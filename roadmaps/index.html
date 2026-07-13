@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Ninja-360 Ops</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Source+Sans+3&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Source Sans 3',sans-serif;background:#fff;color:#3D3D3D;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+  .gate-check{position:absolute;opacity:0;pointer-events:none}
+  .gate-btn{position:fixed;top:16px;right:16px;width:46px;height:46px;border-radius:50%;background:#3D3D3D;color:#fff;display:flex;align-items:center;justify-content:center;font-size:21px;cursor:pointer}
+  .gate-check:checked ~ .gate-btn{opacity:.3}
+  .gate-content{filter:blur(11px);pointer-events:none;transition:filter .4s ease;text-align:center}
+  .gate-check:checked ~ .gate-content{filter:none;pointer-events:auto}
+  a{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:1px;font-size:22px;color:#E05F00;text-decoration:none;margin:14px 0}
+</style>
+</head>
+<body>
+<input type="checkbox" id="gatecheck" class="gate-check" aria-hidden="true">
+<label for="gatecheck" class="gate-btn" title="Enter">🥷</label>
+<div class="gate-content">
+  <a href="pavan.html">Pavan's Roadmap</a>
+  <a href="gabe.html">Gabe's Roadmap</a>
+</div>
+</body>
+</html>

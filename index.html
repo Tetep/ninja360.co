@@ -24,17 +24,23 @@
   p{margin-bottom:12px}
   .alt{background:var(--warm)}
   .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:19px;color:var(--orange)}
+  .wordmark img{height:44px;width:auto;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
   .kicker{font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:13px;color:var(--deep);margin-bottom:12px}
   .sub{font-size:20px;color:var(--gray);max-width:680px}
   .btn{display:inline-block;background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;font-size:17px;padding:13px 30px;text-decoration:none;margin-top:22px}
   .btn.ghost{background:transparent;border:2px solid var(--orange);color:var(--deep);margin-left:10px}
+  .hero{position:relative;overflow:hidden;min-height:560px;display:flex;align-items:center}
+  .hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .hero-overlay{position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.9) 10%,rgba(249,247,245,.82) 52%,rgba(249,247,245,.92) 100%)}
+  .hero .wrap{position:relative;z-index:2}
   /* roster */
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:20px;margin-top:26px}
   .card{border:1px solid var(--line);background:#fff;padding:0}
   .belt{height:8px;background:var(--charcoal)}
   .card.open .belt{background:repeating-linear-gradient(45deg,var(--orange),var(--orange) 10px,#fff 10px,#fff 20px)}
   .card-body{padding:20px 22px 24px}
-  .avatar{width:74px;height:74px;border-radius:50%;background:var(--warm);border:3px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;color:var(--deep);margin-bottom:12px}
+  .avatar{width:74px;height:74px;border-radius:50%;background:var(--warm);border:3px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;color:var(--deep);margin-bottom:12px;overflow:hidden}
+  .avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
   .card.open .avatar{border-style:dashed;color:#b9b1aa}
   .role{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;font-size:23px;letter-spacing:.5px}
   .name{color:var(--deep);font-weight:700;font-size:16px;margin:2px 0 8px}
@@ -52,9 +58,13 @@
 <body>
 <div class="accent-top"></div>
 
-<section>
+<section class="hero">
+  <video class="hero-video" autoplay muted loop playsinline>
+    <source src="assets/Ninjamontage-1.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
   <div class="wrap">
-    <div class="wordmark">NINJA-360</div>
+    <div class="wordmark"><img src="assets/Ninja360_no_bg.png" alt="Ninja-360"></div>
     <div class="kicker" style="margin-top:34px">Kansas City's Local Visibility Dojo</div>
     <h1>The Ninja 360 Dojo</h1>
     <p class="sub" style="margin-top:16px">Multiple Black Belt experts. One mission: your business, found and chosen on Google. Every Ninja masters a craft — capture, code, story, sales — and every client gets the whole Dojo.</p>
@@ -72,7 +82,7 @@
       <div class="card">
         <div class="belt"></div>
         <div class="card-body">
-          <div class="avatar">TP</div>
+          <div class="avatar"><img src="assets/tim-headshot.jpg" alt="Tim Petet"></div>
           <div class="role">Head Ninja</div>
           <div class="name">Tim Petet · Founder</div>
           <p>The Hannibal. Leader, dealmaker, FAA Part 107 pilot, 360 &amp; drone capture master. Loves it when a plan comes together.</p>
@@ -83,7 +93,7 @@
       <div class="card">
         <div class="belt"></div>
         <div class="card-body">
-          <div class="avatar">PG</div>
+          <div class="avatar"><img src="assets/pavan-headshot.jpg" alt="Pavan Gantha"></div>
           <div class="role">Tech Ninja</div>
           <div class="name">Pavan Gantha</div>
           <p>Web development engineer. Builds the machines — CRM, automation, AI agents, the pipes that turn visibility into booked calls.</p>
@@ -94,7 +104,7 @@
       <div class="card">
         <div class="belt"></div>
         <div class="card-body">
-          <div class="avatar">GM</div>
+          <div class="avatar"><img src="assets/gabe-headshot.jpg" alt="Gabe Miller"></div>
           <div class="role">Video Ninja</div>
           <div class="name">Gabe Miller · Lucid Cinematics</div>
           <p>Writer, producer, videographer, editor — the storyteller. Turns raw capture into stories customers can't scroll past.</p>
@@ -168,6 +178,7 @@
 
 <div class="footer">
   © 2026 Ninja-360 Digital Media LLC | Kansas City, MO
+  <a href="roadmaps/index.html" style="color:inherit;text-decoration:none;opacity:.3;margin-left:8px" title="ops">🥷</a>
 </div>
 </body>
 </html>
