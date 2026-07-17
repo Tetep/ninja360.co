@@ -28,8 +28,9 @@ const rooms = (await getCollection('rooms')).sort(
         <Torii />
         <h1 id="dojo-heading">The Ninja-360 Dojo</h1>
         <div class="sub">You're building it. Enter a door.</div>
+        <p class="intro">The Ninja-360 Dojo — the plan, the crew, and the playbooks in one place. New here? Start with the Game Plan.</p>
         <div class="spine-links">
-          <a class="spine-link primary" href="/gameplan">The Game Plan</a>
+          <a class="spine-link start-here" href="/gameplan">Start Here &rarr; The Game Plan</a>
           <a class="spine-link" href="/scrolls">The Scrolls</a>
         </div>
       </div>
@@ -117,13 +118,27 @@ const rooms = (await getCollection('rooms')).sort(
     border-radius: var(--r-md);
     font-size: 12px;
   }
+  .intro {
+    font-size: 14.5px;
+    color: var(--gray);
+    max-width: 460px;
+    margin: 8px auto 0;
+  }
   .spine-link.primary {
     background: var(--charcoal);
     border-color: var(--charcoal);
     color: var(--white);
   }
+  .spine-link.start-here {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: var(--white);
+    font-size: 14px;
+    padding: 11px 18px;
+  }
   .spine-link:hover { background: var(--focus); }
   .spine-link.primary:hover { opacity: 0.92; }
+  .spine-link.start-here:hover { background: var(--deep); border-color: var(--deep); }
 
   .creed {
     max-width: 720px; margin: 18px auto 0;
@@ -168,5 +183,10 @@ const rooms = (await getCollection('rooms')).sort(
     .wall { grid-template-columns: 1fr 1fr; }
     .creed { grid-template-columns: 1fr; }
     .home-head h1 { font-size: 36px; }
+  }
+
+  @media (max-width: 480px) {
+    .wall { grid-template-columns: 1fr; }
+    .spine-link { min-height: 44px; display: inline-flex; align-items: center; }
   }
 </style>

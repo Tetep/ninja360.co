@@ -65,7 +65,7 @@ img, svg { max-width: 100%; display: block; }
 /* Mobile menu toggle — hidden unless the bar collapses below */
 .menu-toggle {
   display: none;
-  width: 40px; height: 40px;
+  width: 44px; height: 44px;
   margin-left: auto;
   flex: 0 0 auto;
   border: none; border-radius: var(--r-md);
@@ -137,6 +137,34 @@ h3 { font-size: 17px; font-weight: 700; color: var(--charcoal); margin: 18px 0 7
 .action b { color: var(--orange); }
 
 .ref { font-size: 12.5px; color: var(--dead); font-style: italic; margin-top: 8px; }
+
+/* ==== "Go deeper" link row — the uniform summary→depth path ==== */
+.godeeper {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  margin: 18px 0 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.gd-label {
+  font-family: var(--font-display);
+  font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+  font-size: 13px; color: var(--dead);
+}
+.gd-link {
+  display: inline-flex; align-items: center;
+  min-height: 36px;
+  background: var(--warm); border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 5px 12px;
+  font-family: var(--font-display);
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  font-size: 13px; color: var(--deep);
+  text-decoration: none;
+}
+.gd-link:hover { background: var(--focus); border-color: var(--orange); }
+@media (max-width: 640px) {
+  .gd-link { min-height: 44px; padding: 8px 14px; }
+}
 
 .stat { display: flex; gap: 14px; flex-wrap: wrap; margin: 6px 0 10px; }
 .stat .s {
@@ -236,4 +264,6 @@ h3 { font-size: 17px; font-weight: 700; color: var(--charcoal); margin: 18px 0 7
     border-bottom: 1px solid rgba(255,255,255,0.1);
   }
   .bar nav a:last-child { border-bottom: none; }
+
+  .back { min-height: 44px; align-items: center; }
 }

@@ -69,6 +69,51 @@
 </style>
 </head>
 <body>
+<!-- n360-unav: unified dojo nav (injected) -->
+<style>
+  .n360bar{position:sticky;top:0;z-index:90;background:#3D3D3D;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;min-height:48px}
+  .n360bar .n360wm{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:#F47920;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav{display:flex;gap:3px;margin-left:auto}
+  .n360bar nav a{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:13px;color:#e8e2dc;padding:0 10px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav a:hover{background:rgba(244,121,32,.25);color:#fff}
+  .n360toggle{display:none;width:44px;height:44px;margin-left:auto;flex:0 0 auto;border:none;border-radius:6px;background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .n360toggle span{display:block;width:22px;height:2px;background:#fff;border-radius:1px}
+  .n360toggle:hover{background:rgba(244,121,32,.25)}
+  .n360accent{height:4px;background:#F47920}
+  .n360crumb{background:#F9F7F5;border-bottom:1px solid #E0DCD8;font-size:13px;padding:7px 18px;color:#404040}
+  .n360crumb a{color:#E05F00;text-decoration:none;font-weight:700}
+  .n360crumb a:hover{text-decoration:underline}
+  .n360crumb .sep{color:#9B948E;margin:0 5px}
+  .n360-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .n360-tw table{min-width:520px}
+  @media(max-width:640px){
+    .n360bar{flex-wrap:nowrap}
+    .n360toggle{display:flex}
+    .n360bar nav{display:none;flex-direction:column;gap:0;margin-left:0;position:absolute;top:100%;left:0;right:0;background:#3D3D3D;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 12px 20px rgba(0,0,0,.25)}
+    .n360bar.open nav{display:flex}
+    .n360bar nav a{font-size:15px;padding:13px 18px;border-radius:0;border-bottom:1px solid rgba(255,255,255,.1);min-height:48px}
+    .n360bar nav a:last-child{border-bottom:none}
+  }
+</style>
+<div class="n360bar">
+  <a class="n360wm" href="/">NINJA-360</a>
+  <button class="n360toggle" type="button" aria-expanded="false" aria-controls="n360nav" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <nav id="n360nav">
+    <a href="/">Dojo</a>
+    <a href="/gameplan">Game Plan</a>
+    <a href="/scrolls">Scrolls</a>
+    <a href="/crew">Crew</a>
+  </nav>
+</div>
+<div class="n360accent"></div>
+<div class="n360crumb"><a href="/">Dojo</a><span class="sep">&rsaquo;</span><span>Game Plan</span></div>
+<script>
+  (function(){
+    var t=document.querySelector('.n360toggle'),b=document.querySelector('.n360bar');
+    if(t&&b)t.addEventListener('click',function(){var o=b.classList.toggle('open');t.setAttribute('aria-expanded',String(o));});
+  })();
+</script>
+
 <div class="accent-top"></div>
 
 <!-- HERO -->
@@ -114,13 +159,13 @@
   <div class="wrap">
     <h2><span class="num">03 ·</span> The Four Legs</h2>
     <p class="section-intro">Each leg is a project: an objective, deliverables, and <b>exactly who's on it — and who isn't.</b> The whole roster at a glance, then the detail:</p>
-    <table>
+    <div class="n360-tw"><table>
       <tr><th style="width:96px">Who</th><th>Leg 1 · Client Work</th><th>Leg 2 · The Engine</th><th>Leg 3 · Podcast</th><th>Leg 4 · Courses</th></tr>
       <tr><td class="wk">Tim</td><td class="mx-in">Owns · sells · captures</td><td class="mx-in">Scopes + pays</td><td class="mx-in">Host + face</td><td class="mx-in">Subject matter</td></tr>
       <tr><td class="wk">Gabe</td><td class="mx-in">Premium capture</td><td class="mx-out">—</td><td class="mx-in">Director / editor</td><td class="mx-in">Production</td></tr>
       <tr><td class="wk">Pavan</td><td class="mx-in">Field help only</td><td class="mx-in">Builds + owns rails</td><td class="mx-out">—</td><td class="mx-out">—</td></tr>
       <tr><td class="wk">Erik</td><td class="mx-out">—</td><td class="mx-out">—</td><td class="mx-in"><i>Potential</i> co-host</td><td class="mx-out">—</td></tr>
-    </table>
+    </table></div>
     <p class="section-intro" style="margin-top:16px;font-size:14.5px">A dash means <b>not on that leg</b> — no say, no share. Detail below.</p>
 
     <!-- LEG 1 -->
@@ -180,14 +225,14 @@
   <div class="wrap">
     <h2><span class="num">04 ·</span> The 12-Month Arc</h2>
     <p class="section-intro">One row per window. What ships, who's on point, where the money comes from.</p>
-    <table>
+    <div class="n360-tw"><table>
       <tr><th style="width:130px">Window</th><th>What ships</th><th style="width:150px">On point</th><th style="width:150px">Funded by</th></tr>
       <tr><td class="wk">Now · July</td><td>Terms on paper (this charter + Gabe/Pavan roadmaps signed) · training trade starts · M0 live · pitch locked · podcast E0 · Erik sounded out</td><td>Tim · Gabe · Pavan</td><td>Ledger A / onboarding</td></tr>
       <tr><td class="wk">August</td><td>Engine: M1 outbound unblocked → M2 Audit Engine → M5 prospect DB → M6 agency-grade + AI by Aug 31 · Podcast E1–E4 · assets: handles, philosophy page, belt brochure, M.A.P. diagram, trademark filing</td><td>Pavan (engine) · Gabe (podcast) · Tim</td><td>August receivables · milestone $</td></tr>
       <tr><td class="wk">September</td><td><b>THE BIG PUSH</b> — campaigns at full clip on agency-grade rails · M3 delivery pipeline · M4 networking · Podcast E5–E6</td><td>Tim (close) · Pavan (rails)</td><td>Per-close fees begin</td></tr>
       <tr><td class="wk">Q4 2026</td><td>Ninja Trainings: outlines + production (Part 107 prep, 360 course) · ambassadors bench · onboarding one-pager · Season 1 wraps</td><td>Tim + Gabe (courses)</td><td>Rev-share terms signed</td></tr>
       <tr><td class="wk">Q1–Q2 2027</td><td>Course launch to the series audience · KC Visibility Report · Season 2 · Business Truths v3 + structure/insurance session · optional valuation (finale beat)</td><td>All</td><td>Course revenue begins</td></tr>
-    </table>
+    </table></div>
   </div>
 </section>
 
@@ -196,12 +241,12 @@
   <div class="wrap">
     <h2><span class="num">05 ·</span> How It's Run — The Monday Loop</h2>
     <p class="section-intro">Defined Monday. Tracked all week. Followed up Friday. One simple loop, run on the dojo.</p>
-    <table>
+    <div class="n360-tw"><table>
       <tr><th style="width:150px">When</th><th>What happens</th></tr>
       <tr><td class="wk">Monday · Dojo</td><td>30 minutes. Set the week's <b>one objective.</b> Fill the Mission Board: each card = <b>owner · deliverable · due date.</b> Pull each card from the leg it serves.</td></tr>
       <tr><td class="wk">All week · Thread</td><td>Updates posted to the thread. No meetings. The board is the source of truth.</td></tr>
       <tr><td class="wk">Friday · Wrap</td><td>Everyone posts their wins. Count the stars. What didn't ship rolls to Monday with a reason.</td></tr>
-    </table>
+    </table></div>
     <div class="note"><b>The Floor is the only surface you touch.</b> Set the board Monday, post to the thread all week, count stars Friday — the rest of the dojo holds itself. You run the rhythm; the rhythm runs the plan.</div>
   </div>
 </section>
@@ -211,7 +256,7 @@
   <div class="wrap">
     <h2><span class="num">06 ·</span> Decisions to Lock — The New Pay/Split</h2>
     <p class="section-intro">These are the only open numbers in the whole plan. Set each one and the charter is complete.</p>
-    <table>
+    <div class="n360-tw"><table>
       <tr><th style="width:130px">Leg</th><th>Decision</th><th style="width:130px">Suggested start</th></tr>
       <tr><td class="wk">Client Work</td><td>Gabe premium-capture: day rate · half-day · per-edit</td><td>Set in the room</td></tr>
       <tr><td class="wk">The Show</td><td>Gabe per-episode on publish</td><td>$200 / episode</td></tr>
@@ -220,7 +265,7 @@
       <tr><td class="wk">The Engine</td><td>Pavan milestone $ (M1, M2) · per-250-batch $ · per-close fee</td><td>Itemize hours → set per stage</td></tr>
       <tr><td class="wk">Courses</td><td>Gabe course rev-share %</td><td>a defined %</td></tr>
       <tr><td class="wk">The Engine</td><td>M6 course seat — who pays (Pavan dev / Tim trade / split)</td><td>Decide in the room</td></tr>
-    </table>
+    </table></div>
     <div class="decide"><b>Rule for all of them:</b> written and signed before the work starts · paid when its "done" test passes · scope changes are a new written line, never a verbal add-on.</div>
   </div>
 </section>

@@ -1,0 +1,31 @@
+---
+// Small breadcrumb trail for deep pages: Dojo › Crew › Gabe Roadmap
+// Last item renders unlinked (current page).
+interface Crumb { label: string; href?: string; }
+interface Props { trail: Crumb[]; }
+const { trail } = Astro.props;
+---
+
+<nav class="crumbs" aria-label="Breadcrumb">
+  {trail.map((c, i) => (
+    <>
+      {i > 0 && <span class="sep">&rsaquo;</span>}
+      {c.href ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}
+    </>
+  ))}
+</nav>
+
+<style>
+  .crumbs {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 10px;
+  }
+  .crumbs a {
+    color: var(--deep);
+    text-decoration: none;
+    font-weight: 700;
+  }
+  .crumbs a:hover { text-decoration: underline; }
+  .sep { color: var(--dead); margin: 0 5px; }
+</style>

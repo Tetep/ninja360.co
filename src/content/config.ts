@@ -9,6 +9,7 @@ const rooms = defineCollection({
     doorLabel: z.string(),                                               // "The Gate", "War Room", ...
     title: z.string(),                                                   // "The Vision — Found in KC"
     subtitle: z.string(),                                                // door sub on the wall
+    plain: z.string().optional(),                                        // plain-English one-liner under the title
     order: z.number(),                                                   // ordering on the wall
     guide: z.enum(['sensei', 'creative', 'architect', 'ally']),          // which lil-ninja leads
     accent: z.enum(['orange', 'deep']).default('orange'),                // door lintel accent

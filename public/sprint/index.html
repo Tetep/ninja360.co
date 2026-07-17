@@ -59,6 +59,51 @@
 </style>
 </head>
 <body>
+<!-- n360-unav: unified dojo nav (injected) -->
+<style>
+  .n360bar{position:sticky;top:0;z-index:90;background:#3D3D3D;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;min-height:48px}
+  .n360bar .n360wm{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:#F47920;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav{display:flex;gap:3px;margin-left:auto}
+  .n360bar nav a{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:13px;color:#e8e2dc;padding:0 10px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav a:hover{background:rgba(244,121,32,.25);color:#fff}
+  .n360toggle{display:none;width:44px;height:44px;margin-left:auto;flex:0 0 auto;border:none;border-radius:6px;background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .n360toggle span{display:block;width:22px;height:2px;background:#fff;border-radius:1px}
+  .n360toggle:hover{background:rgba(244,121,32,.25)}
+  .n360accent{height:4px;background:#F47920}
+  .n360crumb{background:#F9F7F5;border-bottom:1px solid #E0DCD8;font-size:13px;padding:7px 18px;color:#404040}
+  .n360crumb a{color:#E05F00;text-decoration:none;font-weight:700}
+  .n360crumb a:hover{text-decoration:underline}
+  .n360crumb .sep{color:#9B948E;margin:0 5px}
+  .n360-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .n360-tw table{min-width:520px}
+  @media(max-width:640px){
+    .n360bar{flex-wrap:nowrap}
+    .n360toggle{display:flex}
+    .n360bar nav{display:none;flex-direction:column;gap:0;margin-left:0;position:absolute;top:100%;left:0;right:0;background:#3D3D3D;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 12px 20px rgba(0,0,0,.25)}
+    .n360bar.open nav{display:flex}
+    .n360bar nav a{font-size:15px;padding:13px 18px;border-radius:0;border-bottom:1px solid rgba(255,255,255,.1);min-height:48px}
+    .n360bar nav a:last-child{border-bottom:none}
+  }
+</style>
+<div class="n360bar">
+  <a class="n360wm" href="/">NINJA-360</a>
+  <button class="n360toggle" type="button" aria-expanded="false" aria-controls="n360nav" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <nav id="n360nav">
+    <a href="/">Dojo</a>
+    <a href="/gameplan">Game Plan</a>
+    <a href="/scrolls">Scrolls</a>
+    <a href="/crew">Crew</a>
+  </nav>
+</div>
+<div class="n360accent"></div>
+<div class="n360crumb"><a href="/">Dojo</a><span class="sep">&rsaquo;</span><a href="/scrolls">Scrolls</a><span class="sep">&rsaquo;</span><span>90-Day Sprint</span></div>
+<script>
+  (function(){
+    var t=document.querySelector('.n360toggle'),b=document.querySelector('.n360bar');
+    if(t&&b)t.addEventListener('click',function(){var o=b.classList.toggle('open');t.setAttribute('aria-expanded',String(o));});
+  })();
+</script>
+
 
 <header>
   <div class="wrap">
@@ -134,12 +179,12 @@
 
     <h3>The Three Trackers</h3>
     <p class="lede" style="margin-bottom:8px">One shared tracker (sheet or GHL), three tabs. Rule: if it isn't logged, it didn't happen.</p>
-    <table>
+    <div class="n360-tw"><table>
       <tr><th>Tracker</th><th>Columns</th><th>Fed by</th><th>Reviewed</th></tr>
       <tr><td><b>Time Log</b></td><td>Date · Person · Lane · Task · Hours</td><td>Everyone, daily (rough is fine — quarter-hours)</td><td>Monday sync</td></tr>
       <tr><td><b>Issue Log</b></td><td>Date · Issue · Impact · <b>Possible solution(s)</b> · Owner · Status</td><td>Anyone who hits a snag — logged same day, with at least one proposed fix</td><td>Friday close + Monday decision</td></tr>
       <tr><td><b>Punch List</b></td><td>Item · Lane · Owner · Added · Due · Done</td><td>Monday sync additions + anything promised to a client</td><td>Every Monday, top of agenda</td></tr>
-    </table>
+    </table></div>
     <div class="callout">Time tracking isn't surveillance — it's how we learn what a belt build, an episode, and a field day actually cost, so pricing and Gabe/Pavan comp stay fair and defensible.</div>
   </div>
 </section>
@@ -148,7 +193,7 @@
   <div class="wrap">
     <h2><span class="num">§3</span> Week-by-Week Deliverables</h2>
     <p class="lede">Each week has one headline deliverable per lane. Episodes run biweekly. IDS field dates slot in as confirmed and take precedence — deliverables flex within the week, not out of it.</p>
-    <table>
+    <div class="n360-tw"><table>
       <tr><th>Week</th><th>Dates · Monday Sync</th><th>🔵 Lane 1 — Revenue &amp; Systems</th><th>🟠 Lane 2 — Series &amp; Brand</th></tr>
       <tr><td class="wk">W1</td><td class="dt">Jul 13–19</td><td>Acceptance-day invoice rule LIVE · Safelite invoiced · Wichita invoices staged for Fri 7/17 batch · field checklist drafted</td><td>Gabe terms meeting held — terms in principle</td></tr>
       <tr><td class="wk">W2</td><td class="dt">Jul 20–26 · Sync 7/20</td><td>First crew Monday: present this sprint · Gatekeeper STL (7/21–22) run with the new checklist · Merriam ON closed out</td><td>Pitch V01 StoryBrand session · series handles/URLs locked</td></tr>
@@ -163,7 +208,7 @@
       <tr><td class="wk">W11</td><td class="dt">Sep 21–27 · Sync 9/21</td><td>Member-tier monthly promise pages drafted ($99/$499/$999)</td><td><b>E4 "Physician, Heal Thyself" — shoot</b> (self-audit fixed on camera) · data teaser stats published</td></tr>
       <tr><td class="wk">W12</td><td class="dt">Sep 28–Oct 4 · Sync 9/28</td><td>Monthly visibility report template built (feeds from audit data)</td><td><b>E5 "The Draft Picks" — shoot</b> (crew + ambassadors) · case study #2 filmed</td></tr>
       <tr><td class="wk">W13</td><td class="dt">Oct 5–11 · Sync 10/5</td><td>Sprint retro: time-log totals, issue-log patterns, Q4 punch list built</td><td><b>E6 "The Re-Score" — shoot &amp; publish</b> · day-90 KPI re-score on camera (target ~37)</td></tr>
-    </table>
+    </table></div>
     <div class="callout"><b>Floating items (slot when confirmed):</b> Target 1757 two-day shoot (Gabe + Pavan @ $100/day each + Matterport rental + food/tent — filmed for E5 material) · Wichita return trip (basement, back-of-house/roof, survey — first live test of the leave-site gate) · LiveSmart/Josh follow-through.</div>
   </div>
 </section>
@@ -171,13 +216,13 @@
 <section class="alt">
   <div class="wrap">
     <h2><span class="num">§4</span> What Each Person Is Signing Up For</h2>
-    <table>
+    <div class="n360-tw"><table>
       <tr><th>Person</th><th>Role This Sprint</th><th>Standing Commitments</th></tr>
       <tr><td><b>Tim</b></td><td>Sprint owner · both lanes · on camera</td><td>Monday sync agenda + punch list · Friday invoice batch + dashboard · every deliverable has his name or a delegate's</td></tr>
       <tr><td><b>Gabe</b></td><td>Creative Director (post-Gate 0) · Lane 2</td><td>Monday sync · episode shoots &amp; edits on the biweekly clock · brand kit W7 · repurpose set within 5 days of each shoot · logs time per episode</td></tr>
       <tr><td><b>Pavan</b></td><td>Capture &amp; data · Lane 1</td><td>Monday sync · field days as booked ($100/day rate card) · runs the leave-site checklist on every capture · logs audit data same-day</td></tr>
       <tr><td><b>Murdoch</b></td><td>Admin support — lane TBD</td><td>Confirm lane at first Monday sync; candidate owner for invoice engine + dashboard upkeep (#15)</td></tr>
-    </table>
+    </table></div>
     <div class="callout hot"><b>The deal underneath the sprint:</b> everyone's time is logged, every issue gets a proposed solution, and the Monday punch list is the single source of what's owed. That's not bureaucracy — that's the Systems asset (the business's weakest category at 40) being built by how we work, on camera, for 13 weeks.</div>
   </div>
 </section>

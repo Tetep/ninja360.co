@@ -3,6 +3,7 @@ doorNum: "01"
 doorLabel: "The Gate"
 title: "The Vision — Found in KC"
 subtitle: "Found in KC · become the KPI"
+plain: "Where we're headed and why: become the name for local visibility in KC."
 order: 1
 guide: sensei
 accent: orange
@@ -27,4 +28,4 @@ ref: "Full detail: the KPI Gameplan artifact."
 
 <span class="pill">Pitch</span><span class="pill">Publish</span><span class="pill">Product</span><span class="pill">Profile</span><span class="pill">Partnership</span> — Q1 pitch + publish → Q2 product + profile → Q3–Q4 partnership + scale → Key Person of Influence.
 
-Go deeper: [The Game Plan](/gameplan) · [KPI Gameplan](/scrolls/kpi-gameplan)
+<div class="godeeper"><span class="gd-label">Go deeper</span><a class="gd-link" href="/gameplan">The Game Plan &rarr;</a><a class="gd-link" href="/scrolls/kpi-gameplan">KPI Gameplan &rarr;</a></div>

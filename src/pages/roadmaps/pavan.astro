@@ -1,8 +1,10 @@
 ---
 import DojoLayout from '../../layouts/DojoLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 ---
 
 <DojoLayout title="Pavan Roadmap · The Ninja-360 Dojo">
+  <Breadcrumb trail={[{ label: 'Dojo', href: '/' }, { label: 'Crew', href: '/crew' }, { label: 'Pavan Roadmap' }]} />
   <a class="back" href="/crew">← Back to the Crew</a>
   <section class="frame-wrap" aria-labelledby="pavan-roadmap-title">
     <h2 id="pavan-roadmap-title">Pavan Roadmap</h2>

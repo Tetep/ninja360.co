@@ -36,6 +36,51 @@
 </style>
 </head>
 <body>
+<!-- n360-unav: unified dojo nav (injected) -->
+<style>
+  .n360bar{position:sticky;top:0;z-index:90;background:#3D3D3D;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;min-height:48px}
+  .n360bar .n360wm{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:#F47920;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav{display:flex;gap:3px;margin-left:auto}
+  .n360bar nav a{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:13px;color:#e8e2dc;padding:0 10px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav a:hover{background:rgba(244,121,32,.25);color:#fff}
+  .n360toggle{display:none;width:44px;height:44px;margin-left:auto;flex:0 0 auto;border:none;border-radius:6px;background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .n360toggle span{display:block;width:22px;height:2px;background:#fff;border-radius:1px}
+  .n360toggle:hover{background:rgba(244,121,32,.25)}
+  .n360accent{height:4px;background:#F47920}
+  .n360crumb{background:#F9F7F5;border-bottom:1px solid #E0DCD8;font-size:13px;padding:7px 18px;color:#404040}
+  .n360crumb a{color:#E05F00;text-decoration:none;font-weight:700}
+  .n360crumb a:hover{text-decoration:underline}
+  .n360crumb .sep{color:#9B948E;margin:0 5px}
+  .n360-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .n360-tw table{min-width:520px}
+  @media(max-width:640px){
+    .n360bar{flex-wrap:nowrap}
+    .n360toggle{display:flex}
+    .n360bar nav{display:none;flex-direction:column;gap:0;margin-left:0;position:absolute;top:100%;left:0;right:0;background:#3D3D3D;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 12px 20px rgba(0,0,0,.25)}
+    .n360bar.open nav{display:flex}
+    .n360bar nav a{font-size:15px;padding:13px 18px;border-radius:0;border-bottom:1px solid rgba(255,255,255,.1);min-height:48px}
+    .n360bar nav a:last-child{border-bottom:none}
+  }
+</style>
+<div class="n360bar">
+  <a class="n360wm" href="/">NINJA-360</a>
+  <button class="n360toggle" type="button" aria-expanded="false" aria-controls="n360nav" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <nav id="n360nav">
+    <a href="/">Dojo</a>
+    <a href="/gameplan">Game Plan</a>
+    <a href="/scrolls">Scrolls</a>
+    <a href="/crew">Crew</a>
+  </nav>
+</div>
+<div class="n360accent"></div>
+<div class="n360crumb"><a href="/">Dojo</a><span class="sep">&rsaquo;</span><a href="/scrolls">Scrolls</a><span class="sep">&rsaquo;</span><span>Social Hub</span></div>
+<script>
+  (function(){
+    var t=document.querySelector('.n360toggle'),b=document.querySelector('.n360bar');
+    if(t&&b)t.addEventListener('click',function(){var o=b.classList.toggle('open');t.setAttribute('aria-expanded',String(o));});
+  })();
+</script>
+
 <div class="accent-top"></div>
 <section>
   <div class="wrap">
@@ -50,7 +95,7 @@
 <section class="alt">
   <div class="wrap">
     <h2><span class="num">01 ·</span> Official Channels (Canonical)</h2>
-    <table>
+    <div class="n360-tw"><table>
       <tr><th>Platform</th><th>Handle</th><th>Link</th></tr>
       <tr><td>Facebook</td><td>KCNinja360</td><td><a href="https://www.facebook.com/KCNinja360/">facebook.com/KCNinja360</a></td></tr>
       <tr><td>Instagram</td><td>kcninja360</td><td><a href="https://www.instagram.com/kcninja360">instagram.com/kcninja360</a></td></tr>
@@ -58,7 +103,7 @@
       <tr><td>X (Twitter)</td><td>KCNinja360</td><td><a href="https://x.com/KCNinja360">x.com/KCNinja360</a></td></tr>
       <tr><td>Pinterest</td><td>Ninja-360 Virtual Business Tours</td><td><a href="https://www.pinterest.com/0qh3y7tkp1fgvis/">pinterest.com/…</a></td></tr>
       <tr><td>YouTube</td><td>@ninja360vr</td><td><a href="https://www.youtube.com/@ninja360vr">youtube.com/@ninja360vr</a></td></tr>
-    </table>
+    </table></div>
     <div class="note"><b>Handle consistency (a Profile-pillar win):</b> handles vary — KCNinja360, kcninja360, ninja360vr, ninja360digitalma, plus a numeric Pinterest URL. Standardize toward one clean handle (<b>ninja360vr</b> or <b>kcninja360</b>) and claim a vanity Pinterest URL where allowed. Low effort; queue it behind the higher-leverage assets.</div>
   </div>
 </section>

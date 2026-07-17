@@ -9,9 +9,10 @@ interface Props {
   doorLabel: string;
   title: string;
   guide: GuideKey;
+  plain?: string;
   roomHeroImage?: ImageMetadata;
 }
-const { doorNum, doorLabel, title, guide, roomHeroImage } = Astro.props;
+const { doorNum, doorLabel, title, guide, plain, roomHeroImage } = Astro.props;
 ---
 
 <a class="back" href="/">← Back to the Dojo</a>
@@ -20,6 +21,7 @@ const { doorNum, doorLabel, title, guide, roomHeroImage } = Astro.props;
   <div class="rhead-main">
     <div class="k">Door {doorNum} · {doorLabel}</div>
     <h2>{title}</h2>
+    {plain && <p class="plain">{plain}</p>}
     <div class="guide-row">
       <Guide guide={guide} variant="chip" size={44} />
       <span class="caption">{guide === 'sensei' ? 'Tim' : guide === 'creative' ? 'Gabe' : guide === 'architect' ? 'Pavan' : 'Erik'} guides you here</span>
@@ -47,6 +49,12 @@ const { doorNum, doorLabel, title, guide, roomHeroImage } = Astro.props;
   }
   .rhead-main {
     min-width: 0;
+  }
+  .plain {
+    font-size: 15px;
+    color: var(--gray);
+    margin: 6px 0 0;
+    max-width: 560px;
   }
   .rhead-art {
     width: 170px;

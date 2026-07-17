@@ -3,6 +3,7 @@ doorNum: "07"
 doorLabel: "The Floor"
 title: "Run the Week"
 subtitle: "Calendar + Mission Board"
+plain: "How we run the week: Monday board, all-week thread, Friday wins."
 order: 7
 guide: sensei
 accent: deep
@@ -12,4 +13,4 @@ ref: "Click a status to cycle Queued → In Motion → Shipped ★. Type into an
 
 **This is the only surface you touch.** Fill the board Monday, post to the thread all week, count stars Friday. The rest of the dojo holds itself.
 
-Go deeper: [The Game Plan](/gameplan) · [90-Day Sprint](/sprint) · [Operating Rhythm](/scrolls/operating-rhythm) · [Mission Board Scroll](/scrolls/mission-board) · [Domain Strategy](/domain-strategy)
+<div class="godeeper"><span class="gd-label">Go deeper</span><a class="gd-link" href="/gameplan">The Game Plan &rarr;</a><a class="gd-link" href="/sprint">90-Day Sprint &rarr;</a><a class="gd-link" href="/scrolls/operating-rhythm">Operating Rhythm &rarr;</a><a class="gd-link" href="/scrolls/mission-board">Mission Board Scroll &rarr;</a><a class="gd-link" href="/domain-strategy">Domain Strategy &rarr;</a></div>

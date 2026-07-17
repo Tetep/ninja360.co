@@ -65,6 +65,51 @@
 </style>
 </head>
 <body>
+<!-- n360-unav: unified dojo nav (injected) -->
+<style>
+  .n360bar{position:sticky;top:0;z-index:90;background:#3D3D3D;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;min-height:48px}
+  .n360bar .n360wm{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:#F47920;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav{display:flex;gap:3px;margin-left:auto}
+  .n360bar nav a{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:13px;color:#e8e2dc;padding:0 10px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav a:hover{background:rgba(244,121,32,.25);color:#fff}
+  .n360toggle{display:none;width:44px;height:44px;margin-left:auto;flex:0 0 auto;border:none;border-radius:6px;background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .n360toggle span{display:block;width:22px;height:2px;background:#fff;border-radius:1px}
+  .n360toggle:hover{background:rgba(244,121,32,.25)}
+  .n360accent{height:4px;background:#F47920}
+  .n360crumb{background:#F9F7F5;border-bottom:1px solid #E0DCD8;font-size:13px;padding:7px 18px;color:#404040}
+  .n360crumb a{color:#E05F00;text-decoration:none;font-weight:700}
+  .n360crumb a:hover{text-decoration:underline}
+  .n360crumb .sep{color:#9B948E;margin:0 5px}
+  .n360-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .n360-tw table{min-width:520px}
+  @media(max-width:640px){
+    .n360bar{flex-wrap:nowrap}
+    .n360toggle{display:flex}
+    .n360bar nav{display:none;flex-direction:column;gap:0;margin-left:0;position:absolute;top:100%;left:0;right:0;background:#3D3D3D;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 12px 20px rgba(0,0,0,.25)}
+    .n360bar.open nav{display:flex}
+    .n360bar nav a{font-size:15px;padding:13px 18px;border-radius:0;border-bottom:1px solid rgba(255,255,255,.1);min-height:48px}
+    .n360bar nav a:last-child{border-bottom:none}
+  }
+</style>
+<div class="n360bar">
+  <a class="n360wm" href="/">NINJA-360</a>
+  <button class="n360toggle" type="button" aria-expanded="false" aria-controls="n360nav" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <nav id="n360nav">
+    <a href="/">Dojo</a>
+    <a href="/gameplan">Game Plan</a>
+    <a href="/scrolls">Scrolls</a>
+    <a href="/crew">Crew</a>
+  </nav>
+</div>
+<div class="n360accent"></div>
+<div class="n360crumb"><a href="/">Dojo</a><span class="sep">&rsaquo;</span><a href="/scrolls">Scrolls</a><span class="sep">&rsaquo;</span><span>24-Asset Roadmap</span></div>
+<script>
+  (function(){
+    var t=document.querySelector('.n360toggle'),b=document.querySelector('.n360bar');
+    if(t&&b)t.addEventListener('click',function(){var o=b.classList.toggle('open');t.setAttribute('aria-expanded',String(o));});
+  })();
+</script>
+
 <div class="accent-top"></div>
 
 <section>
@@ -162,7 +207,7 @@
   <div class="wrap">
     <h2><span class="num">03 ·</span> Every Tip From the Report — Mapped</h2>
     <p>All 25 tips from the heatmap, each tagged: <strong>COVERED</strong> (already in a live plan), <strong>EXTEND</strong> (in a plan, needs widening), or <strong>NET-NEW</strong> (nothing owns it yet — added to the roadmap below).</p>
-    <table>
+    <div class="n360-tw"><table>
       <tr><th style="width:88px">Category</th><th>Dent's tip</th><th style="width:290px">Ninja-360 status</th></tr>
       <tr><td class="wk">IP</td><td>Trademark the business name</td><td><strong>NET-NEW</strong> — file for "Ninja-360" (and consider "M.A.P. System"); USPTO, DIY or IP attorney</td></tr>
       <tr><td class="wk">IP</td><td>Register social handles everywhere</td><td><strong>NET-NEW</strong> — one-hour sweep; also feeds the Entity Confidence sameAs array</td></tr>
@@ -189,7 +234,7 @@
       <tr><td class="wk">Funding</td><td>Independent business valuation</td><td><strong>PARKED</strong> — optional for lifestyle design; revisit at 12-month re-score</td></tr>
       <tr><td class="wk">Funding</td><td>Professional business plan + forecast</td><td><strong>EXTEND</strong> — Business Truths v3 refresh first (already flagged); professional forecast only if funding is ever wanted</td></tr>
       <tr><td class="wk">Funding</td><td>Accountant + lawyer structure session</td><td><strong>NET-NEW</strong> — one session: LLC hygiene, key-person insurance, basic agreements. Cheap, real risk reduction</td></tr>
-    </table>
+    </table></div>
     <div class="note"><strong>Two process rules adopted from the report, effective now:</strong> (1) <strong>The Asset Creation Cycle</strong> — Ideas → Mess → Brief → Beta → Official → Remarkable — is the official versioning path for every Ninja-360 asset (your V01/V02 habit, formalized). (2) <strong>Let go of DIY</strong> — quality suppliers build sellable assets. This is exactly why Gabe and Pavan get paid real terms (see Money Strategy), not endless trades.</div>
   </div>
 </section>
@@ -199,13 +244,13 @@
   <div class="wrap">
     <h2><span class="num">04 ·</span> The Build Order — Layered Onto What's Running</h2>
     <p>Nothing here replaces the 90-day sprint. The net-new items slot around it, cheapest-and-highest-leverage first. Funding assets stay deliberately last — the lifestyle-boutique design says income, flexibility, and fun are the metrics, not fundability.</p>
-    <table>
+    <div class="n360-tw"><table>
       <tr><th style="width:170px">Horizon</th><th>Asset builds</th></tr>
       <tr><td class="wk">Now → Oct (with sprint)</td><td>Social handle sweep (1 hr) · Philosophy page on ninja360.net · Belt brochure one-pager · M.A.P. methodology diagram · 5 client-data fields in GHL · Trademark filing started · KC Visibility Checklist as no-strings gift</td></tr>
       <tr><td class="wk">Gated (infra first)</td><td>Welcome email sequence + monthly auto-report (after SPF/DKIM/DMARC) · 12-week ad test (after toll-free + Cash Rule 2 headroom)</td></tr>
       <tr><td class="wk">Q4 2026</td><td>Ambassador bench: 3–5 named, value exchanged (client champions, ACA/chamber voices, series guests) · Brand consistency sweep · Onboarding one-pager for Draft Picks</td></tr>
       <tr><td class="wk">Q1–Q2 2027</td><td>Business Truths v3 + plan refresh · Accountant/lawyer structure session + key-person insurance · Optional independent valuation at the 12-month re-score — the "before/after" number makes a great series finale beat</td></tr>
-    </table>
+    </table></div>
   </div>
 </section>
 

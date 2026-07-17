@@ -3,6 +3,7 @@ doorNum: "03"
 doorLabel: "The Armory"
 title: "The 24 Assets Roadmap"
 subtitle: "24 assets · what to build, in order"
+plain: "The assets that make the business valuable — and the order we build them."
 order: 3
 guide: architect
 accent: orange
@@ -27,4 +28,4 @@ ref: "Full detail: the 24 Assets Roadmap artifact."
 
 Valuation, big funding docs, the app — all deferred. The boutique design says they're later.
 
-Go deeper: [The Game Plan](/gameplan) · [24-Asset Roadmap](/roadmaps/assets)
+<div class="godeeper"><span class="gd-label">Go deeper</span><a class="gd-link" href="/gameplan">The Game Plan &rarr;</a><a class="gd-link" href="/roadmaps/assets">24-Asset Roadmap &rarr;</a></div>

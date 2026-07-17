@@ -3,6 +3,7 @@ doorNum: "05"
 doorLabel: "The Alliance"
 title: "Partners — Lucky 13"
 subtitle: "Lucky 13 · the studio trade"
+plain: "The studio trade with Erik: a co-host, a room, and getting Lucky 13 found."
 order: 5
 guide: ally
 accent: orange
@@ -21,4 +22,4 @@ ref: "Full detail: the Lucky 13 Negotiation Brief."
 
 You're not over a barrel — a $2–3K rig makes you studio-independent. Negotiate for his **audience and co-hosting,** not the room.
 
-Go deeper: [The Game Plan](/gameplan) · [Erik Roadmap](/roadmaps/erik) · [Lucky 13 Brief](/scrolls/lucky13-brief)
+<div class="godeeper"><span class="gd-label">Go deeper</span><a class="gd-link" href="/gameplan">The Game Plan &rarr;</a><a class="gd-link" href="/roadmaps/erik">Erik Roadmap &rarr;</a><a class="gd-link" href="/scrolls/lucky13-brief">Lucky 13 Brief &rarr;</a></div>

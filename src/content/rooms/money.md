@@ -3,6 +3,7 @@ doorNum: "02"
 doorLabel: "War Room"
 title: "Money — Two Ledgers"
 subtitle: "Two ledgers · who's paid from what"
+plain: "How the money works: two ledgers, and who's paid from what."
 order: 2
 guide: sensei
 accent: orange
@@ -27,4 +28,4 @@ ref: "Full detail: the Money Strategy workbook (two-ledger V2)."
 
 ~$467/mo (7 episodes @ $200), cap $500 — within cap. One fresh Brown close pays it back 1.4×.
 
-Go deeper: [The Game Plan](/gameplan)
+<div class="godeeper"><span class="gd-label">Go deeper</span><a class="gd-link" href="/gameplan">The Game Plan &rarr;</a></div>

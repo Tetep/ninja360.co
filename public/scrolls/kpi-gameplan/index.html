@@ -88,6 +88,51 @@
 </style>
 </head>
 <body>
+<!-- n360-unav: unified dojo nav (injected) -->
+<style>
+  .n360bar{position:sticky;top:0;z-index:90;background:#3D3D3D;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;min-height:48px}
+  .n360bar .n360wm{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:#F47920;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav{display:flex;gap:3px;margin-left:auto}
+  .n360bar nav a{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:13px;color:#e8e2dc;padding:0 10px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav a:hover{background:rgba(244,121,32,.25);color:#fff}
+  .n360toggle{display:none;width:44px;height:44px;margin-left:auto;flex:0 0 auto;border:none;border-radius:6px;background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .n360toggle span{display:block;width:22px;height:2px;background:#fff;border-radius:1px}
+  .n360toggle:hover{background:rgba(244,121,32,.25)}
+  .n360accent{height:4px;background:#F47920}
+  .n360crumb{background:#F9F7F5;border-bottom:1px solid #E0DCD8;font-size:13px;padding:7px 18px;color:#404040}
+  .n360crumb a{color:#E05F00;text-decoration:none;font-weight:700}
+  .n360crumb a:hover{text-decoration:underline}
+  .n360crumb .sep{color:#9B948E;margin:0 5px}
+  .n360-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .n360-tw table{min-width:520px}
+  @media(max-width:640px){
+    .n360bar{flex-wrap:nowrap}
+    .n360toggle{display:flex}
+    .n360bar nav{display:none;flex-direction:column;gap:0;margin-left:0;position:absolute;top:100%;left:0;right:0;background:#3D3D3D;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 12px 20px rgba(0,0,0,.25)}
+    .n360bar.open nav{display:flex}
+    .n360bar nav a{font-size:15px;padding:13px 18px;border-radius:0;border-bottom:1px solid rgba(255,255,255,.1);min-height:48px}
+    .n360bar nav a:last-child{border-bottom:none}
+  }
+</style>
+<div class="n360bar">
+  <a class="n360wm" href="/">NINJA-360</a>
+  <button class="n360toggle" type="button" aria-expanded="false" aria-controls="n360nav" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <nav id="n360nav">
+    <a href="/">Dojo</a>
+    <a href="/gameplan">Game Plan</a>
+    <a href="/scrolls">Scrolls</a>
+    <a href="/crew">Crew</a>
+  </nav>
+</div>
+<div class="n360accent"></div>
+<div class="n360crumb"><a href="/">Dojo</a><span class="sep">&rsaquo;</span><a href="/scrolls">Scrolls</a><span class="sep">&rsaquo;</span><span>KPI Gameplan</span></div>
+<script>
+  (function(){
+    var t=document.querySelector('.n360toggle'),b=document.querySelector('.n360bar');
+    if(t&&b)t.addEventListener('click',function(){var o=b.classList.toggle('open');t.setAttribute('aria-expanded',String(o));});
+  })();
+</script>
+
 <div class="accent-top"></div>
 
 <!-- ============ 1. HEADLINE ============ -->
@@ -287,7 +332,7 @@
   <div class="wrap">
     <h2><span class="num">05 ·</span> The 90-Day Sprint — Weeks 1–13</h2>
     <p>July 13 – October 11, 2026. Aligned one-to-one with the Content Engine's 13-week cadence yardstick. Standing weekly floor throughout: 2 GBP posts · 1 blog feature · 2 LinkedIn posts · 5 audit invitations extended.</p>
-    <table>
+    <div class="n360-tw"><table>
       <tr><th style="width:120px">Week</th><th>Focus</th><th style="width:200px">Milestone</th></tr>
       <tr><td class="wk">W1 · Jul 13–19</td><td><strong>Gate 0:</strong> Gabe terms meeting (this playbook = agenda). Draft Pitch V01. GHL Social Planner pre-flight.</td><td>Terms agreed in principle</td></tr>
       <tr><td class="wk">W2 · Jul 20–26</td><td>Shoot <span class="ep">E0</span>. Blog template live on ninja360.net. Pitch drilled out loud daily.</td><td>Publishing rails ready</td></tr>
@@ -302,7 +347,7 @@
       <tr><td class="wk">W11 · Sep 21–27</td><td>Ship <span class="ep">E4</span>. Partnership: Brent + Pavan trade-out terms drafted. Partner target list (20).</td><td>Draft Picks on paper</td></tr>
       <tr><td class="wk">W12 · Sep 28–Oct 4</td><td>Shoot + ship <span class="ep">E5</span>. Sign at least 3 partnership terms. First partner-referred audit pursued.</td><td>3 partnerships inked</td></tr>
       <tr><td class="wk">W13 · Oct 5–11</td><td><strong>Day-90 re-score on camera</strong> → <span class="ep">E6</span>. Q2 plan drafted from the delta.</td><td>Target: 35+/60</td></tr>
-    </table>
+    </table></div>
   </div>
 </section>
 
@@ -310,15 +355,15 @@
 <section class="alt">
   <div class="wrap">
     <h2><span class="num">06 ·</span> The 12-Month Arc</h2>
-    <table>
+    <div class="n360-tw"><table>
       <tr><th style="width:150px">Quarter</th><th>Pillars in focus</th><th>Exit criteria</th></tr>
       <tr><td class="wk">Q1 · Jul–Sep 2026</td><td><strong>Pitch + Publish.</strong> The 90-day sprint above: pitch locked, engine live, series E0–E6 aired.</td><td>13-week cadence held · score 35+/60 · 3 partnerships on paper</td></tr>
       <tr><td class="wk">Q2 · Oct–Dec 2026</td><td><strong>Product + Profile.</strong> Delivery systemized (belts run to checklist), self-audit 80+, review engine live, Entity Confidence standard live at /standards/ai-search-nap and folded into the visibility-analyzer rubric. Begin the authority asset: "The Kansas City Local Visibility Report 2027" — with the AI-search data (77% of AI citations come from outside the organic top 10) as its headline finding. Series season 2: client transformations.</td><td>Score 40+/60 · audit leads 4+/mo · Report drafted</td></tr>
       <tr><td class="wk">Q3 · Jan–Mar 2027</td><td><strong>Profile + Partnership.</strong> Publish the Report in January (the quotable asset). Media/speaking push: chambers, podcasts, KC Business Journal. Referral engine formalized in GHL Networking pipeline — tracked referrals in AND out.</td><td>Page-1 findability for micro-niche terms · 3+ producing referral partners · first speaking slot</td></tr>
       <tr><td class="wk">Q4 · Apr–Jun 2027</td><td><strong>Partnership scale.</strong> The chain path: leverage delivered multi-location work into pilot→scale proposals. Season finale: the year's re-score, E0 footage side-by-side with the result.</td><td><strong>Score 45+/60 — Key Person band</strong> · 1 active chain conversation</td></tr>
-    </table>
+    </table></div>
     <h3>The Scoreboard — Targets by Pillar</h3>
-    <table>
+    <div class="n360-tw"><table>
       <tr><th>Pillar</th><th>Baseline</th><th>Day 90</th><th>Month 6</th><th>Month 12</th></tr>
       <tr><td>Pitch (15)</td><td>4.5</td><td>10</td><td>12</td><td>13</td></tr>
       <tr><td>Publish (15)</td><td>10</td><td>12</td><td>13</td><td>14</td></tr>
@@ -326,7 +371,7 @@
       <tr><td>Profile (10)</td><td>~4 (incomplete)</td><td>6</td><td>7</td><td>9</td></tr>
       <tr><td>Partnership (10)</td><td>3</td><td>4</td><td>6</td><td>8</td></tr>
       <tr><td><strong>Total (60)</strong></td><td><strong>23–27 · Starting</strong></td><td><strong>~37 · Rising</strong></td><td><strong>~45 · Key Person</strong></td><td><strong>~52 · Key Person</strong></td></tr>
-    </table>
+    </table></div>
     <p class="legend">Re-scores happen on camera at day 90 and each quarter after. The number airs either way — that honesty is the series' credibility.</p>
   </div>
 </section>
