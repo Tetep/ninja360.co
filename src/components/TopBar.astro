@@ -1,0 +1,24 @@
+---
+// Sticky top nav. Present on every room. Home link + all rooms.
+const pathname = new URL(Astro.request.url).pathname.replace(/\/$/, '') || '/';
+const links = [
+  { href: '/', label: 'Dojo' },
+  { href: '/vision', label: 'Vision' },
+  { href: '/money', label: 'Money' },
+  { href: '/assets', label: 'Assets' },
+  { href: '/forge', label: 'Warp Speed' },
+  { href: '/alliance', label: 'Alliance' },
+  { href: '/crew', label: 'Crew' },
+  { href: '/floor', label: 'The Floor' },
+];
+---
+
+<div class="bar">
+  <a class="wm" href="/">NINJA-360 · DOJO</a>
+  <nav aria-label="Rooms">
+    {links.map(l => (
+      <a href={l.href} aria-current={pathname === l.href ? 'page' : undefined}>{l.label}</a>
+    ))}
+  </nav>
+</div>
+<div class="accent"></div>

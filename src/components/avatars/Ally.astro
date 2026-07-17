@@ -1,0 +1,60 @@
+---
+// Ally — Erik. The allied-studio ninja. Slightly "outside" the core three
+// (partner/ally, show-lane only) — softer silhouette, lighter accents.
+// Motif: microphone / headphones / studio.
+// Role accent: charcoal (--role-ally) — cooler, less claimed than the core three.
+type Variant = 'guide' | 'chip';
+interface Props { variant?: Variant; size?: number; label?: string; }
+const { variant = 'guide', size = variant === 'chip' ? 44 : 120, label = 'Erik — the Ally (Lucky 13)' } = Astro.props;
+---
+
+{variant === 'guide' ? (
+  <svg viewBox="0 0 120 160" width={size} height={size * (160/120)} role="img" aria-label={label} class="ninja ninja-ally">
+    {/* body — lighter fill to read as "outside" the core three */}
+    <path d="M35 90 L85 90 L95 145 L25 145 Z" fill="#404040"/>
+    {/* belt — dotted/broken pattern (visual "partner not member") */}
+    <g fill="#3D3D3D">
+      <rect x="30" y="105" width="10" height="5"/>
+      <rect x="44" y="105" width="10" height="5"/>
+      <rect x="58" y="105" width="10" height="5"/>
+      <rect x="72" y="105" width="10" height="5"/>
+    </g>
+    {/* microphone held out — right hand */}
+    <g transform="translate(85 78)">
+      <rect x="0" y="0" width="16" height="22" rx="7" fill="#3D3D3D"/>
+      <rect x="4" y="4" width="8" height="14" rx="3" fill="#F9F7F5"/>
+      <rect x="7" y="22" width="2" height="10" fill="#3D3D3D"/>
+      <rect x="3" y="32" width="10" height="3" fill="#3D3D3D"/>
+    </g>
+    {/* arm to mic */}
+    <path d="M78 92 L88 84 L92 88 L82 96 Z" fill="#404040"/>
+    {/* head — hood with over-ear headphones */}
+    <path d="M42 78 Q42 45 60 45 Q78 45 78 78 L78 88 L42 88 Z" fill="#404040"/>
+    {/* headphones (band + cans) — the studio motif */}
+    <path d="M38 62 Q60 40 82 62" fill="none" stroke="#3D3D3D" stroke-width="3"/>
+    <ellipse cx="38" cy="66" rx="5" ry="8" fill="#3D3D3D"/>
+    <ellipse cx="82" cy="66" rx="5" ry="8" fill="#3D3D3D"/>
+    {/* eye strip */}
+    <rect x="46" y="70" width="28" height="6" fill="#F9F7F5"/>
+    <circle cx="53" cy="73" r="1.6" fill="#3D3D3D"/>
+    <circle cx="67" cy="73" r="1.6" fill="#3D3D3D"/>
+    {/* subtle "13" mark on chest */}
+    <text x="55" y="130" font-family="Barlow Condensed, sans-serif" font-weight="800" font-size="14" fill="#F9F7F5">13</text>
+  </svg>
+) : (
+  <svg viewBox="0 0 44 44" width={size} height={size} role="img" aria-label={label} class="chip-avatar chip-ally">
+    <circle cx="22" cy="22" r="20" fill="#404040"/>
+    <path d="M8 22 Q8 8 22 8 Q36 8 36 22 L36 32 L8 32 Z" fill="#404040"/>
+    <path d="M6 20 Q22 4 38 20" fill="none" stroke="#3D3D3D" stroke-width="2"/>
+    <ellipse cx="6" cy="22" rx="3" ry="5" fill="#3D3D3D"/>
+    <ellipse cx="38" cy="22" rx="3" ry="5" fill="#3D3D3D"/>
+    <rect x="10" y="21" width="24" height="4" fill="#F9F7F5"/>
+    <circle cx="16" cy="23" r="1.2" fill="#3D3D3D"/>
+    <circle cx="28" cy="23" r="1.2" fill="#3D3D3D"/>
+  </svg>
+)}
+
+<style>
+  .ninja, .chip-avatar { display: block; }
+  .chip-avatar { border-radius: 50%; }
+</style>

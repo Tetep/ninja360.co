@@ -1,0 +1,55 @@
+---
+// Sensei — Tim. Guide-in-chief. Headband, calm and confident.
+// Motif: 360 / drone / "on the M.A.P." Master belt.
+// Variants: "guide" (full pose, leading, pointing) · "chip" (head only, for nav labels)
+type Variant = 'guide' | 'chip';
+interface Props { variant?: Variant; size?: number; label?: string; }
+const { variant = 'guide', size = variant === 'chip' ? 44 : 120, label = 'Tim — the Sensei' } = Astro.props;
+---
+
+{variant === 'guide' ? (
+  <svg viewBox="0 0 120 160" width={size} height={size * (160/120)} role="img" aria-label={label} class="ninja ninja-sensei">
+    {/* body robe */}
+    <path d="M35 90 L85 90 L95 145 L25 145 Z" fill="#3D3D3D"/>
+    {/* Master belt (orange) */}
+    <rect x="30" y="105" width="60" height="8" fill="#F47920"/>
+    {/* extended pointing arm (leading forward) */}
+    <path d="M85 96 L112 78 L118 82 L92 104 Z" fill="#3D3D3D"/>
+    <circle cx="115" cy="80" r="5" fill="#F9F7F5"/>
+    {/* head — hood */}
+    <path d="M42 78 Q42 45 60 45 Q78 45 78 78 L78 88 L42 88 Z" fill="#3D3D3D"/>
+    {/* headband (Sensei mark — full orange) */}
+    <rect x="40" y="62" width="40" height="7" fill="#F47920"/>
+    {/* eyes strip (skin visible through hood) */}
+    <rect x="46" y="70" width="28" height="6" fill="#F9F7F5"/>
+    {/* eyes */}
+    <circle cx="53" cy="73" r="1.6" fill="#3D3D3D"/>
+    <circle cx="67" cy="73" r="1.6" fill="#3D3D3D"/>
+    {/* drone motif above head — 4 rotors + circle */}
+    <g transform="translate(60 26)">
+      <circle r="8" fill="none" stroke="#F47920" stroke-width="2"/>
+      <circle cx="-10" cy="-6" r="3" fill="#3D3D3D"/>
+      <circle cx="10" cy="-6" r="3" fill="#3D3D3D"/>
+      <circle cx="-10" cy="6" r="3" fill="#3D3D3D"/>
+      <circle cx="10" cy="6" r="3" fill="#3D3D3D"/>
+      <line x1="-10" y1="-6" x2="0" y2="0" stroke="#3D3D3D" stroke-width="1.5"/>
+      <line x1="10" y1="-6" x2="0" y2="0" stroke="#3D3D3D" stroke-width="1.5"/>
+      <line x1="-10" y1="6" x2="0" y2="0" stroke="#3D3D3D" stroke-width="1.5"/>
+      <line x1="10" y1="6" x2="0" y2="0" stroke="#3D3D3D" stroke-width="1.5"/>
+    </g>
+  </svg>
+) : (
+  <svg viewBox="0 0 44 44" width={size} height={size} role="img" aria-label={label} class="chip-avatar chip-sensei">
+    <circle cx="22" cy="22" r="20" fill="#3D3D3D"/>
+    <path d="M8 22 Q8 8 22 8 Q36 8 36 22 L36 32 L8 32 Z" fill="#3D3D3D"/>
+    <rect x="7" y="16" width="30" height="5" fill="#F47920"/>
+    <rect x="10" y="21" width="24" height="4" fill="#F9F7F5"/>
+    <circle cx="16" cy="23" r="1.2" fill="#3D3D3D"/>
+    <circle cx="28" cy="23" r="1.2" fill="#3D3D3D"/>
+  </svg>
+)}
+
+<style>
+  .ninja, .chip-avatar { display: block; }
+  .chip-avatar { border-radius: 50%; }
+</style>

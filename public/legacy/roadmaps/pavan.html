@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Ninja-360 Technical Roadmap — GHL Build-Out · Tim Petet × Pavan Gantha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#F47920; --deep:#E05F00; --charcoal:#3D3D3D; --gray:#404040;
+    --warm:#F9F7F5; --line:#E0DCD8; --green:#4CAF50; --blue:#3A6EA5;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:#fff;line-height:1.55;font-size:16px}
+  .accent-top{height:4px;background:var(--orange)}
+  .wrap{max-width:860px;margin:0 auto;padding:0 24px}
+  section{padding:40px 0}
+  h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif;line-height:1.1;text-transform:uppercase;letter-spacing:.5px}
+  h1{font-size:40px;font-weight:800}
+  h2{font-size:27px;font-weight:700;margin-bottom:16px}
+  h2 .num{color:var(--orange)}
+  h3{font-size:20px;font-weight:700;margin:18px 0 8px}
+  p{margin-bottom:12px}
+  .alt{background:var(--warm)}
+  .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:19px;color:var(--orange)}
+  .backlink{display:inline-block;margin-top:14px;font-size:13.5px;color:var(--deep);text-decoration:none;font-weight:700}
+  .kicker{font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:13px;color:var(--deep);margin-bottom:10px}
+  .sub{font-size:18px;color:var(--gray);max-width:660px}
+  .meta{font-size:14px;color:#7a746f;margin-top:14px}
+  .note{border-left:4px solid var(--orange);background:var(--warm);padding:14px 18px;margin:18px 0;font-size:15.5px}
+  ul{margin:0 0 12px 20px}
+  li{margin-bottom:7px}
+  /* milestone cards */
+  .ms{border:1px solid var(--line);margin-bottom:22px}
+  .ms-head{background:var(--charcoal);color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px}
+  .ms-head .disp{font-size:21px;font-weight:800}
+  .ms-head .when{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:var(--orange)}
+  .ms-body{padding:16px 20px}
+  .ms-body h4{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:1px;font-size:14.5px;color:var(--deep);margin:12px 0 5px}
+  .ms-body h4:first-child{margin-top:0}
+  .done{background:var(--warm);padding:9px 13px;font-size:14.5px;border-left:4px solid var(--green);margin-top:10px}
+  .unblocks{background:var(--warm);padding:9px 13px;font-size:14.5px;border-left:4px solid var(--blue);margin-top:8px}
+  .pay{background:var(--warm);padding:9px 13px;font-size:14.5px;border-left:4px solid var(--orange);margin-top:8px}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:15px}
+  th{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:1px;font-size:14px;text-align:left;background:var(--charcoal);color:#fff;padding:9px 12px}
+  td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:var(--warm)}
+  .wk{font-family:'Barlow Condensed',sans-serif;font-weight:700;white-space:nowrap}
+  .cta{background:var(--charcoal);color:#fff}
+  .cta h2{color:#fff}
+  .footer{font-size:13.5px;color:#8a847e;padding:24px 0;border-top:1px solid var(--line)}
+  .blank{display:inline-block;min-width:110px;border-bottom:2px solid var(--orange);height:1.1em;vertical-align:bottom}
+  @media(max-width:640px){ h1{font-size:31px} table{font-size:13.5px} th,td{padding:7px 8px} }
+  @media print{ section{padding:22px 0} .cta{background:#fff;color:var(--charcoal)} .cta h2{color:var(--charcoal)} }
+</style>
+</head>
+<body>
+<div class="accent-top"></div>
+<section>
+  <div class="wrap">
+    <img src="../assets/pavan-ninja-mockup.gif" alt="Pavan Ninja — mockup, Development Ninja coming soon" style="width:130px;float:right;margin-top:-10px">
+    <div class="wordmark">NINJA-360</div>
+    <a class="backlink" href="../index.html">← Ninja-360 Dojo</a>
+    <div class="kicker" style="margin-top:24px">Technical Roadmap · GoHighLevel Build-Out · Working Doc V06</div>
+    <h1>The Ninja-360 Tech Build,<br>Staged &amp; Sequenced</h1>
+    <p class="sub" style="margin-top:14px">Tim Petet × Pavan Gantha (AZ Team). Seven milestones, all pointed at one target: the September push — fresh customers at scale. Each stage is scoped, has a "done means done" test, and gets paid as it lands — structure chosen per milestone: <strong>trade-out · milestone payment on completion · per-close fee.</strong></p>
+    <p class="meta">Prepared 2026-07-13 · V06 (M6 belt test + ninja360.co locked in as the dedicated outreach domain: web 301 → ninja360.net, mail-only cold sends, August warm-up) · Source: Ninja-360 Master Hub open loops (2026-07-12 pass) + Audit Engine SOP v1.0 · Every item below is existing documented scope, not new invention</p>
+  </div>
+</section>
+
+<section class="alt" style="padding-top:30px;padding-bottom:30px">
+  <div class="wrap">
+    <h2><span class="num">01 ·</span> How This Works</h2>
+    <ul>
+      <li><strong>Pointed at fresh customers.</strong> Every paid stage builds acquisition — outbound, audits, pipeline, closes. Existing-client delivery (LiveSmart and the like) stays in-house with Tim and is not part of this agreement or its payments.</li>
+      <li><strong>Sequenced, not lump-sum.</strong> The build is real and it's wanted — it gets done in stages, paid as each stage completes and verifies. No stage starts until the prior one passes its "done when" test.</li>
+      <li><strong>Payments follow collected revenue.</strong> Milestone payments are funded from money that has actually landed; the LiveSmart stage pays from the LiveSmart go-live money itself.</li>
+      <li><strong>Sizing set per stage.</strong> Pavan itemizes hours per milestone → Tim sets the number per stage before it starts. Blanks below are filled together, in writing.</li>
+      <li><strong>The showcase:</strong> this system is the rails under a filmed, public 90-day campaign ("On the M.A.P."). The GHL build gets named credit on camera — a live portfolio piece for AZ Team in the KC market.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">02 ·</span> The Seven Milestones</h2>
+
+    <div class="ms">
+      <div class="ms-head"><span class="disp">M0 · Week-1 Task + First Ship</span><span class="when">This week · Jul 13–19</span></div>
+      <div class="ms-body">
+        <h4>Scope</h4>
+        <ul>
+          <li>Tracking snippet wired to the GHL webhook, tested on a live audit page: cid reader, dwell heartbeat, video-progress events → GHL logs view_count + watch_time and notifies Tim.</li>
+          <li><strong>First ship:</strong> publish the AI-Search NAP standard funnel page at <strong>/standards/ai-search-nap</strong> — files already built (GHL paste version in Drive → "Ninja-360 Audits"); swap the schema placeholders with the real profile URLs (or strip the JSON-LD block) before going live.</li>
+        </ul>
+        <div class="done"><strong>Done when:</strong> a test contact fires every event type and the notification lands · the standard page is live at its slug and verified on mobile.</div>
+        <div class="unblocks"><strong>Unblocks:</strong> engagement tracking for the entire Audit Engine — every milestone after this depends on it.</div>
+        <div class="pay"><strong>Structure:</strong> part of existing onboarding (assigned 6/29) — completes the first commitment.</div>
+      </div>
+    </div>
+
+    <div class="ms">
+      <div class="ms-head"><span class="disp">M1 · Unblock Outbound</span><span class="when">By Jul 31</span></div>
+      <div class="ms-body">
+        <h4>Scope</h4>
+        <ul>
+          <li>Toll-free SMS verification (Error 30032): sweep the 5 published workflows — every SMS step reads "Reply STOP to opt out"; add the required (not pre-checked) consent checkbox to the Free Visibility Audit Intake form; capture the public form URL as the opt-in proof URL; confirm ToS + Privacy links; enter honest volume; submit verification in GHL.</li>
+          <li>Email deliverability: SPF / DKIM / DMARC on ninja360.net.</li>
+          <li><strong>Outreach domain:</strong> configure <strong>ninja360.co</strong> (fresh on Cloudflare) as the dedicated cold-send domain — web 301-redirects to ninja360.net (entity stays consolidated, per the AI-Search NAP standard) · its own SPF/DKIM/DMARC for mail · warm-up schedule runs through August so it's ready for the September push. Cold campaigns NEVER send from ninja360.net.</li>
+        </ul>
+        <div class="done"><strong>Done when:</strong> verification approved · test SMS delivers to US number · email authentication passes.</div>
+        <div class="unblocks"><strong>Unblocks:</strong> ALL US/Canada SMS — the standing hold on restaurant prospecting lifts — plus trustworthy email sends. The single biggest sales unblock on the board.</div>
+        <div class="pay"><strong>Structure:</strong> milestone payment on completion — $<span class="blank"></span> — or equivalent trade-out hours. Set before start.</div>
+      </div>
+    </div>
+
+    <div class="ms">
+      <div class="ms-head"><span class="disp">M2 · Audit Engine Live End-to-End</span><span class="when">Through August</span></div>
+      <div class="ms-body">
+        <h4>Scope</h4>
+        <ul>
+          <li>Audit pitch-page publish flow: /audits/{slug}/ custom-HTML, NO-INDEX verified.</li>
+          <li>Custom fields (industry, city, score, belt, audit_url) + Sales pipeline stages with automations: Audit Built → Audit Sent → Pitch Viewed → Call Booked → Won/Lost.</li>
+          <li>Send workflows carrying ?cid tracking; follow-up rules wired: viewed-no-call-in-24h alert · not-opened-48h resend · repeat-view hot flag.</li>
+          <li>Entity Confidence layer: wire the AI-Search NAP standard's checks into the audit flow as a scored dimension + belt upsell prompt.</li>
+        </ul>
+        <div class="done"><strong>Done when:</strong> one real audit runs all 11 SOP stages with zero manual patching.</div>
+        <div class="unblocks"><strong>Unblocks:</strong> the sales funnel as a machine — every audit invitation becomes tracked pipeline. This is what fills September.</div>
+        <div class="pay"><strong>Structure:</strong> milestone payment on completion — $<span class="blank"></span> — funded by August collected receivables.</div>
+      </div>
+    </div>
+
+    <div class="ms">
+      <div class="ms-head"><span class="disp">M3 · Client Delivery Pipeline V01</span><span class="when">September</span></div>
+      <div class="ms-body">
+        <h4>Scope</h4>
+        <p>Belt delivery task templates (from the execution-playbook spec) + onboarding workflows, so a White or Brown Belt delivery runs to checklist without live decisions from Tim.</p>
+        <div class="done"><strong>Done when:</strong> one belt delivery executes to checklist, no improvisation.</div>
+        <div class="unblocks"><strong>Unblocks:</strong> delivery capacity — the infrastructure that makes Ninja-360's first hire workable.</div>
+        <div class="pay"><strong>Structure:</strong> per-close fee — $<span class="blank"></span> per NEW Brown/Black Belt closed on this infrastructure. Upside scales with wins.</div>
+      </div>
+    </div>
+
+    <div class="ms">
+      <div class="ms-head"><span class="disp">M4 · Content + Network Rails</span><span class="when">Pre-flight this week · build Sept</span></div>
+      <div class="ms-body">
+        <h4>Scope</h4>
+        <ul>
+          <li><strong>Quick win now:</strong> GHL Social Planner pre-flight — confirm channels/config on the Ninja-360 sub-account (the content campaign needs this in week 1; it's small — bundle it with M0 this week).</li>
+          <li>September: Networking pipeline for partners and referrals — tracked referrals in AND out.</li>
+        </ul>
+        <div class="done"><strong>Done when:</strong> autopost publishes on schedule · partners tracked as pipeline records.</div>
+        <div class="unblocks"><strong>Unblocks:</strong> Content Engine cadence + the Partnership pillar of the 90-day campaign.</div>
+        <div class="pay"><strong>Structure:</strong> trade-out or folded into the per-close arrangement.</div>
+      </div>
+    </div>
+
+    <div class="ms">
+      <div class="ms-head"><span class="disp">M5 · The War Chest — Prospect Database</span><span class="when">Build starts now · sends only after M1</span></div>
+      <div class="ms-body">
+        <h4>Scope</h4>
+        <ul>
+          <li>Source waterfall (per the Ninja-360 prospecting plan): ACA roster → Gladstone Chamber → Liberty Chamber → Northland business clubs → Google (compliant tooling only). Beachhead verticals: restaurants → chiro → dental/ortho → Airbnb.</li>
+          <li>Every record: business name, vertical, city/zip, contact name, email, phone, website, GBP URL, source, consent status. <strong>Deduped + email-verified</strong> before it touches the CRM.</li>
+          <li>Loaded into GHL with tags + smart lists by <strong>location × vertical</strong>, segment-pull tested — campaign-ready.</li>
+          <li><strong>Compliance, non-negotiable:</strong> NO SMS to scraped contacts (consent-only channel — standing hold applies) · cold email is CAN-SPAM clean (real address, working opt-out, honest subject lines) · sending architecture protects ninja360.net's domain reputation — Pavan proposes the setup before the first send.</li>
+        </ul>
+        <div class="done"><strong>Done when:</strong> each batch of 250 verified records lands deduped, tagged, &lt;3% bounce on verification, and a test segment (e.g., "restaurants · Gladstone") pulls correctly in GHL. First target: 500 records.</div>
+        <div class="unblocks"><strong>Unblocks:</strong> the email + guerrilla + social campaign — the fresh-customer machine gets its ammunition. (Message/creative comes from the content lane; this milestone is data + rails.)</div>
+        <div class="pay"><strong>Structure:</strong> milestone payment per verified 250-record batch — $<span class="blank"></span> per batch. Volume scales only as batches stay clean.</div>
+      </div>
+    </div>
+
+    <div class="ms">
+      <div class="ms-head"><span class="disp">M6 · Tech Ninja Belt Test — Agency-Grade GHL + AI Agents</span><span class="when">Complete by Aug 31 — before the September push</span></div>
+      <div class="ms-body">
+        <h4>Scope</h4>
+        <ul>
+          <li>Complete <strong>Nuno Tavares' course on setting up GHL as an agency</strong> (Nuno is a HighLevel Certified Expert; courses on Udemy).</li>
+          <li>Complete <strong>at least one of Nuno's AI Agents sub-courses</strong>.</li>
+          <li>Apply it, don't just watch it: configure the Ninja-360 account to agency-grade spec per the course, and build <strong>one working AI agent</strong> in the Ninja-360 sub-account (e.g., audit follow-up conversation agent or booking agent) as the proof piece.</li>
+        </ul>
+        <div class="done"><strong>Done when:</strong> course completions shown + the AI agent demo runs live on a test contact in the Ninja-360 sub-account — before September 1, so the big push runs on agency-grade rails with AI in the toolkit.</div>
+        <div class="unblocks"><strong>Unblocks:</strong> the September big push — war chest (M5) + audit engine (M2) + AI agents working the follow-ups. This is the difference between a mailing list and a machine.</div>
+        <div class="pay"><strong>Structure:</strong> course seat — who pays: <span class="blank"></span> (Pavan's professional development / Tim as trade component / split — decide in the room). The knowledge is Pavan's forever; the build stays Ninja-360's.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2><span class="num">03 ·</span> The Calendar at a Glance</h2>
+    <table>
+      <tr><th style="width:170px">Window</th><th>Milestones</th><th style="width:230px">Funded by</th></tr>
+      <tr><td class="wk">Jul 13–19</td><td>M0 complete (snippet + NAP standard page LIVE) · M4 Social Planner pre-flight · sizing agreed in writing for M1/M2</td><td>Onboarding commitment / trade</td></tr>
+      <tr><td class="wk">Jul 20–31</td><td>M1 — outbound unblocked (SMS verification + email auth) · M5 war-chest build starts in parallel</td><td>Milestone $ or trade — set first</td></tr>
+      <tr><td class="wk">August</td><td>M2 — Audit Engine end-to-end · M5 first verified batches load · first campaign fires (M1 green) · M6 courses done + AI agent demo by Aug 31</td><td>August collected receivables · per-batch $</td></tr>
+      <tr><td class="wk">September</td><td><strong>THE BIG PUSH:</strong> campaigns at full clip on agency-grade rails · M3 — Delivery Pipeline · M4 — Networking pipeline</td><td>Per-close fees begin on NEW belts closed</td></tr>
+    </table>
+    <div class="note"><strong>Ground rules:</strong> scope in writing before any stage starts · a stage is paid when its "done when" test passes, not before · no stage jumps the queue · changes to scope are a new written line, not a verbal add-on · no SMS to scraped contacts, consent only · no cold sends until M1 deliverability passes.</div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <h2>Pick the Structure, Put It in Writing</h2>
+    <p>Every milestone above is already documented Ninja-360 scope — this roadmap turns it into a staged build with clean tests and payments that track real revenue. Choose the structure per stage — trade-out, milestone-on-completion, or per-close — itemize the hours, and the first stage starts this week.</p>
+  </div>
+</section>
+<div class="wrap footer">
+  Prepared for the Tim Petet × Pavan Gantha working session · 2026-07-13 · V06<br>
+  Built from: Ninja-360 Master Hub open loops (2026-07-12) · Audit Engine SOP v1.0 · Content Engine pipeline V01<br>
+  © 2026 Ninja-360 Digital Media LLC | Kansas City, MO
+</div>
+</body>
+</html>

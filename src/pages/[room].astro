@@ -1,0 +1,47 @@
+---
+// Dynamic route for the standard "content" rooms:
+// /vision · /money · /assets · /forge · /alliance
+// (Crew and Floor have their own dedicated pages under src/pages/.)
+import { getCollection } from 'astro:content';
+import DojoLayout from '../layouts/DojoLayout.astro';
+import RoomHead from '../components/RoomHead.astro';
+import { roomHeroImages } from '../assets/doors';
+
+export async function getStaticPaths() {
+  const rooms = await getCollection('rooms');
+  return rooms
+    .filter(r => r.data.variant === 'content')
+    .map(r => ({ params: { room: r.slug }, props: { room: r } }));
+}
+
+const { room } = Astro.props;
+const { Content } = await room.render();
+
+// Tiny inline-markdown helper — turns **bold** into <b>bold</b> inside the CTA
+// line so authors can write "**Monday:** do X" in frontmatter and get emphasis.
+const ctaHtml = room.data.cta
+  ? room.data.cta.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+  : null;
+---
+
+<DojoLayout title={`${room.data.title} · The Ninja-360 Dojo`}>
+  <RoomHead
+    doorNum={room.data.doorNum}
+    doorLabel={room.data.doorLabel}
+    title={room.data.title}
+    guide={room.data.guide}
+    roomHeroImage={roomHeroImages[room.slug as keyof typeof roomHeroImages]}
+  />
+
+  <div class="prose">
+    <Content />
+  </div>
+
+  {ctaHtml && (
+    <div class="action" set:html={ctaHtml} />
+  )}
+
+  {room.data.ref && (
+    <div class="ref">{room.data.ref}</div>
+  )}
+</DojoLayout>

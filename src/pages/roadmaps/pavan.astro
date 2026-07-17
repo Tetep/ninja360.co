@@ -1,0 +1,40 @@
+---
+import DojoLayout from '../../layouts/DojoLayout.astro';
+---
+
+<DojoLayout title="Pavan Roadmap · The Ninja-360 Dojo">
+  <a class="back" href="/crew">← Back to the Crew</a>
+  <section class="frame-wrap" aria-labelledby="pavan-roadmap-title">
+    <h2 id="pavan-roadmap-title">Pavan Roadmap</h2>
+    <p class="note">Legacy roadmap rendered inside the Dojo shell.</p>
+    <iframe
+      class="roadmap-frame"
+      src="/legacy/roadmaps/pavan.html"
+      title="Pavan roadmap"
+      loading="lazy"
+    ></iframe>
+  </section>
+</DojoLayout>
+
+<style>
+  .frame-wrap {
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 12px;
+    background: var(--warm);
+  }
+  .frame-wrap h2 {
+    font-size: 28px;
+  }
+  .note {
+    margin: 4px 0 10px;
+    color: var(--gray);
+  }
+  .roadmap-frame {
+    width: 100%;
+    min-height: 80vh;
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--white);
+  }
+</style>

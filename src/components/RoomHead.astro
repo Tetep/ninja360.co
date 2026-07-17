@@ -1,0 +1,70 @@
+---
+// Room header — back link + kicker + title + the room's guide.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Guide from './Guide.astro';
+type GuideKey = 'sensei' | 'creative' | 'architect' | 'ally';
+interface Props {
+  doorNum: string;
+  doorLabel: string;
+  title: string;
+  guide: GuideKey;
+  roomHeroImage?: ImageMetadata;
+}
+const { doorNum, doorLabel, title, guide, roomHeroImage } = Astro.props;
+---
+
+<a class="back" href="/">← Back to the Dojo</a>
+
+<div class="rhead">
+  <div class="rhead-main">
+    <div class="k">Door {doorNum} · {doorLabel}</div>
+    <h2>{title}</h2>
+    <div class="guide-row">
+      <Guide guide={guide} variant="chip" size={44} />
+      <span class="caption">{guide === 'sensei' ? 'Tim' : guide === 'creative' ? 'Gabe' : guide === 'architect' ? 'Pavan' : 'Erik'} guides you here</span>
+    </div>
+  </div>
+  {roomHeroImage && (
+    <div class="rhead-art">
+      <Image
+        src={roomHeroImage}
+        alt={`${title} badge`}
+        loading="lazy"
+        widths={[180, 260, 360]}
+        sizes="(max-width: 800px) 42vw, 170px"
+      />
+    </div>
+  )}
+</div>
+
+<style>
+  .rhead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .rhead-main {
+    min-width: 0;
+  }
+  .rhead-art {
+    width: 170px;
+    flex: 0 0 auto;
+  }
+  :global(.rhead-art img) {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  @media (max-width: 800px) {
+    .rhead {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .rhead-art {
+      width: 140px;
+    }
+  }
+</style>

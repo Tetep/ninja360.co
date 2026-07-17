@@ -1,0 +1,220 @@
+---
+// Crew — Three Doors. Renders one doorcard per entry in the `partners`
+// collection. Edit src/content/partners/*.md to change pitches / roles /
+// which lil-ninja represents each person — no component changes needed.
+import { getEntry, getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import DojoLayout from '../layouts/DojoLayout.astro';
+import RoomHead from '../components/RoomHead.astro';
+import { roomHeroImages } from '../assets/doors';
+import { crewBanners, crewEmblems, crewPhotos } from '../assets/crew';
+
+const room = await getEntry('rooms', 'crew');
+const { Content } = await room.render();
+
+const partners = (await getCollection('partners')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+
+<DojoLayout title="Three Doors · The Ninja-360 Dojo">
+  <RoomHead
+    doorNum={room.data.doorNum}
+    doorLabel={room.data.doorLabel}
+    title={room.data.title}
+    guide={room.data.guide}
+    roomHeroImage={roomHeroImages.crew}
+  />
+
+  <div class="prose">
+    <Content />
+  </div>
+
+  {partners.map(p => (
+    <article class="doorcard">
+      <header class="dh">
+        <Image
+          src={crewBanners[p.data.banner]}
+          alt=""
+          loading="lazy"
+          widths={[640, 900, 1200]}
+          sizes="(max-width: 800px) 100vw, 760px"
+        />
+        <div class="overlay"></div>
+        <div class="headline">
+          <Image
+            class="emblem"
+            src={crewEmblems[p.data.emblem]}
+            alt={`${p.data.name} emblem`}
+            loading="lazy"
+            widths={[96, 128, 192]}
+            sizes="72px"
+          />
+          <div class="who">
+            <div class="n">{p.data.name}</div>
+            <div class="role">{p.data.role}</div>
+          </div>
+        </div>
+      </header>
+      <div class="db">
+        {crewPhotos[p.data.photo] ? (
+          <Image
+            class="photo"
+            src={crewPhotos[p.data.photo]}
+            alt={`${p.data.name} headshot`}
+            loading="lazy"
+            widths={[220, 320, 460]}
+            sizes="(max-width: 800px) 90vw, 140px"
+          />
+        ) : (
+          <div class="photo slot">Drop {p.data.photo}</div>
+        )}
+        <div class="meta">
+          <p class="bio">{p.data.bio}</p>
+          <div class="actions">
+            <a class="btn" href={p.data.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            {p.data.roadmap && <a class="btn ghost" href={p.data.roadmap}>Roadmap</a>}
+          </div>
+          <div class="pitch">{p.data.pitch}</div>
+        </div>
+        <div class="say">"{p.data.say}"</div>
+      </div>
+    </article>
+  ))}
+
+  {room.data.ref && <div class="ref">{room.data.ref}</div>}
+</DojoLayout>
+
+<style>
+  .doorcard {
+    border-radius: var(--r-lg);
+    overflow: hidden;
+  }
+  .dh {
+    position: relative;
+    min-height: 120px;
+  }
+  .dh .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.12));
+  }
+  .dh .headline {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1;
+  }
+  :global(.dh img) {
+    width: 100%;
+    height: 132px;
+    object-fit: cover;
+    object-position: center;
+  }
+  :global(.dh .emblem) {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    border: 2px solid rgba(255, 255, 255, 0.96);
+  }
+  .dh .who .n {
+    color: var(--white);
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 24px;
+    line-height: 1;
+  }
+  .dh .who .role {
+    color: #ffd9bb;
+    font-family: var(--font-display);
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .db {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  :global(.db .photo) {
+    width: 140px;
+    height: 140px;
+    border-radius: var(--r-md);
+    object-fit: cover;
+    border: 1px solid var(--line);
+    background: var(--warm);
+  }
+  .db .photo.slot {
+    width: 140px;
+    height: 140px;
+    border-radius: var(--r-md);
+    border: 1px dashed var(--line);
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 8px;
+    font-size: 12px;
+    color: var(--dead);
+    background: var(--warm);
+  }
+  .meta .bio {
+    margin: 2px 0 8px;
+  }
+  .meta .pitch {
+    font-weight: 600;
+  }
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-block;
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    padding: 4px 9px;
+    font-size: 12px;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--deep);
+    text-decoration: none;
+    background: var(--warm);
+  }
+  .btn:hover {
+    background: var(--focus);
+  }
+  .btn.ghost {
+    background: var(--charcoal);
+    color: var(--white);
+    border-color: var(--charcoal);
+  }
+  .btn.ghost:hover {
+    opacity: 0.92;
+  }
+
+  @media (max-width: 800px) {
+    .db {
+      grid-template-columns: 1fr;
+    }
+    :global(.db .photo),
+    .db .photo.slot {
+      width: 120px;
+      height: 120px;
+    }
+    .dh .who .n {
+      font-size: 20px;
+    }
+  }
+</style>

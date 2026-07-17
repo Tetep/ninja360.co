@@ -1,0 +1,272 @@
+---
+// The Floor — Run the Week. Two live islands: Calendar + MissionBoard.
+// Both persist state to localStorage so edits survive page reloads.
+import { getEntry } from 'astro:content';
+import DojoLayout from '../layouts/DojoLayout.astro';
+import RoomHead from '../components/RoomHead.astro';
+import { roomHeroImages } from '../assets/doors';
+
+const room = await getEntry('rooms', 'floor');
+const { Content } = await room.render();
+---
+
+<DojoLayout title="Run the Week · The Ninja-360 Dojo">
+  <RoomHead
+    doorNum={room.data.doorNum}
+    doorLabel={room.data.doorLabel}
+    title={room.data.title}
+    guide={room.data.guide}
+    roomHeroImage={roomHeroImages.floor}
+  />
+
+  <div class="prose">
+    <Content />
+  </div>
+
+  <div class="rhythm3">
+    <div class="rh">
+      <div class="h">Mon · Dojo</div>
+      <p>30 min. Fill the board, set the one objective, book the studio.</p>
+    </div>
+    <div class="rh mid">
+      <div class="h">All week · Thread</div>
+      <p>Updates in Google Chat. Flip missions to Shipped.</p>
+    </div>
+    <div class="rh fri">
+      <div class="h">Fri · Wrap</div>
+      <p>Everyone posts wins. Count the stars.</p>
+    </div>
+  </div>
+
+  <h3>This Week's Calendar <span class="hint">— editable; the real one lives in Google Calendar</span></h3>
+  <div class="cal" id="dojo-cal" data-storage-key="dojo:cal:v1">
+    <div class="day key"><div class="dn">Mon</div><div class="ev" contenteditable="true" data-day="mon"><span class="pre">Dojo sync 9a</span> · batch film</div></div>
+    <div class="day"><div class="dn">Tue</div><div class="ev" contenteditable="true" data-day="tue">Heads-down</div></div>
+    <div class="day"><div class="dn">Wed</div><div class="ev" contenteditable="true" data-day="wed">Gabe: deliver cut</div></div>
+    <div class="day"><div class="dn">Thu</div><div class="ev" contenteditable="true" data-day="thu">Client shoot?</div></div>
+    <div class="day key"><div class="dn">Fri</div><div class="ev" contenteditable="true" data-day="fri"><span class="pre">Wrap post</span></div></div>
+    <div class="day"><div class="dn">Sat</div><div class="ev" contenteditable="true" data-day="sat"></div></div>
+    <div class="day"><div class="dn">Sun</div><div class="ev" contenteditable="true" data-day="sun"></div></div>
+  </div>
+
+  <h3>Mission Board <span class="stars">★ <span id="starCount">0</span></span></h3>
+  <div class="board">
+    <table id="mission-table" data-storage-key="dojo:board:v1">
+      <thead>
+        <tr>
+          <th style="width:90px">Ninja</th>
+          <th>Mission</th>
+          <th style="width:120px">For</th>
+          <th style="width:60px">Due</th>
+          <th style="width:110px">Status</th>
+        </tr>
+      </thead>
+      <tbody id="mission-body">
+        <tr><td class="own" contenteditable="true">Tim</td><td contenteditable="true">Settle Gabe (Gate 0)</td><td contenteditable="true">Crew</td><td contenteditable="true">Mon</td><td><span class="chip motion" data-chip>In Motion</span></td></tr>
+        <tr><td class="own" contenteditable="true">Tim</td><td contenteditable="true">Sound out Erik + brief</td><td contenteditable="true">Alliance</td><td contenteditable="true">Mon</td><td><span class="chip queued" data-chip>Queued</span></td></tr>
+        <tr><td class="own" contenteditable="true">Tim</td><td contenteditable="true">Confirm + invoice IDS 7/9</td><td contenteditable="true">Money</td><td contenteditable="true">Tue</td><td><span class="chip queued" data-chip>Queued</span></td></tr>
+        <tr><td class="own" contenteditable="true">Pavan</td><td contenteditable="true">Scope the Pipeline Builder script</td><td contenteditable="true">Warp Speed</td><td contenteditable="true">—</td><td><span class="chip queued" data-chip>Queued</span></td></tr>
+        <tr><td class="own" contenteditable="true">Gabe</td><td contenteditable="true">Define show-layer settings</td><td contenteditable="true">Warp Speed</td><td contenteditable="true">—</td><td><span class="chip queued" data-chip>Queued</span></td></tr>
+        <tr><td class="own" contenteditable="true">—</td><td contenteditable="true">…</td><td contenteditable="true"></td><td contenteditable="true"></td><td><span class="chip queued" data-chip>Queued</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <button class="addbtn" id="add-mission">+ Add mission</button>
+
+  {room.data.ref && <div class="ref">{room.data.ref}</div>}
+</DojoLayout>
+
+<style>
+  .hint {
+    font-size: 12px; color: var(--dead); font-weight: 400;
+    text-transform: none; letter-spacing: 0;
+  }
+
+  /* Calendar */
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 6px; }
+  .cal .day {
+    border: 1px solid var(--line); border-radius: var(--r-md);
+    min-height: 96px; display: flex; flex-direction: column;
+    font-size: 12.5px; overflow: hidden;
+  }
+  .cal .day .dn {
+    font-family: var(--font-display); font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    font-size: 12px; padding: 5px 8px;
+    background: var(--warm); border-bottom: 1px solid var(--line);
+    color: var(--gray);
+  }
+  .cal .day.key .dn { background: var(--orange); color: var(--white); }
+  .cal .day .ev { padding: 6px 8px; outline: none; flex: 1; font-size: 12.5px; }
+  .cal .day .ev:focus { background: var(--focus); }
+  .cal .pre { color: var(--deep); font-weight: 700; }
+
+  /* Mission board */
+  .board { border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; margin-top: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: var(--charcoal); color: var(--white);
+    font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.5px;
+    font-size: 12px; text-align: left; padding: 7px 10px;
+  }
+  td { padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  td[contenteditable]:focus { background: var(--focus); outline: none; }
+  .own { font-family: var(--font-display); font-weight: 800; color: var(--deep); white-space: nowrap; }
+
+  .chip {
+    cursor: pointer; user-select: none;
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 16px; display: inline-block;
+  }
+  .chip.queued { background: #EFEAE6; color: var(--dead); }
+  .chip.motion { background: var(--orange); color: var(--white); }
+  .chip.shipped { background: var(--go); color: var(--white); }
+
+  .stars {
+    float: right;
+    background: var(--orange); color: var(--white);
+    border-radius: var(--r-md); padding: 4px 12px;
+    font-family: var(--font-display); font-weight: 800;
+    font-size: 16px; letter-spacing: 1px;
+  }
+
+  .addbtn {
+    margin-top: 8px;
+    font-family: var(--font-display); font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase; font-size: 12.5px;
+    background: var(--white); border: 1.5px solid var(--orange);
+    color: var(--deep); padding: 6px 13px; border-radius: var(--r-md);
+    cursor: pointer;
+  }
+  .addbtn:hover { background: var(--focus); }
+
+  @media (max-width: 800px) { .cal { grid-template-columns: 1fr 1fr; } }
+</style>
+
+<script is:inline>
+  // --- Local persistence -------------------------------------------------
+  // Both islands store state to localStorage so partners' edits survive
+  // page reloads. Structure is intentionally simple — later, swap the
+  // load()/save() bodies for GHL / Google Calendar / whatever store.
+
+  const STATES = [
+    ['queued',  'Queued'],
+    ['motion',  'In Motion'],
+    ['shipped', 'Shipped ★'],
+  ];
+
+  function tally() {
+    const n = document.querySelectorAll('.chip.shipped').length;
+    const el = document.getElementById('starCount');
+    if (el) el.textContent = String(n);
+  }
+
+  // ---- Calendar ----
+  (function calendar() {
+    const root = document.getElementById('dojo-cal');
+    if (!root) return;
+    const key = root.dataset.storageKey || 'dojo:cal';
+
+    // Load
+    try {
+      const saved = JSON.parse(localStorage.getItem(key) || '{}');
+      root.querySelectorAll('[data-day]').forEach(cell => {
+        const day = cell.getAttribute('data-day');
+        if (day && saved[day] != null) cell.innerHTML = saved[day];
+      });
+    } catch (_) {}
+
+    // Save on any change
+    const debouncedSave = debounce(() => {
+      const out = {};
+      root.querySelectorAll('[data-day]').forEach(cell => {
+        const day = cell.getAttribute('data-day');
+        if (day) out[day] = cell.innerHTML;
+      });
+      localStorage.setItem(key, JSON.stringify(out));
+    }, 400);
+
+    root.addEventListener('input', debouncedSave);
+    root.addEventListener('blur', debouncedSave, true);
+  })();
+
+  // ---- Mission Board ----
+  (function board() {
+    const table = document.getElementById('mission-table');
+    if (!table) return;
+    const body = document.getElementById('mission-body');
+    const key = table.dataset.storageKey || 'dojo:board';
+
+    function saveBoard() {
+      const rows = Array.from(body.querySelectorAll('tr')).map(tr => {
+        const tds = tr.querySelectorAll('td');
+        const chip = tr.querySelector('[data-chip]');
+        return {
+          who: tds[0]?.innerHTML ?? '',
+          what: tds[1]?.innerHTML ?? '',
+          forr: tds[2]?.innerHTML ?? '',
+          due: tds[3]?.innerHTML ?? '',
+          state: chip ? Array.from(chip.classList).find(c => STATES.some(s => s[0] === c)) : 'queued',
+        };
+      });
+      localStorage.setItem(key, JSON.stringify(rows));
+    }
+    const debouncedSave = debounce(saveBoard, 400);
+
+    function makeRow(row) {
+      const label = STATES.find(s => s[0] === (row?.state || 'queued'))?.[1] || 'Queued';
+      const state = row?.state || 'queued';
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="own" contenteditable="true">' + (row?.who ?? '—') + '</td>' +
+        '<td contenteditable="true">' + (row?.what ?? '…') + '</td>' +
+        '<td contenteditable="true">' + (row?.forr ?? '') + '</td>' +
+        '<td contenteditable="true">' + (row?.due ?? '') + '</td>' +
+        '<td><span class="chip ' + state + '" data-chip>' + label + '</span></td>';
+      return tr;
+    }
+
+    // Load
+    try {
+      const saved = JSON.parse(localStorage.getItem(key) || 'null');
+      if (Array.isArray(saved) && saved.length) {
+        body.innerHTML = '';
+        saved.forEach(r => body.appendChild(makeRow(r)));
+      }
+    } catch (_) {}
+
+    // Chip cycle
+    table.addEventListener('click', (e) => {
+      const chip = e.target.closest?.('[data-chip]');
+      if (!chip) return;
+      const cur = STATES.findIndex(s => chip.classList.contains(s[0]));
+      const nx = STATES[(cur + 1) % STATES.length];
+      chip.className = 'chip ' + nx[0];
+      chip.setAttribute('data-chip', '');
+      chip.textContent = nx[1];
+      tally();
+      saveBoard();
+    });
+
+    // Cell edits
+    table.addEventListener('input', debouncedSave);
+    table.addEventListener('blur', debouncedSave, true);
+
+    // Add mission
+    document.getElementById('add-mission')?.addEventListener('click', () => {
+      body.appendChild(makeRow());
+      saveBoard();
+    });
+
+    tally();
+  })();
+
+  function debounce(fn, ms) {
+    let t;
+    return function () {
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(this, arguments), ms);
+    };
+  }
+</script>

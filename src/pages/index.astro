@@ -1,0 +1,141 @@
+---
+// Home — the Dojo wall under the torii.
+// Reads all room entries and renders a door per entry, in order.
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import DojoLayout from '../layouts/DojoLayout.astro';
+import Torii from '../components/Torii.astro';
+import Door from '../components/Door.astro';
+import { doorImages, heroFlankImage } from '../assets/doors';
+
+const rooms = (await getCollection('rooms')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+
+<DojoLayout title="The Ninja-360 Dojo">
+  <section aria-labelledby="dojo-heading">
+    <div class="head-row">
+      <Image
+        class="head-flank head-flank-left"
+        src={heroFlankImage}
+        alt=""
+        loading="lazy"
+        widths={[180, 260, 360]}
+        sizes="(max-width: 640px) 150px, 170px"
+      />
+      <div class="home-head">
+        <Torii />
+        <h1 id="dojo-heading">The Ninja-360 Dojo</h1>
+        <div class="sub">You're building it. Enter a door.</div>
+      </div>
+      <Image
+        class="head-flank head-flank-right"
+        src={heroFlankImage}
+        alt=""
+        loading="lazy"
+        widths={[180, 260, 360]}
+        sizes="(max-width: 640px) 150px, 170px"
+      />
+    </div>
+
+    <div class="creed">
+      <div class="cr"><b>Become the name</b>You are the one KC thinks of for getting found.</div>
+      <div class="cr"><b>Your work makes the show</b>One client visit = the deliverable + an episode of "Found in KC."</div>
+      <div class="cr"><b>Everyone builds together</b>A crew, not employees. Each grows their own while building yours.</div>
+    </div>
+
+    <div class="wallnote">— Seven doors · the journey —</div>
+
+    <div class="wall">
+      {rooms.map(r => (
+        <Door
+          href={`/${r.slug}`}
+          num={r.data.doorNum}
+          lintel={r.data.doorLabel}
+          name={r.data.title.split('—')[0].trim().replace(/^The\s+/, '')}
+          sub={r.data.subtitle}
+          imageSrc={doorImages[r.slug as keyof typeof doorImages]}
+          variant={r.slug === 'floor' ? 'floor' : 'default'}
+        />
+      ))}
+      {/* Parked "Someday" tile — not a room */}
+      <Door
+        href="#"
+        num="★"
+        lintel="Someday"
+        name="The App"
+        sub="This board, upgraded · parked"
+        variant="parked"
+      />
+    </div>
+
+    <p class="tagline">Run the rhythm. The rhythm runs the plan.</p>
+  </section>
+</DojoLayout>
+
+<style>
+  .head-row {
+    display: grid;
+    grid-template-columns: minmax(72px, 170px) 1fr minmax(72px, 170px);
+    align-items: center;
+    gap: 18px;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  .home-head { text-align: center; margin-bottom: 4px; }
+  .head-flank {
+    width: 100%;
+    max-width: 170px;
+    height: auto;
+    justify-self: center;
+  }
+  .head-flank-left { transform: scaleX(-1); }
+  .home-head h1 { font-size: 44px; font-weight: 800; }
+  .home-head .sub { font-size: 17px; color: var(--gray); margin-top: 4px; }
+
+  .creed {
+    max-width: 720px; margin: 18px auto 0;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
+  }
+  .cr {
+    background: var(--warm); border: 1px solid var(--line);
+    border-radius: var(--r-md); padding: 10px 12px; font-size: 13px;
+  }
+  .cr b {
+    font-family: var(--font-display); font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--deep); font-size: 14px; display: block; margin-bottom: 2px;
+  }
+
+  .wallnote {
+    text-align: center;
+    font-family: var(--font-display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: var(--dead); font-size: 13px;
+    margin: 24px 0 12px;
+  }
+
+  .wall { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+  .tagline {
+    text-align: center; margin-top: 22px;
+    font-family: var(--font-display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--deep);
+  }
+
+  @media (max-width: 640px) {
+    .head-row {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .head-flank {
+      max-width: 150px;
+      opacity: 0.92;
+    }
+    .wall { grid-template-columns: 1fr 1fr; }
+    .creed { grid-template-columns: 1fr; }
+    .home-head h1 { font-size: 36px; }
+  }
+</style>
