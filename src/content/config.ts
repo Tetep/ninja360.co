@@ -29,6 +29,12 @@ const partners = defineCollection({
     role: z.string(),                                                    // "Creative Director"
     avatar: z.enum(['sensei', 'creative', 'architect', 'ally']),         // which lil-ninja chip renders
     order: z.number(),                                                   // display order on the Crew page
+    emblem: z.string(),                                                  // crew emblem asset filename
+    banner: z.string(),                                                  // crew banner asset filename
+    photo: z.string(),                                                   // headshot asset filename
+    linkedin: z.string().url(),                                          // LinkedIn profile URL
+    bio: z.string(),                                                     // one-line bio
+    roadmap: z.string().optional(),                                      // optional roadmap route
     pitch: z.string(),                                                   // one-line framing (renders above the quote)
     say: z.string(),                                                     // the italic quote (orange box)
   }),
