@@ -17,10 +17,28 @@ const links = [
 
 <div class="bar">
   <a class="wm" href="/">NINJA-360 · DOJO</a>
-  <nav aria-label="Rooms">
+  <button
+    class="menu-toggle"
+    type="button"
+    aria-expanded="false"
+    aria-controls="rooms-nav"
+    aria-label="Toggle room menu"
+  >
+    <span></span><span></span><span></span>
+  </button>
+  <nav id="rooms-nav" aria-label="Rooms">
     {links.map(l => (
       <a href={l.href} aria-current={pathname === l.href ? 'page' : undefined}>{l.label}</a>
     ))}
   </nav>
 </div>
 <div class="accent"></div>
+
+<script>
+  const toggle = document.querySelector('.menu-toggle');
+  const bar = document.querySelector('.bar');
+  toggle?.addEventListener('click', () => {
+    const isOpen = bar?.classList.toggle('nav-open');
+    toggle.setAttribute('aria-expanded', String(!!isOpen));
+  });
+</script>

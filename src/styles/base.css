@@ -62,6 +62,23 @@ img, svg { max-width: 100%; display: block; }
   background: rgba(244, 121, 32, 0.25); color: var(--white);
 }
 
+/* Mobile menu toggle — hidden unless the bar collapses below */
+.menu-toggle {
+  display: none;
+  width: 40px; height: 40px;
+  margin-left: auto;
+  flex: 0 0 auto;
+  border: none; border-radius: var(--r-md);
+  background: transparent;
+  cursor: pointer;
+  flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+}
+.menu-toggle span {
+  display: block; width: 22px; height: 2px;
+  background: var(--white); border-radius: 1px;
+}
+.menu-toggle:hover { background: rgba(244, 121, 32, 0.25); }
+
 .accent { height: 4px; background: var(--orange); }
 
 /* ==== Layout wrap ==== */
@@ -193,4 +210,30 @@ h3 { font-size: 17px; font-weight: 700; color: var(--charcoal); margin: 18px 0 7
   .rhythm3 { grid-template-columns: 1fr; }
   .rhead h2 { font-size: 26px; }
   .wrap { padding: 20px 16px 32px; }
+}
+
+/* ==== Mobile nav — collapse the 10-link bar into a dropdown ==== */
+@media (max-width: 640px) {
+  .bar { flex-wrap: nowrap; }
+  .menu-toggle { display: flex; }
+
+  .bar nav {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    margin-left: 0;
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: var(--charcoal);
+    border-top: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.25);
+  }
+  .bar.nav-open nav { display: flex; }
+  .bar nav a {
+    font-size: 15px;
+    padding: 13px 18px;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .bar nav a:last-child { border-bottom: none; }
 }
