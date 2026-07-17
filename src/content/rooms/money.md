@@ -26,3 +26,5 @@ ref: "Full detail: the Money Strategy workbook (two-ledger V2)."
 ### The series = your capped investment
 
 ~$467/mo (7 episodes @ $200), cap $500 — within cap. One fresh Brown close pays it back 1.4×.
+
+Go deeper: [The Game Plan](/gameplan)

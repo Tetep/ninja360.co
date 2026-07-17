@@ -26,3 +26,5 @@ ref: "Full detail: the 24 Assets Roadmap artifact."
 ### Parked, on purpose
 
 Valuation, big funding docs, the app — all deferred. The boutique design says they're later.
+
+Go deeper: [The Game Plan](/gameplan) · [24-Asset Roadmap](/roadmaps/assets)

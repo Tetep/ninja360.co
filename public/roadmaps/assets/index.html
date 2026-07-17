@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>The 24-Asset Roadmap — Ninja-360</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#F47920; --deep:#E05F00; --charcoal:#3D3D3D; --gray:#404040;
+    --warm:#F9F7F5; --line:#E0DCD8; --bad:#D94F4F; --org:#F47920; --avg:#E8A630; --ok:#8BC34A; --good:#4CAF50;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:#fff;line-height:1.55;font-size:16.5px}
+  .accent-top{height:4px;background:var(--orange)}
+  .wrap{max-width:860px;margin:0 auto;padding:0 24px}
+  section{padding:44px 0}
+  h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif;line-height:1.1;text-transform:uppercase;letter-spacing:.5px}
+  h1{font-size:42px;font-weight:800}
+  h2{font-size:29px;font-weight:700;margin-bottom:16px}
+  h2 .num{color:var(--orange)}
+  h3{font-size:20px;font-weight:700;margin:20px 0 8px}
+  p{margin-bottom:12px}
+  .alt{background:var(--warm)}
+  .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:19px;color:var(--orange)}
+  .backlink{display:inline-block;margin-top:14px;font-size:13.5px;color:var(--deep);text-decoration:none;font-weight:700}
+  .kicker{font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:13px;color:var(--deep);margin-bottom:10px}
+  .sub{font-size:18.5px;color:var(--gray);max-width:680px}
+  .meta{font-size:14px;color:#7a746f;margin-top:12px}
+  .note{border-left:4px solid var(--orange);background:var(--warm);padding:14px 18px;margin:16px 0;font-size:15.5px}
+  ul{margin:0 0 12px 20px}
+  li{margin-bottom:7px}
+  /* heatmap */
+  .cat{border:1px solid var(--line);margin-bottom:14px}
+  .cat-head{background:var(--charcoal);color:#fff;padding:10px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:19px;text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+  .cat-head .tag{color:var(--orange);font-size:15px;letter-spacing:.5px}
+  .assets{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0}
+  .asset{padding:12px 16px;border-right:1px solid var(--line);border-top:1px solid var(--line)}
+  .asset:last-child{border-right:none}
+  .dot{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+  .a-name{font-weight:700;font-size:15px}
+  .a-ev{font-size:13.5px;color:#7a746f;margin-top:4px;line-height:1.4}
+  .d-bad{background:var(--bad)} .d-org{background:var(--org)} .d-avg{background:var(--avg)} .d-ok{background:var(--ok)} .d-good{background:var(--good)}
+  .legend{font-size:13px;color:#7a746f;margin:10px 0}
+  .legend .dot{width:11px;height:11px}
+  /* tables */
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:15px}
+  th{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:1px;font-size:14.5px;text-align:left;background:var(--charcoal);color:#fff;padding:9px 12px}
+  td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:var(--warm)}
+  .wk{font-family:'Barlow Condensed',sans-serif;font-weight:700;white-space:nowrap}
+  /* checklist */
+  .check{list-style:none;margin:0 0 8px 0}
+  .check li{padding-left:30px;position:relative;margin-bottom:9px;font-size:15.5px}
+  .check li:before{content:"";position:absolute;left:0;top:3px;width:15px;height:15px;border:2px solid var(--orange);background:#fff}
+  .done:before{background:var(--orange) !important}
+  .done{color:#7a746f}
+  .cta{background:var(--charcoal);color:#fff}
+  .cta h2{color:#fff}
+  .footer{font-size:13.5px;color:#8a847e;padding:24px 0;border-top:1px solid var(--line)}
+  @media(max-width:640px){ h1{font-size:32px} .assets{grid-template-columns:1fr 1fr} table{font-size:13.5px} th,td{padding:7px 8px} }
+  @media print{ section{padding:24px 0} .cta{background:#fff;color:var(--charcoal)} .cta h2{color:var(--charcoal)} }
+</style>
+</head>
+<body>
+<div class="accent-top"></div>
+
+<section>
+  <div class="wrap">
+    <div class="wordmark">NINJA-360</div>
+    <a class="backlink" href="/">← Ninja-360 Dojo</a> &nbsp;·&nbsp; <a class="backlink" href="/gameplan">The Game Plan</a> &nbsp;·&nbsp; <a class="backlink" href="/sprint">90-Day Sprint</a>
+    <div class="kicker" style="margin-top:24px">The Official Asset Roadmap · Built from the 24Assets® Heatmap (Dent, 2026-07-16)</div>
+    <h1>Income Follows Assets —<br>The Ninja-360 Build Order</h1>
+    <p class="sub" style="margin-top:14px">An asset is anything that would still be valuable if you weren't around. This roadmap takes every finding and every tip from the Dent heatmap and turns it into the company-wide build order — executed in-house, layered onto the machinery already running.</p>
+    <div class="note"><strong>How this stacks with the KPI Gameplan:</strong> the 5 Ps build <em>Tim</em> — the Key Person of Influence. The 24 assets build <em>Ninja-360</em> — a business that holds value without him. Same Priestley system, two layers. The heatmap literally scores "Key People of Influence" as the strongest Culture asset — the gameplan already under way IS the engine of this roadmap.</div>
+    <p class="meta">Heatmap report issued to James Petet, 2026-07-16 · scores reflect Ninja-360 answers. Prepared 2026-07-16 · companion to: KPI Gameplan V02 · Money Strategy · Entity Confidence Standard.</p>
+  </div>
+</section>
+
+<!-- VERDICTS -->
+<section class="alt">
+  <div class="wrap">
+    <h2><span class="num">01 ·</span> The Two Verdicts That Matter</h2>
+    <h3>Verdict 1 — Business Design: Lifestyle Boutique</h3>
+    <p>Dent's classification: build a fun team of <strong>3–12 technicians</strong> with high revenue per person, driven by <strong>a Key Person of Influence supported by smart digital assets</strong>, optimized for income, flexibility, and fun — and deliberately <strong>never more than 12 people</strong>. This validates the entire current structure: Tim as the KPI face, Draft Picks (Gabe, Pavan, Brent) instead of employees, digital assets instead of headcount. You are not under-building a big agency — you are correctly building a boutique. Stop apologizing for being small; the report says small-by-design wins.</p>
+    <h3>Verdict 2 — Stress Is an Asset Deficiency</h3>
+    <p>The report's diagnostic rule: anything causing stress or a bottleneck is a missing asset. No leads → Marketing &amp; Sales <em>systems</em> deficiency (your reddest square). Everything running through Tim → Management &amp; Admin deficiency. Nobody amplifying the brand → Ambassadors deficiency. This turns every complaint into a build task — the same move the visibility audit does for clients.</p>
+  </div>
+</section>
+
+<!-- HEATMAP -->
+<section>
+  <div class="wrap">
+    <h2><span class="num">02 ·</span> The Heatmap — Ninja-360's 24 Assets</h2>
+    <p class="legend"><span class="dot d-bad"></span>Bad &nbsp; <span class="dot d-org"></span>Weak &nbsp; <span class="dot d-avg"></span>Average &nbsp; <span class="dot d-ok"></span>Decent &nbsp; <span class="dot d-good"></span>Good — Dent's scores, with the Ninja-360 evidence under each.</p>
+
+    <div class="cat"><div class="cat-head"><span>IP Assets</span><span class="tag">Creativity — mostly built, needs registering</span></div>
+      <div class="assets">
+        <div class="asset"><span class="dot d-avg"></span><span class="a-name">Content</span><div class="a-ev">Content Engine locked, cadence not yet held — the 13-week yardstick fixes this square.</div></div>
+        <div class="asset"><span class="dot d-ok"></span><span class="a-name">Methodology</span><div class="a-ev">M.A.P. System, belts, Entity Confidence standard, capture SOP v3 — real methodology, underexposed.</div></div>
+        <div class="asset"><span class="dot d-avg"></span><span class="a-name">Registered</span><div class="a-ev">Nothing trademarked. "Ninja-360" and "M.A.P. System" are unprotected; handle sweep unverified.</div></div>
+      </div>
+    </div>
+
+    <div class="cat"><div class="cat-head"><span>Brand Assets</span><span class="tag">One red square: nobody amplifies you</span></div>
+      <div class="assets">
+        <div class="asset"><span class="dot d-ok"></span><span class="a-name">Philosophy</span><div class="a-ev">"Great work deserves to be found" + locked truths exist — but not published anywhere a customer can see.</div></div>
+        <div class="asset"><span class="dot d-avg"></span><span class="a-name">Identity</span><div class="a-ev">Brand lock exists (orange system, wordmark, voice) — consistency across surfaces unverified.</div></div>
+        <div class="asset"><span class="dot d-bad"></span><span class="a-name">Ambassadors</span><div class="a-ev">Zero people of influence lifting the brand. The Draft Picks + series guests are the fix already drafted.</div></div>
+      </div>
+    </div>
+
+    <div class="cat"><div class="cat-head"><span>Market Assets</span><span class="tag">Position is locked internally, invisible externally</span></div>
+      <div class="assets">
+        <div class="asset"><span class="dot d-org"></span><span class="a-name">Position</span><div class="a-ev">Micro-niche locked on paper (local visibility KC) — market doesn't know it yet. The whole 5P campaign is this fix.</div></div>
+        <div class="asset"><span class="dot d-avg"></span><span class="a-name">Channels</span><div class="a-ev">Owned: GBP, site, blog (new), LinkedIn. Earned: none yet — series + PR pitches open them.</div></div>
+        <div class="asset"><span class="dot d-avg"></span><span class="a-name">Data</span><div class="a-ev">GHL holds contacts, not depth. ~24 warm prospects seeded; no demographic/occasion data discipline.</div></div>
+      </div>
+    </div>
+
+    <div class="cat"><div class="cat-head"><span>Product Assets</span><span class="tag">Strongest category — the ecosystem already exists</span></div>
+      <div class="assets">
+        <div class="asset"><span class="dot d-good"></span><span class="a-name">Gifts</span><div class="a-ev">Free Visibility Audit — genuinely valuable, digital, trackable. Textbook gift.</div></div>
+        <div class="asset"><span class="dot d-ok"></span><span class="a-name">PFP</span><div class="a-ev">Products-for-prospects: audit report pages, Dronie/3-packs — low-commitment first purchases.</div></div>
+        <div class="asset"><span class="dot d-avg"></span><span class="a-name">Core</span><div class="a-ev">The belts. Priced right, delivery not yet documented to run without Tim — the yellow is fulfillment, not offer.</div></div>
+        <div class="asset"><span class="dot d-ok"></span><span class="a-name">PFC</span><div class="a-ev">Monthly recurring + refresh shoots + review engine (pending Pavan cost) — real products-for-clients.</div></div>
+      </div>
+    </div>
+
+    <div class="cat"><div class="cat-head"><span>Systems Assets</span><span class="tag">The reddest zone — and the source of the "no leads" stress</span></div>
+      <div class="assets">
+        <div class="asset"><span class="dot d-bad"></span><span class="a-name">Marketing &amp; Sales</span><div class="a-ev">No lead-generating machine. SMS blocked (toll-free), email domain auth pending, no ad running, no sequence live.</div></div>
+        <div class="asset"><span class="dot d-org"></span><span class="a-name">Mgmt &amp; Admin</span><div class="a-ev">Master Hub + nightly SSOT is a real system (better than scored) — but metrics/reporting are manual.</div></div>
+        <div class="asset"><span class="dot d-avg"></span><span class="a-name">Operations</span><div class="a-ev">Capture SOP locked; editing pipeline exists but dormant (Hasan specs). Revival is on the sprint.</div></div>
+      </div>
+    </div>
+
+    <div class="cat"><div class="cat-head"><span>Culture Assets</span><span class="tag">KPI is your green square — this project</span></div>
+      <div class="assets">
+        <div class="asset"><span class="dot d-ok"></span><span class="a-name">Key People of Influence</span><div class="a-ev">Tim + the gameplan. The strongest people asset — the 5P campaign compounds it.</div></div>
+        <div class="asset"><span class="dot d-avg"></span><span class="a-name">Sales &amp; Marketing</span><div class="a-ev">Tim sells; nobody else does. Pavan's sales-coaching trade is Tim <em>giving</em>, not receiving.</div></div>
+        <div class="asset"><span class="dot d-bad"></span><span class="a-name">Mgmt &amp; Admin</span><div class="a-ev">No one runs the machine but Tim. James countersigns; Elizabeth handles Tatem paperwork — nothing systematic.</div></div>
+        <div class="asset"><span class="dot d-org"></span><span class="a-name">Technicians</span><div class="a-ev">Gabe/Pavan/Hasan are the technician bench — none formalized. The activation sheets fix this square.</div></div>
+      </div>
+    </div>
+
+    <div class="cat"><div class="cat-head"><span>Funding Assets</span><span class="tag">Reddest category — deliberately parked, not ignored</span></div>
+      <div class="assets">
+        <div class="asset"><span class="dot d-bad"></span><span class="a-name">Business Plan</span><div class="a-ev">Business Plan v3 exists but shows superseded pricing — needs the v3 refresh already flagged in the Hub.</div></div>
+        <div class="asset"><span class="dot d-bad"></span><span class="a-name">Valuation</span><div class="a-ev">Never valued. Low urgency for a lifestyle boutique — cheap to fix when wanted.</div></div>
+        <div class="asset"><span class="dot d-bad"></span><span class="a-name">Structure</span><div class="a-ev">Solo LLC, no documented governance. One accountant+lawyer session covers the basics.</div></div>
+        <div class="asset"><span class="dot d-avg"></span><span class="a-name">Risk Mitigation</span><div class="a-ev">Commercial drone insurance + FAA 107 exist. Key-person risk (everything = Tim) is the real exposure.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EVERY TIP MAPPED -->
+<section class="alt">
+  <div class="wrap">
+    <h2><span class="num">03 ·</span> Every Tip From the Report — Mapped</h2>
+    <p>All 25 tips from the heatmap, each tagged: <strong>COVERED</strong> (already in a live plan), <strong>EXTEND</strong> (in a plan, needs widening), or <strong>NET-NEW</strong> (nothing owns it yet — added to the roadmap below).</p>
+    <table>
+      <tr><th style="width:88px">Category</th><th>Dent's tip</th><th style="width:290px">Ninja-360 status</th></tr>
+      <tr><td class="wk">IP</td><td>Trademark the business name</td><td><strong>NET-NEW</strong> — file for "Ninja-360" (and consider "M.A.P. System"); USPTO, DIY or IP attorney</td></tr>
+      <tr><td class="wk">IP</td><td>Register social handles everywhere</td><td><strong>NET-NEW</strong> — one-hour sweep; also feeds the Entity Confidence sameAs array</td></tr>
+      <tr><td class="wk">IP</td><td>Blog weekly (500–1,000 words)</td><td><strong>COVERED</strong> — Content Engine, "Inside [Business]" weekly, 13-week cadence</td></tr>
+      <tr><td class="wk">IP</td><td>Methodology poster/diagram</td><td><strong>NET-NEW</strong> — one-page M.A.P. System diagram; doubles as sales asset + Episode 3 prop</td></tr>
+      <tr><td class="wk">Brand</td><td>Publish 3 unique philosophies on the website</td><td><strong>NET-NEW</strong> — philosophy page from the locked truths ("media is never the product," "great work deserves to be found," "embed-don't-copy")</td></tr>
+      <tr><td class="wk">Brand</td><td>Identify ambassadors; spread the eggs</td><td><strong>EXTEND</strong> — Draft Picks are production partners; add 3–5 brand ambassadors (happy clients like Josh/LiveSmart, ACA figures, chamber voices)</td></tr>
+      <tr><td class="wk">Brand</td><td>Unify a distinctive identity</td><td><strong>EXTEND</strong> — brand lock exists; run a one-day consistency sweep across GBP/site/LinkedIn/proposals/invoices</td></tr>
+      <tr><td class="wk">Market</td><td>Position with total clarity, no conflicts</td><td><strong>COVERED</strong> — locked micro-niche + the 5P campaign making it public</td></tr>
+      <tr><td class="wk">Market</td><td>Open channels that reach the right clients</td><td><strong>COVERED/EXTEND</strong> — blog+GBP+LinkedIn live in sprint; earned channels via PR pitches W10</td></tr>
+      <tr><td class="wk">Market</td><td>Get deeper client data</td><td><strong>NET-NEW</strong> — add 5 profile fields to GHL contacts (vertical, occasion, spend band, source, review count); fill during audits</td></tr>
+      <tr><td class="wk">Market</td><td>Document position/channels/data findings</td><td><strong>COVERED</strong> — Master Hub + project docs are exactly this discipline</td></tr>
+      <tr><td class="wk">Product</td><td>Know customers' problems deeply</td><td><strong>COVERED</strong> — audit engine + StoryBrand problem framing</td></tr>
+      <tr><td class="wk">Product</td><td>Create a core-product brochure</td><td><strong>NET-NEW</strong> — one-page belt brochure (no pricing, per audit-page discipline); use at Chamber/ACA</td></tr>
+      <tr><td class="wk">Product</td><td>Digital gift, downloadable, no strings</td><td><strong>EXTEND</strong> — audit is the gift but requires a call; add a self-serve download ("The KC Visibility Checklist") as a true no-strings gift</td></tr>
+      <tr><td class="wk">Systems</td><td>Assets over tools in marketing</td><td><strong>COVERED</strong> — the standards + audit pages ARE the assets; GHL is just the tool</td></tr>
+      <tr><td class="wk">Systems</td><td>12-week targeted ad left running</td><td><strong>NET-NEW (GATED)</strong> — park until email auth + toll-free clear and Cash Rule 2 allows; then a small 12-week test to the audit funnel</td></tr>
+      <tr><td class="wk">Systems</td><td>Automatic monthly report</td><td><strong>NET-NEW</strong> — monthly auto-digest: MRR, audits run, leads, cadence held (GHL dashboard + the nightly SSOT can feed it)</td></tr>
+      <tr><td class="wk">Systems</td><td>Welcome email sequence for every new client</td><td><strong>NET-NEW (GATED)</strong> — blocked by SPF/DKIM/DMARC on ninja360.net; build once deliverability clears</td></tr>
+      <tr><td class="wk">Culture</td><td>Share vision/brand in consumable formats</td><td><strong>COVERED</strong> — the series IS the vision made public</td></tr>
+      <tr><td class="wk">Culture</td><td>Onboarding procedure for new people</td><td><strong>EXTEND</strong> — activation sheets (Gabe/Pavan) + a one-page "how we work" onboarding doc</td></tr>
+      <tr><td class="wk">Culture</td><td>Invest in training</td><td><strong>COVERED</strong> — two-way training trade (Tim↔Gabe) already planned</td></tr>
+      <tr><td class="wk">Culture</td><td>Establish Key People of Influence</td><td><strong>COVERED</strong> — the entire KPI Gameplan; later, cultivate Gabe's public profile as Creative Director</td></tr>
+      <tr><td class="wk">Funding</td><td>Independent business valuation</td><td><strong>PARKED</strong> — optional for lifestyle design; revisit at 12-month re-score</td></tr>
+      <tr><td class="wk">Funding</td><td>Professional business plan + forecast</td><td><strong>EXTEND</strong> — Business Truths v3 refresh first (already flagged); professional forecast only if funding is ever wanted</td></tr>
+      <tr><td class="wk">Funding</td><td>Accountant + lawyer structure session</td><td><strong>NET-NEW</strong> — one session: LLC hygiene, key-person insurance, basic agreements. Cheap, real risk reduction</td></tr>
+    </table>
+    <div class="note"><strong>Two process rules adopted from the report, effective now:</strong> (1) <strong>The Asset Creation Cycle</strong> — Ideas → Mess → Brief → Beta → Official → Remarkable — is the official versioning path for every Ninja-360 asset (your V01/V02 habit, formalized). (2) <strong>Let go of DIY</strong> — quality suppliers build sellable assets. This is exactly why Gabe and Pavan get paid real terms (see Money Strategy), not endless trades.</div>
+  </div>
+</section>
+
+<!-- SEQUENCED ROADMAP -->
+<section>
+  <div class="wrap">
+    <h2><span class="num">04 ·</span> The Build Order — Layered Onto What's Running</h2>
+    <p>Nothing here replaces the 90-day sprint. The net-new items slot around it, cheapest-and-highest-leverage first. Funding assets stay deliberately last — the lifestyle-boutique design says income, flexibility, and fun are the metrics, not fundability.</p>
+    <table>
+      <tr><th style="width:170px">Horizon</th><th>Asset builds</th></tr>
+      <tr><td class="wk">Now → Oct (with sprint)</td><td>Social handle sweep (1 hr) · Philosophy page on ninja360.net · Belt brochure one-pager · M.A.P. methodology diagram · 5 client-data fields in GHL · Trademark filing started · KC Visibility Checklist as no-strings gift</td></tr>
+      <tr><td class="wk">Gated (infra first)</td><td>Welcome email sequence + monthly auto-report (after SPF/DKIM/DMARC) · 12-week ad test (after toll-free + Cash Rule 2 headroom)</td></tr>
+      <tr><td class="wk">Q4 2026</td><td>Ambassador bench: 3–5 named, value exchanged (client champions, ACA/chamber voices, series guests) · Brand consistency sweep · Onboarding one-pager for Draft Picks</td></tr>
+      <tr><td class="wk">Q1–Q2 2027</td><td>Business Truths v3 + plan refresh · Accountant/lawyer structure session + key-person insurance · Optional independent valuation at the 12-month re-score — the "before/after" number makes a great series finale beat</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- CHECKLIST -->
+<section class="alt">
+  <div class="wrap">
+    <h2><span class="num">05 ·</span> The Work Order</h2>
+    <h3>This Month</h3>
+    <ul class="check">
+      <li>Sweep + register social handles on every major platform (feeds sameAs array too)</li>
+      <li>Write the 3-philosophy brand page; publish on ninja360.net</li>
+      <li>Build the one-page M.A.P. System methodology diagram</li>
+      <li>Draft the belt brochure (no pricing) — print + PDF</li>
+      <li>Add 5 client-data fields to GHL; start filling on every audit</li>
+      <li>Start the trademark filing for "Ninja-360"</li>
+      <li>Package "The KC Visibility Checklist" as a downloadable no-strings gift</li>
+    </ul>
+    <h3>When Infrastructure Clears</h3>
+    <ul class="check">
+      <li>Welcome email sequence for every new client (post-SPF/DKIM)</li>
+      <li>Automatic monthly performance digest (MRR · audits · leads · cadence)</li>
+      <li>12-week targeted ad test into the audit funnel (post toll-free, within cash rules)</li>
+    </ul>
+    <h3>Quarter By Quarter</h3>
+    <ul class="check">
+      <li>Name and activate 3–5 brand ambassadors (Q4)</li>
+      <li>One-day brand consistency sweep across every surface (Q4)</li>
+      <li>Draft Picks onboarding one-pager (Q4)</li>
+      <li>Business Truths v3 + business plan refresh (Q1 2027)</li>
+      <li>Accountant + lawyer structure session; key-person insurance quote (Q1 2027)</li>
+      <li>Optional: independent valuation at the 12-month re-score (Q2 2027)</li>
+    </ul>
+    <h3>Already Running (don't duplicate)</h3>
+    <ul class="check">
+      <li class="done">Weekly blog cadence — Content Engine, 13-week yardstick</li>
+      <li class="done">KPI development — the 5P Gameplan + filmed series</li>
+      <li class="done">Positioning — locked micro-niche going public via the campaign</li>
+      <li class="done">Training — two-way Tim↔Gabe trade</li>
+      <li class="done">Documentation discipline — Master Hub + nightly SSOT</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <h2>The Whole System, One Sentence</h2>
+    <p>The 5 Ps make Tim the Key Person of Influence; the 24 assets make Ninja-360 worth something without him — and every week of the sprint now builds both at once.</p>
+  </div>
+</section>
+
+<div class="wrap footer">
+  Prepared for Tim Petet · Ninja-360 Digital Media LLC · 2026-07-16<br>
+  Framework: 24Assets® (Dent Global / Daniel Priestley) — heatmap report of 2026-07-16, applied in-house for Ninja-360's internal planning. 24Assets® is Dent's registered mark: use this roadmap internally, don't resell it as a branded product.<br>
+  © 2026 Ninja-360 Digital Media LLC | Kansas City, MO
+</div>
+</body>
+</html>

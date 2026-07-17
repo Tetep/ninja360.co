@@ -28,6 +28,10 @@ const rooms = (await getCollection('rooms')).sort(
         <Torii />
         <h1 id="dojo-heading">The Ninja-360 Dojo</h1>
         <div class="sub">You're building it. Enter a door.</div>
+        <div class="spine-links">
+          <a class="spine-link primary" href="/gameplan">The Game Plan</a>
+          <a class="spine-link" href="/scrolls">The Scrolls</a>
+        </div>
       </div>
       <Image
         class="head-flank head-flank-right"
@@ -93,6 +97,33 @@ const rooms = (await getCollection('rooms')).sort(
   .head-flank-left { transform: scaleX(-1); }
   .home-head h1 { font-size: 44px; font-weight: 800; }
   .home-head .sub { font-size: 17px; color: var(--gray); margin-top: 4px; }
+  .spine-links {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .spine-link {
+    border: 1px solid var(--line);
+    background: var(--warm);
+    color: var(--deep);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 6px 10px;
+    border-radius: var(--r-md);
+    font-size: 12px;
+  }
+  .spine-link.primary {
+    background: var(--charcoal);
+    border-color: var(--charcoal);
+    color: var(--white);
+  }
+  .spine-link:hover { background: var(--focus); }
+  .spine-link.primary:hover { opacity: 0.92; }
 
   .creed {
     max-width: 720px; margin: 18px auto 0;

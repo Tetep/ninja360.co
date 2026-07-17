@@ -27,3 +27,5 @@ ref: "Full detail: the Ninja Warp Speed blueprint."
 ### The pipeline
 
 Pick → Plan → Shoot → Upload at the car → **Warp Speed → Shedit** (auto first cut) → **Ninja Editor** (Gabe reviews) → autopost → blog → measure. Goal: faster to publish than anyone = paid faster.
+
+Go deeper: [The Game Plan](/gameplan) · [Content Engine Pipeline](/pipeline) · [Warp Speed Scroll](/scrolls/warp-speed) · [Social Hub](/social-hub)

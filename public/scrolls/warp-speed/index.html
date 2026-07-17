@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>`r`n<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ninja Warp Speed — Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--orange:#F47920;--deep:#E05F00;--charcoal:#3D3D3D;--gray:#404040;--warm:#F9F7F5;--line:#E0DCD8;--dead:#9b948e;--go:#4CAF50;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:#fff;line-height:1.42;font-size:13.5px}
+  .accent-top{height:4px;background:var(--orange)}
+  .wrap{max-width:940px;margin:0 auto;padding:20px 24px 28px}
+  h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif;line-height:1.05;text-transform:uppercase;letter-spacing:.5px}
+  .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:14px;color:var(--orange)}
+  h1{font-size:34px;font-weight:800;margin-top:4px}
+  .lead{font-size:14px;color:var(--gray);max-width:680px;margin:5px 0 4px}
+  .lead b{color:var(--deep)}
+  h2{font-size:17px;font-weight:800;color:var(--deep);margin:22px 0 9px;border-bottom:1px solid var(--line);padding-bottom:3px}
+  /* one-visit model */
+  .visit{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .visit .top{background:var(--charcoal);color:#fff;padding:9px 14px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:1px}
+  .tracks{display:grid;grid-template-columns:1fr 1fr;gap:0}
+  .track{padding:12px 14px}
+  .track:first-child{border-right:1px solid var(--line)}
+  .track .lbl{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;color:var(--charcoal)}
+  .track .lbl .by{color:var(--orange)}
+  .track .k{font-size:12.8px;color:var(--gray);margin:4px 0 8px}
+  .track .out{display:inline-block;background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.5px;padding:3px 10px;border-radius:4px}
+  .selfdoc{background:var(--warm);border-top:1px solid var(--line);padding:10px 14px;font-size:12.8px}
+  .selfdoc b{color:var(--charcoal)}
+  .blend{text-align:center;padding:9px;font-size:12.8px;color:var(--gray);border-top:1px dashed var(--line)}
+  .blend b{color:var(--deep)}
+  /* pipeline ribbon */
+  .ribbon{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch}
+  .st{flex:1 1 90px;border:1px solid var(--line);border-radius:6px;padding:8px 9px;position:relative;min-width:90px}
+  .st .n{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;color:var(--orange)}
+  .st .t{font-size:12px;font-weight:700;margin-top:1px;line-height:1.2}
+  .st.auto{background:var(--orange);border-color:var(--orange)}
+  .st.auto .n,.st.auto .t{color:#fff}
+  .st.human{background:var(--charcoal);border-color:var(--charcoal)}
+  .st.human .n{color:var(--orange)} .st.human .t{color:#fff}
+  .rlegend{font-size:12px;color:var(--dead);margin-top:7px}
+  .rlegend .sw{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:0;margin:0 3px 0 10px}
+  /* warp adds */
+  .cols{display:grid;grid-template-columns:1.1fr 1fr;gap:18px}
+  .tree{font-family:ui-monospace,monospace;font-size:12px;background:var(--warm);border:1px solid var(--line);border-radius:6px;padding:10px 12px;line-height:1.7}
+  .tree b{color:var(--deep)}
+  ul{list-style:none;margin:0}
+  li{padding:4px 0 4px 16px;position:relative;font-size:12.9px;border-bottom:1px solid var(--line)}
+  li:before{content:"";position:absolute;left:0;top:9px;width:7px;height:7px;background:var(--orange)}
+  li b{color:var(--charcoal)}
+  /* settings */
+  table{width:100%;border-collapse:collapse;font-size:12.6px}
+  th{background:var(--charcoal);color:#fff;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px;font-size:11.5px;text-align:left;padding:6px 9px}
+  td{padding:6px 9px;border-bottom:1px solid var(--line)}
+  tr:nth-child(even) td{background:var(--warm)}
+  .lock{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;color:var(--go)}
+  .def{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;color:var(--deep)}
+  .dev{font-weight:700}
+  /* roles + ip */
+  .roles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .role{border:1px solid var(--line);border-radius:6px;padding:9px 11px}
+  .role .n{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;color:var(--deep)}
+  .role .r{font-size:12px;color:var(--gray);margin-top:3px}
+  .ip{background:var(--warm);border-left:4px solid var(--orange);padding:9px 12px;font-size:12.6px;margin-top:8px}
+  .ip b{color:var(--charcoal)}
+  .point{background:var(--charcoal);color:#fff;border-radius:8px;padding:16px 18px;text-align:center;margin-top:16px}
+  .point .disp{font-size:19px;font-weight:800;color:#fff}
+  .point .disp em{color:var(--orange);font-style:normal}
+  .footer{font-size:11px;color:#8a847e;margin-top:14px;border-top:1px solid var(--line);padding-top:8px}
+  @media(max-width:700px){.tracks,.cols,.roles{grid-template-columns:1fr}.track:first-child{border-right:none;border-bottom:1px solid var(--line)}}
+  @media print{@page{margin:9mm}body{font-size:11.5px}.point,.st.human,.visit .top{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<div class="accent-top"></div>
+<div class="wrap">
+
+  <div class="wordmark">NINJA-360</div>
+  <h1>Ninja Warp Speed</h1>
+  <p class="lead">The production pipeline. <b>One client visit → the client deliverable + the show — "Found in KC" <span style="font-weight:400">(we put local businesses on the M.A.P.).</span></b> Automation bolted onto your already-proven Hasan editing system — not a rebuild. The goal: faster to publish than anyone, so you get paid faster.</p>
+
+  <h2>1 · The One-Visit Model — Two Tracks, Two Outputs</h2>
+  <div class="visit">
+    <div class="top">One trip to the client's location</div>
+    <div class="tracks">
+      <div class="track">
+        <div class="lbl">Track 1 · Visibility <span class="by">— Tim</span></div>
+        <div class="k">Drone + 360 capture (the M.A.P. work)</div>
+        <div class="out">→ Client deliverable</div>
+      </div>
+      <div class="track">
+        <div class="lbl">Track 2 · Story <span class="by">— Gabe</span></div>
+        <div class="k">Interview session + cinematic shots</div>
+        <div class="out">→ The show</div>
+      </div>
+    </div>
+    <div class="selfdoc"><b>Self-doc layer:</b> Osmo Pocket 3 + phone + car dash cam + behind-the-scenes → the <b>on-location segment</b> of the podcast. You're filming yourselves doing the real work.</div>
+    <div class="blend">The Final blends both: <b>Gabe's interviews &amp; shots + Tim's drone &amp; 360s.</b> Show = on-location segment <b>+</b> studio segment (Lucky 13 — Erik's only entry point).</div>
+  </div>
+
+  <h2>2 · The 9-Stage Pipeline</h2>
+  <div class="ribbon">
+    <div class="st"><div class="n">1</div><div class="t">Pick business</div></div>
+    <div class="st"><div class="n">2</div><div class="t">Plan route</div></div>
+    <div class="st"><div class="n">3</div><div class="t">Shoot (2 tracks)</div></div>
+    <div class="st"><div class="n">4</div><div class="t">Upload at the car</div></div>
+    <div class="st auto"><div class="n">5</div><div class="t">Warp Speed → Shedit</div></div>
+    <div class="st human"><div class="n">6</div><div class="t">Ninja Editor · Gabe</div></div>
+    <div class="st"><div class="n">7</div><div class="t">Autopost · GHL</div></div>
+    <div class="st"><div class="n">8</div><div class="t">Blog publish</div></div>
+    <div class="st"><div class="n">9</div><div class="t">Measure</div></div>
+  </div>
+  <div class="rlegend"><span class="sw" style="background:var(--orange)"></span>automated (runs while you're still in the field)<span class="sw" style="background:var(--charcoal)"></span>the one hands-on step</div>
+
+  <div class="cols" style="margin-top:14px">
+    <div>
+      <h2 style="margin-top:4px">3 · The Folder Tree (proven — adopt as-is)</h2>
+      <div class="tree">
+        📁 <b>00_BRIEF</b> — brief · notes · brand<br>
+        📁 <b>01_RAW</b> — do not rename/move<br>
+        📁 <b>02_WORKING</b><br>
+        📁 <b>03_EXPORTS</b> — Shedit drafts V01/V02<br>
+        📁 <b>04_FINAL</b> — only when truly final
+      </div>
+      <div style="font-size:11.8px;color:var(--dead);font-style:italic;margin-top:6px">"Ready to Edit" gate: RAW in 01_RAW + brand in 00_BRIEF + brief done → triggers Warp Speed.</div>
+    </div>
+    <div>
+      <h2 style="margin-top:4px">4 · What Warp Speed Automates</h2>
+      <ul>
+        <li><b>A · Ingest &amp; sort</b> — reads tags/names, files each asset (360 · drone · stills · interview · BTS)</li>
+        <li><b>B · Auto color</b> — applies the <b>Ninja LUT</b> per camera</li>
+        <li><b>C · Auto nadir</b> — stamps the <b>Nadir preset</b> on 360 + drone-down</li>
+        <li><b>D · Shedit</b> — auto-cuts a V01 from the shot list + story template → drops in 03_EXPORTS</li>
+      </ul>
+      <div style="font-size:11.8px;color:var(--dead);font-style:italic;margin-top:4px">Pavan revives + extends your existing "Hasan Pipeline Builder" Apps Script — seed already exists.</div>
+    </div>
+  </div>
+
+  <h2>5 · Settings To Lock (before automation can run)</h2>
+  <table>
+    <tr><th>Device / layer</th><th style="width:130px">Status</th><th>Source</th></tr>
+    <tr><td class="dev">360 (Theta Z1) — HDR / EV</td><td class="lock">LOCK</td><td>EG America SOW + SOP Internal v3 — pull exact values</td></tr>
+    <tr><td class="dev">Drone — ortho ~160–170ft, orbit rules</td><td class="lock">LOCK</td><td>EG America SOW — pull exact values</td></tr>
+    <tr><td class="dev">Osmo Pocket 3 (self-doc / on-location)</td><td class="def">DEFINE</td><td>Tim + Gabe — new for the show layer</td></tr>
+    <tr><td class="dev">Phone (self-doc / BTS)</td><td class="def">DEFINE</td><td>Tim + Gabe</td></tr>
+    <tr><td class="dev">Car dash cam</td><td class="def">DEFINE</td><td>Tim — confirm res/framerate usable in edit</td></tr>
+    <tr><td class="dev">Interview A/V (studio + location)</td><td class="def">DEFINE</td><td>Gabe — mics, cameras, lighting standard</td></tr>
+  </table>
+  <div style="font-size:11.8px;color:var(--dead);font-style:italic;margin-top:5px">I won't invent camera settings — the LOCK rows get pulled from your real docs; the DEFINE rows are the Monday-with-Gabe work. Naming + tags get locked at the same time (that's the hinge that makes auto-sort work).</div>
+
+  <h2>6 · Ownership — The LLC Holds the IP</h2>
+  <div style="background:var(--charcoal);color:#fff;border-radius:8px;padding:13px 16px;margin-bottom:10px">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:.5px;color:var(--orange)">Ninja-360 Digital Media LLC owns all of it.</div>
+    <div style="font-size:12.8px;color:#e8e2dc;margin-top:4px">The pipeline, the coined IP, every preset, template, script, LUT, and frame of footage sits with <b style="color:#fff">Ninja-360 Digital Media LLC</b> (operating as ninja360.net). The roles below are <b style="color:#fff">who builds and operates</b> each piece — not who owns it. Everything a partner creates here is <b style="color:#fff">work-for-hire assigned to the LLC</b>, per the Partner Framework. Tim owns the LLC; the LLC holds the IP — so it stays a <b style="color:#fff">business asset</b>, not a personal one. No role confers ownership, equity, or a claim on the assets.</div>
+  </div>
+  <div class="roles">
+    <div class="role"><div class="n">Tim</div><div class="r"><b>Founder / operator.</b> Shoot SOP + approval gate · Track 1 (drone/360) · captures the Ninja LUT</div></div>
+    <div class="role"><div class="n">Gabe</div><div class="r"><b>Builds/operates:</b> Ninja Editor · Track 2 (interview/shots) · LUT + nadir + story templates</div></div>
+    <div class="role"><div class="n">Pavan</div><div class="r"><b>Builds/operates:</b> automation (extend the script) · folder scaffolding · tags · shoot-wrap form</div></div>
+  </div>
+  <div class="ip"><b>Coined, brandable, and owned by Ninja-360 Digital Media LLC — IP asset #3:</b> Ninja Warp Speed (the pipeline) · Shedit (the auto first cut) · Ninja Editor (the role) · Nadir preset (branded 360/drone patch). Optional volume tier: Hasan at $80 FPV / $35 standard, 24h.</div>
+
+  <div class="point">
+    <div class="disp">Faster to publish than anyone = <em>paid faster.</em><br>Shoot-to-publish is the one number that matters.</div>
+  </div>
+
+  <div class="footer">
+    Ninja Warp Speed · Tim Petet · Ninja-360 Digital Media LLC · 2026-07-16 · builds on the field-tested Hasan Editing System · companion to the KPI Gameplan &amp; The Dojo<br>
+    © 2026 Ninja-360 Digital Media LLC | Kansas City, MO
+  </div>
+</div>
+</body>
+</html>

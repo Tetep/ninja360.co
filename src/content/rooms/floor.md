@@ -11,3 +11,5 @@ ref: "Click a status to cycle Queued → In Motion → Shipped ★. Type into an
 ---
 
 **This is the only surface you touch.** Fill the board Monday, post to the thread all week, count stars Friday. The rest of the dojo holds itself.
+
+Go deeper: [The Game Plan](/gameplan) · [90-Day Sprint](/sprint) · [Operating Rhythm](/scrolls/operating-rhythm) · [Mission Board Scroll](/scrolls/mission-board) · [Domain Strategy](/domain-strategy)

@@ -20,3 +20,5 @@ ref: "Full detail: the Lucky 13 Negotiation Brief."
 </div>
 
 You're not over a barrel — a $2–3K rig makes you studio-independent. Negotiate for his **audience and co-hosting,** not the room.
+
+Go deeper: [The Game Plan](/gameplan) · [Erik Roadmap](/roadmaps/erik) · [Lucky 13 Brief](/scrolls/lucky13-brief)

@@ -11,3 +11,5 @@ ref: "Full detail: the Three Doors artifact. (Invitations, not closed deals — 
 ---
 
 Never pitch the whole system. Hand each person their door — the one thing they care about.
+
+Go deeper: [The Game Plan](/gameplan) · [Tim](/roadmaps/tim) · [Gabe](/roadmaps/gabe) · [Pavan](/roadmaps/pavan) · [Erik](/roadmaps/erik)

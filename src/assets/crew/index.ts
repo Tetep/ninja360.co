@@ -10,6 +10,8 @@ import erikEmblem from './crew-erik-emblem.png';
 import erikBanner from './crew-erik-banner.png';
 import gabePhoto from './crew-gabe-photo.jpg';
 import pavanPhoto from './crew-pavan-photo.jpg';
+import timPhoto from './crew-tim-photo.jpg';
+import erikPhoto from './crew-erik-photo.jpg';
 
 export const crewEmblems: Record<string, ImageMetadata> = {
   'crew-tim-emblem.png': timEmblem,
@@ -25,8 +27,9 @@ export const crewBanners: Record<string, ImageMetadata> = {
   'crew-erik-banner.png': erikBanner,
 };
 
-// Tim/Erik photo files are intentionally left as user-supplied slots.
 export const crewPhotos: Record<string, ImageMetadata> = {
+  'crew-tim-photo.jpg': timPhoto,
   'crew-gabe-photo.jpg': gabePhoto,
   'crew-pavan-photo.jpg': pavanPhoto,
+  'crew-erik-photo.jpg': erikPhoto,
 };

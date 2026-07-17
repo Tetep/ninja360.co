@@ -26,3 +26,5 @@ ref: "Full detail: the KPI Gameplan artifact."
 ### The 5 Ps (the path)
 
 <span class="pill">Pitch</span><span class="pill">Publish</span><span class="pill">Product</span><span class="pill">Profile</span><span class="pill">Partnership</span> — Q1 pitch + publish → Q2 product + profile → Q3–Q4 partnership + scale → Key Person of Influence.
+
+Go deeper: [The Game Plan](/gameplan) · [KPI Gameplan](/scrolls/kpi-gameplan)

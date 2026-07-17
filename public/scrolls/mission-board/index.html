@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>`r`n<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Ninja-360 Dojo — Mission Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--orange:#F47920;--deep:#E05F00;--charcoal:#3D3D3D;--gray:#404040;--warm:#F9F7F5;--line:#E0DCD8;--dead:#9b948e;--go:#4CAF50;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:#fff;line-height:1.42;font-size:14px}
+  .wrap{max-width:920px;margin:0 auto;padding:0 22px 30px}
+  h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif;line-height:1;text-transform:uppercase;letter-spacing:.5px}
+  /* banner */
+  .banner{background:var(--charcoal);color:#fff;border-radius:0 0 8px 8px;padding:20px 24px;position:relative;overflow:hidden}
+  .banner:before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--orange)}
+  .banner .star{position:absolute;right:18px;top:14px;font-size:60px;color:rgba(244,121,32,.18);line-height:1}
+  .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:3px;font-size:14px;color:var(--orange)}
+  .banner h1{font-size:38px;font-weight:800;margin-top:4px}
+  .banner .creed{font-size:13px;color:#d9d3cd;font-style:italic;margin-top:4px}
+  .weekrow{margin-top:12px;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+  .weekrow .edit{color:var(--orange);border-bottom:2px dotted var(--orange);padding:0 8px;outline:none;min-width:120px;display:inline-block}
+  .stars{float:right;background:var(--orange);color:#fff;border-radius:6px;padding:5px 14px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;letter-spacing:1px}
+  /* crew */
+  h2{font-size:19px;font-weight:800;color:var(--deep);margin:22px 0 9px}
+  .crew{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .card{border:1px solid var(--line);border-radius:8px;padding:11px 13px;text-align:center;background:#fff}
+  .card .belt{font-size:26px;line-height:1}
+  .card .code{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:17px;text-transform:uppercase;color:var(--charcoal);margin-top:3px}
+  .card .who{font-size:12px;color:var(--dead);text-transform:uppercase;letter-spacing:1px;font-weight:700}
+  .card .lane{font-size:12px;color:var(--gray);margin-top:5px;line-height:1.3}
+  .card.ally{border-style:dashed;background:var(--warm)}
+  .card.ally .code{color:var(--dead)}
+  /* mission scroll */
+  .scroll{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{background:var(--charcoal);color:#fff;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:1px;font-size:12.5px;text-align:left;padding:9px 11px}
+  td{padding:8px 11px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  td[contenteditable]{outline:none}
+  td[contenteditable]:focus{background:#FFF6EE}
+  .own{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;white-space:nowrap;color:var(--deep)}
+  .tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:var(--warm);border:1px solid var(--line);color:var(--gray);padding:1px 6px;border-radius:3px}
+  .chip{cursor:pointer;user-select:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.5px;text-transform:uppercase;padding:4px 10px;border-radius:20px;white-space:nowrap;display:inline-block;transition:.12s}
+  .chip.queued{background:#EFEAE6;color:var(--dead)}
+  .chip.motion{background:var(--orange);color:#fff}
+  .chip.shipped{background:var(--go);color:#fff}
+  .hint{font-size:12px;color:var(--dead);margin-top:6px;font-style:italic}
+  .addbtn{margin-top:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-size:13px;background:#fff;border:1.5px solid var(--orange);color:var(--deep);padding:6px 14px;border-radius:6px;cursor:pointer}
+  /* ritual */
+  .ritual{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .bell{border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+  .bell .h{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;color:#fff;background:var(--orange);display:inline-block;padding:3px 10px;border-radius:4px;margin-bottom:7px}
+  .bell.mid .h{background:var(--charcoal)} .bell.fri .h{background:var(--gray)}
+  .bell p{font-size:12.8px;color:var(--gray)}
+  .footer{font-size:11px;color:#8a847e;margin-top:18px;border-top:1px solid var(--line);padding-top:9px}
+  @media(max-width:700px){.crew,.ritual{grid-template-columns:1fr 1fr}.banner h1{font-size:28px}}
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <div class="star">✦</div>
+  <div class="wordmark">NINJA-360</div>
+  <h1>The Dojo · Mission Board</h1>
+  <div class="creed">One meeting. One scroll. Everybody ships something. Nobody gets left behind.</div>
+  <div class="weekrow">
+    <span class="stars">★ <span id="starCount">0</span> shipped</span>
+    Week of <span class="edit" contenteditable="true">Jul 20</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <h2>The Crew</h2>
+  <div class="crew">
+    <div class="card"><div class="belt">🥋</div><div class="code">Sensei</div><div class="who">Tim</div><div class="lane">Sell · capture · host · book guests</div></div>
+    <div class="card"><div class="belt">🎬</div><div class="code">The Blade</div><div class="who">Gabe</div><div class="lane">Shoot · edit · deliver the cut</div></div>
+    <div class="card"><div class="belt">⚙️</div><div class="code">The Architect</div><div class="who">Pavan</div><div class="lane">GHL + backend · builds the machine</div></div>
+    <div class="card ally"><div class="belt">🏯</div><div class="code">Allied Dojo</div><div class="who">Erik · Lucky 13</div><div class="lane">Studio + co-host · <b>show lane only</b></div></div>
+  </div>
+  <div class="hint">Codenames are placeholders — claim your own on Monday. The dashed card = ally, not inside the build.</div>
+
+  <h2>This Week's Missions</h2>
+  <div class="scroll">
+    <table id="scroll">
+      <tr><th style="width:120px">Ninja</th><th>Mission</th><th style="width:140px">For</th><th style="width:70px">Due</th><th style="width:130px">Status</th></tr>
+      <tr><td class="own" contenteditable="true">Tim</td><td contenteditable="true">Book next 2 podcast guests</td><td contenteditable="true"><span class="tag">Found in KC</span></td><td contenteditable="true">Fri</td><td><span class="chip motion" onclick="cyc(this)">In Motion</span></td></tr>
+      <tr><td class="own" contenteditable="true">Gabe</td><td contenteditable="true">Cut E-01 → video + 3 shorts</td><td contenteditable="true"><span class="tag">Found in KC</span></td><td contenteditable="true">Wed</td><td><span class="chip motion" onclick="cyc(this)">In Motion</span></td></tr>
+      <tr><td class="own" contenteditable="true">Pavan</td><td contenteditable="true">Build out Lucid Cinematics on GHL</td><td contenteditable="true"><span class="tag">Partner Hosting</span></td><td contenteditable="true">—</td><td><span class="chip queued" onclick="cyc(this)">Queued</span></td></tr>
+      <tr><td class="own" contenteditable="true">Pavan</td><td contenteditable="true">Stand up Lucky 13 hosting (part of the trade)</td><td contenteditable="true"><span class="tag">Partner Hosting</span></td><td contenteditable="true">—</td><td><span class="chip queued" onclick="cyc(this)">Queued</span></td></tr>
+      <tr><td class="own" contenteditable="true">Erik</td><td contenteditable="true">Confirm studio block + cross-promo post</td><td contenteditable="true"><span class="tag">Found in KC</span></td><td contenteditable="true">Mon</td><td><span class="chip shipped" onclick="cyc(this)">Shipped ★</span></td></tr>
+      <tr><td class="own" contenteditable="true">—</td><td contenteditable="true">…</td><td contenteditable="true"></td><td contenteditable="true"></td><td><span class="chip queued" onclick="cyc(this)">Queued</span></td></tr>
+    </table>
+  </div>
+  <button class="addbtn" onclick="addRow()">+ Add mission</button>
+  <div class="hint">Click a status chip to cycle it: <b>Queued → In Motion → Shipped ★</b>. Type straight into any cell. Every star lights up the counter at the top — that's the point.</div>
+
+  <h2>The Weekly Ritual</h2>
+  <div class="ritual">
+    <div class="bell"><div class="h">🔔 Mon · Dojo Bell</div><p>30-min sync. Set the week's one objective, fill this scroll together, book the studio. Then batch-film.</p></div>
+    <div class="bell mid"><div class="h">Tue–Thu · Heads-Down</div><p>Everyone in their lane. Drop updates in the thread — no meetings. Flip chips to Shipped as they land.</p></div>
+    <div class="bell fri"><div class="h">🔔 Fri · Wrap Bell</div><p>Each ninja posts to the thread: what shipped, what's stuck, what's next. Count the stars. Feeds Monday.</p></div>
+  </div>
+  <div class="hint">Home base: one Google Chat Space (the thread) + one shared Calendar + this board in your Drive. GHL stays for clients.</div>
+
+  <div class="footer">
+    The Ninja-360 Dojo · Tim Petet · Ninja-360 Digital Media LLC · 2026 · companion to The Dojo Operating Rhythm &amp; the KPI Gameplan<br>
+    © 2026 Ninja-360 Digital Media LLC | Kansas City, MO
+  </div>
+</div>
+
+<script>
+  var STATES=[['queued','Queued'],['motion','In Motion'],['shipped','Shipped ★']];
+  function tally(){
+    var n=document.querySelectorAll('.chip.shipped').length;
+    document.getElementById('starCount').textContent=n;
+  }
+  function cyc(el){
+    var cur=0;
+    for(var i=0;i<STATES.length;i++){if(el.classList.contains(STATES[i][0]))cur=i;}
+    var nx=(cur+1)%STATES.length;
+    el.className='chip '+STATES[nx][0];
+    el.textContent=STATES[nx][1];
+    tally();
+  }
+  function addRow(){
+    var t=document.getElementById('scroll');
+    var r=t.insertRow(-1);
+    r.innerHTML='<td class="own" contenteditable="true">—</td><td contenteditable="true">…</td><td contenteditable="true"></td><td contenteditable="true"></td><td><span class="chip queued" onclick="cyc(this)">Queued</span></td>';
+  }
+  tally();
+</script>
+</body>
+</html>

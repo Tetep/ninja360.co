@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>`r`n<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Dojo — Operating Rhythm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--orange:#F47920;--deep:#E05F00;--charcoal:#3D3D3D;--gray:#404040;--warm:#F9F7F5;--line:#E0DCD8;--dead:#9b948e;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:#fff;line-height:1.42;font-size:13.5px}
+  .accent-top{height:4px;background:var(--orange)}
+  .wrap{max-width:920px;margin:0 auto;padding:20px 26px 26px}
+  h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif;line-height:1.05;text-transform:uppercase;letter-spacing:.5px}
+  .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:15px;color:var(--orange)}
+  h1{font-size:30px;font-weight:800;margin-top:4px}
+  .lead{font-size:14px;color:var(--gray);max-width:660px;margin:6px 0 16px}
+  h2{font-size:16px;font-weight:800;color:var(--deep);margin:18px 0 8px;border-bottom:1px solid var(--line);padding-bottom:3px}
+  /* week strip */
+  .week{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .day{border:1px solid var(--line);border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
+  .day .h{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.5px;padding:7px 11px;color:#fff}
+  .day.mon .h{background:var(--orange)} .day.mid .h{background:var(--charcoal)} .day.fri .h{background:var(--gray)} .day.all .h{background:var(--deep)}
+  .day .b{padding:9px 11px;font-size:12.6px;flex:1}
+  .day .b b{color:var(--charcoal)}
+  .day .b .s{color:var(--dead);font-size:11.5px;display:block;margin-top:4px}
+  /* two col */
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  ol{margin:0 0 0 4px;list-style:none;counter-reset:a}
+  ol li{counter-increment:a;padding:4px 0 4px 26px;position:relative;font-size:12.9px;border-bottom:1px solid var(--line)}
+  ol li:before{content:counter(a);position:absolute;left:0;top:4px;font-family:'Barlow Condensed',sans-serif;font-weight:800;color:var(--orange);font-size:14px}
+  ol li .t{color:var(--dead);font-weight:700;float:right}
+  .hub li{list-style:none;padding:5px 0 5px 18px;position:relative;font-size:12.9px;border-bottom:1px solid var(--line)}
+  .hub{list-style:none}
+  .hub li:before{content:"";position:absolute;left:0;top:9px;width:8px;height:8px;background:var(--orange)}
+  .hub li b{color:var(--charcoal)}
+  .callout{background:var(--warm);border-left:4px solid var(--orange);padding:9px 12px;font-size:12.6px;margin-top:8px}
+  /* punchlist */
+  table{width:100%;border-collapse:collapse;font-size:12.4px;margin-top:6px}
+  th{background:var(--charcoal);color:#fff;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px;font-size:11.5px;text-align:left;padding:6px 9px}
+  td{padding:5px 9px;border-bottom:1px solid var(--line)}
+  tr:nth-child(even) td{background:var(--warm)}
+  .own{font-weight:700;white-space:nowrap}
+  .st{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px}
+  /* lanes */
+  .lanes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:6px}
+  .lane{border:1px solid var(--line);border-radius:6px;padding:9px 11px}
+  .lane .n{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;color:var(--deep)}
+  .lane .r{font-size:12px;color:var(--gray);margin-top:3px}
+  .lane.partner{border-style:dashed}
+  .lane.partner .n{color:var(--dead)}
+  .footer{font-size:11px;color:#8a847e;margin-top:16px;border-top:1px solid var(--line);padding-top:8px}
+  @media(max-width:700px){.week,.lanes{grid-template-columns:1fr 1fr}.cols{grid-template-columns:1fr}}
+  @media print{@page{margin:9mm}body{font-size:11.5px}}
+</style>
+</head>
+<body>
+<div class="accent-top"></div>
+<div class="wrap">
+
+  <div class="wordmark">NINJA-360</div>
+  <h1>The Dojo — How the Collaboration Runs</h1>
+  <p class="lead">One meeting, one thread, one punchlist, one calendar. Built to <em>cut</em> coordination, not add it. The whole crew — Tim, Gabe, Pavan — plus Erik on the show lane.</p>
+
+  <h2>The Weekly Rhythm</h2>
+  <div class="week">
+    <div class="day mon"><div class="h">Mon · The Dojo</div><div class="b"><b>30-min sync</b> — set the week's one objective, run the punchlist. Library, office, or video call. <span class="s">Then: batch-film the podcast when the studio's booked (3–4 episodes in one sitting).</span></div></div>
+    <div class="day mid"><div class="h">Tue–Thu · Heads-Down</div><div class="b"><b>Everyone in their lane.</b> Gabe edits, Pavan builds, Tim sells + captures + books guests. <span class="s">Updates posted async to the thread — no meetings.</span></div></div>
+    <div class="day fri"><div class="h">Fri · 5-Min Wrap</div><div class="b"><b>Each person posts to the thread:</b> what shipped, what's stuck, what's next. <span class="s">Typed, not a meeting. Feeds Monday's punchlist.</span></div></div>
+    <div class="day all"><div class="h">All Week · The Thread</div><div class="b"><b>The always-on channel.</b> Check-ins, ideas, guest bookings, asset drops, quick questions. <span class="s">Async by default — protect the heads-down time.</span></div></div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h2>The Hub — Keep It in Google</h2>
+      <ul class="hub">
+        <li><b>The thread → one Google Chat Space</b> ("The Dojo"). Everyone already has Google; Erik joins without ever touching your CRM.</li>
+        <li><b>The calendar → one shared Google Calendar</b> ("Dojo"): Monday sync, film days, guest bookings, deadlines. Everyone subscribes.</li>
+        <li><b>The punchlist → one Google Doc</b> (template below). Reviewed live every Monday. One page — parked work stays parked.</li>
+      </ul>
+      <div class="callout"><b>GHL stays for clients, not crew chatter.</b> Pavan builds inside GHL, but team coordination lives in Google — same lane discipline that keeps everything else clean. It also matches your Drive "shared brain."</div>
+    </div>
+    <div>
+      <h2>The Monday Dojo — 30 Minutes, Every Time</h2>
+      <ol>
+        <li>Wins since last week <span class="t">2 min</span></li>
+        <li>The ONE objective this week <span class="t">3 min</span></li>
+        <li>Punchlist round — each owner: done / doing / stuck <span class="t">10 min</span></li>
+        <li>Podcast plan — guest, angle, film schedule <span class="t">8 min</span></li>
+        <li>Blockers &amp; asks <span class="t">5 min</span></li>
+        <li>Confirm the week on the calendar <span class="t">2 min</span></li>
+      </ol>
+    </div>
+  </div>
+
+  <h2>The Punchlist — One Page, Reviewed Every Monday</h2>
+  <table>
+    <tr><th>Owner</th><th>Task</th><th>For</th><th>Due</th><th>Status</th></tr>
+    <tr><td class="own">Tim</td><td>Book next 2 podcast guests</td><td>Found in KC</td><td>Fri</td><td class="st" style="color:var(--orange)">DOING</td></tr>
+    <tr><td class="own">Gabe</td><td>Edit + deliver E-01 (video + 3 shorts)</td><td>Found in KC</td><td>Wed</td><td class="st" style="color:var(--orange)">DOING</td></tr>
+    <tr><td class="own">Pavan</td><td>Wire tracking snippet to GHL webhook</td><td>Engine / GHL</td><td>Thu</td><td class="st" style="color:var(--dead)">TO DO</td></tr>
+    <tr><td class="own">Erik</td><td>Confirm studio block + cross-promo post</td><td>Found in KC</td><td>Mon</td><td class="st" style="color:#4CAF50">DONE</td></tr>
+  </table>
+  <div class="callout" style="margin-top:8px">Five columns, nothing more. If it's not moving this week, it doesn't go on the list — it stays on the parked roadmap. The list should be short enough to read in 60 seconds.</div>
+
+  <h2>Who Owns What Lane</h2>
+  <div class="lanes">
+    <div class="lane"><div class="n">Tim</div><div class="r">Sell · capture · host · book guests · the face</div></div>
+    <div class="lane"><div class="n">Gabe</div><div class="r">Shoot · edit · deliver episode assets (Creative Director)</div></div>
+    <div class="lane"><div class="n">Pavan</div><div class="r">GHL + backend build (90-day spec)</div></div>
+    <div class="lane partner"><div class="n">Erik</div><div class="r">Studio · co-host · cross-promo — <b>show lane only</b></div></div>
+  </div>
+  <div class="callout" style="margin-top:8px"><b>The line that keeps it clean:</b> Erik lives on the show lane. Client, money, and pipeline conversations stay in your internal hub (the Master Hub / Drive) — not the shared Dojo space. He gets a room and a co-host chair, not a seat where Ninja-360 gets built.</div>
+
+  <div class="footer">
+    Prepared for Tim Petet · Ninja-360 Digital Media LLC · 2026-07-16 · companion to the KPI Gameplan, 24 Assets Roadmap &amp; Lucky 13 Brief<br>
+    © 2026 Ninja-360 Digital Media LLC | Kansas City, MO
+  </div>
+
+</div>
+</body>
+</html>

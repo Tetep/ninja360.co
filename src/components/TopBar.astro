@@ -3,6 +3,8 @@
 const pathname = new URL(Astro.request.url).pathname.replace(/\/$/, '') || '/';
 const links = [
   { href: '/', label: 'Dojo' },
+  { href: '/gameplan', label: 'Game Plan' },
+  { href: '/scrolls', label: 'Scrolls' },
   { href: '/vision', label: 'Vision' },
   { href: '/money', label: 'Money' },
   { href: '/assets', label: 'Assets' },

@@ -51,7 +51,11 @@ const partners = (await getCollection('partners')).sort(
             sizes="72px"
           />
           <div class="who">
-            <div class="n">{p.data.name}</div>
+            {p.data.roadmap ? (
+              <a class="n link" href={p.data.roadmap}>{p.data.name}</a>
+            ) : (
+              <div class="n">{p.data.name}</div>
+            )}
             <div class="role">{p.data.role}</div>
           </div>
         </div>
@@ -131,6 +135,13 @@ const partners = (await getCollection('partners')).sort(
     text-transform: uppercase;
     font-size: 24px;
     line-height: 1;
+  }
+  .dh .who .n.link {
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+  }
+  .dh .who .n.link:hover {
+    border-bottom-color: rgba(255, 255, 255, 0.95);
   }
   .dh .who .role {
     color: #ffd9bb;
