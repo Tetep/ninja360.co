@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Gabe Miller Roadmap — Ninja-360 × Lucid Cinematics · Working Doc V01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#F47920; --deep:#E05F00; --charcoal:#3D3D3D; --gray:#404040;
+    --warm:#F9F7F5; --line:#E0DCD8; --green:#4CAF50; --blue:#3A6EA5;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:#fff;line-height:1.55;font-size:16px}
+  .accent-top{height:4px;background:var(--orange)}
+  .wrap{max-width:860px;margin:0 auto;padding:0 24px}
+  section{padding:40px 0}
+  h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif;line-height:1.1;text-transform:uppercase;letter-spacing:.5px}
+  h1{font-size:40px;font-weight:800}
+  h2{font-size:27px;font-weight:700;margin-bottom:16px}
+  h2 .num{color:var(--orange)}
+  h3{font-size:20px;font-weight:700;margin:18px 0 8px}
+  p{margin-bottom:12px}
+  .alt{background:var(--warm)}
+  .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:19px;color:var(--orange)}
+  .backlink{display:inline-block;margin-top:14px;font-size:13.5px;color:var(--deep);text-decoration:none;font-weight:700}
+  .kicker{font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:13px;color:var(--deep);margin-bottom:10px}
+  .sub{font-size:18px;color:var(--gray);max-width:660px}
+  .meta{font-size:14px;color:#7a746f;margin-top:14px}
+  .note{border-left:4px solid var(--orange);background:var(--warm);padding:14px 18px;margin:18px 0;font-size:15.5px}
+  ul{margin:0 0 12px 20px}
+  li{margin-bottom:7px}
+  .ms{border:1px solid var(--line);margin-bottom:22px}
+  .ms-head{background:var(--charcoal);color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px}
+  .ms-head .disp{font-size:21px;font-weight:800}
+  .ms-head .when{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:var(--orange)}
+  .ms-body{padding:16px 20px}
+  .ms-body h4{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:1px;font-size:14.5px;color:var(--deep);margin:12px 0 5px}
+  .ms-body h4:first-child{margin-top:0}
+  .done{background:var(--warm);padding:9px 13px;font-size:14.5px;border-left:4px solid var(--green);margin-top:10px}
+  .pay{background:var(--warm);padding:9px 13px;font-size:14.5px;border-left:4px solid var(--orange);margin-top:8px}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:15px}
+  th{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:1px;font-size:14px;text-align:left;background:var(--charcoal);color:#fff;padding:9px 12px}
+  td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:var(--warm)}
+  .wk{font-family:'Barlow Condensed',sans-serif;font-weight:700;white-space:nowrap}
+  .cta{background:var(--charcoal);color:#fff}
+  .cta h2{color:#fff}
+  .footer{font-size:13.5px;color:#8a847e;padding:24px 0;border-top:1px solid var(--line)}
+  .blank{display:inline-block;min-width:110px;border-bottom:2px solid var(--orange);height:1.1em;vertical-align:bottom}
+  .gate-check{position:absolute;opacity:0;pointer-events:none}
+  .gate-btn{position:fixed;top:16px;right:16px;z-index:99;width:46px;height:46px;border-radius:50%;background:var(--charcoal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:21px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);user-select:none;transition:opacity .3s}
+  .gate-check:checked ~ .gate-btn{opacity:.3}
+  .gate-content{filter:blur(11px);user-select:none;pointer-events:none;transition:filter .4s ease}
+  .gate-check:checked ~ .gate-content{filter:none;user-select:auto;pointer-events:auto}
+  @media(max-width:640px){ h1{font-size:31px} table{font-size:13.5px} th,td{padding:7px 8px} }
+  @media print{ section{padding:22px 0} .cta{background:#fff;color:var(--charcoal)} .cta h2{color:var(--charcoal)} }
+</style>
+</head>
+<body>
+<input type="checkbox" id="gatecheck" class="gate-check" aria-hidden="true">
+<label for="gatecheck" class="gate-btn" title="Enter"><img src="../assets/badge-fpv.png" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></label>
+<div class="gate-content">
+<div class="accent-top"></div>
+<section>
+  <div class="wrap">
+    <img src="../assets/gabe-ninja.png" alt="Little Gabe Ninja — Lucid Cinematics" style="width:130px;float:right;margin-top:-10px">
+    <div class="wordmark">NINJA-360</div>
+    <a class="backlink" href="../index.html">← Ninja-360 Dojo</a>
+    <div class="kicker" style="margin-top:24px">Creative Partnership Roadmap · Working Doc V01</div>
+    <h1>The Gabe Miller Roadmap<br>Ninja-360 × Lucid Cinematics</h1>
+    <p class="sub" style="margin-top:14px">Tim Petet × Gabriel Miller. Four buckets, one direction: build the most visible creative operation in Kansas City — and get paid by the work it wins. Each bucket has its own money structure; nothing blurs.</p>
+    <p class="meta">Prepared 2026-07-13 · Companion to the KPI Gameplan ("On the M.A.P.") · Rates set together in writing — blanks filled in the room</p>
+  </div>
+</section>
+
+<section class="alt" style="padding-top:30px;padding-bottom:30px">
+  <div class="wrap">
+    <h2><span class="num">01 ·</span> Ground Rules</h2>
+    <ul>
+      <li><strong>Four separate buckets, four separate money structures.</strong> Client shoots · the series/Content Engine · the Creative Director role · the Ninja Trainings product line. Each priced on its own terms.</li>
+      <li><strong>Paid when the money exists.</strong> Client work pays when the client pays. Series work pays per episode on publish. Courses pay from course revenue. No retainers until recurring revenue supports one.</li>
+      <li><strong>Everything in writing.</strong> Rates, splits, IP ownership, credits — one page per bucket, signed by both, versioned.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">02 ·</span> The Four Buckets</h2>
+
+    <div class="ms">
+      <div class="ms-head"><span class="disp">B1 · Client Builds — Premium Capture</span><span class="when">Now · every belt close</span></div>
+      <div class="ms-body">
+        <h4>Scope</h4>
+        <p>Gabe is the premium production tier on Brown and Black Belt builds — cinematic capture, direction, and edit. His fee is a priced line item inside every belt build; Brown ($3,000) and Black ($10,000) were priced specifically to carry this level of production.</p>
+        <h4>Rates (set together, in writing)</h4>
+        <ul>
+          <li>Day rate: $<span class="blank"></span> · Half-day: $<span class="blank"></span> · Per-edit: $<span class="blank"></span></li>
+          <li>First engagement: the LiveSmart media shoot — fee sized to that deal's cash or paid at go-live.</li>
+        </ul>
+        <div class="pay"><strong>Structure:</strong> per-project, paid when the client pays. Every time. Income scales with closes.</div>
+      </div>
+    </div>
+
+    <div class="ms">
+      <div class="ms-head"><span class="disp">B2 · The Series + Content Engine</span><span class="when">90-day sprint · E0–E6</span></div>
+      <div class="ms-body">
+        <h4>Scope</h4>
+        <ul>
+          <li>Director / DP / editor on "On the M.A.P." — the filmed 12-month KPI campaign (7 episodes in the 90-day sprint, biweekly).</li>
+          <li>The training trade, starting now: Tim teaches 360 editing + mobile DJI workflow → Gabe teaches storytelling, edit craft, and builds the color-grade preset + template library.</li>
+          <li>Success upside: when a client signs traceably from content Gabe directed, he gets a defined cut or the capture work on that build.</li>
+        </ul>
+        <div class="pay"><strong>Structure:</strong> per-episode rate paid on publish — $<span class="blank"></span>/episode — plus the training trade (no cash) plus the content-sourced deal cut: <span class="blank"></span>%. No retainer.</div>
+      </div>
+    </div>
+
+    <div class="ms">
+      <div class="ms-head"><span class="disp">B3 · Creative Director / Lead Editor</span><span class="when">In writing after one paid project</span></div>
+      <div class="ms-body">
+        <h4>Scope</h4>
+        <p>The role is real and intended for Gabe: co-designs the Stage-4 creative layer (templates, color grade, story structure), owns the creative spec the editing pipeline runs on. It goes in writing after the first paid project together — likely LiveSmart — and includes the one-role vs. two-tier decision (Gabe direction + a volume editor) once Hasan's availability is confirmed.</p>
+        <div class="done"><strong>Path:</strong> first paid project delivered → role + authority + comp terms on one page → signed by Friday of that week.</div>
+      </div>
+    </div>
+
+    <div class="ms">
+      <div class="ms-head"><span class="disp">B4 · Ninja Trainings — The Course Line</span><span class="when">Q4 2026 · after the 90-day sprint</span></div>
+      <div class="ms-body">
+        <h4>Scope</h4>
+        <ul>
+          <li><strong>FAA Part 107 prep course</strong> — exam preparation for commercial drone certification, built on Tim's Part 107 experience and field practice. (Prep course — the FAA administers the actual test.)</li>
+          <li><strong>360 photography course</strong> — capture, stitch, publish: the Ninja-360 method from Theta/Matterport to Google Street View, taught from real field SOPs.</li>
+          <li><strong>Further NINJA trainings</strong> — mobile DJI products, editing craft, visibility fundamentals for owners. Curriculum grows from what the two of you already trade-teach each other.</li>
+          <li>Division of labor: Tim = subject matter + field credibility · Gabe = instructional filming, story structure, edit, and course production quality.</li>
+        </ul>
+        <h4>Why this bucket matters</h4>
+        <p>Courses turn expertise into a product that sells while you sleep (the Product pillar), train the future Ninja-360 field techs (the hiring pipeline), and serve the mission on record since day one: teaching young adults drone, 360, and the digital trades. The series audience built in Q1–Q3 becomes the course's launch audience in Q4.</p>
+        <div class="done"><strong>Timing:</strong> concept + outline in Q4 planning (October) · production after the day-90 re-score · launch target: Q1 2027 alongside the KC Visibility Report.</div>
+        <div class="pay"><strong>Structure:</strong> revenue share on course sales — <span class="blank"></span>% to Gabe — with IP ownership, credits, and platform terms defined in writing before production starts. No cash up front; the courses pay their makers.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2><span class="num">03 ·</span> The Year at a Glance</h2>
+    <table>
+      <tr><th style="width:170px">Window</th><th>Focus</th><th style="width:230px">Money</th></tr>
+      <tr><td class="wk">Now · July</td><td>Terms on paper (this doc) · training trade starts · LiveSmart shoot when client unblocks</td><td>B1 first paid project</td></tr>
+      <tr><td class="wk">Aug–Oct</td><td>90-day sprint: episodes E0–E6 · CD role in writing after first paid project</td><td>Per-episode on publish · content-sourced deal cuts</td></tr>
+      <tr><td class="wk">Q4 2026</td><td>Ninja Trainings: outlines + production for Part 107 prep, 360 course, NINJA trainings</td><td>Rev-share terms signed before production</td></tr>
+      <tr><td class="wk">Q1 2027</td><td>Course launch to the series audience · season 2</td><td>Course revenue begins</td></tr>
+    </table>
+    <div class="note"><strong>Ground rules, repeated on purpose:</strong> every number in this doc gets written and signed before work starts · client shoots schedule around IDS field days · nothing publishes without Tim's approval · IP terms travel with every bucket.</div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <h2>One Partnership, Four Clean Deals</h2>
+    <p>This is the whole relationship on one page: paid capture on every belt, a filmed campaign that builds both brands, a director's chair with a short path to it, and a course line that turns what you both know into a product. Fill in the blanks together, sign it Friday, and start shooting.</p>
+  </div>
+</section>
+<div class="wrap footer">
+  Prepared for the Tim Petet × Gabriel Miller working session · 2026-07-13 · V01<br>
+  Companion docs: KPI Gameplan "On the M.A.P." (V02) · Content Engine pipeline V01 · Master Hub (2026-07-12)<br>
+  © 2026 Ninja-360 Digital Media LLC | Kansas City, MO
+</div>
+</div><!-- /.gate-content -->
+</body>
+</html>
