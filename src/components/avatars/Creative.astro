@@ -1,0 +1,52 @@
+---
+// Creative — Gabe. The cinematographer ninja.
+// Motif: film camera / clapperboard / keen eye.
+// Role accent: deeper amber-red (--role-creative).
+type Variant = 'guide' | 'chip';
+interface Props { variant?: Variant; size?: number; label?: string; }
+const { variant = 'guide', size = variant === 'chip' ? 44 : 120, label = 'Gabe — the Creative' } = Astro.props;
+---
+
+{variant === 'guide' ? (
+  <svg viewBox="0 0 120 160" width={size} height={size * (160/120)} role="img" aria-label={label} class="ninja ninja-creative">
+    {/* body */}
+    <path d="M35 90 L85 90 L95 145 L25 145 Z" fill="#3D3D3D"/>
+    {/* belt (creative accent) */}
+    <rect x="30" y="105" width="60" height="6" fill="#C74A1F"/>
+    {/* camera held up, framing the shot — right hand */}
+    <rect x="82" y="80" width="26" height="18" rx="2" fill="#3D3D3D"/>
+    <circle cx="95" cy="89" r="6" fill="#F9F7F5"/>
+    <circle cx="95" cy="89" r="3" fill="#3D3D3D"/>
+    <rect x="102" y="76" width="6" height="6" fill="#C74A1F"/> {/* record light */}
+    {/* left arm holding camera */}
+    <path d="M78 92 L84 88 L88 94 L82 98 Z" fill="#3D3D3D"/>
+    {/* head — hood */}
+    <path d="M42 78 Q42 45 60 45 Q78 45 78 78 L78 88 L42 88 Z" fill="#3D3D3D"/>
+    {/* headband — creative accent */}
+    <rect x="40" y="62" width="40" height="6" fill="#C74A1F"/>
+    {/* eye strip — but one eye is closed (framing the shot) */}
+    <rect x="46" y="70" width="28" height="6" fill="#F9F7F5"/>
+    <circle cx="53" cy="73" r="1.6" fill="#3D3D3D"/>
+    <path d="M63 73 L71 73" stroke="#3D3D3D" stroke-width="1.6" stroke-linecap="round"/> {/* winked eye */}
+    {/* clapperboard motif floating above */}
+    <g transform="translate(38 24)">
+      <rect width="30" height="14" fill="#F9F7F5" stroke="#3D3D3D" stroke-width="1.5"/>
+      <rect y="-4" width="30" height="5" fill="#3D3D3D"/>
+      <path d="M0 -4 L6 1 M6 -4 L12 1 M12 -4 L18 1 M18 -4 L24 1 M24 -4 L30 1" stroke="#F9F7F5" stroke-width="1"/>
+    </g>
+  </svg>
+) : (
+  <svg viewBox="0 0 44 44" width={size} height={size} role="img" aria-label={label} class="chip-avatar chip-creative">
+    <circle cx="22" cy="22" r="20" fill="#3D3D3D"/>
+    <path d="M8 22 Q8 8 22 8 Q36 8 36 22 L36 32 L8 32 Z" fill="#3D3D3D"/>
+    <rect x="7" y="16" width="30" height="4" fill="#C74A1F"/>
+    <rect x="10" y="21" width="24" height="4" fill="#F9F7F5"/>
+    <circle cx="16" cy="23" r="1.2" fill="#3D3D3D"/>
+    <path d="M25 23 L31 23" stroke="#3D3D3D" stroke-width="1.2" stroke-linecap="round"/>
+  </svg>
+)}
+
+<style>
+  .ninja, .chip-avatar { display: block; }
+  .chip-avatar { border-radius: 50%; }
+</style>

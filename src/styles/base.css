@@ -1,0 +1,196 @@
+@import './tokens.css';
+
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font-body);
+  color: var(--charcoal);
+  background: var(--white);
+  line-height: 1.5;
+  font-size: 15px;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--deep); text-decoration: underline; text-underline-offset: 2px; }
+a:hover { text-decoration-thickness: 2px; }
+
+h1, h2, h3, .disp {
+  font-family: var(--font-display);
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 800;
+}
+
+p { margin-bottom: 0.7rem; }
+ul { margin: 0 0 0.75rem 1.25rem; }
+li { margin-bottom: 0.35rem; }
+img, svg { max-width: 100%; display: block; }
+
+/* Focus ring — accessible + on-brand */
+:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ==== Bar (top nav) ==== */
+.bar {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--charcoal); color: var(--white);
+  padding: 9px 18px;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.bar .wm {
+  font-family: var(--font-display);
+  font-weight: 800; letter-spacing: 2.5px;
+  font-size: 16px; color: var(--orange);
+  text-decoration: none;
+}
+.bar nav { display: flex; gap: 3px; flex-wrap: wrap; margin-left: auto; }
+.bar nav a {
+  font-family: var(--font-display);
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  font-size: 12.5px; color: #e8e2dc;
+  padding: 3px 8px; border-radius: 4px;
+  text-decoration: none;
+}
+.bar nav a:hover, .bar nav a[aria-current="page"] {
+  background: rgba(244, 121, 32, 0.25); color: var(--white);
+}
+
+.accent { height: 4px; background: var(--orange); }
+
+/* ==== Layout wrap ==== */
+.wrap { max-width: var(--wrap-max); margin: 0 auto; padding: 26px 24px 40px; }
+
+/* ==== Back-to-Dojo control ==== */
+.back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-display);
+  font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 13px;
+  color: var(--deep);
+  background: var(--warm); border: 1px solid var(--line);
+  padding: 6px 12px; border-radius: var(--r-md);
+  text-decoration: none;
+  margin-bottom: 14px;
+}
+.back:hover { background: var(--focus); }
+
+/* ==== Room head ==== */
+.rhead { border-bottom: 2px solid var(--charcoal); padding-bottom: 8px; margin-bottom: 16px; }
+.rhead .k {
+  font-family: var(--font-display);
+  font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-size: 12px;
+  color: var(--deep);
+}
+.rhead h2 { font-size: 30px; margin-top: 2px; }
+.rhead .guide-row { display: flex; gap: 12px; align-items: center; margin-top: 10px; }
+.rhead .guide-row .caption {
+  font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  font-size: 12px; color: var(--gray);
+}
+
+h3 { font-size: 17px; font-weight: 700; color: var(--charcoal); margin: 18px 0 7px; text-transform: none; letter-spacing: 0; }
+
+/* ==== Primitives ==== */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.box { border: 1px solid var(--line); border-radius: var(--r-lg); padding: 13px 15px; }
+.box .h {
+  font-family: var(--font-display); font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  font-size: 15px; color: var(--deep); margin-bottom: 5px;
+}
+
+.pill {
+  display: inline-block; background: var(--warm);
+  border: 1px solid var(--line); border-radius: var(--r-pill);
+  padding: 3px 11px; font-size: 12.5px; margin: 2px 3px 2px 0;
+}
+
+.action {
+  background: var(--charcoal); color: var(--white);
+  border-radius: var(--r-lg); padding: 12px 15px;
+  margin-top: 12px; font-size: 14px;
+}
+.action b { color: var(--orange); }
+
+.ref { font-size: 12.5px; color: var(--dead); font-style: italic; margin-top: 8px; }
+
+.stat { display: flex; gap: 14px; flex-wrap: wrap; margin: 6px 0 10px; }
+.stat .s {
+  background: var(--warm); border-radius: var(--r-md);
+  padding: 8px 14px; text-align: center; border: 1px solid var(--line);
+}
+.stat .s .n {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: 24px; color: var(--deep); line-height: 1;
+}
+.stat .s .l {
+  font-size: 11px; color: var(--gray);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* ==== Doorcard (Crew room) ==== */
+.doorcard {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.doorcard .dh {
+  background: var(--charcoal); color: var(--white);
+  padding: 9px 14px;
+  font-family: var(--font-display); font-weight: 800; font-size: 17px;
+  text-transform: uppercase; letter-spacing: 1px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 8px;
+}
+.doorcard .dh .who { display: flex; align-items: center; gap: 10px; }
+.doorcard .dh .role { color: var(--orange); font-size: 11.5px; font-weight: 700; letter-spacing: 1px; }
+.doorcard .db { padding: 12px 14px; }
+.doorcard .say {
+  background: var(--orange); color: var(--white);
+  border-radius: var(--r-md); padding: 9px 12px;
+  font-style: italic; font-size: 13.5px; margin-top: 8px;
+}
+
+/* ==== Rhythm cards (Floor room) ==== */
+.rhythm3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-bottom: 14px; }
+.rh { border: 1px solid var(--line); border-radius: var(--r-md); padding: 9px 11px; }
+.rh .h {
+  font-family: var(--font-display); font-weight: 800; font-size: 14px;
+  text-transform: uppercase; color: var(--white);
+  background: var(--orange); display: inline-block;
+  padding: 2px 9px; border-radius: var(--r-sm); margin-bottom: 5px;
+}
+.rh.mid .h { background: var(--charcoal); }
+.rh.fri .h { background: var(--gray); }
+.rh p { font-size: 12.5px; color: var(--gray); margin: 0; }
+
+/* ==== Footer ==== */
+.footer {
+  max-width: var(--wrap-max); margin: 0 auto;
+  padding: 16px 24px;
+  font-size: 11.5px; color: #8a847e;
+  border-top: 1px solid var(--line);
+}
+
+/* ==== Prose helpers for markdown-rendered rooms ==== */
+.prose h3 { margin-top: 22px; }
+.prose ul { margin-left: 1.25rem; }
+
+/* ==== View Transitions (Astro built-in) ==== */
+@view-transition { navigation: auto; }
+
+/* ==== Responsive ==== */
+@media (max-width: 800px) {
+  .grid2 { grid-template-columns: 1fr; }
+  .rhythm3 { grid-template-columns: 1fr; }
+  .rhead h2 { font-size: 26px; }
+  .wrap { padding: 20px 16px 32px; }
+}

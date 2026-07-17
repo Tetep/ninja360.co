@@ -1,0 +1,56 @@
+---
+// Crew — Three Doors. Renders one doorcard per entry in the `partners`
+// collection. Edit src/content/partners/*.md to change pitches / roles /
+// which lil-ninja represents each person — no component changes needed.
+import { getEntry, getCollection } from 'astro:content';
+import DojoLayout from '../layouts/DojoLayout.astro';
+import RoomHead from '../components/RoomHead.astro';
+import Guide from '../components/Guide.astro';
+import { roomHeroImages } from '../assets/doors';
+
+const room = await getEntry('rooms', 'crew');
+const { Content } = await room.render();
+
+const partners = (await getCollection('partners')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+
+<DojoLayout title="Three Doors · The Ninja-360 Dojo">
+  <RoomHead
+    doorNum={room.data.doorNum}
+    doorLabel={room.data.doorLabel}
+    title={room.data.title}
+    guide={room.data.guide}
+    roomHeroImage={roomHeroImages.crew}
+  />
+
+  <div class="prose">
+    <Content />
+  </div>
+
+  {partners.map(p => (
+    <article class="doorcard">
+      <header class="dh">
+        <span class="who">
+          <Guide guide={p.data.avatar} variant="chip" size={36} />
+          <span>{p.data.name}</span>
+        </span>
+        <span class="role">{p.data.role}</span>
+      </header>
+      <div class="db">
+        {p.data.pitch}
+        <div class="say">"{p.data.say}"</div>
+      </div>
+    </article>
+  ))}
+
+  {room.data.ref && <div class="ref">{room.data.ref}</div>}
+</DojoLayout>
+
+<style>
+  .dh .who { display: flex; align-items: center; gap: 10px; }
+  .dh .who > span { display: inline-flex; align-items: center; }
+  /* Suppress the "leads this room" caption for chip variants of Guide inside doorcards */
+  :global(.dh .guide-caption) { display: none; }
+</style>

@@ -1,0 +1,49 @@
+/* Ninja-360 Dojo — brand tokens.
+ * Locked palette. NO red. NO gold. Orange dominant.
+ * Also: role-color accents for the four lil-ninja guides.
+ */
+:root {
+  /* ==== Core palette (LOCKED — do not deviate) ==== */
+  --orange: #F47920;
+  --deep: #E05F00;
+  --charcoal: #3D3D3D;
+  --gray: #404040;
+  --white: #FFFFFF;
+  --warm: #F9F7F5;
+  --line: #E0DCD8;
+
+  /* ==== Working aliases (built from the core) ==== */
+  --paper: #FAF7F2;
+  --dead: #9B948E;
+  --focus: #FFF6EE;
+  --go: #4CAF50;
+
+  /* ==== Role colors (guide accents — muted variants of the core) ==== */
+  --role-sensei: #F47920;   /* Tim — full orange */
+  --role-creative: #C74A1F; /* Gabe — deeper amber-red-ish (still no red red) */
+  --role-architect: #7A5A2E; /* Pavan — bronze */
+  --role-ally: #3D3D3D;     /* Erik — charcoal (partner-adjacent, cooler) */
+
+  /* ==== Type ==== */
+  --font-display: 'Barlow Condensed', system-ui, sans-serif;
+  --font-body: 'Source Sans 3', system-ui, sans-serif;
+
+  /* ==== Spacing scale (rem) ==== */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+
+  /* ==== Radius ==== */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+  --r-pill: 20px;
+
+  /* ==== Layout ==== */
+  --wrap-max: 960px;
+  --bar-h: 44px;
+}

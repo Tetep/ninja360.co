@@ -1,0 +1,59 @@
+---
+// Architect — Pavan. The systems ninja.
+// Motif: gears / circuit / katana-as-wrench.
+// Role accent: bronze (--role-architect).
+type Variant = 'guide' | 'chip';
+interface Props { variant?: Variant; size?: number; label?: string; }
+const { variant = 'guide', size = variant === 'chip' ? 44 : 120, label = 'Pavan — the Architect' } = Astro.props;
+---
+
+{variant === 'guide' ? (
+  <svg viewBox="0 0 120 160" width={size} height={size * (160/120)} role="img" aria-label={label} class="ninja ninja-architect">
+    {/* body */}
+    <path d="M35 90 L85 90 L95 145 L25 145 Z" fill="#3D3D3D"/>
+    {/* belt (architect accent) */}
+    <rect x="30" y="105" width="60" height="6" fill="#7A5A2E"/>
+    {/* wrench-katana held diagonally across body */}
+    <g transform="rotate(-25 60 100)">
+      <rect x="35" y="97" width="55" height="6" fill="#3D3D3D"/>
+      <rect x="88" y="93" width="10" height="14" fill="#7A5A2E"/> {/* wrench head */}
+      <rect x="93" y="95" width="6" height="10" fill="#3D3D3D"/>  {/* jaw slot */}
+    </g>
+    {/* head — hood */}
+    <path d="M42 78 Q42 45 60 45 Q78 45 78 78 L78 88 L42 88 Z" fill="#3D3D3D"/>
+    {/* headband — architect accent */}
+    <rect x="40" y="62" width="40" height="6" fill="#7A5A2E"/>
+    {/* eye strip */}
+    <rect x="46" y="70" width="28" height="6" fill="#F9F7F5"/>
+    <circle cx="53" cy="73" r="1.6" fill="#3D3D3D"/>
+    <circle cx="67" cy="73" r="1.6" fill="#3D3D3D"/>
+    {/* gear motif floating above head */}
+    <g transform="translate(60 26)">
+      <circle r="10" fill="none" stroke="#7A5A2E" stroke-width="2"/>
+      <circle r="4" fill="#F9F7F5"/>
+      {/* teeth */}
+      <rect x="-1.5" y="-14" width="3" height="4" fill="#7A5A2E"/>
+      <rect x="-1.5" y="10" width="3" height="4" fill="#7A5A2E"/>
+      <rect x="-14" y="-1.5" width="4" height="3" fill="#7A5A2E"/>
+      <rect x="10" y="-1.5" width="4" height="3" fill="#7A5A2E"/>
+      <rect x="-10" y="-10" width="3" height="3" fill="#7A5A2E" transform="rotate(45)"/>
+      <rect x="-10" y="7" width="3" height="3" fill="#7A5A2E" transform="rotate(45)"/>
+      <rect x="7" y="-10" width="3" height="3" fill="#7A5A2E" transform="rotate(45)"/>
+      <rect x="7" y="7" width="3" height="3" fill="#7A5A2E" transform="rotate(45)"/>
+    </g>
+  </svg>
+) : (
+  <svg viewBox="0 0 44 44" width={size} height={size} role="img" aria-label={label} class="chip-avatar chip-architect">
+    <circle cx="22" cy="22" r="20" fill="#3D3D3D"/>
+    <path d="M8 22 Q8 8 22 8 Q36 8 36 22 L36 32 L8 32 Z" fill="#3D3D3D"/>
+    <rect x="7" y="16" width="30" height="4" fill="#7A5A2E"/>
+    <rect x="10" y="21" width="24" height="4" fill="#F9F7F5"/>
+    <circle cx="16" cy="23" r="1.2" fill="#3D3D3D"/>
+    <circle cx="28" cy="23" r="1.2" fill="#3D3D3D"/>
+  </svg>
+)}
+
+<style>
+  .ninja, .chip-avatar { display: block; }
+  .chip-avatar { border-radius: 50%; }
+</style>

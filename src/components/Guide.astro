@@ -1,0 +1,40 @@
+---
+// Guide dispatcher — renders the correct lil-ninja for a room by its `guide` frontmatter.
+import Sensei from './avatars/Sensei.astro';
+import Creative from './avatars/Creative.astro';
+import Architect from './avatars/Architect.astro';
+import Ally from './avatars/Ally.astro';
+
+type Guide = 'sensei' | 'creative' | 'architect' | 'ally';
+interface Props {
+  guide: Guide;
+  variant?: 'guide' | 'chip';
+  size?: number;
+}
+const { guide, variant = 'guide', size } = Astro.props;
+
+const captions: Record<Guide, string> = {
+  sensei: 'Tim leads this room',
+  creative: 'Gabe leads this room',
+  architect: 'Pavan leads this room',
+  ally: 'Erik walks with you here',
+};
+---
+
+{guide === 'sensei' && <Sensei variant={variant} size={size} />}
+{guide === 'creative' && <Creative variant={variant} size={size} />}
+{guide === 'architect' && <Architect variant={variant} size={size} />}
+{guide === 'ally' && <Ally variant={variant} size={size} />}
+
+{variant === 'guide' && (
+  <div class="guide-caption">{captions[guide]}</div>
+)}
+
+<style>
+  .guide-caption {
+    font-family: var(--font-display);
+    font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    font-size: 11px; color: var(--gray);
+    text-align: center; margin-top: 4px;
+  }
+</style>
