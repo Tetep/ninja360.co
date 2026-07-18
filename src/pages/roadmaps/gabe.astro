@@ -8,6 +8,7 @@ import Breadcrumb from '../../components/Breadcrumb.astro';
   <a class="back" href="/crew">← Back to the Crew</a>
   <section class="frame-wrap" aria-labelledby="gabe-roadmap-title">
     <h2 id="gabe-roadmap-title">Gabe Roadmap</h2>
+    <p class="epigraph">"Fall in love with the true story &mdash; then tell it beautifully."</p>
     <p class="note">Legacy roadmap rendered inside the Dojo shell.</p>
     <iframe
       class="roadmap-frame"
@@ -27,6 +28,11 @@ import Breadcrumb from '../../components/Breadcrumb.astro';
   }
   .frame-wrap h2 {
     font-size: 28px;
+  }
+  .epigraph {
+    margin: 2px 0 0;
+    font-style: italic;
+    color: var(--deep);
   }
   .note {
     margin: 4px 0 10px;

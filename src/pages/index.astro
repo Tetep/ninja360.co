@@ -26,8 +26,8 @@ const rooms = (await getCollection('rooms')).sort(
       />
       <div class="home-head">
         <Torii />
-        <h1 id="dojo-heading">The Ninja-360 Dojo</h1>
-        <div class="sub">You're building it. Enter a door.</div>
+        <h1 id="dojo-heading">Welcome to the Dojo</h1>
+        <div class="sub">Where we put local businesses on the map, tell their true stories beautifully, and sharpen the blade every single week.</div>
         <p class="intro">The Ninja-360 Dojo — the plan, the crew, and the playbooks in one place. New here? Start with the Game Plan.</p>
         <div class="spine-links">
           <a class="spine-link start-here" href="/gameplan">Start Here &rarr; The Game Plan</a>
@@ -73,6 +73,12 @@ const rooms = (await getCollection('rooms')).sort(
         sub="This board, upgraded · parked"
         variant="parked"
       />
+    </div>
+
+    <div class="philo-strip">
+      <a class="ph" href="/vision"><b>Put People on the Map</b>visible, heard, chosen.</a>
+      <a class="ph" href="/forge"><b>Fall in Love with the True Story</b>technology is the tool; connection is the goal.</a>
+      <a class="ph" href="/floor"><b>Always Sharpen the Blade</b>try, fail, learn, improve &mdash; responsibly.</a>
     </div>
 
     <p class="tagline">Run the rhythm. The rhythm runs the plan.</p>
@@ -164,6 +170,22 @@ const rooms = (await getCollection('rooms')).sort(
 
   .wall { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 
+  .philo-strip {
+    max-width: 720px; margin: 22px auto 0;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
+  }
+  .ph {
+    background: var(--warm); border: 1px solid var(--line);
+    border-radius: var(--r-md); padding: 10px 12px; font-size: 13px;
+    color: inherit; text-decoration: none;
+  }
+  .ph b {
+    font-family: var(--font-display); font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--deep); font-size: 14px; display: block; margin-bottom: 2px;
+  }
+  .ph:hover { background: var(--focus); }
+
   .tagline {
     text-align: center; margin-top: 22px;
     font-family: var(--font-display); font-weight: 700;
@@ -182,6 +204,7 @@ const rooms = (await getCollection('rooms')).sort(
     }
     .wall { grid-template-columns: 1fr 1fr; }
     .creed { grid-template-columns: 1fr; }
+    .philo-strip { grid-template-columns: 1fr; }
     .home-head h1 { font-size: 36px; }
   }
 
