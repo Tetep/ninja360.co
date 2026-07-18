@@ -1,31 +1,35 @@
 ---
 doorNum: "03"
 doorLabel: "The Armory"
-title: "The 24 Assets Roadmap"
-subtitle: "24 assets · what to build, in order"
+title: "The Asset Vault"
+subtitle: "The map outlasts the mapmaker"
 plain: "The assets that make the business valuable — and the order we build them."
 order: 3
-guide: architect
-accent: orange
-variant: content
+guide: "sensei"
+accent: "orange"
+variant: "content"
 ref: "Full detail: the 24 Assets Roadmap artifact."
 ---
 
-**Dent's verdict:** you're a **lifestyle boutique** — ≤12 people, KPI-driven, built for income, flexibility, and fun. Small by design is the win. And: **every stress = a missing asset.**
+### Why assets, not just effort
+
+Philosophy #1 says we put people on the map. Assets are how the map keeps working when nobody's holding the pen — the methodology, the brand, the systems, and the IP that make Ninja-360 valuable *without* Tim in the room.
+
+<div class="stat">Stress is an asset deficiency. Every recurring headache points at a missing asset.</div>
+
+### The 24-asset build
 
 <div class="grid2">
-  <div class="box">
-    <div class="h">Reddest squares</div>
-    Marketing &amp; Sales systems (no lead machine) · Ambassadors (nobody amplifies you) · Mgmt &amp; Admin (all through you). The show + crew fix these.
-  </div>
-  <div class="box">
-    <div class="h">Building now</div>
-    Social handles · philosophy page · belt brochure · M.A.P. diagram · GHL data fields · trademark filing · "KC Visibility Checklist" gift.
-  </div>
+<div class="box"><strong>IP & Methodology</strong> — The M.A.P. Method, the visibility standards, the Warp Speed pipeline. Sharpened, named, and owned by the LLC.</div>
+<div class="box"><strong>Brand</strong> — The three philosophies, the identity, the ambassadors who repeat the triad when we're not in the room.</div>
+</div>
+<div class="grid2">
+<div class="box"><strong>Systems</strong> — The reddest zone on the heatmap and the sharpest blade-work underway: pipelines, checklists, automation. Disciplined execution made permanent.</div>
+<div class="box"><strong>Product</strong> — The belt ladder: a clear path from first audit to full visibility system, priced in the open.</div>
 </div>
 
-### Parked, on purpose
+### Every asset serves a philosophy
 
-Valuation, big funding docs, the app — all deferred. The boutique design says they're later.
+An asset that doesn't put a client on the map, tell a truer story, or sharpen how we work doesn't get built. That's the filter — it keeps a small crew from building shelf-ware.
 
-<div class="godeeper"><span class="gd-label">Go deeper</span><a class="gd-link" href="/gameplan">The Game Plan &rarr;</a><a class="gd-link" href="/roadmaps/assets">24-Asset Roadmap &rarr;</a></div>
+<span class="pill">Owned by the LLC</span> <span class="pill">Ideas → Mess → Brief → Beta → Official</span> <span class="pill">Value without the founder</span>

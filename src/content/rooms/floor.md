@@ -1,16 +1,41 @@
 ---
 doorNum: "07"
 doorLabel: "The Floor"
-title: "Run the Week"
-subtitle: "Calendar + Mission Board"
+title: "The Floor"
+subtitle: "Always Sharpen the Blade"
 plain: "How we run the week: Monday board, all-week thread, Friday wins."
 order: 7
-guide: sensei
-accent: deep
-variant: floor
+guide: "architect"
+accent: "deep"
+variant: "floor"
 ref: "Click a status to cycle Queued → In Motion → Shipped ★. Type into any cell. This mirrors your Google Doc board + Chat thread."
 ---
 
-**This is the only surface you touch.** Fill the board Monday, post to the thread all week, count stars Friday. The rest of the dojo holds itself.
+### The training floor
 
-<div class="godeeper"><span class="gd-label">Go deeper</span><a class="gd-link" href="/gameplan">The Game Plan &rarr;</a><a class="gd-link" href="/sprint">90-Day Sprint &rarr;</a><a class="gd-link" href="/scrolls/operating-rhythm">Operating Rhythm &rarr;</a><a class="gd-link" href="/scrolls/mission-board">Mission Board Scroll &rarr;</a><a class="gd-link" href="/domain-strategy">Domain Strategy &rarr;</a></div>
+A dojo without a training floor is just a room with certificates on the wall. This is where the systems get built, tested, broken, and rebuilt — the engine, the pipelines, the automation that lets a small crew move like a big one.
+
+### Philosophy #3 — Always Sharpen the Blade
+
+We stay on the cutting edge through **research, experimentation, disciplined execution, and honest reflection**. We are willing to try, fail, learn, and improve — but we innovate responsibly, transparently, and in service of the client.
+
+<div class="stat">A dull blade cuts nothing. A reckless one cuts the wrong thing.</div>
+
+Both halves matter. The blade stays sharp — new tools, new tests, new speed — and the blade stays *aimed*: every experiment answers to the client's result, never to novelty for its own sake.
+
+### What sharpening looks like here
+
+<div class="grid2">
+<div class="box"><strong>Ninja Warp Speed</strong> — Automating the proven editing system so a shoot becomes a review-ready draft with near-zero handling. Faster to publish than anyone.</div>
+<div class="box"><strong>Try, fail, learn</strong> — Pilots before promises. The LiveSmart shoot calibrates real numbers before we sell the package.</div>
+</div>
+<div class="grid2">
+<div class="box"><strong>Disciplined execution</strong> — Locked SOPs, named settings, written "done" specs. Experimentation lives on top of a system, not instead of one.</div>
+<div class="box"><strong>Honest reflection</strong> — Friday wins-and-stars, re-scores, and postmortems. We say what worked out loud — and what didn't.</div>
+</div>
+
+<span class="pill">Research</span> <span class="pill">Experiment</span> <span class="pill">Execute</span> <span class="pill">Reflect</span>
+
+### The responsibility clause
+
+Cutting edge, not bleeding edge. New tech gets adopted when it serves the client's visibility and story — transparently, with the client knowing what's automated and what's human.

@@ -1,31 +1,36 @@
 ---
 doorNum: "02"
 doorLabel: "War Room"
-title: "Money — Two Ledgers"
-subtitle: "Two ledgers · who's paid from what"
+title: "The Money Room"
+subtitle: "We tell the truth about money, too"
 plain: "How the money works: two ledgers, and who's paid from what."
 order: 2
-guide: sensei
-accent: orange
-variant: content
+guide: "sensei"
+accent: "deep"
+variant: "content"
 cta: "**Nearest cash:** confirm the 7/9 IDS field day and invoice. That's your book, and it steadies everything."
 ref: "Full detail: the Money Strategy workbook (two-ledger V2)."
 ---
 
+### Truth beautifully told — including the ledger
+
+"Tell the truth beautifully" isn't just a camera philosophy. It's how this operation handles money. No fuzzy math between friends, no handshake economics, no pretending revenue exists before the check clears.
+
+### Two ledgers, zero confusion
+
 <div class="grid2">
-  <div class="box">
-    <div class="h">Ledger A · Your Book</div>
-    IDS, LiveSmart, Kobler — clients you closed. <b>Yours alone.</b> Funds you + the business. Never enters partner economics.<br><br>
-    IDS crew rate for Gabe/Pavan helping: <b>$100/day · $50/half</b> (paid field training).
-  </div>
-  <div class="box">
-    <div class="h">Ledger B · The Engine</div>
-    Tim × Gabe × Pavan. <b>Starts at $0.</b> Income = fresh clients + the show only. Gabe's engine pay comes from fresh build fees, Net 15. Proof-of-life = first fresh Brown close.
-  </div>
+<div class="box"><strong>Ledger A — Existing Ninja Clients</strong> — Tim's book, built before the engine. Crew field help is paid work-for-hire: real pay, real training, no equity confusion.</div>
+<div class="box"><strong>Ledger B — The New Ninja Dojo Engine</strong> — Starts at $0. The only shared money. Funded by fresh clients and the show. Everyone watches it grow from zero together.</div>
 </div>
 
-### The series = your capped investment
+<div class="stat">Engine money follows engine revenue. Nobody gets paid on hope.</div>
 
-~$467/mo (7 episodes @ $200), cap $500 — within cap. One fresh Brown close pays it back 1.4×.
+### The cash rules are a sharpened blade
 
-<div class="godeeper"><span class="gd-label">Go deeper</span><a class="gd-link" href="/gameplan">The Game Plan &rarr;</a></div>
+Disciplined execution (Philosophy #3) applied to dollars: commissions only after client cash lands · margin floors on subcontracted builds · trades timeboxed with a written "done" · no cost in writing, no resale. The rules exist so the relationships never have to absorb a money surprise.
+
+### Honest reflection, in numbers
+
+Every rate, cap, and split gets revisited when real data arrives — pilots calibrate prices, re-scores adjust targets. When something isn't sustainable, it gets renamed for what it is instead of dressed up. Try, learn, improve — the blade applies to the business model itself.
+
+<span class="pill">Two ledgers</span> <span class="pill">Written terms</span> <span class="pill">Truth in numbers</span>

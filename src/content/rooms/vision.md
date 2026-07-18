@@ -1,31 +1,42 @@
 ---
 doorNum: "01"
 doorLabel: "The Gate"
-title: "The Vision — Found in KC"
-subtitle: "Found in KC · become the KPI"
+title: "The Vision Room"
+subtitle: "Put People on the Map"
 plain: "Where we're headed and why: become the name for local visibility in KC."
 order: 1
-guide: sensei
-accent: orange
-variant: content
+guide: "sensei"
+accent: "orange"
+variant: "content"
 cta: "**Monday:** lock the pitch, start the show, settle Gabe."
 ref: "Full detail: the KPI Gameplan artifact."
 ---
 
-**The whole goal:** become the name for local visibility in Kansas City. When a local owner thinks "get me found," they think of you. Everything else serves that.
+### Why we exist
 
-<div class="stat">
-  <div class="s"><div class="n">23–27</div><div class="l">Baseline / 60</div></div>
-  <div class="s"><div class="n">45+</div><div class="l">12-mo target</div></div>
-  <div class="s"><div class="n">13 wk</div><div class="l">First sprint</div></div>
+Kansas City is full of businesses doing great work that nobody can find. The owner who perfected her recipes over twenty years loses foot traffic to a chain with better Google photos. The chiropractor with a decade of five-star care sits below a competitor with triple the reviews. That's not a marketing problem — it's an injustice.
+
+<div class="stat">Great work deserves to be found.</div>
+
+### Philosophy #1 — Put People on the Map
+
+We exist to make deserving businesses **visible, heard, and chosen**. Rooted in Kansas City and local business, we use the M.A.P. Method to help our clients grow.
+
+<div class="grid2">
+<div class="box"><strong>Make</strong> — Capture the business the way it deserves to be seen: 360 tours, drone, cinematic story.</div>
+<div class="box"><strong>Amplify</strong> — Push it everywhere customers look: Google, maps, listings, AI search.</div>
+</div>
+<div class="grid2">
+<div class="box"><strong>Promote</strong> — Keep it working month after month so visibility compounds instead of fading.</div>
+<div class="box"><strong>The result</strong> — The business becomes the obvious choice in its area.</div>
 </div>
 
-### The show
+### Notice who's on the map
 
-**"Found in KC"** — *we put local businesses on the M.A.P.* The flagship. Your client work becomes the content; guests become your proof and your pipeline.
+Not logos. Not listings. **People.** Behind every storefront is an owner who bet everything on their craft. When we put a business on the map, we're putting a person's life work in front of the customers who've been driving past it.
 
-### The 5 Ps (the path)
+<span class="pill">Visible</span> <span class="pill">Heard</span> <span class="pill">Chosen</span>
 
-<span class="pill">Pitch</span><span class="pill">Publish</span><span class="pill">Product</span><span class="pill">Profile</span><span class="pill">Partnership</span> — Q1 pitch + publish → Q2 product + profile → Q3–Q4 partnership + scale → Key Person of Influence.
+### The triad
 
-<div class="godeeper"><span class="gd-label">Go deeper</span><a class="gd-link" href="/gameplan">The Game Plan &rarr;</a><a class="gd-link" href="/scrolls/kpi-gameplan">KPI Gameplan &rarr;</a></div>
+Put them on the map. Tell the truth beautifully. Always sharpen the blade. This room owns the first line — the Forge owns the second, the Floor owns the third.
