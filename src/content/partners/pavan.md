@@ -1,5 +1,5 @@
 ---
-name: "Pavan"
+name: "Pavan Ganta"
 role: "Systems Architect · The Engine Builder"
 avatar: architect
 order: 2
