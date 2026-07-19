@@ -1,177 +1,411 @@
 ---
-// Home — the Dojo wall under the torii.
-// Reads all room entries and renders a door per entry, in order.
+// Home — a scene-based story, not a portal wall.
+//   Scene 1: The Call        (black cinematic — "You've been chosen. Do you accept?")
+//   Scene 2: The Origin      (Ninja-360 + Tim's 10 years + banner + moat)
+//   Scene 3: Philosophies    (three principles we've learned)
+//   Scene 4: The Next Phase  (what the 90-day sprint is building toward)
+//   Scene 5: The Dojo        (torii + wall of doors — enter any)
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import DojoLayout from '../layouts/DojoLayout.astro';
 import Torii from '../components/Torii.astro';
 import Door from '../components/Door.astro';
 import { doorImages, heroFlankImage } from '../assets/doors';
+import { crewBanners } from '../assets/crew';
 
 const rooms = (await getCollection('rooms')).sort(
   (a, b) => a.data.order - b.data.order
 );
+const timBanner = crewBanners['crew-tim-banner.png'];
 ---
 
 <DojoLayout title="The Ninja-360 Dojo">
-  <section aria-labelledby="dojo-heading">
-    <div class="head-row">
-      <Image
-        class="head-flank head-flank-left"
-        src={heroFlankImage}
-        alt=""
-        loading="lazy"
-        widths={[180, 260, 360]}
-        sizes="(max-width: 640px) 150px, 170px"
-      />
-      <div class="home-head">
-        <Torii />
-        <h1 id="dojo-heading">Welcome to the Dojo</h1>
-        <div class="sub">Where we put local businesses on the map, tell their true stories beautifully, and sharpen the blade every single week.</div>
-        <p class="intro">The Ninja-360 Dojo — the plan, the crew, and the playbooks in one place. New here? Start with the Game Plan.</p>
-        <div class="spine-links">
-          <a class="spine-link start-here" href="/gameplan">Start Here &rarr; The Game Plan</a>
-          <a class="spine-link" href="/scrolls">The Scrolls</a>
+
+  {/* ================================================================
+      SCENE 1 · THE CALL — full black hero, staggered fade-in.
+      The emotional first breath. "You've been chosen. Do you accept?"
+      ================================================================ */}
+  <section class="scene-call" aria-labelledby="call-title">
+    <div class="call-inner">
+      <p class="call-kicker fade fade-1">THE 90-DAY SPRINT · V01</p>
+      <h1 id="call-title" class="call-title fade fade-2">
+        Welcome to the<br /><span class="orange">Ninja-360 Dojo.</span>
+      </h1>
+      <p class="call-lead fade fade-3">
+        You've been chosen. You've been drafted.
+      </p>
+      <p class="call-body fade fade-4">
+        This is the 90-day sprint to elevate Ninja-360 into
+        the Key Person of Influence brand of the Kansas City metro —
+        and you're part of how we get there.
+      </p>
+      <p class="call-ask fade fade-5">Do you accept?</p>
+      <div class="call-actions fade fade-6">
+        <a href="#origin" class="btn-accept">I accept &rarr; take me inside</a>
+        <a href="/gameplan" class="btn-skip">Skip to the Game Plan</a>
+      </div>
+      <p class="call-hint fade fade-7" aria-hidden="true">↓ scroll</p>
+    </div>
+  </section>
+
+  {/* ================================================================
+      SCENE 2 · THE ORIGIN — This is Ninja-360. This is what Tim built.
+      Banner + copy + the moat strip (90M+ views / 2 decades / KC).
+      ================================================================ */}
+  <section id="origin" class="scene scene-origin">
+    <div class="scene-wrap">
+      <p class="scene-kicker">THIS IS NINJA-360</p>
+      <h2 class="scene-title">Ten years of putting Kansas City on the map.</h2>
+      <p class="scene-lede">
+        Since the beginning, Tim Petet has been quietly documenting the Kansas City
+        metro from every angle — drone captures, 360 virtual tours, and cinematic
+        media for the businesses that make this city run. That work has racked up
+        a quiet superpower most agencies would kill for.
+      </p>
+
+      <div class="banner-wrap">
+        <Image
+          class="banner-img"
+          src={timBanner}
+          alt="Ninja-360 · Tim Petet"
+          loading="eager"
+          widths={[600, 900, 1200]}
+          sizes="(max-width: 800px) 100vw, 900px"
+        />
+        <div class="banner-badge">Ninja-360 · Since 2015</div>
+      </div>
+
+      <div class="moat" aria-label="Ninja-360 authority signals">
+        <div class="moat-item">
+          <div class="moat-n">90M<span class="plus">+</span></div>
+          <div class="moat-l">Google Photos &amp; Virtual Tour views</div>
+        </div>
+        <div class="moat-sep" aria-hidden="true"></div>
+        <div class="moat-item">
+          <div class="moat-n">2<span class="plus">+</span> <span class="unit">decades</span></div>
+          <div class="moat-l">documenting the Kansas City metro</div>
+        </div>
+        <div class="moat-sep" aria-hidden="true"></div>
+        <div class="moat-item">
+          <div class="moat-n">KC<span class="plus">.</span></div>
+          <div class="moat-l">Owner-operated from Gladstone, MO</div>
         </div>
       </div>
-      <Image
-        class="head-flank head-flank-right"
-        src={heroFlankImage}
-        alt=""
-        loading="lazy"
-        widths={[180, 260, 360]}
-        sizes="(max-width: 640px) 150px, 170px"
-      />
     </div>
+  </section>
 
-    <div class="moat" aria-label="Ninja-360 authority signals">
-      <div class="moat-item">
-        <div class="moat-n">90M<span class="plus">+</span></div>
-        <div class="moat-l">Google Photos &amp; Virtual Tour views</div>
-      </div>
-      <div class="moat-sep" aria-hidden="true"></div>
-      <div class="moat-item">
-        <div class="moat-n">2<span class="plus">+</span> <span class="unit">decades</span></div>
-        <div class="moat-l">documenting the Kansas City metro</div>
-      </div>
-      <div class="moat-sep" aria-hidden="true"></div>
-      <div class="moat-item">
-        <div class="moat-n">KC<span class="plus">.</span></div>
-        <div class="moat-l">Owner-operated from Gladstone, MO</div>
+  {/* ================================================================
+      SCENE 3 · THE PHILOSOPHIES — three principles the last decade taught.
+      ================================================================ */}
+  <section class="scene scene-philosophies">
+    <div class="scene-wrap">
+      <p class="scene-kicker">WHAT WE'VE LEARNED</p>
+      <h2 class="scene-title">Three principles guide everything.</h2>
+      <p class="scene-lede">
+        Ten years of work distilled down to three sentences. Every project, every
+        pitch, every crew decision has to answer to one of these — or it doesn't
+        get a lane.
+      </p>
+
+      <div class="phil-grid">
+        <article class="phil-card">
+          <div class="phil-num">01</div>
+          <h3 class="phil-h">Put people on the map.</h3>
+          <p class="phil-body">Visible. Heard. Chosen. That's the outcome we sell — for our clients, for our crew, and for Ninja-360 itself.</p>
+        </article>
+        <article class="phil-card">
+          <div class="phil-num">02</div>
+          <h3 class="phil-h">Fall in love with the true story.</h3>
+          <p class="phil-body">Technology is the tool; connection is the goal. Drones, 360s, and cinema are how we tell it — never why we shoot.</p>
+        </article>
+        <article class="phil-card">
+          <div class="phil-num">03</div>
+          <h3 class="phil-h">Always sharpen the blade.</h3>
+          <p class="phil-body">Try. Fail. Learn. Improve — responsibly. The Dojo exists so the whole crew gets sharper every week.</p>
+        </article>
       </div>
     </div>
+  </section>
 
-    <div class="creed">
-      <div class="cr"><b>Become the name</b>Ninja-360 is the one KC thinks of for getting found.</div>
-      <div class="cr"><b>Your work makes the show</b>One client visit = the deliverable + an episode of "Found in KC."</div>
-      <div class="cr"><b>Everyone builds together</b>A crew, not employees. Each grows their own while building yours.</div>
+  {/* ================================================================
+      SCENE 4 · THE NEXT PHASE — the 90-day sprint framing + CTA to the Game Plan.
+      ================================================================ */}
+  <section class="scene scene-phase">
+    <div class="scene-wrap">
+      <p class="scene-kicker">THE NEXT PHASE</p>
+      <h2 class="scene-title">Ninja-360, elevated.</h2>
+      <p class="scene-lede">
+        The last decade built the foundation. The next 90 days build the
+        <b>brand</b> — a refined, automated, crew-operated Ninja-360 that becomes
+        the name Kansas City reaches for when a local business needs to get found.
+      </p>
+      <p class="scene-lede">
+        The Game Plan is the master charter — who does what, and by when. Read it
+        first. Then walk the seven rooms of the Dojo.
+      </p>
+      <div class="phase-actions">
+        <a href="/gameplan" class="btn-primary">Open the Game Plan &rarr;</a>
+        <a href="#dojo-wall" class="btn-ghost">Enter the Dojo</a>
+      </div>
     </div>
+  </section>
 
-    <div class="wallnote">— Seven doors · the journey —</div>
-
-    <div class="wall">
-      {rooms.map(r => (
-        <Door
-          href={`/${r.slug}`}
-          num={r.data.doorNum}
-          lintel={r.data.doorLabel}
-          name={r.data.title.split('—')[0].trim().replace(/^The\s+/, '')}
-          sub={r.data.subtitle}
-          imageSrc={doorImages[r.slug as keyof typeof doorImages]}
-          variant={r.slug === 'floor' ? 'floor' : 'default'}
+  {/* ================================================================
+      SCENE 5 · THE DOJO — torii + wall of doors, framed as the deep dive.
+      ================================================================ */}
+  <section id="dojo-wall" class="scene scene-dojo" aria-labelledby="dojo-heading">
+    <div class="scene-wrap">
+      <div class="head-row">
+        <Image
+          class="head-flank head-flank-left"
+          src={heroFlankImage}
+          alt=""
+          loading="lazy"
+          widths={[180, 260, 360]}
+          sizes="(max-width: 640px) 150px, 170px"
         />
-      ))}
-      {/* Parked "Someday" tile — not a room */}
-      <Door
-        href="#"
-        num="★"
-        lintel="Someday"
-        name="The App"
-        sub="This board, upgraded · parked"
-        variant="parked"
-      />
-    </div>
+        <div class="dojo-head">
+          <Torii />
+          <h2 id="dojo-heading">The Dojo</h2>
+          <div class="sub">Seven rooms of the plan. Enter any door.</div>
+        </div>
+        <Image
+          class="head-flank head-flank-right"
+          src={heroFlankImage}
+          alt=""
+          loading="lazy"
+          widths={[180, 260, 360]}
+          sizes="(max-width: 640px) 150px, 170px"
+        />
+      </div>
 
-    <div class="philo-strip">
-      <a class="ph" href="/vision"><b>Put People on the Map</b>visible, heard, chosen.</a>
-      <a class="ph" href="/forge"><b>Fall in Love with the True Story</b>technology is the tool; connection is the goal.</a>
-      <a class="ph" href="/floor"><b>Always Sharpen the Blade</b>try, fail, learn, improve &mdash; responsibly.</a>
-    </div>
+      <div class="wall">
+        {rooms.map(r => (
+          <Door
+            href={`/${r.slug}`}
+            num={r.data.doorNum}
+            lintel={r.data.doorLabel}
+            name={r.data.title.split('—')[0].trim().replace(/^The\s+/, '')}
+            sub={r.data.subtitle}
+            imageSrc={doorImages[r.slug as keyof typeof doorImages]}
+            variant={r.slug === 'floor' ? 'floor' : 'default'}
+          />
+        ))}
+        <Door
+          href="#"
+          num="★"
+          lintel="Someday"
+          name="The App"
+          sub="This board, upgraded · parked"
+          variant="parked"
+        />
+      </div>
 
-    <p class="tagline">Run the rhythm. The rhythm runs the plan.</p>
+      <p class="tagline">Run the rhythm. The rhythm runs the plan.</p>
+    </div>
   </section>
 </DojoLayout>
 
 <style>
-  .head-row {
-    display: grid;
-    grid-template-columns: minmax(72px, 170px) 1fr minmax(72px, 170px);
-    align-items: center;
-    gap: 18px;
-    max-width: 980px;
-    margin: 0 auto;
+  /* =====================================================================
+     Scene 1 — The Call. Full-viewport black cinematic hero.
+     Content fades in staggered. Scroll cue at the bottom.
+     ===================================================================== */
+  .scene-call {
+    position: relative;
+    min-height: calc(100vh - var(--bar-h) - 8px);
+    background:
+      radial-gradient(1200px 800px at 50% -10%, rgba(244, 121, 32, 0.10), transparent 60%),
+      radial-gradient(800px 600px at 15% 90%, rgba(244, 121, 32, 0.06), transparent 70%),
+      linear-gradient(180deg, #0F0F10 0%, #1A1A1B 60%, #0B0B0C 100%);
+    color: #F2EAE0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 60px 24px;
+    /* Full-bleed: break out of .wrap's max-width + horizontal padding */
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-top: -26px;
+    overflow: hidden;
   }
-  .home-head { text-align: center; margin-bottom: 4px; }
-  .head-flank {
-    width: 100%;
-    max-width: 170px;
-    height: auto;
-    justify-self: center;
+  .scene-call::before {
+    /* subtle vignette + faint fiber texture */
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--texture-paper);
+    opacity: 0.4;
+    mix-blend-mode: overlay;
+    pointer-events: none;
   }
-  .head-flank-left { transform: scaleX(-1); }
-  .home-head h1 { font-size: 44px; font-weight: 800; }
-  .home-head .sub { font-size: 17px; color: var(--gray); margin-top: 4px; }
-  .spine-links {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
+  .call-inner {
+    position: relative;
+    max-width: 720px; text-align: center;
+    z-index: 1;
   }
-  .spine-link {
-    border: 1px solid var(--line);
-    background: var(--warm);
-    color: var(--deep);
+  .call-kicker {
+    font-family: var(--font-display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 4px;
+    font-size: 12px; color: var(--orange);
+    margin-bottom: 18px;
+  }
+  .call-title {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(44px, 8vw, 92px); line-height: 0.95;
+    color: #FFFFFF; text-transform: uppercase; letter-spacing: 1px;
+    text-shadow: 0 2px 40px rgba(0, 0, 0, 0.4);
+  }
+  .call-title .orange { color: var(--orange); }
+  .call-lead {
+    font-family: var(--font-display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px;
+    font-size: clamp(15px, 2.2vw, 20px);
+    color: #F2EAE0; margin: 22px 0 0;
+    opacity: 0.9;
+  }
+  .call-body {
+    font-size: clamp(15px, 1.6vw, 17px);
+    color: #C8BFB5; line-height: 1.55;
+    max-width: 560px; margin: 20px auto 0;
+  }
+  .call-ask {
+    font-family: var(--font-display); font-weight: 800;
+    text-transform: uppercase; letter-spacing: 3px;
+    font-size: clamp(18px, 2.6vw, 24px);
+    color: var(--orange);
+    margin: 34px 0 22px;
+  }
+  .call-actions {
+    display: flex; justify-content: center; align-items: center;
+    gap: 18px; flex-wrap: wrap;
+  }
+  .btn-accept {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, var(--orange), var(--deep));
+    color: var(--white);
+    font-family: var(--font-display); font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1.6px;
+    font-size: 15px;
+    padding: 14px 26px;
+    border-radius: var(--r-md); text-decoration: none;
+    box-shadow: var(--shadow-orange), var(--shadow-2);
+    transition: transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med) var(--ease-out);
+    animation: accept-pulse 3.6s ease-in-out infinite;
+  }
+  .btn-accept:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(244, 121, 32, 0.45), var(--shadow-3);
+  }
+  @keyframes accept-pulse {
+    0%, 100% { box-shadow: var(--shadow-orange), var(--shadow-2); }
+    50%      { box-shadow: 0 6px 28px rgba(244, 121, 32, 0.45), var(--shadow-2); }
+  }
+  .btn-skip {
+    color: #B0A69B;
+    font-family: var(--font-display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.4px;
+    font-size: 12.5px;
     text-decoration: none;
-    font-family: var(--font-display);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    padding: 6px 10px;
-    border-radius: var(--r-md);
-    font-size: 12px;
+    border-bottom: 1px solid rgba(176, 166, 155, 0.35);
+    padding-bottom: 2px;
+    transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
   }
-  .intro {
-    font-size: 14.5px;
-    color: var(--gray);
-    max-width: 460px;
-    margin: 8px auto 0;
+  .btn-skip:hover { color: var(--orange); border-color: var(--orange); }
+  .call-hint {
+    margin-top: 44px;
+    font-family: var(--font-display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 4px;
+    font-size: 10px; color: #7A736A;
+    animation: hint-bob 2.4s ease-in-out infinite;
   }
-  .spine-link.primary {
-    background: var(--charcoal);
-    border-color: var(--charcoal);
-    color: var(--white);
+  @keyframes hint-bob {
+    0%, 100% { transform: translateY(0); opacity: 0.6; }
+    50%      { transform: translateY(4px); opacity: 1; }
   }
-  .spine-link.start-here {
-    background: var(--orange);
-    border-color: var(--orange);
-    color: var(--white);
-    font-size: 14px;
-    padding: 11px 18px;
-  }
-  .spine-link:hover { background: var(--focus); }
-  .spine-link.primary:hover { opacity: 0.92; }
-  .spine-link.start-here:hover { background: var(--deep); border-color: var(--deep); }
 
-  /* ==== Moat strip — the 90M+ authority signal ==== */
+  /* Staggered fade-in for call-scene elements */
+  .fade { opacity: 0; animation: fade-up 700ms var(--ease-out) forwards; }
+  .fade-1 { animation-delay: 100ms; }
+  .fade-2 { animation-delay: 350ms; }
+  .fade-3 { animation-delay: 900ms; }
+  .fade-4 { animation-delay: 1300ms; }
+  .fade-5 { animation-delay: 1800ms; }
+  .fade-6 { animation-delay: 2200ms; }
+  .fade-7 { animation-delay: 2900ms; }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fade, .btn-accept, .call-hint { animation: none !important; opacity: 1 !important; transform: none !important; }
+  }
+
+  /* =====================================================================
+     Shared scene shell (Origin, Philosophies, Phase, Dojo)
+     ===================================================================== */
+  .scene {
+    padding: 72px 0;
+    scroll-margin-top: calc(var(--bar-h) + 8px);
+    /* Full-bleed so per-scene background bands span the viewport,
+       breaking out of the layout's .wrap max-width + padding. */
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+  }
+  .scene-wrap { max-width: var(--wrap-max); margin: 0 auto; padding: 0 24px; }
+  .scene-kicker {
+    font-family: var(--font-display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 3px;
+    font-size: 12px; color: var(--deep);
+    margin-bottom: 10px;
+  }
+  .scene-title {
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 800; margin-bottom: 12px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .scene-lede {
+    font-size: 16px; color: var(--gray);
+    max-width: 680px; margin-bottom: 12px;
+    line-height: 1.6;
+  }
+
+  /* alternating band tints for scene rhythm */
+  .scene-origin { background: linear-gradient(180deg, transparent, rgba(250, 247, 242, 0.6)); }
+  .scene-philosophies { background: var(--paper); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .scene-phase { background: transparent; }
+  .scene-dojo { background: linear-gradient(180deg, var(--paper) 0%, var(--white) 60%); }
+
+  /* =====================================================================
+     Origin — banner + moat
+     ===================================================================== */
+  .banner-wrap {
+    position: relative;
+    margin: 26px 0;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-2);
+    border: 1px solid var(--line);
+  }
+  :global(.banner-wrap .banner-img) {
+    width: 100%; height: auto; display: block;
+  }
+  .banner-badge {
+    position: absolute; bottom: 14px; left: 14px;
+    background: rgba(0, 0, 0, 0.72); color: var(--orange);
+    padding: 6px 12px; border-radius: var(--r-md);
+    font-family: var(--font-display); font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    font-size: 12px;
+    backdrop-filter: blur(4px);
+    box-shadow: var(--shadow-1);
+  }
+
   .moat {
     max-width: 900px;
-    margin: 28px auto 8px;
+    margin: 8px auto 0;
     display: grid;
     grid-template-columns: 1fr auto 1fr auto 1fr;
     align-items: center;
     gap: 18px;
-    padding: 18px 22px;
+    padding: 20px 24px;
     background: linear-gradient(180deg, var(--white), var(--paper));
     border: 1px solid var(--line);
     border-radius: var(--r-lg);
@@ -179,118 +413,142 @@ const rooms = (await getCollection('rooms')).sort(
     position: relative;
   }
   .moat::before {
-    content: '';
-    position: absolute; left: 0; top: 0; bottom: 0;
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
     width: 4px;
     background: linear-gradient(180deg, var(--orange), var(--deep));
     border-radius: var(--r-lg) 0 0 var(--r-lg);
   }
   .moat-item { text-align: center; }
   .moat-n {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: 40px;
-    line-height: 1;
-    color: var(--charcoal);
-    letter-spacing: 0.5px;
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(30px, 4.5vw, 44px); line-height: 1;
+    color: var(--charcoal); letter-spacing: 0.5px;
   }
   .moat-n .plus { color: var(--orange); }
-  .moat-n .unit {
-    font-size: 20px; color: var(--gray); font-weight: 700;
-    letter-spacing: 1px;
-  }
+  .moat-n .unit { font-size: 0.5em; color: var(--gray); font-weight: 700; letter-spacing: 1px; }
   .moat-l {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    color: var(--gray);
-    margin-top: 6px;
-    font-weight: 600;
+    font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--gray); margin-top: 8px; font-weight: 600;
   }
   .moat-sep {
-    width: 1px;
-    height: 44px;
+    width: 1px; height: 46px;
     background: linear-gradient(180deg, transparent, var(--line), transparent);
   }
-  @media (max-width: 640px) {
-    .moat {
-      grid-template-columns: 1fr;
-      gap: 14px;
-      padding: 16px 18px;
-      max-width: 100%;
-    }
-    .moat-sep { width: 60%; height: 1px; justify-self: center;
-                background: linear-gradient(90deg, transparent, var(--line), transparent); }
-    .moat-n { font-size: 32px; }
-  }
 
-  .creed {
-    max-width: 720px; margin: 18px auto 0;
-    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
+  /* =====================================================================
+     Philosophies — three big principle cards
+     ===================================================================== */
+  .phil-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 18px; margin-top: 32px;
   }
-  .cr {
-    background: var(--white); border: 1px solid var(--line);
-    border-radius: var(--r-md); padding: 12px 14px; font-size: 13px;
+  .phil-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 26px 22px 24px;
     box-shadow: var(--shadow-1);
-    transition: box-shadow var(--dur-med) var(--ease-out), transform var(--dur-med) var(--ease-out);
+    position: relative;
+    transition: transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med) var(--ease-out);
   }
-  .cr:hover { box-shadow: var(--shadow-2); transform: translateY(-1px); }
-  .cr b {
+  .phil-card::before {
+    content: ''; position: absolute; top: 0; left: 22px; right: 22px;
+    height: 3px; background: linear-gradient(90deg, var(--orange), var(--deep));
+    border-radius: 0 0 var(--r-sm) var(--r-sm);
+  }
+  .phil-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-3); }
+  .phil-num {
     font-family: var(--font-display); font-weight: 800;
-    text-transform: uppercase; letter-spacing: 0.5px;
-    color: var(--deep); font-size: 14px; display: block; margin-bottom: 2px;
+    font-size: 44px; color: var(--orange);
+    line-height: 1; letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .phil-h {
+    font-size: 20px; margin: 4px 0 10px;
+    text-transform: none; letter-spacing: 0;
+    color: var(--charcoal);
+  }
+  .phil-body {
+    font-size: 14.5px; color: var(--gray); line-height: 1.55;
+    margin: 0;
   }
 
-  .wallnote {
-    text-align: center;
+  /* =====================================================================
+     Next Phase — CTAs
+     ===================================================================== */
+  .phase-actions {
+    display: flex; gap: 14px; margin-top: 20px; flex-wrap: wrap;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, var(--orange), var(--deep));
+    color: var(--white); text-decoration: none;
+    font-family: var(--font-display); font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1.4px;
+    font-size: 14px;
+    padding: 13px 22px; border-radius: var(--r-md);
+    box-shadow: var(--shadow-2), 0 0 0 1px rgba(244, 121, 32, 0.15);
+    transition: transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med) var(--ease-out);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-3), 0 8px 22px var(--orange-glow); }
+  .btn-ghost {
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--deep); background: var(--white);
+    border: 1px solid var(--line);
     font-family: var(--font-display); font-weight: 700;
-    text-transform: uppercase; letter-spacing: 2px;
-    color: var(--dead); font-size: 13px;
-    margin: 24px 0 12px;
+    text-transform: uppercase; letter-spacing: 1.2px;
+    font-size: 13px;
+    padding: 12px 20px; border-radius: var(--r-md);
+    text-decoration: none;
+    transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
   }
+  .btn-ghost:hover { background: var(--focus); border-color: var(--orange); }
 
-  .wall { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  /* =====================================================================
+     Dojo — torii + door wall
+     ===================================================================== */
+  .head-row {
+    display: grid;
+    grid-template-columns: minmax(72px, 170px) 1fr minmax(72px, 170px);
+    align-items: center; gap: 18px;
+    max-width: 980px; margin: 0 auto;
+  }
+  .dojo-head { text-align: center; margin-bottom: 4px; }
+  .head-flank { width: 100%; max-width: 170px; height: auto; justify-self: center; }
+  .head-flank-left { transform: scaleX(-1); }
+  .dojo-head h2 { font-size: 36px; font-weight: 800; margin-top: 6px; }
+  .dojo-head .sub { font-size: 15px; color: var(--gray); margin-top: 4px; }
 
-  .philo-strip {
-    max-width: 720px; margin: 22px auto 0;
-    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
+  .wall {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 14px; margin-top: 30px;
   }
-  .ph {
-    background: var(--warm); border: 1px solid var(--line);
-    border-radius: var(--r-md); padding: 10px 12px; font-size: 13px;
-    color: inherit; text-decoration: none;
-  }
-  .ph b {
-    font-family: var(--font-display); font-weight: 800;
-    text-transform: uppercase; letter-spacing: 0.5px;
-    color: var(--deep); font-size: 14px; display: block; margin-bottom: 2px;
-  }
-  .ph:hover { background: var(--focus); }
-
   .tagline {
-    text-align: center; margin-top: 22px;
+    text-align: center; margin-top: 28px;
     font-family: var(--font-display); font-weight: 700;
     text-transform: uppercase; letter-spacing: 1.5px;
     color: var(--deep);
   }
 
-  @media (max-width: 640px) {
-    .head-row {
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-    .head-flank {
-      max-width: 150px;
-      opacity: 0.92;
-    }
-    .wall { grid-template-columns: 1fr 1fr; }
-    .creed { grid-template-columns: 1fr; }
-    .philo-strip { grid-template-columns: 1fr; }
-    .home-head h1 { font-size: 36px; }
+  /* =====================================================================
+     Responsive
+     ===================================================================== */
+  @media (max-width: 800px) {
+    .phil-grid { grid-template-columns: 1fr; }
   }
-
+  @media (max-width: 640px) {
+    .head-row { grid-template-columns: 1fr; gap: 10px; }
+    .head-flank { max-width: 150px; opacity: 0.92; }
+    .wall { grid-template-columns: 1fr 1fr; }
+    .moat { grid-template-columns: 1fr; padding: 16px 18px; }
+    .moat-sep { width: 60%; height: 1px; justify-self: center;
+                background: linear-gradient(90deg, transparent, var(--line), transparent); }
+    .scene { padding: 56px 0; }
+    .scene-call { padding: 40px 20px; }
+  }
   @media (max-width: 480px) {
     .wall { grid-template-columns: 1fr; }
-    .spine-link { min-height: 44px; display: inline-flex; align-items: center; }
+    .call-actions { flex-direction: column; gap: 14px; }
+    .btn-accept, .btn-skip { min-height: 44px; }
   }
 </style>
