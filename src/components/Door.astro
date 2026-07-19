@@ -55,16 +55,29 @@ const cls = `door door-${variant}${imageSrc ? ' has-art' : ''}`;
     position: relative; height: 200px;
     border: 6px solid var(--charcoal);
     border-radius: 5px;
-    background: linear-gradient(#fff, var(--paper));
+    background: linear-gradient(180deg, #fff 0%, var(--paper) 62%, #F3ECDE 100%);
     overflow: hidden;
     text-decoration: none;
     color: inherit;
     display: flex; flex-direction: column;
-    transition: transform 0.16s ease, box-shadow 0.16s ease;
+    box-shadow: var(--shadow-1);
+    transition:
+      transform var(--dur-med) var(--ease-out),
+      box-shadow var(--dur-med) var(--ease-out),
+      border-color var(--dur-med) var(--ease-out);
   }
-  .door:hover { transform: translateY(-5px); box-shadow: 0 16px 30px rgba(61,61,61,0.20); }
+  .door:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-3), 0 0 0 1px var(--orange);
+    border-color: var(--charcoal);
+  }
+  .door:hover .handle {
+    box-shadow: 0 0 0 4px var(--orange-glow), 0 0 12px var(--orange-glow);
+    transform: scale(1.08);
+  }
   .door-floor { border-color: var(--deep); }
-  .door-parked { border-style: dashed; border-color: var(--dead); background: var(--warm); cursor: default; opacity: 0.85; }
+  .door-floor:hover { box-shadow: var(--shadow-3), 0 0 0 1px var(--deep); }
+  .door-parked { border-style: dashed; border-color: var(--dead); background: var(--warm); cursor: default; opacity: 0.85; box-shadow: none; }
   .door-parked:hover { transform: none; box-shadow: none; }
 
   .panes {
@@ -126,8 +139,9 @@ const cls = `door door-${variant}${imageSrc ? ' has-art' : ''}`;
   .handle {
     position: absolute; right: 12px; top: 52%;
     width: 11px; height: 11px; border-radius: 50%;
-    background: var(--orange);
-    box-shadow: 0 0 0 3px rgba(244,121,32,0.2);
+    background: radial-gradient(circle at 35% 35%, #FFB166, var(--orange) 60%, var(--deep));
+    box-shadow: 0 0 0 3px rgba(244, 121, 32, 0.2);
     z-index: 2;
+    transition: transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med) var(--ease-out);
   }
 </style>

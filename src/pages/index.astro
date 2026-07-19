@@ -44,8 +44,25 @@ const rooms = (await getCollection('rooms')).sort(
       />
     </div>
 
+    <div class="moat" aria-label="Ninja-360 authority signals">
+      <div class="moat-item">
+        <div class="moat-n">90M<span class="plus">+</span></div>
+        <div class="moat-l">Google Photos &amp; Virtual Tour views</div>
+      </div>
+      <div class="moat-sep" aria-hidden="true"></div>
+      <div class="moat-item">
+        <div class="moat-n">2<span class="plus">+</span> <span class="unit">decades</span></div>
+        <div class="moat-l">documenting the Kansas City metro</div>
+      </div>
+      <div class="moat-sep" aria-hidden="true"></div>
+      <div class="moat-item">
+        <div class="moat-n">KC<span class="plus">.</span></div>
+        <div class="moat-l">Owner-operated from Gladstone, MO</div>
+      </div>
+    </div>
+
     <div class="creed">
-      <div class="cr"><b>Become the name</b>You are the one KC thinks of for getting found.</div>
+      <div class="cr"><b>Become the name</b>Ninja-360 is the one KC thinks of for getting found.</div>
       <div class="cr"><b>Your work makes the show</b>One client visit = the deliverable + an episode of "Found in KC."</div>
       <div class="cr"><b>Everyone builds together</b>A crew, not employees. Each grows their own while building yours.</div>
     </div>
@@ -146,14 +163,78 @@ const rooms = (await getCollection('rooms')).sort(
   .spine-link.primary:hover { opacity: 0.92; }
   .spine-link.start-here:hover { background: var(--deep); border-color: var(--deep); }
 
+  /* ==== Moat strip — the 90M+ authority signal ==== */
+  .moat {
+    max-width: 900px;
+    margin: 28px auto 8px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 22px;
+    background: linear-gradient(180deg, var(--white), var(--paper));
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-2), var(--shadow-inner-hairline);
+    position: relative;
+  }
+  .moat::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--orange), var(--deep));
+    border-radius: var(--r-lg) 0 0 var(--r-lg);
+  }
+  .moat-item { text-align: center; }
+  .moat-n {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 40px;
+    line-height: 1;
+    color: var(--charcoal);
+    letter-spacing: 0.5px;
+  }
+  .moat-n .plus { color: var(--orange); }
+  .moat-n .unit {
+    font-size: 20px; color: var(--gray); font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .moat-l {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--gray);
+    margin-top: 6px;
+    font-weight: 600;
+  }
+  .moat-sep {
+    width: 1px;
+    height: 44px;
+    background: linear-gradient(180deg, transparent, var(--line), transparent);
+  }
+  @media (max-width: 640px) {
+    .moat {
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 16px 18px;
+      max-width: 100%;
+    }
+    .moat-sep { width: 60%; height: 1px; justify-self: center;
+                background: linear-gradient(90deg, transparent, var(--line), transparent); }
+    .moat-n { font-size: 32px; }
+  }
+
   .creed {
     max-width: 720px; margin: 18px auto 0;
     display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
   }
   .cr {
-    background: var(--warm); border: 1px solid var(--line);
-    border-radius: var(--r-md); padding: 10px 12px; font-size: 13px;
+    background: var(--white); border: 1px solid var(--line);
+    border-radius: var(--r-md); padding: 12px 14px; font-size: 13px;
+    box-shadow: var(--shadow-1);
+    transition: box-shadow var(--dur-med) var(--ease-out), transform var(--dur-med) var(--ease-out);
   }
+  .cr:hover { box-shadow: var(--shadow-2); transform: translateY(-1px); }
   .cr b {
     font-family: var(--font-display); font-weight: 800;
     text-transform: uppercase; letter-spacing: 0.5px;
