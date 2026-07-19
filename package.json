@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "test:e2e": "playwright test",
-    "test:e2e:headed": "playwright test --headed"
+    "test:e2e:headed": "playwright test --headed",
+    "test:smoke:prod": "playwright test -c playwright.prod.config.mjs"
   },
   "dependencies": {
     "astro": "^4.16.18"
