@@ -104,8 +104,15 @@ const { Content } = await room.render();
   .cal .pre { color: var(--deep); font-weight: 700; }
 
   /* Mission board */
-  .board { border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; margin-top: 8px; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .board {
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin-top: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+  table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 13px; }
   th {
     background: var(--charcoal); color: var(--white);
     font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.5px;
@@ -144,6 +151,14 @@ const { Content } = await room.render();
   .addbtn:hover { background: var(--focus); }
 
   @media (max-width: 800px) { .cal { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) {
+    .cal { grid-template-columns: 1fr; }
+    .stars {
+      float: none;
+      display: inline-block;
+      margin-top: 6px;
+    }
+  }
 </style>
 
 <script is:inline>

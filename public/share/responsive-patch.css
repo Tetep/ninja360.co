@@ -1,0 +1,37 @@
+/* Shared responsive safety patch for static public pages */
+html, body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+img, svg, video, iframe, embed {
+  max-width: 100%;
+  height: auto;
+}
+
+.wrap {
+  width: min(100%, 960px);
+}
+
+table {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Generic table wrappers used in static pages */
+.n360-tw,
+.table-wrap,
+.tw {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .n360bar nav a,
+  .backlink,
+  button,
+  .btn,
+  .card {
+    min-height: 44px;
+  }
+}

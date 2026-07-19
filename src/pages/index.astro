@@ -251,7 +251,7 @@ const identities = [
         <div class="dojo-head">
           <Torii />
           <h2 id="dojo-heading">The Dojo</h2>
-          <div class="sub">Seven rooms of the plan. Enter any door.</div>
+          <div class="sub">Seven rooms of the plan. Walk them in order — the doors are the milestones.</div>
         </div>
         <Image class="head-flank head-flank-right" src={heroFlankImage} alt="" loading="lazy" widths={[180, 260, 360]} sizes="(max-width: 640px) 150px, 170px" />
       </div>
@@ -623,7 +623,9 @@ const identities = [
   .scene {
     padding: 72px 0;
     scroll-margin-top: calc(var(--bar-h) + 8px);
-    width: 100vw;
+    /* Full-bleed so per-scene background bands span the viewport,
+       breaking out of the layout's .wrap max-width + padding. */
+    width: 100%;
     margin-left: calc(50% - 50vw);
   }
   .scene-wrap { max-width: var(--wrap-max); margin: 0 auto; padding: 0 24px; }
@@ -1050,7 +1052,6 @@ const identities = [
       imgs.forEach(function (img) {
         img.classList.toggle('is-active', img.getAttribute('data-for') === id);
       });
-    }
 
     function setPhase(next) {
       if (next === null) delete document.documentElement.dataset.phase;

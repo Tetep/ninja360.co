@@ -3,7 +3,11 @@
 *, *::before, *::after { box-sizing: border-box; }
 * { margin: 0; padding: 0; }
 
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  overflow-x: clip;
+}
 body {
   font-family: var(--font-body);
   color: var(--charcoal);
@@ -16,6 +20,8 @@ body {
   line-height: 1.5;
   font-size: 15px;
   min-height: 100vh;
+  max-width: 100%;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   animation: page-in var(--dur-slow) var(--ease-out);
 }
@@ -43,6 +49,24 @@ p { margin-bottom: 0.7rem; }
 ul { margin: 0 0 0.75rem 1.25rem; }
 li { margin-bottom: 0.35rem; }
 img, svg { max-width: 100%; display: block; }
+
+/* Global content safety for narrow screens */
+table {
+  width: 100%;
+  max-width: 100%;
+}
+
+.prose table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.prose iframe,
+.prose video,
+.prose embed {
+  max-width: 100%;
+}
 
 /* Focus ring — accessible + on-brand */
 :focus-visible {
