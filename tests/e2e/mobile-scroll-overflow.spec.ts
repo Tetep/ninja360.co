@@ -45,6 +45,8 @@ test.describe('mobile scroll and overflow guardrails', () => {
         await page.goto(route, { waitUntil: 'domcontentloaded' });
       }
 
+      // Reset to top so per-route scroll assertions are deterministic.
+      await page.evaluate(() => window.scrollTo(0, 0));
       await page.waitForTimeout(150);
 
       const metrics = await page.evaluate(() => {
