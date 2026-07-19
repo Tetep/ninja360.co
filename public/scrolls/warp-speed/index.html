@@ -61,9 +61,13 @@
   .dev{font-weight:700}
   /* roles + ip */
   .roles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-  .role{border:1px solid var(--line);border-radius:6px;padding:9px 11px}
-  .role .n{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;color:var(--deep)}
+  .role{border:1px solid var(--line);border-radius:6px;padding:9px 11px;position:relative;overflow:hidden}
+  .role .mark{position:absolute;top:6px;right:6px;width:54px;height:auto;opacity:.9;filter:drop-shadow(0 2px 4px rgba(0,0,0,.1))}
+  .role .n{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;color:var(--deep);padding-right:56px}
   .role .r{font-size:12px;color:var(--gray);margin-top:3px}
+  /* section-lead emblems */
+  .ws-mark{float:right;width:110px;height:auto;margin:-4px 0 8px 14px;filter:drop-shadow(0 3px 8px rgba(0,0,0,.08))}
+  @media(max-width:700px){.ws-mark{width:80px}.role .mark{width:44px}.role .n{padding-right:48px}}
   .ip{background:var(--warm);border-left:4px solid var(--orange);padding:9px 12px;font-size:12.6px;margin-top:8px}
   .ip b{color:var(--charcoal)}
   .point{background:var(--charcoal);color:#fff;border-radius:8px;padding:16px 18px;text-align:center;margin-top:16px}
@@ -141,6 +145,7 @@
   <h1>Ninja Warp Speed</h1>
   <p class="lead">The production pipeline. <b>One client visit → the client deliverable + the show — "Found in KC" <span style="font-weight:400">(we put local businesses on the M.A.P.).</span></b> Automation bolted onto your already-proven Hasan editing system — not a rebuild. The goal: faster to publish than anyone, so you get paid faster.</p>
 
+  <img src="/assets/crew/crew-tim-emblem.png" alt="Tim — Track 1" class="ws-mark" style="width:80px">
   <h2>1 · The One-Visit Model — Two Tracks, Two Outputs</h2>
   <div class="visit">
     <div class="top">One trip to the client's location</div>
@@ -216,11 +221,115 @@
     <div style="font-size:12.8px;color:#e8e2dc;margin-top:4px">The pipeline, the coined IP, every preset, template, script, LUT, and frame of footage sits with <b style="color:#fff">Ninja-360 Digital Media LLC</b> (operating as ninja360.net). The roles below are <b style="color:#fff">who builds and operates</b> each piece — not who owns it. Everything a partner creates here is <b style="color:#fff">work-for-hire assigned to the LLC</b>, per the Partner Framework. Tim owns the LLC; the LLC holds the IP — so it stays a <b style="color:#fff">business asset</b>, not a personal one. No role confers ownership, equity, or a claim on the assets.</div>
   </div>
   <div class="roles">
-    <div class="role"><div class="n">Tim</div><div class="r"><b>Founder / operator.</b> Shoot SOP + approval gate · Track 1 (drone/360) · captures the Ninja LUT</div></div>
-    <div class="role"><div class="n">Gabe</div><div class="r"><b>Builds/operates:</b> Ninja Editor · Track 2 (interview/shots) · LUT + nadir + story templates</div></div>
-    <div class="role"><div class="n">Pavan</div><div class="r"><b>Builds/operates:</b> automation (extend the script) · folder scaffolding · tags · shoot-wrap form</div></div>
+    <div class="role"><img src="/assets/crew/crew-tim-emblem.png" alt="" class="mark"><div class="n">Tim</div><div class="r"><b>Founder / operator.</b> Shoot SOP + approval gate · Track 1 (drone/360) · captures the Ninja LUT</div></div>
+    <div class="role"><img src="/assets/crew/crew-gabe-emblem.png" alt="" class="mark"><div class="n">Gabe</div><div class="r"><b>Builds/operates:</b> Ninja Editor · Track 2 (interview/shots) · LUT + nadir + story templates</div></div>
+    <div class="role"><img src="/assets/crew/crew-pavan-emblem.png" alt="" class="mark"><div class="n">Pavan</div><div class="r"><b>Builds/operates:</b> automation (extend the script) · folder scaffolding · tags · shoot-wrap form</div></div>
   </div>
   <div class="ip"><b>Coined, brandable, and owned by Ninja-360 Digital Media LLC — IP asset #3:</b> Ninja Warp Speed (the pipeline) · Shedit (the auto first cut) · Ninja Editor (the role) · Nadir preset (branded 360/drone patch). Optional volume tier: Hasan at $80 FPV / $35 standard, 24h.</div>
+
+  <h2>7 · Statement of Work (SOW)</h2>
+  <div class="cols">
+    <div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;color:var(--deep);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Objective</div>
+      <p style="font-size:13px;margin-bottom:8px">Automate the front of the proven Hasan system so a finished shoot becomes a review-ready <b>Shedit</b> draft with near-zero manual handling — while capturing the show from the same visit.</p>
+
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;color:var(--deep);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Success metrics</div>
+      <ul style="margin:0">
+        <li><b>Shoot-to-publish time</b> — baseline → target (e.g. 24h)</li>
+        <li><b>Weeks shipped ÷ 13</b> — sprint delivery rate</li>
+        <li><b>% drafts passing review in ≤1 pass</b></li>
+      </ul>
+    </div>
+    <div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;color:var(--deep);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Scope (five workstreams)</div>
+      <ul style="margin:0">
+        <li><b>1 · Shoot SOP</b> — standardized 2-track capture so automation can run</li>
+        <li><b>2 · Warp Speed</b> — auto-sort → auto-color → auto-nadir → Shedit into 03_EXPORTS</li>
+        <li><b>3 · Templates &amp; assets</b> — Ninja LUT · Nadir preset · story templates · tag taxonomy</li>
+        <li><b>4 · Automation</b> — extend the existing Apps Script (Pavan)</li>
+        <li><b>5 · Show layer</b> — on-location + studio segments feed "Found in KC"</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>8 · SOP — The Shoot (2 tracks)</h2>
+  <p style="font-size:12.8px;color:var(--dead);font-style:italic;margin-top:-4px;margin-bottom:8px">Owner: Tim. Reference: SOP Internal v3 §7.1–7.2 + EG America SOW.</p>
+  <div class="n360-tw"><table>
+    <tr><th style="width:36px">#</th><th>Step</th><th style="width:180px">Owner</th></tr>
+    <tr><td>1</td><td class="dev">Pre-production — scope · LAANC · weather · gear · client timing</td><td>Tim</td></tr>
+    <tr><td>2</td><td class="dev">Track 1 capture — walk-through → exterior drone → interior 360s → stills → FPV. Theta Z1 HDR/EV, drone ortho 160–170ft, orbit rules</td><td>Tim</td></tr>
+    <tr><td>3</td><td class="dev">Track 2 capture — interview session + cinematic shots</td><td>Gabe</td></tr>
+    <tr><td>4</td><td class="dev">Self-doc layer — Osmo Pocket 3 + phone + car dash cam + BTS → on-location show segment</td><td>Both</td></tr>
+    <tr><td>5</td><td class="dev">Name + tag at the source — every asset named to standard so auto-sort works</td><td>Both</td></tr>
+    <tr><td>6</td><td class="dev">Upload at the car (same day) into <b>01_RAW</b></td><td>Whoever's driving</td></tr>
+    <tr><td>7</td><td class="dev">2-min shoot-wrap form → completes Project Brief + notes (blog + show fuel)</td><td>Pavan builds · Tim fills</td></tr>
+  </table></div>
+  <div class="ip" style="margin-top:10px"><b>"Ready to Edit" gate:</b> RAW in <b>01_RAW</b> + brand in <b>00_BRIEF/BRAND</b> + <b>Project Brief</b> done → triggers Warp Speed. If any of these three is missing, the pipeline does not start.</div>
+
+  <img src="/assets/crew/crew-gabe-emblem.png" alt="Gabe — Ninja Editor" class="ws-mark" style="width:80px">
+  <h2>9 · SOP — Ninja Warp Speed (editing pipeline)</h2>
+  <div class="cols">
+    <div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;color:var(--deep);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Draft naming (locked)</div>
+      <div class="tree"><code>YYYY-MM-DD_ProjectName_Platform_AR_V01.mp4</code></div>
+      <div style="font-size:11.8px;color:var(--dead);font-style:italic;margin-top:5px">Formats: 16:9 <b>and</b> 9:16 from the same RAW. Every draft version bumps V## — never overwrite.</div>
+
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;color:var(--deep);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 4px">Tracker statuses</div>
+      <ul style="margin:0">
+        <li>Ready to Edit</li>
+        <li>Warp Processing</li>
+        <li>Editing</li>
+        <li>Draft Sent (Needs Notes)</li>
+        <li>Revisions</li>
+        <li>Final Delivered</li>
+        <li>On Hold</li>
+        <li>Archived</li>
+      </ul>
+      <div style="font-size:11.8px;color:var(--dead);font-style:italic;margin-top:5px">Feedback only in <b>00_BRIEF/Feedback Notes</b>, time-coded, one batch per pass.</div>
+    </div>
+    <div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;color:var(--deep);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">The six pipeline stages (A–F)</div>
+      <ul style="margin:0">
+        <li><b>A · Ingest &amp; sort</b> — 360 · drone · stills · interview · BTS</li>
+        <li><b>B · Auto color</b> — Ninja LUT applied per camera</li>
+        <li><b>C · Auto nadir</b> — Nadir preset on 360 + drone-down</li>
+        <li><b>D · Shedit auto-assembly</b> — V01 dropped in 03_EXPORTS</li>
+        <li><b>E · Ninja Editor · Gabe</b> — calibrate color/story/brand/nadir on V01; ≤1 pass</li>
+        <li><b>F · Approve → publish · Tim</b> → 04_FINAL → GHL autopost → blog → measure shoot-to-publish</li>
+      </ul>
+      <div style="font-size:11.8px;color:var(--dead);font-style:italic;margin-top:5px">A–D = Warp Speed automation. E = the one hands-on step. F = the approval gate.</div>
+    </div>
+  </div>
+
+  <h2>10 · Templates &amp; Assets to Build (all owned by the LLC)</h2>
+  <div class="n360-tw"><table>
+    <tr><th>Asset</th><th style="width:150px">Owner (build)</th><th style="width:100px">Status</th></tr>
+    <tr><td class="dev">Ninja LUT</td><td>Tim → Gabe</td><td class="def">DEFINE</td></tr>
+    <tr><td class="dev">Nadir preset</td><td>Gabe</td><td class="def">DEFINE</td></tr>
+    <tr><td class="dev">Story / shot templates</td><td>Gabe + Tim</td><td class="def">DEFINE</td></tr>
+    <tr><td class="dev">Tag taxonomy + capture naming</td><td>Pavan + Tim</td><td class="lock">LOCK · hinge for auto-sort</td></tr>
+    <tr><td class="dev">Warp Speed automation (extend Pipeline Builder script)</td><td>Pavan</td><td class="def">DEFINE</td></tr>
+    <tr><td class="dev">2-min shoot-wrap form</td><td>Pavan</td><td class="def">DEFINE</td></tr>
+  </table></div>
+
+  <h2>11 · Ties to Pay + Sprint</h2>
+  <ul>
+    <li><b>Pavan milestone (engine pay · Bucket 2):</b> "Warp Speed live" = script does auto sort/color/nadir/Shedit into 03_EXPORTS, written "done" spec. See <a href="/scrolls/partner-pay" style="color:var(--deep);font-weight:700">Partner Pay</a>.</li>
+    <li><b>Gabe (Gate 0):</b> Ninja Editor + Track 2 + LUT/nadir/template design. Pilot fee is Ledger A · engine work is Ledger B.</li>
+    <li><b>Speed = paid-faster loop:</b> track shoot-to-publish from day one · beat Hasan's 24h edit SLA end-to-end · publish faster than anyone in KC.</li>
+  </ul>
+
+  <h2>12 · Immediate Next Actions</h2>
+  <ol style="margin:0 0 12px 20px">
+    <li>Pull SOP Internal v3 + EG America SOW settings into Section 8 (concretize Track 1 shoot spec).</li>
+    <li>Open the "Hasan Pipeline Builder" script — scope existing vs. Warp Speed adds (Pavan).</li>
+    <li>Lock tag taxonomy + capture naming (Tim + Pavan) — the hinge for auto-sort.</li>
+    <li>DEFINE show-layer settings with Gabe (Osmo/phone/dashcam/interview) + the Track 2 interview workflow.</li>
+    <li>Capture the Ninja LUT (Tim → Gabe); Gabe drafts the "Inside [Business]" story template (the Shedit blueprint).</li>
+    <li>Decide one-tier (Gabe) vs two-tier (Gabe + Hasan); confirm Hasan availability.</li>
+    <li>Set shoot-to-publish baseline + target at the Monday sync.</li>
+    <li>Register / trademark under the LLC: "Ninja-360" (+ consider "M.A.P. System" + the coined Warp Speed terms); log handles + assets to the LLC.</li>
+  </ol>
 
   <div class="point">
     <div class="disp">Faster to publish than anyone = <em>paid faster.</em><br>Shoot-to-publish is the one number that matters.</div>

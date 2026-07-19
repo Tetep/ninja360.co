@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partner Pay — Two-Ledger Model · Ninja-360</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#F47920; --deep:#E05F00; --charcoal:#3D3D3D; --gray:#404040;
+    --warm:#F9F7F5; --line:#E0DCD8; --dead:#9b948e;
+    --a:#4A7C59; --a-soft:#EDF2EE;  /* Ledger A — stable */
+    --b:#F47920; --b-soft:#FFF3E8;  /* Ledger B — engine */
+    --warn:#B03A2E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:#fff;line-height:1.55;font-size:16.5px}
+  .accent-top{height:4px;background:var(--orange)}
+  .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+  section{padding:38px 0}
+  h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif;line-height:1.1;text-transform:uppercase;letter-spacing:.5px}
+  h1{font-size:42px;font-weight:800}
+  h2{font-size:26px;font-weight:800;color:var(--deep);margin:0 0 14px;border-bottom:1px solid var(--line);padding-bottom:5px}
+  h3{font-size:19px;font-weight:700;margin:16px 0 6px}
+  p{margin-bottom:11px}
+  .alt{background:var(--warm)}
+  .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:var(--orange)}
+  .kicker{font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:12.5px;color:var(--deep);margin-bottom:8px}
+  .sub{font-size:18px;color:var(--gray);max-width:700px}
+  .meta{font-size:13px;color:#7a746f;margin-top:12px}
+
+  /* THE TWO LEDGERS — the visual anchor of this whole page */
+  .ledgers{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px}
+  .ledger{border:2px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+  .ledger .top{padding:14px 18px 12px;border-bottom:1px solid var(--line)}
+  .ledger .tag{display:inline-block;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;padding:3px 10px;border-radius:3px;color:#fff}
+  .ledger .name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;text-transform:uppercase;letter-spacing:.5px;margin-top:8px;color:var(--charcoal)}
+  .ledger .who{font-size:13.5px;color:var(--gray);margin-top:3px}
+  .ledger .body{padding:14px 18px 16px;font-size:14.5px;flex:1}
+  .ledger .body b{color:var(--charcoal)}
+  .ledger ul{list-style:none;margin:8px 0 0}
+  .ledger li{padding:6px 0;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .ledger li:last-child{border-bottom:none}
+  .ledger li .k{font-weight:700}
+  .ledger li .v{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;color:var(--charcoal);white-space:nowrap}
+  .ledger.a{border-color:var(--a)}
+  .ledger.a .tag{background:var(--a)}
+  .ledger.a .top{background:var(--a-soft)}
+  .ledger.b{border-color:var(--b)}
+  .ledger.b .tag{background:var(--b)}
+  .ledger.b .top{background:var(--b-soft)}
+  .ledger .footnote{font-size:12.5px;color:var(--gray);font-style:italic;padding:10px 18px;border-top:1px solid var(--line);background:#fff}
+  .retail{margin-top:10px;padding:10px 12px;background:var(--warm);border-radius:5px;border:1px solid var(--line)}
+  .retail .rlbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+  .retail .rchips{display:flex;flex-wrap:wrap;gap:4px}
+  .retail .rchip{background:#fff;border:1px solid var(--line);border-radius:3px;padding:3px 8px;font-size:12.5px;color:var(--charcoal);font-weight:600}
+  .subunits{font-weight:400;color:var(--gray);font-size:12.5px}
+  /* ninja emblems inside scroll sections */
+  .ninja-mark{float:right;width:110px;height:auto;margin:-6px 0 8px 16px;filter:drop-shadow(0 3px 8px rgba(0,0,0,.08))}
+  .ledger-mark{position:absolute;top:8px;right:10px;width:64px;height:auto;opacity:.85;filter:drop-shadow(0 2px 6px rgba(0,0,0,.12))}
+  .ledger .top{position:relative}
+  @media(max-width:640px){ .ninja-mark{width:80px} .ledger-mark{width:52px} }
+
+  .divider{display:flex;align-items:center;justify-content:center;gap:14px;margin:22px 0 0;padding:12px 18px;background:#fff;border:2px dashed var(--warn);border-radius:6px}
+  .divider .disp{color:var(--warn);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:17px;text-transform:uppercase;letter-spacing:1px;text-align:center}
+  .divider small{display:block;font-family:'Source Sans 3',sans-serif;font-weight:400;text-transform:none;letter-spacing:0;font-size:13.5px;color:var(--gray);margin-top:2px;font-style:italic}
+
+  /* seven rules */
+  .rules{counter-reset:rule;list-style:none;margin:8px 0 0}
+  .rules li{position:relative;padding:14px 16px 14px 62px;background:var(--warm);border-left:4px solid var(--orange);margin-bottom:9px;font-size:15px}
+  .rules li:before{counter-increment:rule;content:counter(rule);position:absolute;left:14px;top:12px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;color:var(--orange);line-height:1;width:34px;text-align:center}
+  .rules li b{color:var(--deep)}
+
+  /* buckets / lanes */
+  .buckets{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:8px}
+  .bucket{border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:#fff}
+  .bucket .n{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.5px;color:var(--deep)}
+  .bucket .h{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:17px;color:var(--charcoal);margin:3px 0 4px}
+  .bucket p{font-size:13.5px;margin:0;color:var(--gray)}
+
+  .callout{background:var(--charcoal);color:#fff;border-radius:8px;padding:18px 22px;margin-top:20px}
+  .callout .disp{color:var(--orange);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .callout p{color:#e8e2dc;font-size:14.5px;margin:0}
+  .callout p + p{margin-top:6px}
+  .callout b{color:#fff}
+
+  .honest{background:#fff;border:2px solid var(--warn);border-radius:8px;padding:16px 20px;margin-top:16px}
+  .honest .lbl{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:1px;color:var(--warn);margin-bottom:5px}
+  .honest p{margin:0;font-size:14.5px}
+  .honest b{color:var(--charcoal)}
+
+  .pill{display:inline-block;background:var(--warm);border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--deep)}
+  .pill.on-dark{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#fff}
+
+  .footer{font-size:12.5px;color:#8a847e;margin-top:24px;border-top:1px solid var(--line);padding:14px 0 4px}
+  @media(max-width:720px){
+    .ledgers,.buckets{grid-template-columns:1fr}
+    h1{font-size:32px}
+  }
+  @media print{@page{margin:9mm}body{font-size:11.5px}.callout,.honest,.divider,.ledger{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+<meta name="description" content="Partner Pay — Two-Ledger Model. How money moves inside Ninja-360.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Ninja-360 Dojo">
+<meta property="og:title" content="Partner Pay — Two-Ledger Model">
+<meta property="og:description" content="Two ledgers, seven cash rules. The private money model behind Ninja-360.">
+</head>
+<body>
+<!-- n360-unav: unified dojo nav -->
+<style>
+  .n360bar{position:sticky;top:0;z-index:90;background:#3D3D3D;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;min-height:48px}
+  .n360bar .n360wm{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:#F47920;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav{display:flex;gap:3px;margin-left:auto}
+  .n360bar nav a{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:13px;color:#e8e2dc;padding:0 10px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav a:hover{background:rgba(244,121,32,.25);color:#fff}
+  .n360toggle{display:none;width:44px;height:44px;margin-left:auto;flex:0 0 auto;border:none;border-radius:6px;background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .n360toggle span{display:block;width:22px;height:2px;background:#fff;border-radius:1px}
+  .n360toggle:hover{background:rgba(244,121,32,.25)}
+  .n360accent{height:4px;background:#F47920}
+  .n360crumb{background:#F9F7F5;border-bottom:1px solid #E0DCD8;font-size:13px;padding:7px 18px;color:#404040}
+  .n360crumb a{color:#E05F00;text-decoration:none;font-weight:700}
+  .n360crumb a:hover{text-decoration:underline}
+  .n360crumb .sep{color:#9B948E;margin:0 5px}
+  @media(max-width:640px){
+    .n360bar{flex-wrap:nowrap}
+    .n360toggle{display:flex}
+    .n360bar nav{display:none;flex-direction:column;gap:0;margin-left:0;position:absolute;top:100%;left:0;right:0;background:#3D3D3D;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 12px 20px rgba(0,0,0,.25)}
+    .n360bar.open nav{display:flex}
+    .n360bar nav a{font-size:15px;padding:13px 18px;border-radius:0;border-bottom:1px solid rgba(255,255,255,.1);min-height:48px}
+    .n360bar nav a:last-child{border-bottom:none}
+  }
+</style>
+<div class="n360bar">
+  <a class="n360wm" href="/">NINJA-360</a>
+  <button class="n360toggle" type="button" aria-expanded="false" aria-controls="n360nav" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <nav id="n360nav">
+    <a href="/">Dojo</a>
+    <a href="/gameplan">Game Plan</a>
+    <a href="/scrolls">Scrolls</a>
+    <a href="/crew">Crew</a>
+  </nav>
+</div>
+<div class="n360accent"></div>
+<div class="n360crumb"><a href="/">Dojo</a><span class="sep">&rsaquo;</span><a href="/scrolls">Scrolls</a><span class="sep">&rsaquo;</span><span>Partner Pay</span></div>
+<script>
+  (function(){
+    var t=document.querySelector('.n360toggle'),b=document.querySelector('.n360bar');
+    if(t&&b)t.addEventListener('click',function(){var o=b.classList.toggle('open');t.setAttribute('aria-expanded',String(o));});
+  })();
+</script>
+
+<div class="accent-top"></div>
+
+<section>
+  <div class="wrap">
+    <div class="wordmark">NINJA-360</div>
+    <div class="kicker" style="margin-top:16px">Money Strategy · V02 Two-Ledger Model</div>
+    <h1>Partner Pay —<br>Two Ledgers, Seven Rules</h1>
+    <p class="sub" style="margin-top:14px">How money moves inside Ninja-360. The existing book (Tim's clients, running today) and the engine (Tim × Gabe × Pavan, starts at $0) are <b>separate ledgers on purpose</b> — they never share money and they never share rates in the same conversation.</p>
+    <p class="meta">Private working doc · 2026-07-16 · Supersedes V01 (single-pot model)</p>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>1 · The Two Ledgers</h2>
+    <p style="max-width:680px">Every dollar in the business lives in exactly one of these. If you can't tell which ledger a number belongs to, don't put it on a page next to a number from the other one.</p>
+
+    <div class="ledgers">
+      <!-- LEDGER A -->
+      <div class="ledger a">
+        <div class="top">
+          <img src="/assets/crew/crew-tim-emblem.png" alt="" class="ledger-mark">
+          <span class="tag">Ledger A</span>
+          <div class="name">Existing Business — Ninja-360</div>
+          <div class="who">Stable / already running · <b>excluded from partner economics</b></div>
+        </div>
+        <div class="body">
+          <ul>
+            <li><span class="k">LiveSmart Electric &amp; Solar</span><span class="v">TBD</span></li>
+            <li><span class="k">Kobler Chiropractic</span><span class="v">TBD</span></li>
+            <li><span class="k">54th Street Grill Chain <span class="subunits">· 32 units</span></span><span class="v">TBD</span></li>
+            <li><span class="k">Immersive Data Solutions</span><span class="v">TBD</span></li>
+            <li><span class="k">IDS crew day-rate</span><span class="v">TBD</span></li>
+            <li><span class="k">IDS crew half-day</span><span class="v">TBD</span></li>
+          </ul>
+          <div class="retail">
+            <div class="rlbl">Immersive Data Solutions — retail subcontracts</div>
+            <div class="rchips">
+              <span class="rchip">Gap</span>
+              <span class="rchip">Old Navy</span>
+              <span class="rchip">Athleta</span>
+              <span class="rchip">Banana Republic</span>
+              <span class="rchip">Target</span>
+              <span class="rchip">Love's Travel Stops</span>
+              <span class="rchip">Tractor Supply</span>
+              <span class="rchip">Valvoline</span>
+              <span class="rchip">Home Depot</span>
+              <span class="rchip">Verizon</span>
+            </div>
+          </div>
+          <div style="margin-top:12px;font-size:13.5px;color:var(--gray)"><b>Frame:</b> the crew rate is paid <b>field training</b> — Gabe/Pavan earn while learning 360 &amp; drone on real retail sites. Work-for-hire, no share of the existing book.</div>
+        </div>
+        <div class="footnote">This existing work stays isolated. Its financials never appear next to Ledger B rates.</div>
+      </div>
+
+      <!-- LEDGER B -->
+      <div class="ledger b">
+        <div class="top">
+          <img src="/assets/crew/crew-pavan-emblem.png" alt="" class="ledger-mark">
+          <span class="tag">Ledger B</span>
+          <div class="name">The Engine</div>
+          <div class="who">Tim × Gabe × Pavan · <b>starts at $0</b></div>
+        </div>
+        <div class="body">
+          <ul>
+            <li><span class="k">Fresh-client MRR</span><span class="v">$0 · building</span></li>
+            <li><span class="k">Fresh build fees</span><span class="v">Net 15</span></li>
+            <li><span class="k">Series-derived revenue</span><span class="v">$0 · pending</span></li>
+            <li><span class="k">Gabe pilot fee (R&amp;D)</span><span class="v">$300 default</span></li>
+            <li><span class="k">Margin floor · subcontracted builds</span><span class="v">30%</span></li>
+          </ul>
+          <div style="margin-top:12px;font-size:13.5px;color:var(--gray)"><b>Frame:</b> Pavan starts at zero clients. Gabe's engine rates get set by the LiveSmart pilot (Exhibit A). Proof-of-life = first fresh Brown Belt closed <b>through the engine</b>.</div>
+        </div>
+        <div class="footnote">Engine money follows engine revenue. Nothing from Tim's book funds this ledger.</div>
+      </div>
+    </div>
+
+    <div class="divider">
+      <div class="disp">
+        These do not mix.
+        <small>Never put a Ledger A rate ($100/day IDS crew) next to a Ledger B rate (Gabe's engine work) in the same conversation. Different jobs. Different ledgers.</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>2 · Seven Cash Rules</h2>
+    <ol class="rules">
+      <li><b>Existing books excluded.</b> IDS / LiveSmart / Kobler revenue never enters partner economics.</li>
+      <li><b>Engine money follows engine revenue.</b> Gabe gets paid from FRESH build fees, Net 15 after client acceptance.</li>
+      <li><b>Series = capped founder investment.</b> Paid from Tim's book by choice; the engine's first close pays it back.</li>
+      <li><b>Commissions only after client cash received.</b> No promised commissions from receivables.</li>
+      <li><b>No cost in writing, no resale.</b> Pavan's gate — engine cost is documented before any client sees it.</li>
+      <li><b>30% margin floor on subcontracted engine builds.</b> Below the floor = don't take the work.</li>
+      <li><b>Trades timeboxed 90 days with written "done."</b> Every trade-out has a spec and an expiry.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <img src="/assets/crew/crew-gabe-emblem.png" alt="Gabe — story ninja" class="ninja-mark">
+    <h2>3 · Gabe — Three Lanes</h2>
+    <p style="max-width:680px">Gabe operates on three distinct engagements. Two are on Ledger A (Tim's book), one is Ledger B (engine). Setting rates on one lane never sets rates on the others.</p>
+    <div class="buckets">
+      <div class="bucket">
+        <div class="n">Lane 1 · Ledger A</div>
+        <div class="h">IDS Crew Help</div>
+        <p>$100/day (8 hr) or $50/half-day. Flat work-for-hire on IDS shoots. Positioned as <b>paid apprenticeship</b> — real retail-site reps on 360/drone with Tim.</p>
+      </div>
+      <div class="bucket">
+        <div class="n">Lane 2 · Ledger A</div>
+        <div class="h">LiveSmart Pilot</div>
+        <p>One-time pilot fee (default <b>$300</b>) booked as R&amp;D. Output = Exhibit A rate sheet: deliverables per belt, real shoot/edit effort, turnaround, Gabe's floor rate, Brown vs Black media contents.</p>
+      </div>
+      <div class="bucket">
+        <div class="n">Lane 3 · Ledger B</div>
+        <div class="h">Engine Client Work</div>
+        <p>Fresh Brown/Black closes only. Rate set by Exhibit A (from the pilot). Paid Net 15 from fresh build fees. This is the lane that scales.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <img src="/assets/crew/crew-pavan-emblem.png" alt="Pavan — engine ninja" class="ninja-mark">
+    <h2>4 · Pavan — Three Buckets</h2>
+    <p style="max-width:680px">Same principle: separate arrangements, separate rates, separate timing. Bucket 2 is where the real engine gets built.</p>
+    <div class="buckets">
+      <div class="bucket">
+        <div class="n">Bucket 1</div>
+        <div class="h">Day-Rate</div>
+        <p>Cash for specific work Tim needs now (IDS crew, one-off builds). Priced per engagement.</p>
+      </div>
+      <div class="bucket">
+        <div class="n">Bucket 2</div>
+        <div class="h">Trade → Milestone</div>
+        <p>Build the engine (auto-sort / auto-color / auto-nadir / Shedit / audit engine). Trade now, paid on milestone. <b>90-day timebox, written "done" spec</b> for every module. Ties to Warp Speed &amp; the Pavan roadmap.</p>
+      </div>
+      <div class="bucket">
+        <div class="n">Bucket 3</div>
+        <div class="h">Retainer (Later)</div>
+        <p>Once the engine is producing MRR, Pavan moves to a monthly retainer against ongoing systems. Not yet — retainer waits for engine revenue.</p>
+      </div>
+    </div>
+    <div class="callout">
+      <div class="disp">Pavan Gate — cost in writing, no resale.</div>
+      <p>Every engine module Pavan builds has its <b>cost documented in writing before it exists</b>, so it can be sold to future clients without renegotiation. Nothing Pavan builds gets sold twice at hidden rates.</p>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <img src="/assets/crew/crew-erik-emblem.png" alt="Erik — broadcast ninja" class="ninja-mark">
+    <h2>5 · The Series — Capped Founder Investment</h2>
+    <p style="max-width:680px">The "Found in KC" show is Tim's investment in the engine's story layer. It comes out of Ledger A by choice; it does NOT come out of the engine.</p>
+    <div class="buckets" style="grid-template-columns:1fr 1fr">
+      <div class="bucket">
+        <div class="n">Cap</div>
+        <div class="h">$500 / mo (editable)</div>
+        <p>Placeholder until the LiveSmart pilot calibrates Gabe's real numbers.</p>
+      </div>
+      <div class="bucket">
+        <div class="n">Math</div>
+        <div class="h">$200 × 7 ep = $1,400 / 3 mo</div>
+        <p>= $467/mo → within the $500 cap.</p>
+      </div>
+    </div>
+    <div class="callout" style="background:var(--a);color:#fff">
+      <div class="disp" style="color:#fff">Payback loop</div>
+      <p style="color:#fff">One fresh Brown Belt closed w/ Gabe returns ~1.4× the whole series cost. First engine close pays the series back and re-funds it.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>6 · The Gabe Pilot (LiveSmart)</h2>
+    <p style="max-width:680px">The pilot is on Ledger A. One-time fee, booked as R&amp;D — <b>not taken from LiveSmart revenue</b>. Its job is not to make money; its job is to define Exhibit A.</p>
+    <h3>Pilot must define:</h3>
+    <ul style="margin:0 0 12px 22px">
+      <li>Deliverables per belt (White / Brown / Black)</li>
+      <li>Real shoot &amp; edit effort per belt</li>
+      <li>Turnaround time</li>
+      <li>Gabe's floor rate</li>
+      <li>Brown-vs-Black media package contents</li>
+    </ul>
+    <p><b>Output:</b> Exhibit A rate sheet + recalibrated day/edit assumptions. Once Exhibit A exists, Lane 3 (engine client work) has real numbers.</p>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>7 · Honest Flag</h2>
+    <div class="honest">
+      <div class="lbl">The rule that protects both ledgers</div>
+      <p>The IDS crew rate is <b>sustainable only when framed as paid apprenticeship</b> (crew help + free field training on Tim's craft), NOT as Gabe's professional rate. <b>Never let the IDS crew rate and Gabe's engine rates appear in the same conversation.</b> They are different jobs on different ledgers. If a page, deck, or estimate can't keep them separate — split it into two.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>8 · Companion Documents</h2>
+    <p><span class="pill">V02 · CURRENT</span> Money Strategy — Partner Pay (this scroll)</p>
+    <p><span class="pill">V02 · SUPERSEDED</span> Partner Framework V02 → reissue as V03 (commissions were 3× low at V02 pricing)</p>
+    <p><span class="pill">RELATED</span> <a href="/scrolls/warp-speed" style="color:var(--deep);font-weight:700">Ninja Warp Speed SOW/SOP</a> — Pavan's engine milestones map to Bucket 2</p>
+    <p><span class="pill">RELATED</span> <a href="/roadmaps/pavan" style="color:var(--deep);font-weight:700">Pavan roadmap</a> — the interleaved build plan Bucket 2 pays against</p>
+
+    <div class="footer">
+      Partner Pay · Money Strategy V02 · Ninja-360 Digital Media LLC · 2026-07-16<br>
+      Private working doc · not for external circulation · deliverable: <code>ninja360_money_strategy.xlsx</code> V2 (Money Map / Belt Economics / Series Budget)<br>
+      © 2026 Ninja-360 Digital Media LLC | Kansas City, MO
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
