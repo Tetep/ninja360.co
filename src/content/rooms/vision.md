@@ -1,42 +1,48 @@
 ---
 doorNum: "01"
 doorLabel: "The Gate"
-title: "The Vision Room"
-subtitle: "Put People on the Map"
-plain: "Where we're headed and why: become the name for local visibility in KC."
+title: "The Vision — From Job to Company"
+subtitle: "Phase 1 built it · Phase 2 scales it"
 order: 1
-guide: "sensei"
-accent: "orange"
-variant: "content"
-cta: "**Monday:** lock the pitch, start the show, settle Gabe."
-ref: "Full detail: the KPI Gameplan artifact."
+guide: sensei
+accent: orange
+variant: content
+cta: "Phase 2 · Monday 1: lock the pitch, start the show, wire the machine."
+ref: "Full picture: the Game Plan."
 ---
 
-### Why we exist
+**You are here. Phase 1 is built. Phase 2 starts now.**
 
-Kansas City is full of businesses doing great work that nobody can find. The owner who perfected her recipes over twenty years loses foot traffic to a chain with better Google photos. The chiropractor with a decade of five-star care sits below a competitor with triple the reviews. That's not a marketing problem — it's an injustice.
-
-<div class="stat">Great work deserves to be found.</div>
-
-### Philosophy #1 — Put People on the Map
-
-We exist to make deserving businesses **visible, heard, and chosen**. Rooted in Kansas City and local business, we use the M.A.P. Method to help our clients grow.
+Ninja-360 has been Tim — one man doing the selling, the shooting, the editing, the invoicing. And it works: real clients, a proven method, the first Brown Belt closed. But a business that only runs when one person shows up is a job, not a company. Phase 2 is where that changes.
 
 <div class="grid2">
-<div class="box"><strong>Make</strong> — Capture the business the way it deserves to be seen: 360 tours, drone, cinematic story.</div>
-<div class="box"><strong>Amplify</strong> — Push it everywhere customers look: Google, maps, listings, AI search.</div>
+  <div class="box">
+    <div class="h">Phase 1 · The Foundation — done</div>
+    Proved it solo: the M.A.P. method, the belt system, real paying clients (IDS in the field, LiveSmart as the first Brown Belt, Kobler), the capture SOPs, the audit engine, the crew assembled. It works — it just all runs through Tim.
+  </div>
+  <div class="box">
+    <div class="h">Phase 2 · The Build-Out — now</div>
+    Turn the proven hustle into a company: a machine that brings the customers, a show that makes Tim the name, and 24 assets that hold value without him. The 90-day sprint is the opening move.
+  </div>
 </div>
-<div class="grid2">
-<div class="box"><strong>Promote</strong> — Keep it working month after month so visibility compounds instead of fading.</div>
-<div class="box"><strong>The result</strong> — The business becomes the obvious choice in its area.</div>
+
+### The three engines of Phase 2
+
+Everyone builds one piece of the machine that replaces "everything runs through Tim":
+
+- **Pavan builds the MACHINE** — the GoHighLevel engine that finds, audits, pitches, books, closes, and delivers customers on rails. Customers without Tim chasing them.
+- **Gabe builds the STORY** — Creative Director of the content engine and the "Found in KC" show. One client shoot becomes a feature that feeds the funnel and makes Tim famous. A brand — and a content asset that lasts.
+- **Erik produces the BROADCAST** — Lucky 13 Studios: the room, the audience, the co-host chair where the show gets made every week. (Potential partner — his trade for getting Lucky 13 found.)
+- **Tim builds the NAME** — sells, captures, hosts, and assembles it all into one company. Becomes the Key Person of Influence for "get me found" in Kansas City.
+
+### The scoreboard
+
+<div class="stat">
+  <div class="s"><div class="n">~25 → ~37</div><div class="l">KPI score by Day 90</div></div>
+  <div class="s"><div class="n">1st</div><div class="l">Fresh Brown Belt through the machine</div></div>
+  <div class="s"><div class="n">45+</div><div class="l">12-month KPI target</div></div>
 </div>
 
-### Notice who's on the map
+The 24 assets are the whole point. Phase 2 builds revenue and assets at the same time, on camera — so at Day 90 you don't just have a good quarter, you have a company worth something on its own. That's the next level: from Tim's hustle to a business with a machine, a name, and assets.
 
-Not logos. Not listings. **People.** Behind every storefront is an owner who bet everything on their craft. When we put a business on the map, we're putting a person's life work in front of the customers who've been driving past it.
-
-<span class="pill">Visible</span> <span class="pill">Heard</span> <span class="pill">Chosen</span>
-
-### The triad
-
-Put them on the map. Tell the truth beautifully. Always sharpen the blade. This room owns the first line — the Forge owns the second, the Floor owns the third.
+<a href="/gameplan">See the full Game Plan &rarr;</a>
