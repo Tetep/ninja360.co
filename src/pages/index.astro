@@ -21,6 +21,10 @@ const timBanner = crewBanners['crew-tim-banner.png'];
 
 <DojoLayout title="The Ninja-360 Dojo">
 
+  {/* Gate lock — runs synchronously, before scenes below Scene 1 paint.
+      Prevents scroll-past + flash. Removed on Accept click (see script at bottom). */}
+  <script is:inline>document.documentElement.classList.add('gate-locked');</script>
+
   {/* ================================================================
       SCENE 1 · THE CALL — full black hero, staggered fade-in.
       The emotional first breath. "You've been chosen. Do you accept?"
@@ -41,10 +45,10 @@ const timBanner = crewBanners['crew-tim-banner.png'];
       </p>
       <p class="call-ask fade fade-5">Do you accept?</p>
       <div class="call-actions fade fade-6">
-        <a href="#origin" class="btn-accept">I accept &rarr; take me inside</a>
+        <button type="button" id="accept-btn" class="btn-accept">I accept &rarr; take me inside</button>
         <a href="/gameplan" class="btn-skip">Skip to the Game Plan</a>
       </div>
-      <p class="call-hint fade fade-7" aria-hidden="true">↓ scroll</p>
+      <p class="call-hint fade fade-7" aria-hidden="true">↑ accept to unlock</p>
     </div>
   </section>
 
@@ -63,16 +67,16 @@ const timBanner = crewBanners['crew-tim-banner.png'];
         a quiet superpower most agencies would kill for.
       </p>
 
-      <div class="banner-wrap">
+      <div class="portrait-wrap">
         <Image
-          class="banner-img"
+          class="portrait-img"
           src={timBanner}
-          alt="Ninja-360 · Tim Petet"
-          loading="eager"
-          widths={[600, 900, 1200]}
-          sizes="(max-width: 800px) 100vw, 900px"
+          alt="Tim Petet — Ninja-360"
+          loading="lazy"
+          widths={[240, 360, 480]}
+          sizes="(max-width: 640px) 60vw, 240px"
         />
-        <div class="banner-badge">Ninja-360 · Since 2015</div>
+        <div class="portrait-caption">Tim Petet · Founder · Ninja-360 Digital Media LLC</div>
       </div>
 
       <div class="moat" aria-label="Ninja-360 authority signals">
@@ -376,26 +380,34 @@ const timBanner = crewBanners['crew-tim-banner.png'];
   /* =====================================================================
      Origin — banner + moat
      ===================================================================== */
-  .banner-wrap {
-    position: relative;
-    margin: 26px 0;
-    border-radius: var(--r-lg);
-    overflow: hidden;
-    box-shadow: var(--shadow-2);
-    border: 1px solid var(--line);
+  /* Small inline portrait — accent, not hero. Right-aligned on wide screens,
+     centered on narrow. */
+  .portrait-wrap {
+    float: right;
+    width: 220px;
+    margin: 6px 0 16px 24px;
+    text-align: center;
   }
-  :global(.banner-wrap .banner-img) {
+  :global(.portrait-wrap .portrait-img) {
     width: 100%; height: auto; display: block;
+    border-radius: 50%;
+    border: 3px solid var(--orange);
+    box-shadow: var(--shadow-2);
+    background: var(--white);
   }
-  .banner-badge {
-    position: absolute; bottom: 14px; left: 14px;
-    background: rgba(0, 0, 0, 0.72); color: var(--orange);
-    padding: 6px 12px; border-radius: var(--r-md);
-    font-family: var(--font-display); font-weight: 800;
-    text-transform: uppercase; letter-spacing: 1.5px;
-    font-size: 12px;
-    backdrop-filter: blur(4px);
-    box-shadow: var(--shadow-1);
+  .portrait-caption {
+    margin-top: 10px;
+    font-family: var(--font-display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    font-size: 11px; color: var(--gray);
+    line-height: 1.3;
+  }
+  @media (max-width: 640px) {
+    .portrait-wrap {
+      float: none;
+      width: 160px;
+      margin: 18px auto;
+    }
   }
 
   .moat {
@@ -551,4 +563,55 @@ const timBanner = crewBanners['crew-tim-banner.png'];
     .call-actions { flex-direction: column; gap: 14px; }
     .btn-accept, .btn-skip { min-height: 44px; }
   }
+
+  /* =====================================================================
+     Gate lock — while <html> has .gate-locked, hide all scenes after the
+     Call, hide the footer, block scroll. Removed on Accept click.
+     Users can still navigate away via the top bar or the Skip link.
+     ===================================================================== */
+  :global(html.gate-locked) { overflow: hidden; }
+  :global(html.gate-locked) body { overflow: hidden; }
+  :global(html.gate-locked) .scene:not(.scene-call) { display: none !important; }
+  :global(html.gate-locked) .footer { display: none !important; }
+  /* Reveal animation for scenes when the gate lifts */
+  :global(html:not(.gate-locked)) .scene:not(.scene-call) {
+    animation: scene-reveal 700ms var(--ease-out) both;
+  }
+  :global(html:not(.gate-locked)) .scene-origin       { animation-delay: 100ms; }
+  :global(html:not(.gate-locked)) .scene-philosophies { animation-delay: 260ms; }
+  :global(html:not(.gate-locked)) .scene-phase        { animation-delay: 420ms; }
+  :global(html:not(.gate-locked)) .scene-dojo         { animation-delay: 580ms; }
+  @keyframes scene-reveal {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(html:not(.gate-locked)) .scene:not(.scene-call) {
+      animation: none !important;
+    }
+  }
 </style>
+
+<script is:inline>
+  // Unlock the gate on Accept click. Smooth-scrolls into the Origin scene
+  // once the below-the-fold content is rendered.
+  (function () {
+    function wire() {
+      var btn = document.getElementById('accept-btn');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        document.documentElement.classList.remove('gate-locked');
+        // wait one frame for display:none to lift, then scroll
+        requestAnimationFrame(function () {
+          var target = document.getElementById('origin');
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', wire);
+    } else {
+      wire();
+    }
+  })();
+</script>
