@@ -1,47 +1,123 @@
 ---
-// Home — a scene-based story, not a portal wall.
-//   Scene 1: The Call        (black cinematic — "You've been chosen. Do you accept?")
-//   Scene 2: The Origin      (Ninja-360 + Tim's 10 years + banner + moat)
-//   Scene 3: Philosophies    (three principles we've learned)
-//   Scene 4: The Next Phase  (what the 90-day sprint is building toward)
-//   Scene 5: The Dojo        (torii + wall of doors — enter any)
+// Home — three-act cinematic story:
+//   ACT 0 · PICKER   Who are you? (5 cards — 4 ninjas + guest)
+//   ACT 1 · CALL     Do you accept? (personalized by identity)
+//   ACT 2+ · ORIGIN / PHILOSOPHIES / NEXT PHASE / DOJO
+//
+// Phase state stored on <html data-phase>:
+//   "picker"  → only Act 0 visible
+//   "call"    → only Act 1 visible (identity chosen, awaiting accept)
+//   (unset)   → everything visible (accepted OR guest)
+//
+// localStorage keys:
+//   dojo:identity  → 'tim' | 'gabe' | 'pavan' | 'erik' | 'guest'
+//   dojo:accepted  → 'true'
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import DojoLayout from '../layouts/DojoLayout.astro';
 import Torii from '../components/Torii.astro';
 import Door from '../components/Door.astro';
 import { doorImages, heroFlankImage } from '../assets/doors';
-import { crewBanners } from '../assets/crew';
+import { crewBanners, crewEmblems } from '../assets/crew';
 
 const rooms = (await getCollection('rooms')).sort(
   (a, b) => a.data.order - b.data.order
 );
 const timBanner = crewBanners['crew-tim-banner.png'];
+
+// Identity roster — single source for card copy + personalized Call text.
+// Only Tim gets a quote on his card (per Tim's ask).
+const identities = [
+  { id: 'tim',   name: 'Tim Petet',       role: 'Sensei · Head Ninja',      accent: 'sensei',    emblem: crewEmblems['crew-tim-emblem.png'],   action: 'LEAD',      sub: 'The Dojo is yours to build.',      quote: 'I help Kansas City businesses get found and chosen on Google.' },
+  { id: 'gabe',  name: 'Gabriel Miller',  role: 'Creative · Video Ninja',   accent: 'creative',  emblem: crewEmblems['crew-gabe-emblem.png'],  action: 'TELL',      sub: 'Every frame is your canvas.' },
+  { id: 'pavan', name: 'Pavan Ganta',     role: 'Architect · Dev Ninja',    accent: 'architect', emblem: crewEmblems['crew-pavan-emblem.png'], action: 'BUILD',     sub: 'The systems are yours to wire.' },
+  { id: 'erik',  name: 'Erik Juergensen', role: 'Ally · Podcast Ninja',     accent: 'ally',      emblem: crewEmblems['crew-erik-emblem.png'],  action: 'BROADCAST', sub: 'Lucky 13 is the home stage.' },
+];
 ---
 
 <DojoLayout title="The Ninja-360 Dojo">
 
-  {/* Gate lock — runs synchronously, before scenes below Scene 1 paint.
-      Prevents scroll-past + flash. Removed on Accept click (see script at bottom). */}
-  <script is:inline>document.documentElement.classList.add('gate-locked');</script>
+  {/* Set initial phase before any scene paints — prevents flash of wrong content.
+      New visitors → PICKER. Returning visitors with identity but no accept → CALL.
+      Fully-accepted (or guest) visitors → no phase set → everything visible. */}
+  <script is:inline>
+    (function () {
+      try {
+        var id = localStorage.getItem('dojo:identity');
+        var ok = localStorage.getItem('dojo:accepted');
+        if (!id) document.documentElement.dataset.phase = 'picker';
+        else if (!ok) document.documentElement.dataset.phase = 'call';
+      } catch (_) {
+        document.documentElement.dataset.phase = 'picker';
+      }
+    })();
+  </script>
 
-  {/* ================================================================
-      SCENE 1 · THE CALL — full black hero, staggered fade-in.
-      The emotional first breath. "You've been chosen. Do you accept?"
-      ================================================================ */}
+  {/* ============================================================
+      ACT 0 · THE PICKER — Who are you?
+      ============================================================ */}
+  <section class="scene-picker" aria-labelledby="picker-title">
+    <div class="picker-inner">
+      <p class="picker-kicker fade fade-1">THE 90-DAY SPRINT · V01</p>
+      <h1 id="picker-title" class="picker-title fade fade-2">Who are you?</h1>
+      <p class="picker-lead fade fade-3">Every mission starts with an identity.</p>
+
+      <div class="ninja-grid fade fade-4" role="radiogroup" aria-label="Choose your identity">
+        {identities.map(n => (
+          <button
+            type="button"
+            class={`ninja-card accent-${n.accent}`}
+            data-ninja={n.id}
+            role="radio"
+            aria-checked="false"
+            aria-label={`I am ${n.name}, ${n.role}`}
+          >
+            <div class="card-glow" aria-hidden="true"></div>
+            <div class="card-portrait">
+              <Image
+                src={n.emblem}
+                alt=""
+                loading="eager"
+                widths={[240, 360, 480]}
+                sizes="(max-width: 640px) 44vw, 220px"
+              />
+            </div>
+            <div class="card-meta">
+              <div class="card-name">{n.name}</div>
+              <div class="card-role">{n.role}</div>
+              {n.quote && <div class="card-quote">"{n.quote}"</div>}
+            </div>
+          </button>
+        ))}
+      </div>
+
+      <button type="button" class="guest-link fade fade-5" data-ninja="guest" data-guest="true">
+        I'm just visiting — show me the Dojo &rarr;
+      </button>
+    </div>
+  </section>
+
+  {/* ============================================================
+      ACT 1 · THE CALL — Do you accept? (personalized)
+      ============================================================ */}
   <section class="scene-call" aria-labelledby="call-title">
+    <div class="call-chip" id="call-chip" aria-live="polite">
+      <span class="chip-arrow">↳</span>
+      <span class="chip-name" id="chip-name">—</span>
+      <span class="chip-sep">·</span>
+      <button type="button" id="reset-identity" class="chip-reset">not you?</button>
+    </div>
+
     <div class="call-inner">
       <p class="call-kicker fade fade-1">THE 90-DAY SPRINT · V01</p>
       <h1 id="call-title" class="call-title fade fade-2">
-        Welcome to the<br /><span class="orange">Ninja-360 Dojo.</span>
+        You've been drafted to<br /><span class="orange" id="draft-action">LEAD</span> this sprint.
       </h1>
-      <p class="call-lead fade fade-3">
-        You've been chosen. You've been drafted.
-      </p>
+      <p class="call-lead fade fade-3" id="draft-sub">The Dojo is yours to build.</p>
       <p class="call-body fade fade-4">
-        This is the 90-day sprint to elevate Ninja-360 into
-        the Key Person of Influence brand of the Kansas City metro —
-        and you're part of how we get there.
+        This is the 90-day sprint to elevate Ninja-360 into the Key Person of
+        Influence brand of the Kansas City metro — and you're part of how we
+        get there.
       </p>
       <p class="call-ask fade fade-5">Do you accept?</p>
       <div class="call-actions fade fade-6">
@@ -52,10 +128,9 @@ const timBanner = crewBanners['crew-tim-banner.png'];
     </div>
   </section>
 
-  {/* ================================================================
-      SCENE 2 · THE ORIGIN — This is Ninja-360. This is what Tim built.
-      Banner + copy + the moat strip (90M+ views / 2 decades / KC).
-      ================================================================ */}
+  {/* ============================================================
+      ACT 2 · THE ORIGIN — This is Ninja-360.
+      ============================================================ */}
   <section id="origin" class="scene scene-origin">
     <div class="scene-wrap">
       <p class="scene-kicker">THIS IS NINJA-360</p>
@@ -98,42 +173,45 @@ const timBanner = crewBanners['crew-tim-banner.png'];
     </div>
   </section>
 
-  {/* ================================================================
-      SCENE 3 · THE PHILOSOPHIES — three principles the last decade taught.
-      ================================================================ */}
-  <section class="scene scene-philosophies">
+  {/* ACT 3 · THE PHILOSOPHIES — the fancy scroll */}
+  <section class="scene scene-philosophies" id="philosophies">
     <div class="scene-wrap">
-      <p class="scene-kicker">WHAT WE'VE LEARNED</p>
-      <h2 class="scene-title">Three principles guide everything.</h2>
-      <p class="scene-lede">
-        Ten years of work distilled down to three sentences. Every project, every
+      <div class="phil-ornament" aria-hidden="true"><span>◆</span></div>
+      <p class="phil-kicker">The Way of Ninja-360</p>
+      <h2 class="phil-title">
+        <span class="phil-title-lead">The Three</span>
+        <span class="phil-title-main">Core Philosophies</span>
+        <span class="phil-title-tail">— of Ninja-360.</span>
+      </h2>
+      <p class="phil-lede">
+        Ten years of work, distilled down to three sentences. Every project, every
         pitch, every crew decision has to answer to one of these — or it doesn't
         get a lane.
       </p>
-
       <div class="phil-grid">
-        <article class="phil-card">
-          <div class="phil-num">01</div>
-          <h3 class="phil-h">Put people on the map.</h3>
+        <article class="phil-card phil-card-1">
+          <div class="phil-numeral">ONE</div>
+          <div class="phil-divider" aria-hidden="true"></div>
+          <h3 class="phil-h"><em>Put people</em><br />on the map.</h3>
           <p class="phil-body">Visible. Heard. Chosen. That's the outcome we sell — for our clients, for our crew, and for Ninja-360 itself.</p>
         </article>
-        <article class="phil-card">
-          <div class="phil-num">02</div>
-          <h3 class="phil-h">Fall in love with the true story.</h3>
+        <article class="phil-card phil-card-2">
+          <div class="phil-numeral">TWO</div>
+          <div class="phil-divider" aria-hidden="true"></div>
+          <h3 class="phil-h"><em>Fall in love</em><br />with the true story.</h3>
           <p class="phil-body">Technology is the tool; connection is the goal. Drones, 360s, and cinema are how we tell it — never why we shoot.</p>
         </article>
-        <article class="phil-card">
-          <div class="phil-num">03</div>
-          <h3 class="phil-h">Always sharpen the blade.</h3>
+        <article class="phil-card phil-card-3">
+          <div class="phil-numeral">THREE</div>
+          <div class="phil-divider" aria-hidden="true"></div>
+          <h3 class="phil-h"><em>Always sharpen</em><br />the blade.</h3>
           <p class="phil-body">Try. Fail. Learn. Improve — responsibly. The Dojo exists so the whole crew gets sharper every week.</p>
         </article>
       </div>
     </div>
   </section>
 
-  {/* ================================================================
-      SCENE 4 · THE NEXT PHASE — the 90-day sprint framing + CTA to the Game Plan.
-      ================================================================ */}
+  {/* ACT 4 · THE NEXT PHASE */}
   <section class="scene scene-phase">
     <div class="scene-wrap">
       <p class="scene-kicker">THE NEXT PHASE</p>
@@ -154,35 +232,18 @@ const timBanner = crewBanners['crew-tim-banner.png'];
     </div>
   </section>
 
-  {/* ================================================================
-      SCENE 5 · THE DOJO — torii + wall of doors, framed as the deep dive.
-      ================================================================ */}
+  {/* ACT 5 · THE DOJO */}
   <section id="dojo-wall" class="scene scene-dojo" aria-labelledby="dojo-heading">
     <div class="scene-wrap">
       <div class="head-row">
-        <Image
-          class="head-flank head-flank-left"
-          src={heroFlankImage}
-          alt=""
-          loading="lazy"
-          widths={[180, 260, 360]}
-          sizes="(max-width: 640px) 150px, 170px"
-        />
+        <Image class="head-flank head-flank-left" src={heroFlankImage} alt="" loading="lazy" widths={[180, 260, 360]} sizes="(max-width: 640px) 150px, 170px" />
         <div class="dojo-head">
           <Torii />
           <h2 id="dojo-heading">The Dojo</h2>
           <div class="sub">Seven rooms of the plan. Enter any door.</div>
         </div>
-        <Image
-          class="head-flank head-flank-right"
-          src={heroFlankImage}
-          alt=""
-          loading="lazy"
-          widths={[180, 260, 360]}
-          sizes="(max-width: 640px) 150px, 170px"
-        />
+        <Image class="head-flank head-flank-right" src={heroFlankImage} alt="" loading="lazy" widths={[180, 260, 360]} sizes="(max-width: 640px) 150px, 170px" />
       </div>
-
       <div class="wall">
         {rooms.map(r => (
           <Door
@@ -195,16 +256,8 @@ const timBanner = crewBanners['crew-tim-banner.png'];
             variant={r.slug === 'floor' ? 'floor' : 'default'}
           />
         ))}
-        <Door
-          href="#"
-          num="★"
-          lintel="Someday"
-          name="The App"
-          sub="This board, upgraded · parked"
-          variant="parked"
-        />
+        <Door href="#" num="★" lintel="Someday" name="The App" sub="This board, upgraded · parked" variant="parked" />
       </div>
-
       <p class="tagline">Run the rhythm. The rhythm runs the plan.</p>
     </div>
   </section>
@@ -212,9 +265,9 @@ const timBanner = crewBanners['crew-tim-banner.png'];
 
 <style>
   /* =====================================================================
-     Scene 1 — The Call. Full-viewport black cinematic hero.
-     Content fades in staggered. Scroll cue at the bottom.
+     Full-bleed black cinematic canvas — shared by Picker + Call
      ===================================================================== */
+  .scene-picker,
   .scene-call {
     position: relative;
     min-height: calc(100vh - var(--bar-h) - 8px);
@@ -225,14 +278,14 @@ const timBanner = crewBanners['crew-tim-banner.png'];
     color: #F2EAE0;
     display: flex; align-items: center; justify-content: center;
     padding: 60px 24px;
-    /* Full-bleed: break out of .wrap's max-width + horizontal padding */
     width: 100vw;
     margin-left: calc(50% - 50vw);
     margin-top: -26px;
     overflow: hidden;
   }
+  .scene-call { margin-top: 0; }
+  .scene-picker::before,
   .scene-call::before {
-    /* subtle vignette + faint fiber texture */
     content: '';
     position: absolute; inset: 0;
     background: var(--texture-paper);
@@ -240,6 +293,177 @@ const timBanner = crewBanners['crew-tim-banner.png'];
     mix-blend-mode: overlay;
     pointer-events: none;
   }
+
+  /* =====================================================================
+     ACT 0 · THE PICKER — Who are you?
+     ===================================================================== */
+  .picker-inner {
+    position: relative;
+    max-width: 1100px;
+    width: 100%;
+    text-align: center;
+    z-index: 1;
+  }
+  .picker-kicker {
+    font-family: var(--font-display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 4px;
+    font-size: 12px; color: var(--orange);
+    margin-bottom: 14px;
+  }
+  .picker-title {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(40px, 7vw, 74px); line-height: 0.95;
+    color: #FFFFFF; text-transform: uppercase; letter-spacing: 1px;
+    text-shadow: 0 2px 40px rgba(0, 0, 0, 0.4);
+  }
+  .picker-lead {
+    font-family: var(--font-display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px;
+    font-size: clamp(13px, 1.8vw, 16px);
+    color: #C8BFB5; margin: 12px 0 0;
+    opacity: 0.9;
+  }
+
+  .ninja-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin: 38px 0 24px;
+  }
+
+  /* --- Card --- */
+  .ninja-card {
+    position: relative;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: var(--r-lg);
+    padding: 20px 16px 18px;
+    color: #F2EAE0;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    font-family: inherit;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    transition:
+      transform var(--dur-med) var(--ease-out),
+      border-color var(--dur-med) var(--ease-out),
+      box-shadow var(--dur-med) var(--ease-out),
+      background var(--dur-med) var(--ease-out);
+  }
+  .ninja-card:hover,
+  .ninja-card:focus-visible {
+    transform: translateY(-6px);
+    border-color: var(--card-accent, var(--orange));
+    background: linear-gradient(180deg, rgba(244, 121, 32, 0.06), rgba(255, 255, 255, 0.02));
+    box-shadow:
+      0 20px 40px rgba(0, 0, 0, 0.35),
+      0 0 0 1px var(--card-accent, var(--orange)),
+      0 0 42px rgba(244, 121, 32, 0.30);
+    outline: none;
+  }
+  .ninja-card:active { transform: translateY(-3px) scale(0.99); }
+  .ninja-card.is-chosen {
+    transform: translateY(-6px) scale(1.03);
+    border-color: var(--card-accent, var(--orange));
+    box-shadow:
+      0 30px 60px rgba(0, 0, 0, 0.45),
+      0 0 0 2px var(--card-accent, var(--orange)),
+      0 0 60px rgba(244, 121, 32, 0.45);
+  }
+
+  /* accent per role */
+  .accent-sensei    { --card-accent: var(--role-sensei); }
+  .accent-creative  { --card-accent: var(--role-creative); }
+  .accent-architect { --card-accent: #C48A3E; }  /* brighter bronze on dark bg */
+  .accent-ally      { --card-accent: #B5AFA6; }  /* lighter charcoal on dark bg */
+
+  .card-glow {
+    position: absolute; inset: -2px;
+    border-radius: inherit;
+    background:
+      radial-gradient(60% 40% at 50% 0%, var(--card-accent, var(--orange)), transparent 70%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur-med) var(--ease-out);
+    z-index: 0;
+    filter: blur(20px);
+  }
+  .ninja-card:hover .card-glow,
+  .ninja-card:focus-visible .card-glow,
+  .ninja-card.is-chosen .card-glow { opacity: 0.35; }
+
+  .card-portrait {
+    position: relative;
+    width: 100%;
+    max-width: 200px;
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1;
+    transition: transform var(--dur-med) var(--ease-out), filter var(--dur-med) var(--ease-out);
+  }
+  :global(.ninja-card .card-portrait img) {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.5));
+    transition: filter var(--dur-med) var(--ease-out);
+  }
+  .ninja-card:hover .card-portrait,
+  .ninja-card:focus-visible .card-portrait { transform: scale(1.05); }
+  :global(.ninja-card:hover .card-portrait img),
+  :global(.ninja-card:focus-visible .card-portrait img) {
+    filter: drop-shadow(0 8px 32px rgba(244, 121, 32, 0.55));
+  }
+
+  .card-meta { position: relative; z-index: 1; }
+  .card-name {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: 18px; letter-spacing: 1px; text-transform: uppercase;
+    color: #FFFFFF;
+    line-height: 1.1;
+  }
+  .card-role {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase;
+    color: var(--card-accent, var(--orange));
+    margin-top: 4px;
+  }
+  .card-quote {
+    font-size: 12.5px;
+    color: #C8BFB5;
+    font-style: italic;
+    line-height: 1.4;
+    margin-top: 10px;
+    max-width: 220px;
+  }
+
+  /* Guest link */
+  .guest-link {
+    margin-top: 4px;
+    display: inline-block;
+    background: transparent; border: none;
+    color: #B0A69B;
+    font-family: var(--font-display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.4px;
+    font-size: 12.5px;
+    cursor: pointer;
+    padding: 10px 16px;
+    border-radius: var(--r-md);
+    border-bottom: 1px solid rgba(176, 166, 155, 0.35);
+    transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+  }
+  .guest-link:hover, .guest-link:focus-visible {
+    color: var(--orange);
+    border-color: var(--orange);
+    outline: none;
+  }
+
+  /* =====================================================================
+     ACT 1 · THE CALL
+     ===================================================================== */
   .call-inner {
     position: relative;
     max-width: 720px; text-align: center;
@@ -253,7 +477,7 @@ const timBanner = crewBanners['crew-tim-banner.png'];
   }
   .call-title {
     font-family: var(--font-display); font-weight: 800;
-    font-size: clamp(44px, 8vw, 92px); line-height: 0.95;
+    font-size: clamp(40px, 7vw, 78px); line-height: 0.98;
     color: #FFFFFF; text-transform: uppercase; letter-spacing: 1px;
     text-shadow: 0 2px 40px rgba(0, 0, 0, 0.4);
   }
@@ -263,7 +487,7 @@ const timBanner = crewBanners['crew-tim-banner.png'];
     text-transform: uppercase; letter-spacing: 2px;
     font-size: clamp(15px, 2.2vw, 20px);
     color: #F2EAE0; margin: 22px 0 0;
-    opacity: 0.9;
+    opacity: 0.95;
   }
   .call-body {
     font-size: clamp(15px, 1.6vw, 17px);
@@ -289,7 +513,9 @@ const timBanner = crewBanners['crew-tim-banner.png'];
     text-transform: uppercase; letter-spacing: 1.6px;
     font-size: 15px;
     padding: 14px 26px;
+    border: none;
     border-radius: var(--r-md); text-decoration: none;
+    cursor: pointer;
     box-shadow: var(--shadow-orange), var(--shadow-2);
     transition: transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med) var(--ease-out);
     animation: accept-pulse 3.6s ease-in-out infinite;
@@ -325,21 +551,49 @@ const timBanner = crewBanners['crew-tim-banner.png'];
     50%      { transform: translateY(4px); opacity: 1; }
   }
 
-  /* Staggered fade-in for call-scene elements */
+  /* Identity chip — persistent reminder of who's in the room */
+  .call-chip {
+    position: absolute;
+    top: 20px; right: 20px;
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--r-pill);
+    font-family: var(--font-display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    font-size: 11px;
+    color: #E8E0D6;
+    backdrop-filter: blur(6px);
+    z-index: 2;
+  }
+  .chip-arrow { color: var(--orange); }
+  .chip-name { color: #FFFFFF; }
+  .chip-sep { color: rgba(255, 255, 255, 0.3); }
+  .chip-reset {
+    background: none; border: none;
+    color: #B0A69B; font: inherit; text-transform: inherit;
+    letter-spacing: inherit; cursor: pointer;
+    text-decoration: underline; text-underline-offset: 2px;
+    padding: 0;
+  }
+  .chip-reset:hover { color: var(--orange); }
+  @media (max-width: 640px) {
+    .call-chip { top: 14px; right: 14px; font-size: 10px; padding: 6px 10px; }
+  }
+
+  /* Staggered fade-in — shared by Picker + Call */
   .fade { opacity: 0; animation: fade-up 700ms var(--ease-out) forwards; }
   .fade-1 { animation-delay: 100ms; }
   .fade-2 { animation-delay: 350ms; }
-  .fade-3 { animation-delay: 900ms; }
-  .fade-4 { animation-delay: 1300ms; }
-  .fade-5 { animation-delay: 1800ms; }
-  .fade-6 { animation-delay: 2200ms; }
-  .fade-7 { animation-delay: 2900ms; }
+  .fade-3 { animation-delay: 700ms; }
+  .fade-4 { animation-delay: 1050ms; }
+  .fade-5 { animation-delay: 1400ms; }
+  .fade-6 { animation-delay: 1700ms; }
+  .fade-7 { animation-delay: 2100ms; }
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: none; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .fade, .btn-accept, .call-hint { animation: none !important; opacity: 1 !important; transform: none !important; }
   }
 
   /* =====================================================================
@@ -348,8 +602,6 @@ const timBanner = crewBanners['crew-tim-banner.png'];
   .scene {
     padding: 72px 0;
     scroll-margin-top: calc(var(--bar-h) + 8px);
-    /* Full-bleed so per-scene background bands span the viewport,
-       breaking out of the layout's .wrap max-width + padding. */
     width: 100vw;
     margin-left: calc(50% - 50vw);
   }
@@ -370,181 +622,323 @@ const timBanner = crewBanners['crew-tim-banner.png'];
     max-width: 680px; margin-bottom: 12px;
     line-height: 1.6;
   }
-
-  /* alternating band tints for scene rhythm */
   .scene-origin { background: linear-gradient(180deg, transparent, rgba(250, 247, 242, 0.6)); }
-  .scene-philosophies { background: var(--paper); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .scene-phase { background: transparent; }
   .scene-dojo { background: linear-gradient(180deg, var(--paper) 0%, var(--white) 60%); }
 
   /* =====================================================================
-     Origin — banner + moat
+     PHILOSOPHIES — the sacred scroll. Dark band. Cream cards. Ornaments.
      ===================================================================== */
-  /* Small inline portrait — accent, not hero. Right-aligned on wide screens,
-     centered on narrow. */
-  .portrait-wrap {
-    float: right;
-    width: 220px;
-    margin: 6px 0 16px 24px;
+  .scene-philosophies {
+    position: relative;
+    color: #F2EAE0;
+    padding: 96px 0 100px;
+    background:
+      radial-gradient(900px 500px at 50% -20%, rgba(244, 121, 32, 0.15), transparent 65%),
+      radial-gradient(700px 400px at 15% 100%, rgba(244, 121, 32, 0.06), transparent 70%),
+      linear-gradient(180deg, #1A1614 0%, #14100E 55%, #0F0C0A 100%);
+    border-top: 1px solid rgba(244, 121, 32, 0.15);
+    border-bottom: 1px solid rgba(244, 121, 32, 0.15);
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.35) inset,
+      0 -20px 60px rgba(0, 0, 0, 0.35) inset;
+    overflow: hidden;
+  }
+  .scene-philosophies::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--texture-paper);
+    opacity: 0.35;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+  .scene-philosophies .scene-wrap { position: relative; z-index: 1; }
+
+  /* Ornamental divider above the title */
+  .phil-ornament {
     text-align: center;
+    margin-bottom: 18px;
+    color: var(--orange);
+    font-size: 12px;
+    letter-spacing: 0;
+    line-height: 1;
+    opacity: 0.85;
   }
-  :global(.portrait-wrap .portrait-img) {
-    width: 100%; height: auto; display: block;
-    border-radius: 50%;
-    border: 3px solid var(--orange);
-    box-shadow: var(--shadow-2);
-    background: var(--white);
+  .phil-ornament::before,
+  .phil-ornament::after {
+    content: '';
+    display: inline-block;
+    width: 72px; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(244, 121, 32, 0.7), transparent);
+    vertical-align: middle;
+    margin: 0 14px;
   }
-  .portrait-caption {
-    margin-top: 10px;
-    font-family: var(--font-display); font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1px;
-    font-size: 11px; color: var(--gray);
-    line-height: 1.3;
-  }
-  @media (max-width: 640px) {
-    .portrait-wrap {
-      float: none;
-      width: 160px;
-      margin: 18px auto;
-    }
+  .phil-ornament span {
+    display: inline-block;
+    vertical-align: middle;
+    text-shadow: 0 0 8px rgba(244, 121, 32, 0.7);
   }
 
-  .moat {
-    max-width: 900px;
-    margin: 8px auto 0;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr auto 1fr;
-    align-items: center;
-    gap: 18px;
-    padding: 20px 24px;
-    background: linear-gradient(180deg, var(--white), var(--paper));
-    border: 1px solid var(--line);
-    border-radius: var(--r-lg);
-    box-shadow: var(--shadow-2), var(--shadow-inner-hairline);
+  /* Fancy title stack */
+  .phil-kicker {
+    text-align: center;
+    color: var(--orange);
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 3px;
+    margin-bottom: 18px;
+    opacity: 0.95;
+  }
+  .phil-title {
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1;
+    margin: 0 auto 20px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .phil-title-lead {
+    display: block;
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(20px, 2.2vw, 26px);
+    color: #E4D7C8;
+    letter-spacing: 4px;
+    text-transform: none;
+    margin-bottom: 8px;
+    opacity: 0.9;
+  }
+  .phil-title-main {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(46px, 8vw, 96px);
+    line-height: 0.92;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F5E9D5 55%, #F4C88E 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    text-shadow: 0 4px 40px rgba(244, 121, 32, 0.35);
+  }
+  .phil-title-tail {
+    display: block;
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(18px, 2.2vw, 24px);
+    color: var(--orange);
+    letter-spacing: 2px;
+    margin-top: 12px;
+    text-transform: none;
+  }
+  .phil-lede {
+    text-align: center;
+    color: #C8BFB5;
+    max-width: 640px;
+    margin: 0 auto 52px;
+    font-size: 15.5px;
+    line-height: 1.65;
+    font-style: italic;
+  }
+
+  /* Cards — cream on dark, scroll-like */
+  .phil-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 22px; margin-top: 20px;
+  }
+  .phil-card {
     position: relative;
+    background: linear-gradient(180deg, #FBF6EC 0%, #F1E5CE 100%);
+    border: 1px solid rgba(232, 217, 188, 0.9);
+    border-radius: var(--r-lg);
+    padding: 40px 26px 32px;
+    color: var(--charcoal);
+    text-align: center;
+    box-shadow:
+      0 24px 50px rgba(0, 0, 0, 0.45),
+      0 0 0 1px rgba(244, 121, 32, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    /* Off-screen for reveal-on-scroll */
+    opacity: 0;
+    transform: translateY(30px);
+    transition:
+      transform var(--dur-slow) var(--ease-out),
+      opacity var(--dur-slow) var(--ease-out),
+      box-shadow var(--dur-med) var(--ease-out);
+  }
+  .phil-card.is-in-view { opacity: 1; transform: translateY(0); }
+  .phil-card.is-in-view.phil-card-1 { transition-delay: 100ms; }
+  .phil-card.is-in-view.phil-card-2 { transition-delay: 260ms; }
+  .phil-card.is-in-view.phil-card-3 { transition-delay: 420ms; }
+  .phil-card:hover {
+    transform: translateY(-6px);
+    box-shadow:
+      0 34px 68px rgba(0, 0, 0, 0.55),
+      0 0 0 1px var(--orange),
+      0 0 42px rgba(244, 121, 32, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+  .phil-card::before {
+    /* orange rule at top of card */
+    content: '';
+    position: absolute;
+    top: 0; left: 22%; right: 22%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--orange), transparent);
+    border-radius: 0 0 var(--r-sm) var(--r-sm);
+  }
+
+  .phil-numeral {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(34px, 4.8vw, 46px);
+    letter-spacing: 8px;
+    line-height: 1;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, var(--orange) 0%, var(--deep) 60%, #A54200 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    text-shadow: 0 2px 12px rgba(244, 121, 32, 0.25);
+  }
+
+  .phil-divider {
+    width: 48px; height: 1px;
+    background: var(--orange);
+    margin: 0 auto 22px;
+    position: relative;
+    opacity: 0.7;
+  }
+  .phil-divider::after {
+    content: '◆';
+    position: absolute;
+    top: -8px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: var(--orange);
+    background: #F7EBD3;
+    padding: 0 5px;
+  }
+
+  .phil-h {
+    font-size: clamp(19px, 2.2vw, 24px);
+    margin: 0 0 18px;
+    text-transform: none;
+    letter-spacing: 0;
+    line-height: 1.18;
+    color: var(--charcoal);
+    font-weight: 800;
+  }
+  .phil-h em {
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--deep);
+    letter-spacing: 0.5px;
+  }
+
+  .phil-body {
+    font-size: 14.5px;
+    color: #5C544B;
+    line-height: 1.6;
+    margin: 0 auto;
+    max-width: 260px;
+    font-style: italic;
+  }
+  .phil-body::before {
+    content: '';
+    display: block;
+    width: 24px; height: 1px;
+    background: rgba(228, 105, 0, 0.4);
+    margin: 0 auto 12px;
+  }
+
+  /* Origin — portrait + moat (unchanged) */
+  .portrait-wrap { float: right; width: 220px; margin: 6px 0 16px 24px; text-align: center; }
+  :global(.portrait-wrap .portrait-img) {
+    width: 100%; height: auto; display: block; border-radius: 50%;
+    border: 3px solid var(--orange); box-shadow: var(--shadow-2); background: var(--white);
+  }
+  .portrait-caption {
+    margin-top: 10px; font-family: var(--font-display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px; font-size: 11px; color: var(--gray); line-height: 1.3;
+  }
+  @media (max-width: 640px) { .portrait-wrap { float: none; width: 160px; margin: 18px auto; } }
+
+  .moat {
+    max-width: 900px; margin: 8px auto 0;
+    display: grid; grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: center; gap: 18px; padding: 20px 24px;
+    background: linear-gradient(180deg, var(--white), var(--paper));
+    border: 1px solid var(--line); border-radius: var(--r-lg);
+    box-shadow: var(--shadow-2), var(--shadow-inner-hairline); position: relative;
   }
   .moat::before {
-    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-    width: 4px;
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
     background: linear-gradient(180deg, var(--orange), var(--deep));
     border-radius: var(--r-lg) 0 0 var(--r-lg);
   }
   .moat-item { text-align: center; }
-  .moat-n {
-    font-family: var(--font-display); font-weight: 800;
+  .moat-n { font-family: var(--font-display); font-weight: 800;
     font-size: clamp(30px, 4.5vw, 44px); line-height: 1;
-    color: var(--charcoal); letter-spacing: 0.5px;
-  }
+    color: var(--charcoal); letter-spacing: 0.5px; }
   .moat-n .plus { color: var(--orange); }
   .moat-n .unit { font-size: 0.5em; color: var(--gray); font-weight: 700; letter-spacing: 1px; }
-  .moat-l {
-    font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px;
-    color: var(--gray); margin-top: 8px; font-weight: 600;
-  }
-  .moat-sep {
-    width: 1px; height: 46px;
-    background: linear-gradient(180deg, transparent, var(--line), transparent);
-  }
+  .moat-l { font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--gray); margin-top: 8px; font-weight: 600; }
+  .moat-sep { width: 1px; height: 46px;
+    background: linear-gradient(180deg, transparent, var(--line), transparent); }
 
-  /* =====================================================================
-     Philosophies — three big principle cards
-     ===================================================================== */
-  .phil-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 18px; margin-top: 32px;
-  }
-  .phil-card {
-    background: var(--white);
-    border: 1px solid var(--line);
-    border-radius: var(--r-lg);
-    padding: 26px 22px 24px;
-    box-shadow: var(--shadow-1);
-    position: relative;
-    transition: transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med) var(--ease-out);
-  }
-  .phil-card::before {
-    content: ''; position: absolute; top: 0; left: 22px; right: 22px;
-    height: 3px; background: linear-gradient(90deg, var(--orange), var(--deep));
-    border-radius: 0 0 var(--r-sm) var(--r-sm);
-  }
-  .phil-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-3); }
-  .phil-num {
-    font-family: var(--font-display); font-weight: 800;
-    font-size: 44px; color: var(--orange);
-    line-height: 1; letter-spacing: 1px;
-    margin-bottom: 8px;
-  }
-  .phil-h {
-    font-size: 20px; margin: 4px 0 10px;
-    text-transform: none; letter-spacing: 0;
-    color: var(--charcoal);
-  }
-  .phil-body {
-    font-size: 14.5px; color: var(--gray); line-height: 1.55;
-    margin: 0;
-  }
-
-  /* =====================================================================
-     Next Phase — CTAs
-     ===================================================================== */
-  .phase-actions {
-    display: flex; gap: 14px; margin-top: 20px; flex-wrap: wrap;
-  }
+  /* Next Phase (unchanged) */
+  .phase-actions { display: flex; gap: 14px; margin-top: 20px; flex-wrap: wrap; }
   .btn-primary {
     display: inline-flex; align-items: center; justify-content: center;
     background: linear-gradient(180deg, var(--orange), var(--deep));
     color: var(--white); text-decoration: none;
     font-family: var(--font-display); font-weight: 800;
     text-transform: uppercase; letter-spacing: 1.4px;
-    font-size: 14px;
-    padding: 13px 22px; border-radius: var(--r-md);
+    font-size: 14px; padding: 13px 22px; border-radius: var(--r-md);
     box-shadow: var(--shadow-2), 0 0 0 1px rgba(244, 121, 32, 0.15);
     transition: transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med) var(--ease-out);
   }
   .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-3), 0 8px 22px var(--orange-glow); }
   .btn-ghost {
     display: inline-flex; align-items: center; justify-content: center;
-    color: var(--deep); background: var(--white);
-    border: 1px solid var(--line);
+    color: var(--deep); background: var(--white); border: 1px solid var(--line);
     font-family: var(--font-display); font-weight: 700;
     text-transform: uppercase; letter-spacing: 1.2px;
-    font-size: 13px;
-    padding: 12px 20px; border-radius: var(--r-md);
-    text-decoration: none;
+    font-size: 13px; padding: 12px 20px; border-radius: var(--r-md); text-decoration: none;
     transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
   }
   .btn-ghost:hover { background: var(--focus); border-color: var(--orange); }
 
-  /* =====================================================================
-     Dojo — torii + door wall
-     ===================================================================== */
-  .head-row {
-    display: grid;
-    grid-template-columns: minmax(72px, 170px) 1fr minmax(72px, 170px);
-    align-items: center; gap: 18px;
-    max-width: 980px; margin: 0 auto;
-  }
+  /* Dojo (unchanged) */
+  .head-row { display: grid; grid-template-columns: minmax(72px, 170px) 1fr minmax(72px, 170px);
+    align-items: center; gap: 18px; max-width: 980px; margin: 0 auto; }
   .dojo-head { text-align: center; margin-bottom: 4px; }
   .head-flank { width: 100%; max-width: 170px; height: auto; justify-self: center; }
   .head-flank-left { transform: scaleX(-1); }
   .dojo-head h2 { font-size: 36px; font-weight: 800; margin-top: 6px; }
   .dojo-head .sub { font-size: 15px; color: var(--gray); margin-top: 4px; }
-
-  .wall {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 14px; margin-top: 30px;
-  }
-  .tagline {
-    text-align: center; margin-top: 28px;
-    font-family: var(--font-display); font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1.5px;
-    color: var(--deep);
-  }
+  .wall { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 30px; }
+  .tagline { text-align: center; margin-top: 28px; font-family: var(--font-display);
+    font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--deep); }
 
   /* =====================================================================
      Responsive
      ===================================================================== */
+  @media (max-width: 900px) {
+    .ninja-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  }
   @media (max-width: 800px) {
     .phil-grid { grid-template-columns: 1fr; }
   }
@@ -556,62 +950,189 @@ const timBanner = crewBanners['crew-tim-banner.png'];
     .moat-sep { width: 60%; height: 1px; justify-self: center;
                 background: linear-gradient(90deg, transparent, var(--line), transparent); }
     .scene { padding: 56px 0; }
-    .scene-call { padding: 40px 20px; }
+    .scene-picker, .scene-call { padding: 40px 20px; }
+    .picker-title { font-size: clamp(36px, 10vw, 56px); }
+    .ninja-grid { gap: 12px; margin: 28px 0 20px; }
+    .card-portrait { max-width: 140px; }
+    .card-name { font-size: 15px; }
   }
   @media (max-width: 480px) {
     .wall { grid-template-columns: 1fr; }
+    .ninja-grid { grid-template-columns: 1fr; }
+    .card-portrait { max-width: 180px; }
     .call-actions { flex-direction: column; gap: 14px; }
     .btn-accept, .btn-skip { min-height: 44px; }
   }
 
   /* =====================================================================
-     Gate lock — while <html> has .gate-locked, hide all scenes after the
-     Call, hide the footer, block scroll. Removed on Accept click.
-     Users can still navigate away via the top bar or the Skip link.
+     PHASE GATE — controls which acts are visible
+     [data-phase="picker"] → only .scene-picker
+     [data-phase="call"]   → only .scene-call
+     (no data-phase)       → everything visible (accepted / guest)
      ===================================================================== */
-  :global(html.gate-locked) { overflow: hidden; }
-  :global(html.gate-locked) body { overflow: hidden; }
-  :global(html.gate-locked) .scene:not(.scene-call) { display: none !important; }
-  :global(html.gate-locked) .footer { display: none !important; }
-  /* Reveal animation for scenes when the gate lifts */
-  :global(html:not(.gate-locked)) .scene:not(.scene-call) {
+  :global(html[data-phase="picker"]),
+  :global(html[data-phase="call"]) { overflow: hidden; }
+  :global(html[data-phase="picker"]) body,
+  :global(html[data-phase="call"]) body { overflow: hidden; }
+
+  :global(html[data-phase="picker"]) .scene-call,
+  :global(html[data-phase="picker"]) .scene,
+  :global(html[data-phase="picker"]) .footer { display: none !important; }
+
+  :global(html[data-phase="call"]) .scene-picker,
+  :global(html[data-phase="call"]) .scene,
+  :global(html[data-phase="call"]) .footer { display: none !important; }
+
+  /* Reveal animation when phase clears */
+  :global(html:not([data-phase])) .scene {
     animation: scene-reveal 700ms var(--ease-out) both;
   }
-  :global(html:not(.gate-locked)) .scene-origin       { animation-delay: 100ms; }
-  :global(html:not(.gate-locked)) .scene-philosophies { animation-delay: 260ms; }
-  :global(html:not(.gate-locked)) .scene-phase        { animation-delay: 420ms; }
-  :global(html:not(.gate-locked)) .scene-dojo         { animation-delay: 580ms; }
+  :global(html:not([data-phase])) .scene-origin       { animation-delay: 100ms; }
+  :global(html:not([data-phase])) .scene-philosophies { animation-delay: 260ms; }
+  :global(html:not([data-phase])) .scene-phase        { animation-delay: 420ms; }
+  :global(html:not([data-phase])) .scene-dojo         { animation-delay: 580ms; }
   @keyframes scene-reveal {
     from { opacity: 0; transform: translateY(28px); }
     to   { opacity: 1; transform: none; }
   }
   @media (prefers-reduced-motion: reduce) {
-    :global(html:not(.gate-locked)) .scene:not(.scene-call) {
+    .fade, .btn-accept, .call-hint {
       animation: none !important;
+      opacity: 1 !important; transform: none !important;
     }
+    :global(html:not([data-phase])) .scene { animation: none !important; }
   }
 </style>
 
 <script is:inline>
-  // Unlock the gate on Accept click. Smooth-scrolls into the Origin scene
-  // once the below-the-fold content is rendered.
+  /* =====================================================================
+     Identity + phase orchestration
+     Picker card click  → save identity, personalize Call, switch to "call"
+     Accept button      → save accepted flag, unlock everything
+     Guest link         → save guest identity + accepted, unlock everything
+     Reset "not you?"   → clear identity, drop back to "picker"
+     ===================================================================== */
   (function () {
-    function wire() {
-      var btn = document.getElementById('accept-btn');
-      if (!btn) return;
-      btn.addEventListener('click', function () {
-        document.documentElement.classList.remove('gate-locked');
-        // wait one frame for display:none to lift, then scroll
-        requestAnimationFrame(function () {
-          var target = document.getElementById('origin');
-          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
+    var IDENTITIES = {
+      tim:   { name: 'Tim',   action: 'LEAD',      sub: 'The Dojo is yours to build.' },
+      gabe:  { name: 'Gabe',  action: 'TELL',      sub: 'Every frame is your canvas.' },
+      pavan: { name: 'Pavan', action: 'BUILD',     sub: 'The systems are yours to wire.' },
+      erik:  { name: 'Erik',  action: 'BROADCAST', sub: 'Lucky 13 is the home stage.' },
+      guest: { name: 'Guest', action: 'EXPLORE',   sub: 'Take a look around.' }
+    };
+
+    function personalizeCall(id) {
+      var m = IDENTITIES[id]; if (!m) return;
+      var action = document.getElementById('draft-action');
+      var sub    = document.getElementById('draft-sub');
+      var chip   = document.getElementById('chip-name');
+      if (action) action.textContent = m.action;
+      if (sub)    sub.textContent    = m.sub;
+      if (chip)   chip.textContent   = m.name;
+    }
+
+    function setPhase(next) {
+      if (next === null) delete document.documentElement.dataset.phase;
+      else document.documentElement.dataset.phase = next;
+    }
+
+    function scrollToId(id) {
+      var el = document.getElementById(id);
+      if (el) requestAnimationFrame(function () {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     }
+
+    function saveIdentity(id)  { try { localStorage.setItem('dojo:identity', id); } catch(_){} }
+    function saveAccepted()    { try { localStorage.setItem('dojo:accepted', 'true'); } catch(_){} }
+    function clearIdentity()   { try {
+      localStorage.removeItem('dojo:identity');
+      localStorage.removeItem('dojo:accepted');
+    } catch(_){} }
+
+    function wire() {
+      // On load: if identity already exists (returning visitor), personalize Call now
+      var storedId = null;
+      try { storedId = localStorage.getItem('dojo:identity'); } catch(_) {}
+      if (storedId) personalizeCall(storedId);
+
+      // Picker cards → choose identity
+      var cards = document.querySelectorAll('[data-ninja]');
+      cards.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var id = btn.getAttribute('data-ninja');
+          if (!id) return;
+          var isGuest = btn.getAttribute('data-guest') === 'true';
+
+          // Chosen-state animation on the card (skipped for guest)
+          if (!isGuest) {
+            cards.forEach(function (c) { c.classList.remove('is-chosen'); });
+            btn.classList.add('is-chosen');
+            btn.setAttribute('aria-checked', 'true');
+          }
+          saveIdentity(id);
+          personalizeCall(id);
+
+          if (isGuest) {
+            // Guest goes straight in — skip Call entirely
+            saveAccepted();
+            setTimeout(function () {
+              setPhase(null);
+              scrollToId('origin');
+            }, 250);
+          } else {
+            // Short pause for the chosen-state animation to read, then transition to Call
+            setTimeout(function () {
+              setPhase('call');
+              window.scrollTo({ top: 0, behavior: 'auto' });
+            }, 550);
+          }
+        });
+      });
+
+      // Accept button → lock in accepted, unlock everything, scroll to Origin
+      var accept = document.getElementById('accept-btn');
+      if (accept) accept.addEventListener('click', function () {
+        saveAccepted();
+        setPhase(null);
+        scrollToId('origin');
+      });
+
+      // "not you?" reset — clear identity + drop back to picker
+      var reset = document.getElementById('reset-identity');
+      if (reset) reset.addEventListener('click', function () {
+        clearIdentity();
+        setPhase('picker');
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      });
+    }
+
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', wire);
-    } else {
-      wire();
+    } else { wire(); }
+  })();
+
+  /* Philosophy card reveal — trigger the fade+lift when cards scroll into view */
+  (function () {
+    function reveal() {
+      var cards = document.querySelectorAll('.phil-card');
+      if (!cards.length) return;
+      if (!('IntersectionObserver' in window)) {
+        cards.forEach(function (c) { c.classList.add('is-in-view'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-in-view');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.2, rootMargin: '0px 0px -60px 0px' });
+      cards.forEach(function (c) { io.observe(c); });
     }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', reveal);
+    } else { reveal(); }
   })();
 </script>
