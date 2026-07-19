@@ -111,9 +111,20 @@ const identities = [
     <div class="call-inner">
       <p class="call-kicker fade fade-1">THE 90-DAY SPRINT · V01</p>
       <h1 id="call-title" class="call-title fade fade-2">
-        You've been drafted to<br /><span class="orange" id="draft-action">LEAD</span> this sprint.
+        You've been <span class="orange">drafted.</span>
       </h1>
-      <p class="call-lead fade fade-3" id="draft-sub">The Dojo is yours to build.</p>
+      <div class="call-emblem fade fade-3" id="call-emblem">
+        {identities.map(n => (
+          <Image
+            src={n.emblem}
+            alt={`${n.name} — ninja emblem`}
+            data-for={n.id}
+            loading="eager"
+            widths={[320, 480, 640]}
+            sizes="(max-width: 640px) 68vw, 320px"
+          />
+        ))}
+      </div>
       <p class="call-body fade fade-4">
         This is the 90-day sprint to elevate Ninja-360 into the Key Person of
         Influence brand of the Kansas City metro — and you're part of how we
@@ -482,6 +493,16 @@ const identities = [
     text-shadow: 0 2px 40px rgba(0, 0, 0, 0.4);
   }
   .call-title .orange { color: var(--orange); }
+  .call-emblem {
+    display: flex; justify-content: center;
+    margin-top: 26px;
+  }
+  .call-emblem img {
+    display: none;
+    width: min(320px, 68vw); height: auto;
+    filter: drop-shadow(0 14px 44px rgba(244, 121, 32, 0.35));
+  }
+  .call-emblem img.is-active { display: block; }
   .call-lead {
     font-family: var(--font-display); font-weight: 700;
     text-transform: uppercase; letter-spacing: 2px;
@@ -1023,12 +1044,12 @@ const identities = [
 
     function personalizeCall(id) {
       var m = IDENTITIES[id]; if (!m) return;
-      var action = document.getElementById('draft-action');
-      var sub    = document.getElementById('draft-sub');
-      var chip   = document.getElementById('chip-name');
-      if (action) action.textContent = m.action;
-      if (sub)    sub.textContent    = m.sub;
-      if (chip)   chip.textContent   = m.name;
+      var chip = document.getElementById('chip-name');
+      if (chip) chip.textContent = m.name;
+      var imgs = document.querySelectorAll('#call-emblem img');
+      imgs.forEach(function (img) {
+        img.classList.toggle('is-active', img.getAttribute('data-for') === id);
+      });
     }
 
     function setPhase(next) {
