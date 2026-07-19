@@ -28,11 +28,11 @@ Both halves matter. The blade stays sharp — new tools, new tests, new speed �
 ### What sharpening looks like here
 
 <div class="grid2">
-<div class="box"><strong>Ninja Warp Speed</strong> — Automating the proven editing system so a shoot becomes a review-ready draft with near-zero handling. Faster to publish than anyone.</div>
-<div class="box"><strong>Try, fail, learn</strong> — Pilots before promises. The LiveSmart shoot calibrates real numbers before we sell the package.</div>
+<div class="box"><strong>Ninja Warp Speed</strong> — Automating the proven editing system so a shoot becomes a review-ready draft with near-zero handling. Faster to publish than anyone. <a class="moreinfo" href="/scrolls/warp-speed" title="The full SOW/SOP">💡 More info</a></div>
+<div class="box"><strong>Try, fail, learn</strong> — Pilots before promises. The LiveSmart shoot calibrates real numbers before we sell the package. <a class="moreinfo" href="/scrolls/partner-pay#pilot" title="The Gabe pilot">💡 More info</a></div>
 </div>
 <div class="grid2">
-<div class="box"><strong>Disciplined execution</strong> — Locked SOPs, named settings, written "done" specs. Experimentation lives on top of a system, not instead of one.</div>
+<div class="box"><strong>Disciplined execution</strong> — Locked SOPs, named settings, written "done" specs. Experimentation lives on top of a system, not instead of one. <a class="moreinfo" href="/roadmaps/pavan" title="The interleaved build plan">💡 More info</a></div>
 <div class="box"><strong>Honest reflection</strong> — Friday wins-and-stars, re-scores, and postmortems. We say what worked out loud — and what didn't.</div>
 </div>
 

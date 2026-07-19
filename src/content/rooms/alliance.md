@@ -25,11 +25,11 @@ No small crew has everything. The Alliance is how a boutique operation delivers 
 ### How an ally joins
 
 <div class="grid2">
-<div class="box"><strong>One clear entry point</strong> — Every ally plugs into a specific lane. Lucky 13 enters through the studio segment of the show — nowhere else in the pipeline.</div>
-<div class="box"><strong>Terms in writing</strong> — Trades are timeboxed with a written "done." Handshakes start relationships; documents keep them.</div>
+<div class="box"><strong>One clear entry point</strong> — Every ally plugs into a specific lane. Lucky 13 enters through the studio segment of the show — nowhere else in the pipeline. <a class="moreinfo" href="/scrolls/lucky13-brief" title="The Lucky 13 brief">💡 More info</a></div>
+<div class="box"><strong>Terms in writing</strong> — Trades are timeboxed with a written "done." Handshakes start relationships; documents keep them. <a class="moreinfo" href="/scrolls/partner-pay#rules" title="Cash rule 7 — trades timeboxed 90 days">💡 More info</a></div>
 </div>
 <div class="grid2">
-<div class="box"><strong>The LLC owns the work</strong> — Everything created inside the pipeline is work-for-hire to Ninja-360 Digital Media LLC. Allies keep their brands; the alliance keeps its assets.</div>
+<div class="box"><strong>The LLC owns the work</strong> — Everything created inside the pipeline is work-for-hire to Ninja-360 Digital Media LLC. Allies keep their brands; the alliance keeps its assets. <a class="moreinfo" href="/scrolls/warp-speed#ownership" title="The ownership clause">💡 More info</a></div>
 <div class="box"><strong>Earned depth</strong> — Roles expand when results land, not before. Potential co-hosts stay "potential" until locked.</div>
 </div>
 

@@ -8,7 +8,7 @@ order: 4
 guide: "creative"
 accent: "orange"
 variant: "content"
-cta: "**Ownership:** Ninja-360 Digital Media LLC owns all the IP. Partners build &amp; operate; the LLC owns."
+cta: "**Ownership:** Ninja-360 Digital Media LLC owns all the IP. Partners build &amp; operate; the LLC owns. <a class='moreinfo' href='/scrolls/warp-speed#ownership' title='The ownership clause'>💡 More info</a>"
 ref:
   - "/scrolls/warp-speed"
   - "/pipeline"
@@ -30,7 +30,7 @@ We shoot real places and real people — never staged, never stock, never someon
 
 <div class="grid2">
 <div class="box"><strong>Listen first</strong> — The interview comes before the shot list. We don't know what to film until we know what matters.</div>
-<div class="box"><strong>Two tracks, one visit</strong> — Visibility capture (Tim) + story capture (Gabe) from the same trip. The client deliverable and the show share the same truth.</div>
+<div class="box"><strong>Two tracks, one visit</strong> — Visibility capture (Tim) + story capture (Gabe) from the same trip. The client deliverable and the show share the same truth. <a class="moreinfo" href="/scrolls/warp-speed" title="The one-visit / two-track model">💡 More info</a></div>
 </div>
 <div class="grid2">
 <div class="box"><strong>Beautiful is the standard</strong> — Emotionally compelling isn't extra credit; it's the deliverable.</div>

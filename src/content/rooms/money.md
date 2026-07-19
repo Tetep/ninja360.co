@@ -19,15 +19,15 @@ ref: "/scrolls/partner-pay"
 ### Two ledgers, zero confusion
 
 <div class="grid2">
-<div class="box"><strong>Ledger A — Existing Ninja Clients</strong> — Tim's book, built before the engine. Crew field help is paid work-for-hire: real pay, real training, no equity confusion.</div>
-<div class="box"><strong>Ledger B — The New Ninja Dojo Engine</strong> — Starts at $0. The only shared money. Funded by fresh clients and the show. Everyone watches it grow from zero together.</div>
+<div class="box"><strong>Ledger A — Existing Ninja Clients</strong> — Tim's book, built before the engine. Crew field help is paid work-for-hire: real pay, real training, no equity confusion. <a class="moreinfo" href="/scrolls/partner-pay#ledgers" title="The two-ledger model">💡 More info</a></div>
+<div class="box"><strong>Ledger B — The New Ninja Dojo Engine</strong> — Starts at $0. The only shared money. Funded by fresh clients and the show. Everyone watches it grow from zero together. <a class="moreinfo" href="/scrolls/partner-pay#ledgers" title="The two-ledger model">💡 More info</a></div>
 </div>
 
-<div class="stat">Engine money follows engine revenue. Nobody gets paid on hope.</div>
+<div class="stat">Engine money follows engine revenue. Nobody gets paid on hope. <a class="moreinfo" href="/scrolls/partner-pay#rules" title="Cash rule 2">💡</a></div>
 
 ### The cash rules are a sharpened blade
 
-Disciplined execution (Philosophy #3) applied to dollars: commissions only after client cash lands · margin floors on subcontracted builds · trades timeboxed with a written "done" · no cost in writing, no resale. The rules exist so the relationships never have to absorb a money surprise.
+Disciplined execution (Philosophy #3) applied to dollars: commissions only after client cash lands · margin floors on subcontracted builds · trades timeboxed with a written "done" · no cost in writing, no resale. The rules exist so the relationships never have to absorb a money surprise. <a class="moreinfo" href="/scrolls/partner-pay#rules" title="All seven cash rules">💡 the seven rules</a>
 
 ### Honest reflection, in numbers
 
