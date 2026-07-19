@@ -32,6 +32,7 @@ const ctaHtml = room.data.cta
     guide={room.data.guide}
     plain={room.data.plain}
     roomHeroImage={roomHeroImages[room.slug as keyof typeof roomHeroImages]}
+    ref={room.data.ref}
   />
 
   <div class="prose">
@@ -41,8 +42,5 @@ const ctaHtml = room.data.cta
   {ctaHtml && (
     <div class="action" set:html={ctaHtml} />
   )}
-
-  {room.data.ref && (
-    <div class="ref">{room.data.ref}</div>
-  )}
+  {/* ref renders as source chip in RoomHead — no bottom rendering needed */}
 </DojoLayout>

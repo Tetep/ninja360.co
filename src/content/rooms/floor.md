@@ -8,7 +8,9 @@ order: 7
 guide: "architect"
 accent: "deep"
 variant: "floor"
-ref: "Click a status to cycle Queued → In Motion → Shipped ★. Type into any cell. This mirrors your Google Doc board + Chat thread."
+ref:
+  - "/scrolls/warp-speed"
+  - "/roadmaps/pavan"
 ---
 
 ### The training floor

@@ -165,6 +165,57 @@ h3 { font-size: 17px; font-weight: 700; color: var(--charcoal); margin: 18px 0 7
   padding: 3px 11px; font-size: 12.5px; margin: 2px 3px 2px 0;
 }
 
+/* ==== 💡 More info — inline affordance next to stats/terms/claims ====
+ * Author convention:
+ *   <a class="moreinfo" href="/scrolls/kpi-gameplan">💡 More info</a>
+ *   <a class="moreinfo" href="/scrolls/warp-speed" data-tip="Warp Speed">💡</a>
+ * Sits inline in prose or beside .stat blocks without breaking flow.
+ * No JS. Optional data-tip renders as a native browser tooltip via `title`. */
+.moreinfo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  vertical-align: baseline;
+  margin: 0 3px;
+  padding: 1px 9px 2px;
+  background: var(--warm);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  color: var(--deep);
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  box-shadow: var(--shadow-0);
+  transition: background var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-fast) var(--ease-out);
+}
+.moreinfo:hover, .moreinfo:focus-visible {
+  background: var(--focus);
+  border-color: var(--orange);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-1);
+  text-decoration: none;
+  outline: none;
+}
+/* Dark surfaces (e.g. inside a black hero band): invert */
+:global(.on-dark) .moreinfo,
+.scene-philosophies .moreinfo {
+  background: rgba(244, 121, 32, 0.12);
+  border-color: rgba(244, 121, 32, 0.45);
+  color: #FFB984;
+}
+:global(.on-dark) .moreinfo:hover,
+.scene-philosophies .moreinfo:hover {
+  background: rgba(244, 121, 32, 0.24);
+  border-color: var(--orange);
+  color: #FFFFFF;
+}
+
 .action {
   background: linear-gradient(180deg, var(--charcoal), #2E2E2E);
   color: var(--white);
@@ -176,6 +227,53 @@ h3 { font-size: 17px; font-weight: 700; color: var(--charcoal); margin: 18px 0 7
 .action b { color: var(--orange); }
 
 .ref { font-size: 12.5px; color: var(--dead); font-style: italic; margin-top: 8px; }
+
+/* ==== 📜 Source chip(s) — page-level "this room's source of truth" ====
+ * Rendered from `ref` frontmatter by RoomHead, or inline on roadmap pages.
+ * Sits below the guide row (or under the back link on legacy roadmaps). */
+.source-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.source-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: var(--warm);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  color: var(--deep);
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 11.5px;
+  text-decoration: none;
+  box-shadow: var(--shadow-0);
+  transition: background var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-fast) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
+}
+.source-chip:hover, .source-chip:focus-visible {
+  background: var(--focus);
+  border-color: var(--orange);
+  box-shadow: var(--shadow-1);
+  transform: translateY(-1px);
+  text-decoration: none;
+  outline: none;
+}
+.source-chip .src-icon { font-size: 13px; }
+.source-chip .src-target {
+  color: var(--gray);
+  font-weight: 600;
+  text-transform: lowercase;
+  letter-spacing: 0.4px;
+}
+.source-chip .src-target::before { content: '· '; opacity: 0.6; }
 
 /* ==== "Go deeper" link row — the uniform summary→depth path ==== */
 .godeeper {

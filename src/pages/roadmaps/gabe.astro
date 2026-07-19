@@ -6,6 +6,13 @@ import Breadcrumb from '../../components/Breadcrumb.astro';
 <DojoLayout title="Gabe Roadmap · The Ninja-360 Dojo">
   <Breadcrumb trail={[{ label: 'Dojo', href: '/' }, { label: 'Crew', href: '/crew' }, { label: 'Gabe Roadmap' }]} />
   <a class="back" href="/crew">← Back to the Crew</a>
+  <div class="source-row" aria-label="Source artifacts">
+    <a class="source-chip" href="/scrolls/warp-speed">
+      <span class="src-icon" aria-hidden="true">📜</span>
+      <span class="src-label">Source</span>
+      <span class="src-target">warp speed</span>
+    </a>
+  </div>
   <section class="frame-wrap" aria-labelledby="gabe-roadmap-title">
     <h2 id="gabe-roadmap-title">Gabe Roadmap</h2>
     <p class="epigraph">"Fall in love with the true story &mdash; then tell it beautifully."</p>

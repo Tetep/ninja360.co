@@ -18,6 +18,7 @@ const { Content } = await room.render();
     guide={room.data.guide}
     plain={room.data.plain}
     roomHeroImage={roomHeroImages.floor}
+    ref={room.data.ref}
   />
 
   <div class="prose">
@@ -74,7 +75,7 @@ const { Content } = await room.render();
   </div>
   <button class="addbtn" id="add-mission">+ Add mission</button>
 
-  {room.data.ref && <div class="ref">{room.data.ref}</div>}
+  {/* ref renders as source chip in RoomHead — no bottom rendering needed */}
 </DojoLayout>
 
 <style>

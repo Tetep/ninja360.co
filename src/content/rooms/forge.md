@@ -9,7 +9,9 @@ guide: "creative"
 accent: "orange"
 variant: "content"
 cta: "**Ownership:** Ninja-360 Digital Media LLC owns all the IP. Partners build &amp; operate; the LLC owns."
-ref: "Full detail: the Ninja Warp Speed blueprint."
+ref:
+  - "/scrolls/warp-speed"
+  - "/pipeline"
 ---
 
 ### Where the story gets made

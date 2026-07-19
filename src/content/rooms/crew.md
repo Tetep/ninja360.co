@@ -8,7 +8,7 @@ order: 6
 guide: "sensei"
 accent: "orange"
 variant: "crew"
-ref: "Full detail: the Three Doors artifact. (Invitations, not closed deals — settle terms after.)"
+ref: "/scrolls/three-doors"
 ---
 
 ### The philosophies start at home

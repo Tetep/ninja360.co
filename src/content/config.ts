@@ -16,7 +16,7 @@ const rooms = defineCollection({
     parked: z.boolean().default(false),                                  // "Someday" tiles
     variant: z.enum(['content', 'crew', 'floor']).default('content'),    // page template
     cta: z.string().optional(),                                          // bottom action line
-    ref: z.string().optional(),                                          // "Full detail: ..." reference
+    ref: z.union([z.string(), z.array(z.string())]).optional(),          // "Source" — a single URL or an array
   }),
 });
 

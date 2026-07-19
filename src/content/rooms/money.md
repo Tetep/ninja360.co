@@ -9,7 +9,7 @@ guide: "sensei"
 accent: "deep"
 variant: "content"
 cta: "**Nearest cash:** confirm the 7/9 IDS field day and invoice. That's your book, and it steadies everything."
-ref: "Full detail: the Money Strategy workbook (two-ledger V2)."
+ref: "/scrolls/partner-pay"
 ---
 
 ### Truth beautifully told — including the ledger

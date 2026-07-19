@@ -25,6 +25,7 @@ const partners = (await getCollection('partners')).sort(
     guide={room.data.guide}
     plain={room.data.plain}
     roomHeroImage={roomHeroImages.crew}
+    ref={room.data.ref}
   />
 
   <div class="prose">
@@ -87,7 +88,7 @@ const partners = (await getCollection('partners')).sort(
     </article>
   ))}
 
-  {room.data.ref && <div class="ref">{room.data.ref}</div>}
+  {/* ref renders as source chip in RoomHead — no bottom rendering needed */}
 </DojoLayout>
 
 <style>

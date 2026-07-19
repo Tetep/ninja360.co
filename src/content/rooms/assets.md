@@ -8,7 +8,7 @@ order: 3
 guide: "sensei"
 accent: "orange"
 variant: "content"
-ref: "Full detail: the 24 Assets Roadmap artifact."
+ref: "/roadmaps/assets"
 ---
 
 ### Why assets, not just effort

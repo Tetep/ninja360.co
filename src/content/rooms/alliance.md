@@ -9,7 +9,7 @@ guide: "ally"
 accent: "deep"
 variant: "content"
 cta: "**Monday:** sound out Erik with the Lucky 13 brief in hand."
-ref: "Full detail: the Lucky 13 Negotiation Brief."
+ref: "/scrolls/lucky13-brief"
 ---
 
 ### Why alliances exist
