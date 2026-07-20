@@ -965,6 +965,33 @@ const identities = [
   @media (max-width: 800px) {
     .phil-grid { grid-template-columns: 1fr; }
   }
+  @media (max-width: 900px) {
+    .ninja-grid {
+      display: flex;
+      gap: 12px;
+      margin: 28px -2px 20px;
+      padding: 2px 2px 10px;
+      overflow-x: auto;
+      overflow-y: visible;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: 2px;
+      overscroll-behavior-x: contain;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x;
+    }
+    .ninja-grid::-webkit-scrollbar { height: 6px; }
+    .ninja-grid::-webkit-scrollbar-thumb {
+      background: rgba(244, 121, 32, 0.5);
+      border-radius: 999px;
+    }
+    .ninja-grid::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.08); }
+    .ninja-card {
+      flex: 0 0 min(76vw, 320px);
+      scroll-snap-align: center;
+      scroll-snap-stop: always;
+    }
+  }
+
   @media (max-width: 640px) {
     .head-row { grid-template-columns: 1fr; gap: 10px; }
     .head-flank { max-width: 150px; opacity: 0.92; }
@@ -975,13 +1002,12 @@ const identities = [
     .scene { padding: 56px 0; }
     .scene-picker, .scene-call { padding: 40px 20px; }
     .picker-title { font-size: clamp(36px, 10vw, 56px); }
-    .ninja-grid { gap: 12px; margin: 28px 0 20px; }
     .card-portrait { max-width: 140px; }
     .card-name { font-size: 15px; }
   }
   @media (max-width: 480px) {
     .wall { grid-template-columns: 1fr; }
-    .ninja-grid { grid-template-columns: 1fr; }
+    .ninja-card { flex-basis: min(84vw, 320px); }
     .card-portrait { max-width: 180px; }
     .call-actions { flex-direction: column; gap: 14px; }
     .btn-accept, .btn-skip { min-height: 44px; }
@@ -993,11 +1019,6 @@ const identities = [
      [data-phase="call"]   → only .scene-call
      (no data-phase)       → everything visible (accepted / guest)
      ===================================================================== */
-  :global(html[data-phase="picker"]),
-  :global(html[data-phase="call"]) { overflow: hidden; }
-  :global(html[data-phase="picker"]) body,
-  :global(html[data-phase="call"]) body { overflow: hidden; }
-
   :global(html[data-phase="picker"]) .scene-call,
   :global(html[data-phase="picker"]) .scene,
   :global(html[data-phase="picker"]) .footer { display: none !important; }
@@ -1052,10 +1073,31 @@ const identities = [
       imgs.forEach(function (img) {
         img.classList.toggle('is-active', img.getAttribute('data-for') === id);
       });
+    }
 
     function setPhase(next) {
       if (next === null) delete document.documentElement.dataset.phase;
       else document.documentElement.dataset.phase = next;
+    }
+
+    function syncPhaseFromStorage() {
+      var id = null;
+      var ok = null;
+      try {
+        id = localStorage.getItem('dojo:identity');
+        ok = localStorage.getItem('dojo:accepted');
+      } catch (_) {}
+
+      if (!id) setPhase('picker');
+      else if (!ok) setPhase('call');
+      else setPhase(null);
+
+      // iOS Safari can occasionally retain a stale non-scrollable state
+      // across page restores, so force-clear inline overflow when unlocked.
+      if (!document.documentElement.dataset.phase) {
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+      }
     }
 
     function scrollToId(id) {
@@ -1073,6 +1115,8 @@ const identities = [
     } catch(_){} }
 
     function wire() {
+      syncPhaseFromStorage();
+
       // On load: if identity already exists (returning visitor), personalize Call now
       var storedId = null;
       try { storedId = localStorage.getItem('dojo:identity'); } catch(_) {}
@@ -1132,6 +1176,8 @@ const identities = [
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', wire);
     } else { wire(); }
+
+    window.addEventListener('pageshow', syncPhaseFromStorage);
   })();
 
   /* Philosophy card reveal — trigger the fade+lift when cards scroll into view */
