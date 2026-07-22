@@ -125,9 +125,9 @@ const partners = (await getCollection('partners')).sort(
     width: 72px;
     height: 72px;
     object-fit: contain;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.92);
-    border: 2px solid rgba(255, 255, 255, 0.96);
+    filter: drop-shadow(0 0 6px rgba(244, 121, 32, 0.38))
+      drop-shadow(0 0 14px rgba(244, 121, 32, 0.16))
+      drop-shadow(0 2px 5px rgba(0, 0, 0, 0.15));
   }
   .dh .who .n {
     color: var(--white);
