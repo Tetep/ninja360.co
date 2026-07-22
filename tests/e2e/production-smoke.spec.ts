@@ -20,6 +20,8 @@ const routes = [
   '/roadmaps/assets',
   '/roadmaps/erik',
   '/roadmaps/tim',
+  '/scrolls/found-kc-playbook',
+  '/scrolls/gi-ninja-lane',
   '/scrolls/kpi-gameplan',
   '/scrolls/mission-board',
   '/scrolls/operating-rhythm',

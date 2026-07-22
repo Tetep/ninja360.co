@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Found KC · Episode Playbook · Ninja-360</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#F47920; --deep:#E05F00; --charcoal:#3D3D3D; --gray:#404040;
+    --warm:#F9F7F5; --line:#E0DCD8; --dead:#9b948e; --warn:#B03A2E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:#fff;line-height:1.55;font-size:16.5px}
+  .accent-top{height:4px;background:var(--orange)}
+  .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+  section{padding:38px 0}
+  h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif;line-height:1.1;text-transform:uppercase;letter-spacing:.5px}
+  h1{font-size:42px;font-weight:800}
+  h2{font-size:26px;font-weight:800;color:var(--deep);margin:0 0 14px;border-bottom:1px solid var(--line);padding-bottom:5px}
+  h3{font-size:19px;font-weight:700;margin:16px 0 6px}
+  p{margin-bottom:11px}
+  .alt{background:var(--warm)}
+  .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:var(--orange)}
+  .kicker{font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:12.5px;color:var(--deep);margin-bottom:8px}
+  .sub{font-size:18px;color:var(--gray);max-width:700px}
+  .meta{font-size:13px;color:#7a746f;margin-top:12px}
+
+  /* the tagline card — cut to black */
+  .tagline{background:#111;color:#fff;border-radius:8px;padding:22px 26px;margin-top:20px;text-align:center}
+  .tagline .line{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;letter-spacing:.5px;line-height:1.3;font-style:italic;text-transform:none}
+  .tagline .line b{color:var(--orange);font-style:normal}
+  .tagline .note{font-size:12.5px;color:#9b948e;margin-top:8px;text-transform:uppercase;letter-spacing:1.5px;font-family:'Barlow Condensed',sans-serif;font-weight:700}
+
+  /* three jobs */
+  .buckets{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:8px}
+  .bucket{border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:#fff}
+  .bucket .n{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.5px;color:var(--deep)}
+  .bucket .h{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:17px;color:var(--charcoal);margin:3px 0 4px}
+  .bucket p{font-size:13.5px;margin:0;color:var(--gray)}
+
+  /* the three acts */
+  .act{border:2px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;margin-top:16px}
+  .act .top{padding:12px 18px;border-bottom:1px solid var(--line);background:var(--warm);display:flex;align-items:baseline;gap:12px}
+  .act .num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;color:var(--orange);line-height:1}
+  .act .name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.5px;color:var(--charcoal)}
+  .act .time{margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;color:var(--dead);text-transform:uppercase;letter-spacing:1px}
+  .act .body{padding:14px 18px 16px;font-size:15px}
+  .act .body ul{list-style:none;margin:0}
+  .act .body li{padding:7px 0 7px 20px;border-bottom:1px dashed var(--line);position:relative}
+  .act .body li:before{content:"·";position:absolute;left:4px;color:var(--orange);font-weight:800;font-size:20px;line-height:1.1}
+  .act .body li:last-child{border-bottom:none}
+  .act .body b{color:var(--deep)}
+  .act.one{border-color:var(--charcoal)}
+  .act.two{border-color:var(--orange)}
+  .act.three{border-color:var(--deep)}
+  .actrule{background:#fff;border:2px dashed var(--warn);border-radius:6px;padding:10px 16px;margin-top:10px;font-size:14px}
+  .actrule b{color:var(--warn)}
+
+  /* the rules */
+  .rules{counter-reset:rule;list-style:none;margin:8px 0 0}
+  .rules li{position:relative;padding:14px 16px 14px 62px;background:var(--warm);border-left:4px solid var(--orange);margin-bottom:9px;font-size:15px}
+  .rules li:before{counter-increment:rule;content:counter(rule);position:absolute;left:14px;top:12px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;color:var(--orange);line-height:1;width:34px;text-align:center}
+  .rules li b{color:var(--deep)}
+
+  /* crew lanes table */
+  table{border-collapse:collapse;width:100%;font-size:14.5px;background:#fff}
+  th{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.5px;font-size:14px;text-align:left;color:var(--deep);border-bottom:2px solid var(--orange);padding:8px 10px}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  td b{color:var(--charcoal)}
+
+  /* next moves */
+  .moves{list-style:none;margin:8px 0 0}
+  .moves li{padding:9px 0 9px 34px;border-bottom:1px dashed var(--line);position:relative;font-size:15px}
+  .moves li:before{content:"☐";position:absolute;left:6px;top:7px;color:var(--orange);font-size:18px}
+  .moves li:last-child{border-bottom:none}
+  .moves b{color:var(--deep)}
+
+  .callout{background:var(--charcoal);color:#fff;border-radius:8px;padding:18px 22px;margin-top:20px}
+  .callout .disp{color:var(--orange);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .callout p{color:#e8e2dc;font-size:14.5px;margin:0}
+  .callout b{color:#fff}
+
+  .pill{display:inline-block;background:var(--warm);border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--deep)}
+
+  .footer{font-size:12.5px;color:#8a847e;margin-top:24px;border-top:1px solid var(--line);padding:14px 0 4px}
+  .n360-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .n360-tw table{min-width:520px}
+  @media(max-width:720px){
+    .buckets{grid-template-columns:1fr}
+    h1{font-size:32px}
+    .tagline .line{font-size:18px}
+  }
+  @media print{@page{margin:9mm}body{font-size:11.5px}.callout,.tagline,.act,.actrule{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+<meta name="description" content="Found KC · Episode Playbook — the three-act arc behind every episode.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Ninja-360 Dojo">
+<meta property="og:title" content="Found KC · Episode Playbook">
+<meta property="og:description" content="One episode = one local KC business rescued from invisibility. The arc, the rules, the lanes.">
+
+<link rel='stylesheet' href='/share/responsive-patch.css'>
+</head>
+<body>
+<!-- n360-unav: unified dojo nav -->
+<style>
+  .n360bar{position:sticky;top:0;z-index:90;background:#3D3D3D;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;min-height:48px}
+  .n360bar .n360wm{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:#F47920;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav{display:flex;gap:3px;margin-left:auto}
+  .n360bar nav a{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:13px;color:#e8e2dc;padding:0 10px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav a:hover{background:rgba(244,121,32,.25);color:#fff}
+  .n360toggle{display:none;width:44px;height:44px;margin-left:auto;flex:0 0 auto;border:none;border-radius:6px;background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .n360toggle span{display:block;width:22px;height:2px;background:#fff;border-radius:1px}
+  .n360toggle:hover{background:rgba(244,121,32,.25)}
+  .n360accent{height:4px;background:#F47920}
+  .n360crumb{background:#F9F7F5;border-bottom:1px solid #E0DCD8;font-size:13px;padding:7px 18px;color:#404040}
+  .n360crumb a{color:#E05F00;text-decoration:none;font-weight:700}
+  .n360crumb a:hover{text-decoration:underline}
+  .n360crumb .sep{color:#9B948E;margin:0 5px}
+  @media(max-width:640px){
+    .n360bar{flex-wrap:nowrap}
+    .n360toggle{display:flex}
+    .n360bar nav{display:none;flex-direction:column;gap:0;margin-left:0;position:absolute;top:100%;left:0;right:0;background:#3D3D3D;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 12px 20px rgba(0,0,0,.25)}
+    .n360bar.open nav{display:flex}
+    .n360bar nav a{font-size:15px;padding:13px 18px;border-radius:0;border-bottom:1px solid rgba(255,255,255,.1);min-height:48px}
+    .n360bar nav a:last-child{border-bottom:none}
+  }
+</style>
+<div class="n360bar">
+  <a class="n360wm" href="/">NINJA-360</a>
+  <button class="n360toggle" type="button" aria-expanded="false" aria-controls="n360nav" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <nav id="n360nav">
+    <a href="/">Dojo</a>
+    <a href="/gameplan">Game Plan</a>
+    <a href="/scrolls">Scrolls</a>
+    <a href="/crew">Crew</a>
+  </nav>
+</div>
+<div class="n360accent"></div>
+<div class="n360crumb"><a href="/">Dojo</a><span class="sep">&rsaquo;</span><a href="/scrolls">Scrolls</a><span class="sep">&rsaquo;</span><span>Found KC Playbook</span></div>
+<script>
+  (function(){
+    var t=document.querySelector('.n360toggle'),b=document.querySelector('.n360bar');
+    if(t&&b)t.addEventListener('click',function(){var o=b.classList.toggle('open');t.setAttribute('aria-expanded',String(o));});
+  })();
+</script>
+
+<div class="accent-top"></div>
+
+<section>
+  <div class="wrap">
+    <div class="wordmark">NINJA-360</div>
+    <div class="kicker" style="margin-top:16px">The Flagship Show · Episode Playbook</div>
+    <h1>Found KC —<br>We Put You On The Map</h1>
+    <p class="sub" style="margin-top:14px"><b>MAP = the Ninja-360 process: Make · Amplify · Promote.</b> YouTube-first documentary series. One episode = one local KC business rescued from invisibility. Day-in-the-life style — real work, real owner, real transformation.</p>
+    <div class="tagline">
+      <div class="line">"You can hire a web developer, a photographer, a videographer… <b>or you can just hire a ninja.</b>"</div>
+      <div class="note">Lands at the end of every episode · cut to black</div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 id="why">1 · Why This Show Exists</h2>
+    <p style="max-width:680px">Every episode does <b>three jobs at once</b>. Most content does one job. Found KC does three — this is the client-acquisition machine wearing a story's clothes.</p>
+    <div class="buckets">
+      <div class="bucket">
+        <div class="n">Job 1</div>
+        <div class="h">Markets the Business</div>
+        <p>The featured owner gets cinema-grade media and a story worth telling.</p>
+      </div>
+      <div class="bucket">
+        <div class="n">Job 2</div>
+        <div class="h">Markets Ninja-360 by Demonstration</div>
+        <p>No pitch, just proof. The viewer watches the work and thinks <b>"I want that for my place."</b></p>
+      </div>
+      <div class="bucket">
+        <div class="n">Job 3</div>
+        <div class="h">Becomes a Permanent Case Study</div>
+        <p>Send it to the next prospect. The library compounds.</p>
+      </div>
+    </div>
+    <div class="callout">
+      <div class="disp">StoryBrand rule</div>
+      <p>The <b>owner is the hero</b>. Ninja-360 is the <b>guide</b>. The camera's heart stays on them, always.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 id="arc">2 · The Episode Arc</h2>
+
+    <div class="act one">
+      <div class="top"><span class="num">I</span><span class="name">The Ache</span><span class="time">0:00–0:30</span></div>
+      <div class="body">
+        <p style="margin-bottom:8px">Cold open. <b>No logo. No music. No intro.</b></p>
+        <ul>
+          <li>The business, empty. A wide shot that feels a little too quiet — a restaurant with no diners, a shop door that doesn't open.</li>
+          <li>The owner, raw, to camera: <i>"I've been open two years. People love it when they come. But some days nobody comes."</i></li>
+          <li><b>~0:15 — the turn:</b> <i>"So I called somebody."</i> Cut to Tim and Gabe pulling up. Arrival only — no resolution yet.</li>
+          <li><b>Title hits AFTER the problem is felt:</b> <i>Found KC. We put you on the map.</i> Now the logo means something.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="actrule"><b>Rule:</b> keep Act One genuinely uncomfortable. Don't rush the rescue. The longer the viewer sits in the owner's frustration, the more they feel their own.</div>
+
+    <div class="act two">
+      <div class="top"><span class="num">II</span><span class="name">The Build</span><span class="time">The transformation engine</span></div>
+      <div class="body">
+        <p style="margin-bottom:8px">Make skilled work feel like a mission.</p>
+        <ul>
+          <li><b>Arrival energy</b> — car doors, gear coming out, the quiet confidence of people who know what they're doing. Show up like the cavalry.</li>
+          <li><b>Intercut two threads:</b> <b>the craft</b> — 360 rig going up, drone launch, lighting, tight detail shots of the space suddenly looking gorgeous (people love watching competence) — and <b>the connection</b> — Tim listening to the owner's story; Gabe explaining how he's going to tell it. This is where the guide relationship shows.</li>
+          <li><b>Pacing accelerates</b> — start deliberate, then quick cuts, music lifts, the empty room from Act One fills with light and motion.</li>
+          <li><b>Teaching beats, not lectures</b> — quick "here's why we shoot it this way" moments. The watching owner sees the thinking, not just the results. That builds trust.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="act three">
+      <div class="top"><span class="num">III</span><span class="name">The Payoff</span><span class="time">Don't rush it</span></div>
+      <div class="body">
+        <p style="margin-bottom:8px">The single emotional beat the whole episode builds to.</p>
+        <ul>
+          <li><b>The reveal.</b> The owner hasn't seen the finished work. Sit them down, turn the screen. The tour, the drone shot, their place looking like somewhere people drive across town for.</li>
+          <li><b>Then shut up.</b> Hold on their face. The "oh wow," the smile, the catch in the throat — <b>that reaction is the most valuable footage in the episode.</b> That's what makes the next owner call.</li>
+          <li><b>The callback.</b> Act One: <i>"some days nobody comes."</i> Close the loop — weeks later, the place is busy, the phone rings, they're on the map.</li>
+          <li><b>The tagline lands.</b> Cut to black. Done.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 id="rules">3 · The Rules</h2>
+    <ol class="rules">
+      <li><b>The hero is always the owner.</b> Never Tim. Never Gabe.</li>
+      <li><b>Act One stays uncomfortable</b> — no early rescue.</li>
+      <li><b>Every episode is a case study</b> disguised as a story.</li>
+      <li><b>The reveal reaction is sacred footage.</b> Protect the surprise.</li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 id="lanes">4 · Crew Lanes</h2>
+    <div class="n360-tw"><table>
+      <tr><th>Lane</th><th>Owner</th></tr>
+      <tr><td>Story, 360, drone, GBP, distribution</td><td><b>Tim</b> · Ninja-360</td></tr>
+      <tr><td>Cinematography, edit</td><td><b>Gabe</b> · Lucid Cinematics</td></tr>
+      <tr><td>Studio segments (if used)</td><td><b>Erik</b> · Lucky 13 — studio lane only</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 id="next">5 · Next Moves</h2>
+    <ul class="moves">
+      <li><b>Pick Episode #1 business</b> — warm relationship, visually strong space</li>
+      <li><b>Rough shot list with Gabe</b> against the three-act arc</li>
+      <li><b>Name / handle / domain check</b> for "Found KC"</li>
+      <li><b>Confirm studio vs. field split with Erik</b> if Lucky 13 is in the episode</li>
+    </ul>
+    <p style="margin-top:18px"><span class="pill">Related</span> <a href="/scrolls/warp-speed" style="color:var(--deep);font-weight:700">Ninja Warp Speed</a> — the production pipeline every episode runs through &nbsp;·&nbsp; <span class="pill">Related</span> <a href="/scrolls/gi-ninja-lane" style="color:var(--deep);font-weight:700">Generationally Incorrect · The Ninja-360 Lane</a> — the other show</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="footer">
+      Found KC · Episode Playbook · Ninja-360 Digital Media LLC · 2026-07-22<br>
+      Put them on the map · Tell the truth beautifully · Always sharpen the blade<br>
+      © 2026 Ninja-360 Digital Media LLC | Kansas City, MO
+    </div>
+  </div>
+</section>
+
+<script defer src='/share/responsive-patch.js'></script>
+</body>
+</html>
