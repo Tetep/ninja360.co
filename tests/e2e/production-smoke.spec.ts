@@ -85,6 +85,16 @@ test.describe('production smoke checks', () => {
         expect(metrics.bodyOverflowY, 'Unexpected body overflow lock').not.toBe('hidden');
       }
 
+      // Any image that finished loading with zero natural width failed to load
+      // (404/corrupt asset). Lazy images that never started are excluded.
+      await page.waitForTimeout(400);
+      const brokenImages = await page.evaluate(() =>
+        Array.from(document.images)
+          .filter(img => (img.currentSrc || img.src) && img.complete && img.naturalWidth === 0)
+          .map(img => img.currentSrc || img.src),
+      );
+      expect(brokenImages, 'Broken images detected').toEqual([]);
+
       // Emit useful debug context when workflow logs are reviewed.
       test.info().annotations.push({
         type: 'route-check',
