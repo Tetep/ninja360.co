@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generationally Incorrect · Master Plan · Ninja-360</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#F47920; --deep:#E05F00; --charcoal:#3D3D3D; --gray:#404040;
+    --warm:#F9F7F5; --line:#E0DCD8; --dead:#9b948e; --warn:#B03A2E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:#fff;line-height:1.55;font-size:16.5px}
+  .accent-top{height:4px;background:var(--orange)}
+  .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+  section{padding:38px 0}
+  h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif;line-height:1.1;text-transform:uppercase;letter-spacing:.5px}
+  h1{font-size:42px;font-weight:800}
+  h2{font-size:26px;font-weight:800;color:var(--deep);margin:0 0 14px;border-bottom:1px solid var(--line);padding-bottom:5px}
+  h3{font-size:19px;font-weight:700;margin:16px 0 6px}
+  p{margin-bottom:11px}
+  .alt{background:var(--warm)}
+  .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:var(--orange)}
+  .kicker{font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:12.5px;color:var(--deep);margin-bottom:8px}
+  .sub{font-size:18px;color:var(--gray);max-width:700px}
+
+  .isnot{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+  .isnot .card{border:2px solid var(--line);border-radius:8px;padding:14px 18px;background:#fff}
+  .isnot .card.is{border-color:var(--orange)}
+  .isnot .lbl{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+  .isnot .is .lbl{color:var(--deep)}
+  .isnot .not .lbl{color:var(--warn)}
+  .isnot p{margin:0;font-size:14.5px;color:var(--gray)}
+  .isnot b{color:var(--charcoal)}
+
+  .flow{background:#fff;border:2px solid var(--orange);border-radius:8px;padding:16px 20px;margin-top:8px;font-size:15px}
+  .flow b{color:var(--deep)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+  .box{border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:#fff;font-size:14.5px}
+  .box .h{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:.5px;color:var(--deep);margin-bottom:3px}
+  .box b{color:var(--charcoal)}
+
+  .bigq{background:var(--charcoal);color:#fff;border-radius:8px;padding:20px 24px;margin:8px 0 16px;text-align:center}
+  .bigq .q{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:24px;letter-spacing:.5px;color:var(--orange)}
+  .bigq .n{font-size:13.5px;color:#e8e2dc;margin-top:6px}
+
+  .rhythm{list-style:none;margin:8px 0 0}
+  .rhythm li{padding:12px 16px 12px 20px;background:var(--warm);border-left:4px solid var(--orange);margin-bottom:9px;font-size:15px}
+  .rhythm li b{color:var(--deep)}
+
+  table{border-collapse:collapse;width:100%;font-size:14.5px;background:#fff}
+  th{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.5px;font-size:14px;text-align:left;color:var(--deep);border-bottom:2px solid var(--orange);padding:8px 10px}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  td b{color:var(--charcoal)}
+
+  .callout{background:var(--charcoal);color:#fff;border-radius:8px;padding:18px 22px;margin-top:20px}
+  .callout .disp{color:var(--orange);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .callout p{color:#e8e2dc;font-size:14.5px;margin:0}
+  .callout b{color:#fff}
+
+  .moves{list-style:none;margin:8px 0 0}
+  .moves li{padding:9px 0 9px 34px;border-bottom:1px dashed var(--line);position:relative;font-size:15px}
+  .moves li:before{content:"☐";position:absolute;left:6px;top:7px;color:var(--orange);font-size:18px}
+  .moves li:last-child{border-bottom:none}
+
+  .spot{background:var(--warm);border-left:4px solid var(--orange);padding:14px 18px;margin:10px 0;font-size:14.5px;display:flex;align-items:center;gap:16px}
+  .spot .ninja{width:96px;height:96px;flex:0 0 auto}
+  .spot .who{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.5px;font-size:16px;color:var(--deep)}
+  .spot em{color:var(--gray)}
+
+  .pill{display:inline-block;background:var(--warm);border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--deep)}
+
+  .footer{font-size:12.5px;color:#8a847e;margin-top:24px;border-top:1px solid var(--line);padding:14px 0 4px}
+  .n360-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .n360-tw table{min-width:520px}
+  @media(max-width:720px){
+    .isnot,.grid2{grid-template-columns:1fr}
+    h1{font-size:32px}
+    .bigq .q{font-size:19px}
+    .spot{flex-direction:column;text-align:center}
+    .spot .ninja{width:120px;height:120px}
+  }
+  @media print{@page{margin:9mm}body{font-size:11.5px}.callout,.bigq,.flow{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+<meta name="description" content="Generationally Incorrect · Master Plan — the full show build: positioning, format, clip engine, funnel, and launch roadmap.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Ninja-360 Dojo">
+<meta property="og:title" content="Generationally Incorrect · Master Plan">
+<meta property="og:description" content="The full show build — positioning, footprint, episode anatomy, clip engine, funnel, and the 90-day launch roadmap.">
+
+<link rel='stylesheet' href='/share/responsive-patch.css'>
+</head>
+<body>
+<!-- n360-unav: unified dojo nav -->
+<style>
+  .n360bar{position:sticky;top:0;z-index:90;background:#3D3D3D;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;min-height:48px}
+  .n360bar .n360wm{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:#F47920;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav{display:flex;gap:3px;margin-left:auto}
+  .n360bar nav a{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:13px;color:#e8e2dc;padding:0 10px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav a:hover{background:rgba(244,121,32,.25);color:#fff}
+  .n360toggle{display:none;width:44px;height:44px;margin-left:auto;flex:0 0 auto;border:none;border-radius:6px;background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .n360toggle span{display:block;width:22px;height:2px;background:#fff;border-radius:1px}
+  .n360toggle:hover{background:rgba(244,121,32,.25)}
+  .n360accent{height:4px;background:#F47920}
+  .n360crumb{background:#F9F7F5;border-bottom:1px solid #E0DCD8;font-size:13px;padding:7px 18px;color:#404040}
+  .n360crumb a{color:#E05F00;text-decoration:none;font-weight:700}
+  .n360crumb a:hover{text-decoration:underline}
+  .n360crumb .sep{color:#9B948E;margin:0 5px}
+  @media(max-width:640px){
+    .n360bar{flex-wrap:nowrap}
+    .n360toggle{display:flex}
+    .n360bar nav{display:none;flex-direction:column;gap:0;margin-left:0;position:absolute;top:100%;left:0;right:0;background:#3D3D3D;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 12px 20px rgba(0,0,0,.25)}
+    .n360bar.open nav{display:flex}
+    .n360bar nav a{font-size:15px;padding:13px 18px;border-radius:0;border-bottom:1px solid rgba(255,255,255,.1);min-height:48px}
+    .n360bar nav a:last-child{border-bottom:none}
+  }
+</style>
+<div class="n360bar">
+  <a class="n360wm" href="/">NINJA-360</a>
+  <button class="n360toggle" type="button" aria-expanded="false" aria-controls="n360nav" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <nav id="n360nav">
+    <a href="/">Dojo</a>
+    <a href="/gameplan">Game Plan</a>
+    <a href="/scrolls">Scrolls</a>
+    <a href="/crew">Crew</a>
+  </nav>
+</div>
+<div class="n360accent"></div>
+<div class="n360crumb"><a href="/">Dojo</a><span class="sep">&rsaquo;</span><a href="/scrolls">Scrolls</a><span class="sep">&rsaquo;</span><span>GI · Master Plan</span></div>
+<script>
+  (function(){
+    var t=document.querySelector('.n360toggle'),b=document.querySelector('.n360bar');
+    if(t&&b)t.addEventListener('click',function(){var o=b.classList.toggle('open');t.setAttribute('aria-expanded',String(o));});
+  })();
+</script>
+
+<div class="accent-top"></div>
+
+<section>
+  <div class="wrap">
+    <div class="wordmark">NINJA-360</div>
+    <div class="kicker" style="margin-top:16px">The Podcast · The Full Show Build</div>
+    <h1>Generationally Incorrect —<br>Master Plan</h1>
+    <p class="sub" style="margin-top:14px"><b>Four generations at one table</b>, pulling apart the questions everyone's afraid to ask out loud — with the explicit goal of finding common ground or changing someone's mind. The friction is the hook. The bridge is the mission. Co-produced by Erik (Lucky 13), Gabe (Lucid Cinematics) &amp; Tim (Ninja-360).</p>
+    <div class="isnot">
+      <div class="card is">
+        <div class="lbl">What this scroll is</div>
+        <p>The <b>whole show's</b> build plan — positioning, footprint, format, clip engine, funnel, launch. The shared map all three partners work from.</p>
+      </div>
+      <div class="card not">
+        <div class="lbl">What this scroll is not</div>
+        <p><b>Not the money.</b> Rates, splits, and terms live in the shared partnership doc — see <a href="/scrolls/gi-ninja-lane" style="color:var(--deep);font-weight:700">the Ninja-360 Lane</a> for how our lane bills.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 id="positioning">1 · Positioning</h2>
+    <div class="flow">
+      <b>The lane no one owns:</b> between Diary-of-a-CEO production value, Jubilee's structured disagreement, and a late-night panel — organized around <b>age as the axis of conflict</b>. Taglines: <em>"Every generation has something to fight about"</em> · <em>"Because the truth isn't always age-appropriate."</em> Every episode ends on <b>"where did we actually agree?"</b> — that closing ritual is the editorial rule that keeps charged topics sponsor-safe.
+    </div>
+    <div class="grid2">
+      <div class="box"><div class="h">Who it's for</div>Share-the-clip 25–45s are the primary audience — but the panel spans all four generations, so every viewer sees someone who thinks like them <b>and</b> someone who infuriates them. That tension is the retention mechanic.</div>
+      <div class="box"><div class="h">Brand voice</div><b>Provocative but principled.</b> The edge lives in the questions; the warmth lives in the goal. Never punch down, never pretend there's one correct answer.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 id="anatomy">2 · Episode Anatomy</h2>
+    <div class="n360-tw"><table>
+      <tr><th>Segment</th><th>Runtime</th><th>Job</th></tr>
+      <tr><td><b>Cold open</b></td><td>0:30–1:00</td><td>Sharpest 20 seconds of disagreement, cut in first. Hook before logo.</td></tr>
+      <tr><td><b>The Opener</b> (signature)</td><td>4–6 min</td><td>"What's one belief your generation holds strongly that the others misunderstand?" Sets positions.</td></tr>
+      <tr><td><b>The Topic</b></td><td>25–40 min</td><td>One pillar question + 4–6 sub-questions. Host steers for contrast, not chaos.</td></tr>
+      <tr><td><b>Steel-man round</b></td><td>5–8 min</td><td>Each generation argues the opposing side's best point — the "change your mind" engine and the most clippable segment.</td></tr>
+      <tr><td><b>Common Ground</b></td><td>3–5 min</td><td>"Where did we actually agree?" The mission delivered — and the warm share.</td></tr>
+      <tr><td><b>Outro / CTA</b></td><td>0:30</td><td>Sub, next-topic tease, and the Question-of-the-Week ask.</td></tr>
+    </table></div>
+    <p style="margin-top:12px;font-size:14px;color:var(--gray)">45–70 min long-form, video-first. Panel: fix one recognizable voice per generation as the home team; rotate the fourth seat for guest draw.</p>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 id="pillars">3 · Content Pillars — The Season Map</h2>
+    <div class="grid2">
+      <div class="box"><div class="h">Main feed</div><b>The Big Questions</b> · Work · Tech · Success &amp; Money · Culture · Leadership · Family &amp; Community. Each pillar = a themed run of episodes; makes planning, booking, and sponsor packages simple.</div>
+      <div class="box"><div class="h">Third Rail — handle with care</div>Racism, gender, abortion, corruption, drugs. High-reach, advertiser-sensitive — scheduled as <b>membership / YouTube-first "special" drops</b>, never main-feed by default.</div>
+    </div>
+    <div class="bigq">
+      <div class="q">One episode → ~40 assets</div>
+      <div class="n">1 long-form anchor · 8–15 captioned shorts · 3–5 quote cards · 1 common-ground audiogram · 1 email · 1 SEO/transcript page. Clip philosophy and the weekly drip live in <b>the Ninja-360 Lane scroll</b>.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 id="footprint">4 · Digital Footprint</h2>
+    <div class="n360-tw"><table>
+      <tr><th>Asset</th><th>Handle</th><th>Status (verified 7/21)</th></tr>
+      <tr><td><b>Domain</b></td><td>generationallyincorrect.com</td><td>Available (RDAP) — register + .co/.tv redirects</td></tr>
+      <tr><td><b>YouTube</b></td><td>@generationallyincorrect</td><td>Open — the anchor channel</td></tr>
+      <tr><td><b>Spotify</b></td><td>Generationally Incorrect</td><td>Name clear</td></tr>
+      <tr><td><b>IG / TikTok / FB / X</b></td><td>@generationallyincorrect · @GenIncorrect</td><td>Bot-blocked — verify by hand at signup; fallbacks: @gen.incorrect, @genincorrectpod</td></tr>
+    </table></div>
+    <p style="margin-top:12px;font-size:14px;color:var(--gray)"><b>Rule:</b> lock every handle in one sitting before the name leaks. Consistency beats the perfect string.</p>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 id="funnel">5 · The Funnel — Views Are Rented, the List Is Owned</h2>
+    <ul class="rhythm">
+      <li><b>Lead magnet — "The Question of the Week":</b> email the big question before the episode drops, invite answers, read the best on air. Free, on-brand, participatory — the audience becomes part of the show.</li>
+      <li><b>The path:</b> clip CTA → landing page → one GHL form: name, email, <b>"which generation are you?"</b>, optional SMS. Nurture weekly; ascend to membership → live events → merch.</li>
+      <li><b>The money field:</b> the generation dropdown segments the entire list by cohort from day one — the thing sponsors actually buy. One dropdown, disproportionate value.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 id="spots">6 · House Sponsor Spots — First Episodes</h2>
+    <p style="max-width:700px">The first episodes carry sponsor reads for our own three companies — practice for real reads, promotion for the alliance, and an on-air proof that the ad format works. Full disclosure on air ("this one's ours") — the honesty <b>builds</b> the trust a paid read will spend later. Rule: <b>nobody reads their own company.</b></p>
+    <div class="spot"><img class="ninja" src="/assets/crew/web/crew-erik-emblem-320.webp" width="96" height="96" loading="lazy" alt="Erik — Podcast Ninja, Lucky 13"><div><span class="who">Spot 1 · Lucky 13</span> — read by anyone but Erik. <em>"This whole show — the look, the room, the reason it doesn't feel like four people yelling into webcams — that's Lucky 13…"</em> 60s + 30s cuts drafted; brackets pending Erik's proof point + offer.</div></div>
+    <div class="spot"><img class="ninja" src="/assets/crew/web/crew-gabe-emblem-320.webp" width="96" height="96" loading="lazy" alt="Gabe — Creative Ninja, Lucid Cinematics"><div><span class="who">Spot 2 · Lucid Cinematics</span> — read by anyone but Gabe. <em>"See how good this looks? Production value isn't vanity — it's the difference between scrolling past and trusting you in three seconds…"</em> Brackets pending signature capability + offer.</div></div>
+    <div class="spot"><img class="ninja" src="/assets/crew/web/crew-tim-emblem-320.webp" width="96" height="96" loading="lazy" alt="Tim — Head Ninja, Ninja-360"><div><span class="who">Spot 3 · Ninja-360</span> — read by anyone but Tim. <em>"Most small businesses are invisible online and don't know it… free visibility audit at ninja360.net. Get the audit, then decide."</em> Record-ready.</div></div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 id="launch">7 · 90-Day Launch Arc</h2>
+    <div class="n360-tw"><table>
+      <tr><th>Window</th><th>Milestones</th></tr>
+      <tr><td><b>W1–2 · Lock</b></td><td>Logo direction · domain + all handles · entity + operating agreement · panel format.</td></tr>
+      <tr><td><b>W3–4 · Build</b></td><td>GHL (calendar, form, tags, Episode-Launch workflow) · landing page + Question-of-the-Week live · studio look with Lucid · book pilot panel.</td></tr>
+      <tr><td><b>W5–6 · Pilot</b></td><td>2–3 pilot episodes (test-shoot learnings applied) · clip templates · sponsor one-pager.</td></tr>
+      <tr><td><b>W7–8 · Prime</b></td><td>Batch-record 4–6 · pre-load the calendar · soft-launch to warm networks; start the list.</td></tr>
+      <tr><td><b>W9–12 · Launch</b></td><td>Public drops on cadence · membership on · first sponsor conversations · review + iterate.</td></tr>
+    </table></div>
+    <div class="callout">
+      <div class="disp">Cadence — the anchor metric</div>
+      <p>Twice a month, 3-month sprint, then reassess for weekly. The scoreboard isn't episode count — it's <b>did we hit every date we promised.</b> Twenty-six solid beats forty flaky.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 id="open">8 · Open Decisions (The Three-Way Vote)</h2>
+    <ul class="moves">
+      <li>Logo direction — pick 1–2 of the 6 concepts to finish</li>
+      <li>Panel format — fixed core / rotating / recommended hybrid</li>
+      <li>Equity &amp; roles — settle the split so entity + model can finalize (tracked in the shared doc)</li>
+      <li>Cadence — confirm the bi-weekly → weekly trigger after the 3-month sprint</li>
+      <li>Lucky 13 &amp; Lucid sponsor-spot brackets — proof points + offers from Erik and Gabe</li>
+    </ul>
+    <p style="margin-top:18px"><span class="pill">Related</span> <a href="/scrolls/gi-ninja-lane" style="color:var(--deep);font-weight:700">GI · The Ninja-360 Lane</a> — our lane, billing &amp; clip system &nbsp;·&nbsp; <span class="pill">Related</span> <a href="/scrolls/found-kc-playbook" style="color:var(--deep);font-weight:700">Found KC · Episode Playbook</a> &nbsp;·&nbsp; <span class="pill">Related</span> <a href="/alliance" style="color:var(--deep);font-weight:700">The Alliance</a></p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="footer">
+      Generationally Incorrect · Master Plan · Ninja-360 Digital Media LLC · 2026-07-22<br>
+      Put them on the map · Tell the truth beautifully · Always sharpen the blade<br>
+      © 2026 Ninja-360 Digital Media LLC | Kansas City, MO
+    </div>
+  </div>
+</section>
+
+<script defer src='/share/responsive-patch.js'></script>
+</body>
+</html>

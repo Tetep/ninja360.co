@@ -10,6 +10,7 @@ accent: "deep"
 variant: "content"
 cta: "**Next:** confirm the studio vs. field split with Erik for Found KC Episode #1."
 ref:
+  - "/scrolls/gi-master-plan"
   - "/scrolls/gi-ninja-lane"
   - "/scrolls/found-kc-playbook"
 ---
@@ -29,7 +30,7 @@ No small crew has everything. The Alliance is how a boutique operation delivers 
 **The Ally in the studio lane — and now, two shows deep.** Lucky 13 is the room where the shows get made. Erik brings the broadcast-quality studio, the production environment, and a co-host chair — the physical home of the podcast operation in Gladstone.
 
 <div class="grid2">
-<div class="box"><strong>Generationally Incorrect — Co-Producer</strong> — The three-way co-production: Erik (Lucky 13), Gabe (Lucid Cinematics), Tim (Ninja-360). Four generations, one table, structured five-round format. Erik's contribution: the studio, the gear, the production environment — and a seat in the strategy vote. Terms tracked in the shared partnership doc; every partner's company bills the show at disclosed rates, costs before profit. <a class="moreinfo" href="/scrolls/gi-ninja-lane" title="The Ninja-360 lane in the podcast">💡 More info</a></div>
+<div class="box"><strong>Generationally Incorrect — Co-Producer</strong> — The three-way co-production: Erik (Lucky 13), Gabe (Lucid Cinematics), Tim (Ninja-360). Four generations, one table, structured five-round format. Erik's contribution: the studio, the gear, the production environment — and a seat in the strategy vote. Terms tracked in the shared partnership doc; every partner's company bills the show at disclosed rates, costs before profit. <a class="moreinfo" href="/scrolls/gi-master-plan" title="The full show build — positioning, format, funnel, launch">💡 Master plan</a> <a class="moreinfo" href="/scrolls/gi-ninja-lane" title="The Ninja-360 lane in the podcast">💡 Our lane</a></div>
 <div class="box"><strong>Found KC — Studio Partner</strong> — Ninja-360's flagship show. Erik's lane is the studio segment — when an episode needs the room, Lucky 13 is the room. Field work (the business visits, 360, drone) stays with Tim and Gabe. <a class="moreinfo" href="/scrolls/found-kc-playbook" title="The Found KC episode playbook">💡 More info</a></div>
 </div>
 

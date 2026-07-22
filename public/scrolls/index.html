@@ -8,12 +8,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-  :root{--orange:#F47920;--deep:#E05F00;--charcoal:#3D3D3D;--gray:#404040;--warm:#F9F7F5;--line:#E0DCD8;}
+  :root{--orange:#F47920;--deep:#FF8D3E;--charcoal:#EDE6DD;--gray:#B8B0A7;--warm:#1A1714;--line:#3A342D;--ink:#12100E;}
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:#fff;line-height:1.55;font-size:16px}
+  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:radial-gradient(1100px 500px at 50% -80px,#1E1915 0%,var(--ink) 55%) fixed var(--ink);line-height:1.55;font-size:16px}
   .accent-top{height:4px;background:var(--orange)}
   .wrap{max-width:900px;margin:0 auto;padding:0 24px}
-  section{padding:32px 0}
+  section{padding:32px 0;position:relative;z-index:1}
+  .footer{position:relative;z-index:1}
   h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif;line-height:1.1;text-transform:uppercase;letter-spacing:.5px}
   h1{font-size:40px;font-weight:800}
   h2{font-size:22px;font-weight:700;margin-bottom:4px}
@@ -26,13 +27,49 @@
   .sub{font-size:18px;color:var(--gray);max-width:680px}
   .group{margin-bottom:26px}
   .glabel{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:1px;font-size:17px;color:var(--charcoal);border-bottom:2px solid var(--orange);padding-bottom:5px;margin-bottom:12px}
+  summary.glabel{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;margin-bottom:0;-webkit-tap-highlight-color:transparent;background:linear-gradient(180deg,#26201A,#1A1714);border:1px solid var(--line);border-bottom:2px solid var(--orange);border-radius:6px;padding:12px 16px 10px;position:relative;overflow:hidden}
+  summary.glabel::after{content:"";position:absolute;top:0;right:0;border-style:solid;border-width:0 20px 20px 0;border-color:transparent #33291F transparent transparent}
+  details[open] > summary.glabel{border-radius:6px 6px 0 0}
+  details.group > .cards{padding:14px;border:1px solid var(--line);border-top:none;border-radius:0 0 6px 6px;background:linear-gradient(180deg,#151210,var(--ink));box-shadow:inset 0 10px 14px -12px rgba(0,0,0,.9)}
+  summary.glabel::-webkit-details-marker{display:none}
+  summary.glabel:hover{color:var(--deep)}
+  .glabel .chev{flex:0 0 auto;transition:transform .18s ease}
+  details[open] > summary .chev{transform:rotate(180deg)}
+  details.group > .cards{margin-top:0}
   .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .card{border:1px solid var(--line);border-radius:6px;padding:14px 16px;text-decoration:none;color:var(--charcoal);display:block;transition:border-color .15s}
-  .card:hover{border-color:var(--orange)}
+  .card{border:1px solid var(--line);border-radius:6px;padding:14px 16px;text-decoration:none;color:var(--charcoal);display:block;background:linear-gradient(180deg,#1D1915,#171310);transition:border-color .15s,box-shadow .2s}
+  .card:hover{border-color:var(--orange);box-shadow:0 0 16px rgba(244,121,32,.18)}
   .card .t{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:17px;color:var(--deep)}
   .card .d{font-size:14px;color:var(--gray);margin-top:3px}
+  .card.person{display:flex;gap:12px;align-items:center}
+  .card.person img{width:56px;height:56px;flex:0 0 auto}
+  .card.person .ic{width:56px;height:56px;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
   .footer{font-size:13.5px;color:#8a847e;padding:24px 0;border-top:1px solid var(--line)}
   @media(max-width:640px){h1{font-size:31px}.cards{grid-template-columns:1fr}}
+  /* incense smoke */
+  .smoke{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .smoke .ember{position:absolute;left:-120px;bottom:-140px;width:420px;height:420px;background:radial-gradient(circle,rgba(244,121,32,.10) 0%,rgba(244,121,32,0) 65%)}
+  .smoke svg{position:absolute;bottom:-40px;left:4%;width:92%;height:100%}
+  .smoke .w{filter:blur(13px);opacity:.07;animation:drift 26s ease-in-out infinite}
+  .smoke .w2{animation-duration:34s;animation-delay:-12s;opacity:.05}
+  .smoke .w3{animation-duration:44s;animation-delay:-22s;opacity:.04}
+  @keyframes drift{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(36px,-70px) rotate(2.5deg)}}
+  @media(prefers-reduced-motion:reduce){.smoke .w{animation:none}}
+  /* ember glow — orange family only (palette locked: no true gold) */
+  .card.person .ic svg{filter:drop-shadow(0 0 4px rgba(250,187,124,.50)) drop-shadow(0 0 12px rgba(244,121,32,.30));transition:filter 240ms cubic-bezier(0.16,1,0.3,1),transform 240ms cubic-bezier(0.16,1,0.3,1)}
+  .card.person img{filter:drop-shadow(0 0 5px rgba(244,121,32,.35));transition:filter 240ms cubic-bezier(0.16,1,0.3,1),transform 240ms cubic-bezier(0.16,1,0.3,1)}
+  .card:hover .ic svg,.card:hover img{filter:drop-shadow(0 0 6px rgba(250,187,124,.75)) drop-shadow(0 0 18px rgba(244,121,32,.45));transform:scale(1.06)}
+  .glabel .chev{filter:drop-shadow(0 0 5px rgba(250,187,124,.6))}
+  .hero-sharpen{filter:drop-shadow(0 0 4px rgba(250,187,124,.50)) drop-shadow(0 0 12px rgba(244,121,32,.30))}
+  summary.glabel{background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.96 0 0 0 0 0.85 0 0 0 0 0.66 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),linear-gradient(180deg,#26201A,#1A1714)}
+  .card{background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.96 0 0 0 0 0.85 0 0 0 0 0.66 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),linear-gradient(180deg,#1D1915,#171310)}
+  .hint{font-size:13.5px;color:#8A8178;font-style:italic;margin-top:10px}
+  .hint b{color:var(--deep);font-style:normal}
+  .hero-duo{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:720px;margin:18px 0 4px}
+  .hero-duo .art{border:1px solid var(--line);border-radius:8px;background:linear-gradient(180deg,#191512,#100E0C);padding:10px 12px 4px;position:relative;z-index:1}
+  .hero-duo .art svg{display:block;width:100%;height:auto;filter:drop-shadow(0 0 10px rgba(244,121,32,.18))}
+  .hero-duo .cap{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1.6px;font-size:12.5px;text-transform:uppercase;color:var(--deep);text-align:center;padding:7px 0 6px;border-top:1px solid var(--line);margin-top:6px}
+  @media(max-width:640px){.hero-duo{grid-template-columns:1fr;max-width:340px}}
 </style>
 <!-- n360-og: share-card metadata -->
 <meta name="description" content="The Ninja-360 Dojo — the plan, the crew, and the playbooks in one place.">
@@ -97,6 +134,8 @@
   })();
 </script>
 
+<style>.n360bar{background:#181512}.n360bar nav a{color:#CFC7BD}.n360crumb{background:#151210;border-bottom:1px solid #3A342D;color:#B8A78F}.n360crumb a{color:#FF8D3E}.n360crumb .sep{color:#6B645C}</style>
+<div class="smoke" aria-hidden="true"><div class="ember"></div><svg viewBox="0 0 1200 800" preserveAspectRatio="none"><path class="w" d="M140 820 C120 640 220 560 170 440 C130 340 230 300 210 200" stroke="#CBB89F" stroke-width="26" fill="none" stroke-linecap="round"/><path class="w w2" d="M620 840 C660 660 560 580 640 460 C700 370 600 320 660 210" stroke="#B8A78F" stroke-width="20" fill="none" stroke-linecap="round"/><path class="w w3" d="M1030 820 C990 660 1090 560 1030 440 C980 350 1080 300 1050 190" stroke="#CBB89F" stroke-width="30" fill="none" stroke-linecap="round"/></svg></div>
 <div class="accent-top"></div>
 <section>
   <div class="wrap">
@@ -104,57 +143,136 @@
     <a class="backlink" href="/">← Ninja-360 Dojo</a> &nbsp;·&nbsp; <a class="backlink" href="/gameplan">The Game Plan</a>
     <div class="kicker">The Scrolls · Every Playbook, Standard &amp; Plan — In One Place</div>
     <h1>The Scrolls</h1>
-    <p class="sub" style="margin-top:12px">The Scrolls are the sharpening stone — every experiment, standard, and system written down so the blade never dulls between sessions. Nothing stays in a drawer; honest reflection only works out loud.</p>
+    <div class="hero-duo">
+      <div class="art"><svg viewBox="0 0 300 200" role="img" aria-label="A sacred scroll, unrolled">
+<defs>
+<radialGradient id="sA" cx="50%" cy="45%" r="65%"><stop offset="0%" stop-color="#F47920" stop-opacity=".16"/><stop offset="100%" stop-color="#F47920" stop-opacity="0"/></radialGradient>
+<linearGradient id="sP" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EFE3CB"/><stop offset="45%" stop-color="#E3D3B4"/><stop offset="100%" stop-color="#CDB78F"/></linearGradient>
+<linearGradient id="sW" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#5A4430"/><stop offset="45%" stop-color="#7A5A2E"/><stop offset="55%" stop-color="#8A6A3A"/><stop offset="100%" stop-color="#3E2E1E"/></linearGradient>
+<linearGradient id="sCL" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#6B5638" stop-opacity=".55"/><stop offset="100%" stop-color="#6B5638" stop-opacity="0"/></linearGradient>
+<linearGradient id="sCR" x1="1" y1="0" x2="0" y2="0"><stop offset="0%" stop-color="#6B5638" stop-opacity=".55"/><stop offset="100%" stop-color="#6B5638" stop-opacity="0"/></linearGradient>
+<filter id="sG"><feGaussianBlur stdDeviation="2.2"/></filter>
+</defs>
+<ellipse cx="150" cy="100" rx="140" ry="86" fill="url(#sA)"/>
+<ellipse cx="150" cy="170" rx="110" ry="10" fill="#000" opacity=".45"/>
+<path d="M46 54 C95 49 205 49 254 54 L254 146 C205 151 95 151 46 146 Z" fill="url(#sP)"/>
+<path d="M46 54 C95 49 205 49 254 54 L254 60 C205 55 95 55 46 60 Z" fill="#FFF" opacity=".35"/>
+<rect x="46" y="54" width="20" height="92" fill="url(#sCL)"/>
+<rect x="234" y="54" width="20" height="92" fill="url(#sCR)"/>
+<g stroke="#8A7A5C" stroke-width=".8" opacity=".5"><line x1="60" y1="74" x2="240" y2="72"/><line x1="60" y1="128" x2="240" y2="130"/></g>
+<g stroke="#3A3630" stroke-linecap="round" fill="none" opacity=".9">
+<path d="M104 70 h26" stroke-width="4.5"/>
+<path d="M117 70 q4 12 -1 22 q-3 8 3 14" stroke-width="6"/>
+<path d="M106 96 q12 6 24 0" stroke-width="4"/>
+<path d="M100 118 h32" stroke-width="4.5"/>
+<path d="M148 68 q-5 10 1 18" stroke-width="5.5"/>
+<path d="M140 90 h24" stroke-width="4"/>
+<path d="M152 90 q3 14 -2 24 q-2 8 3 14" stroke-width="5.5"/>
+<path d="M142 128 q10 7 22 1" stroke-width="4"/>
+<path d="M182 72 h26" stroke-width="4.5"/>
+<path d="M195 72 v18" stroke-width="5.5"/>
+<path d="M184 100 q11 -6 22 0" stroke-width="4"/>
+<path d="M188 112 q2 10 -1 18" stroke-width="5"/>
+<path d="M200 112 q3 10 0 18" stroke-width="5"/>
+</g>
+<g transform="rotate(-4 84 122)"><rect x="76" y="114" width="17" height="17" rx="2.5" fill="#F47920"/><rect x="79" y="117" width="11" height="11" rx="1" fill="none" stroke="#FFF" stroke-width="1.4" opacity=".8"/></g>
+<rect x="28" y="36" width="15" height="128" rx="7.5" fill="url(#sW)"/>
+<rect x="257" y="36" width="15" height="128" rx="7.5" fill="url(#sW)"/>
+<g fill="#8A6A3A" stroke="#F47920" stroke-width="1.6">
+<circle cx="35.5" cy="31" r="7"/><circle cx="35.5" cy="169" r="7"/><circle cx="264.5" cy="31" r="7"/><circle cx="264.5" cy="169" r="7"/>
+</g>
+<g filter="url(#sG)" fill="#FABB7C"><circle cx="70" cy="46" r="1.6"/><circle cx="228" cy="42" r="1.3"/><circle cx="250" cy="152" r="1.5"/><circle cx="58" cy="156" r="1.2"/></g>
+</svg><div class="cap">The Knowledge · Written Down</div></div>
+      <div class="art"><svg viewBox="0 0 300 200" role="img" aria-label="A katana being sharpened on a whetstone">
+<defs>
+<radialGradient id="kA" cx="42%" cy="55%" r="60%"><stop offset="0%" stop-color="#F47920" stop-opacity=".20"/><stop offset="100%" stop-color="#F47920" stop-opacity="0"/></radialGradient>
+<linearGradient id="kB" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F4F2EE"/><stop offset="55%" stop-color="#C9C5BD"/><stop offset="100%" stop-color="#8F8B83"/></linearGradient>
+<linearGradient id="kS1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6B645C"/><stop offset="100%" stop-color="#57504A"/></linearGradient>
+<linearGradient id="kS2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3E3830"/><stop offset="100%" stop-color="#2A2620"/></linearGradient>
+<linearGradient id="kH" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#2E2822"/><stop offset="100%" stop-color="#1A1613"/></linearGradient>
+<filter id="kG"><feGaussianBlur stdDeviation="2.6"/></filter>
+<filter id="kG2"><feGaussianBlur stdDeviation="1.1"/></filter>
+</defs>
+<ellipse cx="130" cy="110" rx="130" ry="80" fill="url(#kA)"/>
+<ellipse cx="130" cy="172" rx="112" ry="10" fill="#000" opacity=".5"/>
+<polygon points="58,120 158,98 200,108 108,132" fill="url(#kS1)"/>
+<polygon points="108,132 200,108 200,130 108,154" fill="url(#kS2)"/>
+<polygon points="58,120 108,132 108,154 58,142" fill="#231F1A"/>
+<path d="M78 118 L150 103" stroke="#B8B0A7" stroke-width="2.2" opacity=".5" stroke-linecap="round"/>
+<path d="M84 124 L128 115" stroke="#8A8178" stroke-width="1.4" opacity=".5" stroke-linecap="round"/>
+<path d="M14 136 C80 114 160 84 232 58 L238 63 C170 90 92 120 20 143 Z" fill="url(#kB)" stroke="#1A1613" stroke-width="1.2" stroke-linejoin="round"/>
+<path d="M17 139 C82 118 162 88 234 61" stroke="#FFF" stroke-width="1.3" opacity=".75" fill="none"/>
+<path d="M20 134 q8 -2 15 -5 q9 -4 17 -6 q10 -4 18 -7 q9 -4 18 -7 q10 -4 18 -7 q9 -4 18 -7 q10 -4 18 -7 q9 -4 17 -6 q8 -3 15 -6" stroke="#FFF" stroke-width="2" opacity=".28" fill="none"/>
+<ellipse cx="238" cy="60" rx="6.5" ry="10.5" transform="rotate(-21 238 60)" fill="#7A5A2E" stroke="#1A1613" stroke-width="1.2"/>
+<g transform="rotate(-21 246 62)">
+<rect x="244" y="55" width="46" height="13.5" rx="5.5" fill="url(#kH)" stroke="#0E0C0A" stroke-width="1"/>
+<path d="M250 55.5 l10 12.5 M260 55.5 l10 12.5 M270 55.5 l10 12.5 M260 68 l10 -12.5 M270 68 l10 -12.5 M250 68 l10 -12.5" stroke="#F47920" stroke-width="1.5" opacity=".9"/>
+<rect x="286" y="55.5" width="5" height="12.5" rx="2" fill="#7A5A2E"/>
+</g>
+<g filter="url(#kG)"><circle cx="106" cy="106" r="7" fill="#FABB7C" opacity=".85"/></g>
+<g stroke="#FABB7C" stroke-width="2.2" stroke-linecap="round" filter="url(#kG2)">
+<line x1="106" y1="104" x2="96" y2="86"/><line x1="110" y1="102" x2="112" y2="84"/><line x1="102" y1="106" x2="88" y2="96"/><line x1="112" y1="106" x2="124" y2="92"/>
+</g>
+<g stroke="#FFF" stroke-width="1.1" stroke-linecap="round" opacity=".9">
+<line x1="106" y1="103" x2="100" y2="92"/><line x1="109" y1="103" x2="112" y2="91"/>
+</g>
+<path d="M96 84 C92 70 102 64 98 50 C95 40 104 34 102 24" stroke="#CBB89F" stroke-width="5" fill="none" stroke-linecap="round" opacity=".14" filter="url(#kG)"/>
+</svg><div class="cap">Always Sharpen the Blade</div></div>
+    </div>
+    <p class="sub" style="margin-top:12px">These are the records and the strategies — our plan, and our experiments. We dream. We try. We take stock of what we can do better. Then it gets written down here, so the next run starts smarter than the last.</p>
+    <p class="hint"><b>How to read the library:</b> each band below is a folded scroll — tap a title to unroll it. Start with Strategy, end with People.</p>
   </div>
 </section>
 
 <section class="alt">
   <div class="wrap">
 
-    <div class="group">
-      <div class="glabel">Strategy &amp; Plan <span style="color:var(--orange)">· Map</span></div>
+    <details class="group" open>
+      <summary class="glabel">Strategy &amp; Plan <span style="color:var(--orange)">· Map</span> <svg class="chev" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M3 6l5 5 5-5" stroke="#F47920" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
       <div class="cards">
-        <a class="card" href="/gameplan"><div class="t">The Game Plan</div><div class="d">The master charter — four legs, who does what, the 12-month arc, the money split.</div></a>
-        <a class="card" href="/roadmaps/assets"><div class="t">24-Asset Roadmap</div><div class="d">The Dent heatmap turned into Ninja-360's official build order.</div></a>
-        <a class="card" href="/scrolls/kpi-gameplan"><div class="t">KPI Gameplan</div><div class="d">The Person-of-Influence 5 Ps plan — how Tim becomes the name.</div></a>
+        <a class="card person" href="/gameplan"><svg class="ic" viewBox="0 0 64 64" width="48" height="48" aria-hidden="true" fill="none" stroke="#EDE6DD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="22"/><polygon points="32,15 39,32 32,49 25,32" fill="#F47920" stroke="none"/><line x1="32" y1="6" x2="32" y2="10"/></svg><div><div class="t">The Game Plan</div><div class="d">The master charter — four legs, who does what, the 12-month arc, the money split.</div></div></a>
+        <a class="card person" href="/roadmaps/assets"><svg class="ic" viewBox="0 0 64 64" width="48" height="48" aria-hidden="true" fill="none" stroke="#EDE6DD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 56 Q30 46 22 32 T40 10" stroke-width="6"/><path d="M12 56 Q30 46 22 32 T40 10" stroke="#F47920" stroke-width="2" stroke-dasharray="5 6"/><circle cx="46" cy="44" r="13" fill="#F47920" stroke="#EDE6DD"/><text x="46" y="49" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-size="14" font-weight="800" fill="#fff" stroke="none">24</text></svg><div><div class="t">24-Asset Roadmap</div><div class="d">The Dent heatmap turned into Ninja-360's official build order.</div></div></a>
+        <a class="card person" href="/scrolls/kpi-gameplan"><svg class="ic" viewBox="0 0 64 64" width="48" height="48" aria-hidden="true" fill="none" stroke="#EDE6DD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="14" width="9" height="9" fill="#8A8178" stroke="none"/><rect x="14" y="23" width="9" height="9" fill="#F47920" stroke="none"/><rect x="14" y="32" width="9" height="9" fill="#8A8178" stroke="none"/><rect x="14" y="41" width="9" height="9" fill="#F47920" stroke="none"/><rect x="23" y="14" width="9" height="9" fill="#F47920" stroke="none"/><rect x="23" y="23" width="9" height="9" fill="#8A8178" stroke="none"/><rect x="23" y="32" width="9" height="9" fill="#F47920" stroke="none"/><rect x="23" y="41" width="9" height="9" fill="#8A8178" stroke="none"/><rect x="32" y="14" width="9" height="9" fill="#8A8178" stroke="none"/><rect x="32" y="23" width="9" height="9" fill="#F47920" stroke="none"/><rect x="32" y="32" width="9" height="9" fill="#8A8178" stroke="none"/><rect x="32" y="41" width="9" height="9" fill="#F47920" stroke="none"/><rect x="41" y="14" width="9" height="9" fill="#F47920" stroke="none"/><rect x="41" y="23" width="9" height="9" fill="#8A8178" stroke="none"/><rect x="41" y="32" width="9" height="9" fill="#F47920" stroke="none"/><rect x="41" y="41" width="9" height="9" fill="#8A8178" stroke="none"/><rect x="14" y="14" width="36" height="36"/></svg><div><div class="t">The KPI Strategy</div><div class="d">The 5 Ps strategy — elevating Ninja-360 from startup to KC’s visibility authority.</div></div></a>
       </div>
-    </div>
+    </details>
 
-    <div class="group">
-      <div class="glabel">Production &amp; Content <span style="color:var(--orange)">· True Story</span></div>
+    <details class="group">
+      <summary class="glabel">Production &amp; Content <span style="color:var(--orange)">· True Story</span> <svg class="chev" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M3 6l5 5 5-5" stroke="#F47920" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
       <div class="cards">
-        <a class="card" href="/pipeline"><div class="t">Content Engine Pipeline</div><div class="d">Shoot once, publish everywhere — the nine stages from capture to funnel.</div></a>
-        <a class="card" href="/scrolls/warp-speed"><div class="t">Ninja Warp Speed</div><div class="d">The production SOP — one visit, two tracks, faster-to-publish-than-anyone.</div></a>
-        <a class="card" href="/scrolls/found-kc-playbook"><div class="t">Found KC · Episode Playbook</div><div class="d">The flagship show — the three-act arc, the rules, the crew lanes.</div></a>
-        <a class="card" href="/scrolls/gi-ninja-lane"><div class="t">Generationally Incorrect · The Ninja-360 Lane</div><div class="d">Our lane in the three-way co-production — distribution, clips, sponsors, rhythm.</div></a>
-        <a class="card" href="/social-hub"><div class="t">Social Hub</div><div class="d">Every official channel, the hashtag framework, the canonical handles.</div></a>
+        <a class="card person" href="/pipeline"><svg class="ic" viewBox="0 0 64 64" width="48" height="48" aria-hidden="true" fill="none" stroke="#EDE6DD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="25" width="13" height="14" rx="2"/><rect x="26" y="25" width="13" height="14" rx="2"/><rect x="46" y="25" width="13" height="14" rx="2" fill="#F47920" stroke="#EDE6DD"/><line x1="19" y1="32" x2="25" y2="32" stroke="#F47920"/><line x1="39" y1="32" x2="45" y2="32" stroke="#F47920"/></svg><div><div class="t">Content Engine Pipeline</div><div class="d">Shoot once, publish everywhere — the nine stages from capture to funnel.</div></div></a>
+        <a class="card person" href="/scrolls/warp-speed"><svg class="ic" viewBox="0 0 64 64" width="48" height="48" aria-hidden="true" fill="none" stroke="#EDE6DD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polygon points="36,6 20,34 30,34 26,58 46,26 35,26" fill="#F47920" stroke="#EDE6DD"/><line x1="6" y1="20" x2="16" y2="20"/><line x1="4" y1="32" x2="13" y2="32"/><line x1="6" y1="44" x2="14" y2="44"/></svg><div><div class="t">Ninja Warp Speed</div><div class="d">The production SOP — one visit, two tracks, faster-to-publish-than-anyone.</div></div></a>
+        <a class="card person" href="/scrolls/found-kc-playbook"><svg class="ic" viewBox="0 0 64 64" width="48" height="48" aria-hidden="true" fill="none" stroke="#EDE6DD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8 C22 8 15 16 15 25 C15 38 32 56 32 56 C32 56 49 38 49 25 C49 16 42 8 32 8 Z"/><polygon points="32,17 34.7,23 41,23 36,27 38,33 32,29.4 26,33 28,27 23,23 29.3,23" fill="#F47920" stroke="none"/></svg><div><div class="t">Found KC · Episode Playbook</div><div class="d">The flagship show — the three-act arc, the rules, the crew lanes.</div></div></a>
+        <a class="card person" href="/scrolls/gi-master-plan"><svg class="ic" viewBox="0 0 64 64" width="48" height="48" aria-hidden="true" fill="none" stroke="#EDE6DD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="26" y="8" width="12" height="26" rx="6" fill="#F47920" stroke="#EDE6DD"/><path d="M17 28 a15 15 0 0 0 30 0"/><line x1="32" y1="43" x2="32" y2="52"/><line x1="23" y1="52" x2="41" y2="52"/></svg><div><div class="t">Generationally Incorrect · Master Plan</div><div class="d">The full show build — positioning, format, clip engine, funnel, house spots, 90-day launch.</div></div></a>
+        <a class="card person" href="/scrolls/gi-ninja-lane"><svg class="ic" viewBox="0 0 64 64" width="48" height="48" aria-hidden="true" fill="none" stroke="#EDE6DD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="32" r="6" fill="#F47920" stroke="#EDE6DD"/><circle cx="48" cy="13" r="6"/><circle cx="48" cy="51" r="6"/><line x1="20" y1="29" x2="43" y2="16"/><line x1="20" y1="35" x2="43" y2="48"/></svg><div><div class="t">Generationally Incorrect · The Ninja-360 Lane</div><div class="d">Our lane in the three-way co-production — distribution, clips, sponsors, rhythm.</div></div></a>
+        <a class="card person" href="/social-hub"><svg class="ic" viewBox="0 0 64 64" width="48" height="48" aria-hidden="true" fill="none" stroke="#EDE6DD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="24" y1="10" x2="18" y2="54"/><line x1="44" y1="10" x2="38" y2="54"/><line x1="10" y1="24" x2="54" y2="24" stroke="#F47920"/><line x1="8" y1="42" x2="52" y2="42"/></svg><div><div class="t">Social Hub</div><div class="d">Every official channel, the hashtag framework, the canonical handles.</div></div></a>
       </div>
-    </div>
+    </details>
 
-    <div class="group">
-      <div class="glabel">Systems &amp; Infrastructure <span style="color:var(--orange)">· Blade</span></div>
+    <details class="group">
+      <summary class="glabel">Systems &amp; Infrastructure <span style="color:var(--orange)">· Blade</span> <svg class="chev" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M3 6l5 5 5-5" stroke="#F47920" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
       <div class="cards">
-        <a class="card" href="/domain-strategy"><div class="t">Domain &amp; Brand Strategy</div><div class="d">One apex, the redirect layer, HighLevel + tour + email architecture.</div></a>
+        <a class="card person" href="/domain-strategy"><svg class="ic" viewBox="0 0 64 64" width="48" height="48" aria-hidden="true" fill="none" stroke="#EDE6DD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="22"/><ellipse cx="32" cy="32" rx="9" ry="22"/><line x1="10" y1="32" x2="54" y2="32" stroke="#F47920"/><path d="M14 20 a26 18 0 0 1 36 0"/><path d="M14 44 a26 18 0 0 0 36 0"/></svg><div><div class="t">Domain &amp; Brand Strategy</div><div class="d">One apex, the redirect layer, HighLevel + tour + email architecture.</div></div></a>
       </div>
-    </div>
+    </details>
 
-    <div class="group">
-      <div class="glabel">Cadence &amp; Operations <span style="color:var(--orange)">· Blade</span></div>
+    <details class="group">
+      <summary class="glabel">Cadence &amp; Operations <span style="color:var(--orange)">· Blade</span> <svg class="chev" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M3 6l5 5 5-5" stroke="#F47920" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
       <div class="cards">
-        <a class="card" href="/sprint"><div class="t">90-Day Sprint</div><div class="d">Two lanes, one scoreboard — week-by-week deliverables, W1–W13.</div></a>
-        <a class="card" href="/scrolls/operating-rhythm"><div class="t">Operating Rhythm</div><div class="d">How the week runs — Monday sync, the trackers, Friday close.</div></a>
-        <a class="card" href="/scrolls/mission-board"><div class="t">Mission Board</div><div class="d">The weekly board — owner · deliverable · due. The single source of what's owed.</div></a>
+        <a class="card person" href="/sprint"><svg class="ic" viewBox="0 0 64 64" width="48" height="48" aria-hidden="true" fill="none" stroke="#EDE6DD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="36" r="19"/><line x1="28" y1="7" x2="36" y2="7"/><line x1="32" y1="7" x2="32" y2="13"/><text x="32" y="42" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-size="16" font-weight="800" fill="#F47920" stroke="none">90</text></svg><div><div class="t">90-Day Sprint</div><div class="d">Two lanes, one scoreboard — week-by-week deliverables, W1–W13.</div></div></a>
+        <a class="card person" href="/scrolls/operating-rhythm"><svg class="ic" viewBox="0 0 64 64" width="48" height="48" aria-hidden="true" fill="none" stroke="#EDE6DD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M13 28 a20 20 0 0 1 34 -8"/><polygon points="47,10 49,22 38,18" fill="#8A8178" stroke="none"/><path d="M51 36 a20 20 0 0 1 -34 8" stroke="#F47920"/><polygon points="17,54 15,42 26,46" fill="#F47920" stroke="none"/></svg><div><div class="t">Operating Rhythm</div><div class="d">How the week runs — Monday sync, the trackers, Friday close.</div></div></a>
+        <a class="card person" href="/scrolls/mission-board"><svg class="ic" viewBox="0 0 64 64" width="48" height="48" aria-hidden="true" fill="none" stroke="#EDE6DD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="10" width="48" height="44" rx="3"/><line x1="24" y1="10" x2="24" y2="54"/><line x1="40" y1="10" x2="40" y2="54"/><rect x="12" y="16" width="8" height="6" fill="#F47920" stroke="none"/><rect x="12" y="26" width="8" height="6" fill="#F47920" stroke="none"/><rect x="28" y="16" width="8" height="6" fill="#8A8178" stroke="none"/><rect x="44" y="16" width="8" height="6" fill="#8A8178" stroke="none"/></svg><div><div class="t">Mission Board</div><div class="d">The weekly board — owner · deliverable · due. The single source of what's owed.</div></div></a>
       </div>
-    </div>
+    </details>
 
-    <div class="group">
-      <div class="glabel">People &amp; Partnerships <span style="color:var(--orange)">· Map</span></div>
+    <details class="group">
+      <summary class="glabel">People &amp; Partnerships <span style="color:var(--orange)">· Map</span> <svg class="chev" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M3 6l5 5 5-5" stroke="#F47920" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
       <div class="cards">
-        <a class="card" href="/crew"><div class="t">The Crew</div><div class="d">Tim, Gabe, Pavan &amp; Erik — photos, roles, and each person's page.</div></a>
-        <a class="card" href="/roadmaps/gabe"><div class="t">Gabe Roadmap</div><div class="d">Creative Director — the four buckets and the pay structure.</div></a>
-        <a class="card" href="/roadmaps/pavan"><div class="t">Pavan Roadmap</div><div class="d">Dev Ninja — the seven milestones to the September push.</div></a>
+        <a class="card person" href="/crew"><svg class="ic" viewBox="0 0 64 64" width="48" height="48" aria-hidden="true" fill="none" stroke="#EDE6DD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20 Q32 12 54 20" stroke-width="5" stroke="#F47920"/><line x1="14" y1="28" x2="50" y2="28"/><line x1="20" y1="21" x2="21" y2="54"/><line x1="44" y1="21" x2="43" y2="54"/></svg><div><div class="t">The Crew</div><div class="d">Tim, Gabe, Pavan &amp; Erik — photos, roles, and each person's page.</div></div></a>
+        <a class="card person" href="/roadmaps/gabe"><img src="/assets/crew/web/crew-gabe-emblem-96.webp" width="56" height="56" loading="lazy" alt="Gabe — Creative Ninja"><div><div class="t">Gabe Roadmap</div><div class="d">Creative Director — the four buckets and the pay structure.</div></div></a>
+        <a class="card person" href="/roadmaps/erik"><img src="/assets/crew/web/crew-erik-emblem-96.webp" width="56" height="56" loading="lazy" alt="Erik — Podcast Ninja"><div><div class="t">Erik Roadmap</div><div class="d">Studio Ally — Lucky 13: co-producer on Generationally Incorrect, studio partner on Found KC.</div></div></a>
+        <a class="card person" href="/roadmaps/pavan"><img src="/assets/crew/web/crew-pavan-emblem-96.webp" width="56" height="56" loading="lazy" alt="Pavan — Dev Ninja"><div><div class="t">Pavan Roadmap</div><div class="d">Dev Ninja — the seven milestones to the September push.</div></div></a>
       </div>
-    </div>
+    </details>
 
   </div>
 </section>
