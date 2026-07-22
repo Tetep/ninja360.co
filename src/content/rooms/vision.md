@@ -32,7 +32,7 @@ Everyone builds one piece of the machine that replaces "everything runs through 
 
 - **Pavan builds the MACHINE** — the GoHighLevel engine that finds, audits, pitches, books, closes, and delivers customers on rails. Customers without Tim chasing them. <a class="moreinfo" href="/roadmaps/pavan" title="Pavan's build plan">💡 More info</a>
 - **Gabe builds the STORY** — Creative Director of the content engine and the "Found in KC" show. One client shoot becomes a feature that feeds the funnel and makes Tim famous. A brand — and a content asset that lasts. <a class="moreinfo" href="/scrolls/warp-speed" title="Warp Speed SOP">💡 More info</a>
-- **Erik produces the BROADCAST** — Lucky 13 Studios: the room, the audience, the co-host chair where the show gets made every week. (Potential partner — his trade for getting Lucky 13 found.) <a class="moreinfo" href="/scrolls/lucky13-brief" title="Lucky 13 brief">💡 More info</a>
+- **Erik produces the BROADCAST** — Lucky 13 Studios: the room, the audience, the co-host chair where the show gets made every week. (Potential partner — his trade for getting Lucky 13 found.)
 - **Tim builds the NAME** — sells, captures, hosts, and assembles it all into one company. Becomes the Key Person of Influence <a class="moreinfo" href="/scrolls/kpi-gameplan" title="KPI Gameplan">💡 KPI</a> for "get me found" in Kansas City.
 
 ### The scoreboard

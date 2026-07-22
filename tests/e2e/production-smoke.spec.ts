@@ -21,7 +21,6 @@ const routes = [
   '/roadmaps/erik',
   '/roadmaps/tim',
   '/scrolls/kpi-gameplan',
-  '/scrolls/lucky13-brief',
   '/scrolls/mission-board',
   '/scrolls/operating-rhythm',
   '/scrolls/three-doors',

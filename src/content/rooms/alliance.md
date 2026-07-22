@@ -9,7 +9,6 @@ guide: "ally"
 accent: "deep"
 variant: "content"
 cta: "**Monday:** sound out Erik with the Lucky 13 brief in hand."
-ref: "/scrolls/lucky13-brief"
 ---
 
 ### Why alliances exist
@@ -25,7 +24,7 @@ No small crew has everything. The Alliance is how a boutique operation delivers 
 ### How an ally joins
 
 <div class="grid2">
-<div class="box"><strong>One clear entry point</strong> — Every ally plugs into a specific lane. Lucky 13 enters through the studio segment of the show — nowhere else in the pipeline. <a class="moreinfo" href="/scrolls/lucky13-brief" title="The Lucky 13 brief">💡 More info</a></div>
+<div class="box"><strong>One clear entry point</strong> — Every ally plugs into a specific lane. Lucky 13 enters through the studio segment of the show — nowhere else in the pipeline.</div>
 <div class="box"><strong>Terms in writing</strong> — Trades are timeboxed with a written "done." Handshakes start relationships; documents keep them. <a class="moreinfo" href="/scrolls/partner-pay#rules" title="Cash rule 7 — trades timeboxed 90 days">💡 More info</a></div>
 </div>
 <div class="grid2">
