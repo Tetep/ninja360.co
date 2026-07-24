@@ -117,7 +117,7 @@ const lanes: Record<string, { tag: string; name: string }> = {
     /* Reveal each dossier as it scrolls into view (staggered by DOM order). */
     (function () {
       function reveal() {
-        var cards = document.querySelectorAll('.ninja-dossier.reveal');
+        var cards = document.querySelectorAll('.roster .reveal');
         if (!cards.length) return;
         if (!('IntersectionObserver' in window)) {
           cards.forEach(function (c) { c.classList.add('is-in-view'); });
@@ -135,6 +135,11 @@ const lanes: Record<string, { tag: string; name: string }> = {
           });
         }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
         cards.forEach(function (c) { io.observe(c); });
+        // Safety net: nothing stays invisible. If the observer never fires
+        // (background tab, edge cases), force-reveal after a beat.
+        setTimeout(function () {
+          cards.forEach(function (c) { c.classList.add('is-in-view'); });
+        }, 1500);
       }
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', reveal);
