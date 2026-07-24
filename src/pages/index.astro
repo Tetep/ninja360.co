@@ -232,7 +232,23 @@ const identities = [
           <div class="kake-body">
             <span class="kake-kanji" aria-hidden="true">一</span>
             <div class="kake-content">
-              <div class="phil-numeral">ONE</div>
+              <div class="phil-roman" role="img" aria-label="One">
+                <svg viewBox="0 0 46 110" class="rn">
+                  <defs>
+                    <linearGradient id="rg1" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stop-color="#F47920"/><stop offset=".6" stop-color="#E05F00"/><stop offset="1" stop-color="#A54200"/>
+                    </linearGradient>
+                    <filter id="rf1" x="-20%" y="-10%" width="140%" height="120%">
+                      <feTurbulence type="fractalNoise" baseFrequency="0.021 0.036" numOctaves="2" seed="7" result="n"/>
+                      <feDisplacementMap in="SourceGraphic" in2="n" scale="3.4"/>
+                    </filter>
+                    <path id="rp1" d="M-8,15 C-11,17 -11,22 -10,28 L-9,82 C-10,89 -6,95 0,95 C6,95 10,89 9,82 L10,28 C11,22 11,17 8,15 C4,13 -4,13 -8,15 Z"/>
+                  </defs>
+                  <g fill="url(#rg1)" filter="url(#rf1)">
+                    <use href="#rp1" transform="translate(23 0)"/>
+                  </g>
+                </svg>
+              </div>
               <h3 class="phil-h">Put People<br />on the Map.</h3>
               <p class="phil-sub">Visible. Heard. Chosen.</p>
               <ul class="phil-points">
@@ -251,7 +267,24 @@ const identities = [
           <div class="kake-body">
             <span class="kake-kanji" aria-hidden="true">二</span>
             <div class="kake-content">
-              <div class="phil-numeral">TWO</div>
+              <div class="phil-roman" role="img" aria-label="Two">
+                <svg viewBox="0 0 84 110" class="rn">
+                  <defs>
+                    <linearGradient id="rg2" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stop-color="#F47920"/><stop offset=".6" stop-color="#E05F00"/><stop offset="1" stop-color="#A54200"/>
+                    </linearGradient>
+                    <filter id="rf2" x="-15%" y="-10%" width="130%" height="120%">
+                      <feTurbulence type="fractalNoise" baseFrequency="0.021 0.036" numOctaves="2" seed="4" result="n"/>
+                      <feDisplacementMap in="SourceGraphic" in2="n" scale="3.4"/>
+                    </filter>
+                    <path id="rp2" d="M-7,15 C-10,17 -10,22 -9,28 L-8,82 C-9,89 -5,95 0,95 C5,95 9,89 8,82 L9,28 C10,22 10,17 7,15 C4,13 -3,13 -7,15 Z"/>
+                  </defs>
+                  <g fill="url(#rg2)" filter="url(#rf2)">
+                    <use href="#rp2" transform="translate(27 0)"/>
+                    <use href="#rp2" transform="translate(57 0)"/>
+                  </g>
+                </svg>
+              </div>
               <h3 class="phil-h">Fall in Love with<br />the True Story.</h3>
               <p class="phil-sub">Technology is the tool. Connection is the goal.</p>
               <ul class="phil-points">
@@ -270,7 +303,25 @@ const identities = [
           <div class="kake-body">
             <span class="kake-kanji" aria-hidden="true">三</span>
             <div class="kake-content">
-              <div class="phil-numeral">THREE</div>
+              <div class="phil-roman" role="img" aria-label="Three">
+                <svg viewBox="0 0 124 110" class="rn">
+                  <defs>
+                    <linearGradient id="rg3" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stop-color="#F47920"/><stop offset=".6" stop-color="#E05F00"/><stop offset="1" stop-color="#A54200"/>
+                    </linearGradient>
+                    <filter id="rf3" x="-12%" y="-10%" width="124%" height="120%">
+                      <feTurbulence type="fractalNoise" baseFrequency="0.021 0.036" numOctaves="2" seed="11" result="n"/>
+                      <feDisplacementMap in="SourceGraphic" in2="n" scale="3.4"/>
+                    </filter>
+                    <path id="rp3" d="M-7,15 C-10,17 -10,22 -9,28 L-8,82 C-9,89 -5,95 0,95 C5,95 9,89 8,82 L9,28 C10,22 10,17 7,15 C4,13 -3,13 -7,15 Z"/>
+                  </defs>
+                  <g fill="url(#rg3)" filter="url(#rf3)">
+                    <use href="#rp3" transform="translate(26 0)"/>
+                    <use href="#rp3" transform="translate(62 0)"/>
+                    <use href="#rp3" transform="translate(98 0)"/>
+                  </g>
+                </svg>
+              </div>
               <h3 class="phil-h">Always Sharpen<br />the Blade.</h3>
               <p class="phil-sub">Cutting edge, never reckless.</p>
               <ul class="phil-points">
@@ -1010,19 +1061,16 @@ const identities = [
   }
   .kake-content { position: relative; z-index: 1; }
 
-  .phil-numeral {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: clamp(30px, 4vw, 40px);
-    letter-spacing: 8px;
-    line-height: 1;
-    margin-bottom: 14px;
-    text-transform: uppercase;
-    background: linear-gradient(180deg, var(--orange) 0%, var(--deep) 60%, #A54200 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
+  /* Brush-painted roman numerals — inline SVG strokes, ink-displaced */
+  .phil-roman {
+    margin-bottom: 16px;
+    line-height: 0;
+  }
+  .phil-roman .rn {
+    height: clamp(46px, 6vw, 62px);
+    width: auto;
+    display: inline-block;
+    filter: drop-shadow(0 2px 10px rgba(244, 121, 32, 0.3));
   }
 
   .phil-h {
