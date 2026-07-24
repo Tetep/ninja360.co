@@ -15,6 +15,16 @@ const { Content } = await room.render();
 const partners = (await getCollection('partners')).sort(
   (a, b) => a.data.order - b.data.order
 );
+
+// Philosophy lane per crew member — ties the Crew back to the Three
+// Philosophies. Keyed by the partner file id. Erik is positioning, not
+// a core philosophy (per the Alliance room).
+const lanes: Record<string, { tag: string; name: string }> = {
+  tim:   { tag: 'Philosophy I',  name: 'Put People on the Map' },
+  gabe:  { tag: 'Philosophy II', name: 'Fall in Love with the True Story' },
+  pavan: { tag: 'Philosophy III', name: 'Always Sharpen the Blade' },
+  erik:  { tag: 'The Alliance',  name: 'Big Leagues to Main Street' },
+};
 ---
 
 <DojoLayout title="Three Doors · The Ninja-360 Dojo">
@@ -32,202 +42,337 @@ const partners = (await getCollection('partners')).sort(
     <Content />
   </div>
 
-  {partners.map(p => (
-    <article class="doorcard">
-      <header class="dh">
-        <Image
-          src={crewBanners[p.data.banner]}
-          alt=""
-          loading="lazy"
-          widths={[640, 900, 1200]}
-          sizes="(max-width: 800px) 100vw, 760px"
-        />
-        <div class="overlay"></div>
-        <div class="headline">
-          <Image
-            class="emblem"
-            src={crewEmblems[p.data.emblem]}
-            alt={`${p.data.name} emblem`}
-            loading="lazy"
-            widths={[96, 128, 192]}
-            sizes="72px"
-          />
-          <div class="who">
-            {p.data.roadmap ? (
-              <a class="n link" href={p.data.roadmap}>{p.data.name}</a>
-            ) : (
-              <div class="n">{p.data.name}</div>
-            )}
-            <div class="role">{p.data.role}</div>
-          </div>
-        </div>
-      </header>
-      <div class="db">
-        {crewPhotos[p.data.photo] ? (
-          <Image
-            class="photo"
-            src={crewPhotos[p.data.photo]}
-            alt={`${p.data.name} headshot`}
-            loading="lazy"
-            widths={[220, 320, 460]}
-            sizes="(max-width: 800px) 90vw, 140px"
-          />
-        ) : (
-          <div class="photo slot">Drop {p.data.photo}</div>
-        )}
-        <div class="meta">
-          <p class="bio">{p.data.bio}</p>
-          <div class="actions">
-            <a class="btn" href={p.data.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            {p.data.roadmap && <a class="btn ghost" href={p.data.roadmap}>Roadmap</a>}
-          </div>
-          <div class="pitch">{p.data.pitch}</div>
-        </div>
-        <div class="say">"{p.data.say}"</div>
-      </div>
-    </article>
-  ))}
+  {/* ============================================================
+      THE ROSTER — cinematic dark lineup, one dossier per ninja
+      ============================================================ */}
+  <section class="roster" aria-label="The Ninja-360 crew">
+    <div class="roster-smoke" aria-hidden="true">
+      <svg viewBox="0 0 900 600" preserveAspectRatio="none">
+        <path class="w"  d="M120 620 C 160 480, 60 420, 140 300 C 210 200, 120 140, 180 40"  fill="none" stroke="#F4C88E" stroke-width="26" stroke-linecap="round"/>
+        <path class="w w2" d="M480 640 C 440 500, 560 440, 490 320 C 420 210, 540 150, 480 60" fill="none" stroke="#F4C88E" stroke-width="20" stroke-linecap="round"/>
+        <path class="w w3" d="M780 620 C 820 470, 720 430, 790 310 C 850 210, 760 150, 820 50" fill="none" stroke="#F4C88E" stroke-width="24" stroke-linecap="round"/>
+      </svg>
+    </div>
 
-  {/* ref renders as source chip in RoomHead — no bottom rendering needed */}
+    <div class="roster-inner">
+      <p class="roster-tagline reveal">
+        You can hire a web developer, a photographer, a videographer<span class="rt-dots">…</span>
+        <span class="rt-punch">or you can just hire a ninja.</span>
+      </p>
+
+      {partners.map((p, i) => {
+        const lane = lanes[p.slug];
+        return (
+          <article class={`ninja-dossier reveal ${i % 2 === 1 ? 'flip' : ''}`}>
+            <div class="nd-portrait">
+              {crewPhotos[p.data.photo] ? (
+                <Image
+                  class="nd-photo"
+                  src={crewPhotos[p.data.photo]}
+                  alt={`${p.data.name} — Ninja-360`}
+                  loading="lazy"
+                  widths={[220, 320, 460]}
+                  sizes="(max-width: 720px) 60vw, 220px"
+                />
+              ) : (
+                <div class="nd-photo slot">Drop {p.data.photo}</div>
+              )}
+              <Image
+                class="nd-emblem"
+                src={crewEmblems[p.data.emblem]}
+                alt={`${p.data.name} ninja sigil`}
+                loading="lazy"
+                widths={[96, 128, 192]}
+                sizes="96px"
+              />
+            </div>
+
+            <div class="nd-body">
+              {lane && (
+                <div class="nd-lane">
+                  <span class="nd-lane-tag">{lane.tag}</span>
+                  <span class="nd-lane-name">{lane.name}</span>
+                </div>
+              )}
+              {p.data.roadmap ? (
+                <a class="nd-name link" href={p.data.roadmap}>{p.data.name}</a>
+              ) : (
+                <h3 class="nd-name">{p.data.name}</h3>
+              )}
+              <div class="nd-role">{p.data.role}</div>
+              <p class="nd-bio">{p.data.bio}</p>
+              <blockquote class="nd-say">{p.data.say}</blockquote>
+              <div class="nd-actions">
+                <a class="nd-btn" href={p.data.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+                {p.data.roadmap && <a class="nd-btn ghost" href={p.data.roadmap}>See the roadmap →</a>}
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  </section>
+
+  <script is:inline>
+    /* Reveal each dossier as it scrolls into view (staggered by DOM order). */
+    (function () {
+      function reveal() {
+        var cards = document.querySelectorAll('.ninja-dossier.reveal');
+        if (!cards.length) return;
+        if (!('IntersectionObserver' in window)) {
+          cards.forEach(function (c) { c.classList.add('is-in-view'); });
+          return;
+        }
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) {
+              var el = e.target;
+              var idx = [].indexOf.call(el.parentNode.children, el);
+              el.style.transitionDelay = Math.min(idx, 4) * 90 + 'ms';
+              el.classList.add('is-in-view');
+              io.unobserve(el);
+            }
+          });
+        }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+        cards.forEach(function (c) { io.observe(c); });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', reveal);
+      } else { reveal(); }
+    })();
+  </script>
 </DojoLayout>
 
 <style>
-  .doorcard {
-    border-radius: var(--r-lg);
+  /* =====================================================================
+     THE ROSTER — full-bleed dark cinematic band
+     ===================================================================== */
+  .roster {
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-top: 34px;
+    padding: 64px 0 76px;
+    color: #F2EAE0;
+    background:
+      radial-gradient(1000px 600px at 50% -10%, rgba(244, 121, 32, 0.12), transparent 60%),
+      radial-gradient(700px 500px at 12% 100%, rgba(244, 121, 32, 0.06), transparent 70%),
+      linear-gradient(180deg, #1A1614 0%, #14100E 55%, #0F0C0A 100%);
+    border-top: 1px solid rgba(244, 121, 32, 0.18);
+    border-bottom: 1px solid rgba(244, 121, 32, 0.18);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35) inset, 0 -20px 60px rgba(0, 0, 0, 0.35) inset;
     overflow: hidden;
   }
-  .dh {
-    position: relative;
-    min-height: 120px;
+  .roster::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--texture-paper);
+    opacity: 0.32;
+    mix-blend-mode: overlay;
+    pointer-events: none;
   }
-  .dh .overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.12));
+  .roster-smoke {
+    position: absolute; inset: 0;
+    pointer-events: none; overflow: hidden; z-index: 0;
   }
-  .dh .headline {
-    position: absolute;
-    left: 14px;
-    right: 14px;
-    bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 1;
-  }
-  :global(.dh img) {
-    width: 100%;
-    height: 132px;
-    object-fit: cover;
-    object-position: center;
-  }
-  :global(.dh .emblem) {
-    width: 72px;
-    height: 72px;
-    object-fit: contain;
-    filter: drop-shadow(0 0 6px rgba(244, 121, 32, 0.38))
-      drop-shadow(0 0 14px rgba(244, 121, 32, 0.16))
-      drop-shadow(0 2px 5px rgba(0, 0, 0, 0.15));
-  }
-  .dh .who .n {
-    color: var(--white);
-    font-family: var(--font-display);
-    font-weight: 800;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    font-size: 24px;
-    line-height: 1;
-  }
-  .dh .who .n.link {
-    text-decoration: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.45);
-  }
-  .dh .who .n.link:hover {
-    border-bottom-color: rgba(255, 255, 255, 0.95);
-  }
-  .dh .who .role {
-    color: #ffd9bb;
-    font-family: var(--font-display);
-    font-size: 12px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-top: 4px;
-  }
-  .db {
-    display: grid;
-    grid-template-columns: 140px 1fr;
-    gap: 12px;
-    align-items: start;
-  }
-  :global(.db .photo) {
-    width: 140px;
-    height: 140px;
-    border-radius: var(--r-md);
-    object-fit: cover;
-    border: 1px solid var(--line);
-    background: var(--warm);
-  }
-  .db .photo.slot {
-    width: 140px;
-    height: 140px;
-    border-radius: var(--r-md);
-    border: 1px dashed var(--line);
-    display: grid;
-    place-items: center;
-    text-align: center;
-    padding: 8px;
-    font-size: 12px;
-    color: var(--dead);
-    background: var(--warm);
-  }
-  .meta .bio {
-    margin: 2px 0 8px;
-  }
-  .meta .pitch {
-    font-weight: 600;
-  }
-  .actions {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
-  }
-  .btn {
-    display: inline-block;
-    border: 1px solid var(--line);
-    border-radius: var(--r-sm);
-    padding: 4px 9px;
-    font-size: 12px;
-    font-family: var(--font-display);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--deep);
-    text-decoration: none;
-    background: var(--warm);
-  }
-  .btn:hover {
-    background: var(--focus);
-  }
-  .btn.ghost {
-    background: var(--charcoal);
-    color: var(--white);
-    border-color: var(--charcoal);
-  }
-  .btn.ghost:hover {
-    opacity: 0.92;
+  .roster-smoke svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .roster-smoke .w  { filter: blur(14px); opacity: 0.05; animation: roster-drift 30s ease-in-out infinite; }
+  .roster-smoke .w2 { animation-duration: 40s; animation-delay: -16s; opacity: 0.035; }
+  .roster-smoke .w3 { animation-duration: 48s; animation-delay: -26s; opacity: 0.045; }
+  @keyframes roster-drift {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50%      { transform: translate(28px, -52px) rotate(2deg); }
   }
 
-  @media (max-width: 800px) {
-    .db {
+  .roster-inner {
+    position: relative; z-index: 1;
+    max-width: var(--wrap-max);
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /* The hook — page tagline */
+  .roster-tagline {
+    text-align: center;
+    max-width: 780px;
+    margin: 0 auto 14px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-size: clamp(19px, 2.6vw, 27px);
+    line-height: 1.4;
+    color: #D8CCBC;
+  }
+  .roster-tagline .rt-dots { color: var(--orange); font-style: normal; }
+  .roster-tagline .rt-punch {
+    display: block;
+    margin-top: 8px;
+    font-family: var(--font-display);
+    font-style: normal;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    font-size: clamp(24px, 3.6vw, 40px);
+    line-height: 1.05;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F5E9D5 55%, #F4C88E 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+    text-shadow: 0 4px 40px rgba(244, 121, 32, 0.3);
+  }
+
+  /* =====================================================================
+     NINJA DOSSIER — one cinematic card per crew member
+     ===================================================================== */
+  .ninja-dossier {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 28px;
+    align-items: center;
+    padding: 26px 28px;
+    border-radius: var(--r-lg);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
+    border: 1px solid rgba(244, 121, 32, 0.16);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transition: transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med) var(--ease-out), border-color var(--dur-med) var(--ease-out);
+  }
+  .ninja-dossier.flip { grid-template-columns: 1fr 240px; }
+  .ninja-dossier.flip .nd-portrait { order: 2; }
+  .ninja-dossier.flip .nd-body { order: 1; }
+  .ninja-dossier:hover {
+    transform: translateY(-4px);
+    border-color: rgba(244, 121, 32, 0.42);
+    box-shadow: 0 26px 56px rgba(0, 0, 0, 0.5), 0 0 40px rgba(244, 121, 32, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  }
+
+  /* reveal-on-scroll */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); }
+  .reveal.is-in-view { opacity: 1; transform: translateY(0); }
+
+  /* Portrait: real photo framed + ninja emblem sigil */
+  .nd-portrait {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  :global(.nd-photo) {
+    width: 190px; height: 190px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(244, 121, 32, 0.55);
+    box-shadow: 0 0 0 6px rgba(244, 121, 32, 0.08), 0 14px 34px rgba(0, 0, 0, 0.55), 0 0 34px rgba(244, 121, 32, 0.22);
+  }
+  .nd-photo.slot {
+    width: 190px; height: 190px;
+    border-radius: 50%;
+    border: 2px dashed rgba(244, 121, 32, 0.4);
+    display: grid; place-items: center;
+    text-align: center; padding: 8px;
+    font-size: 12px; color: #B8B0A7;
+    background: rgba(0, 0, 0, 0.25);
+  }
+  :global(.nd-emblem) {
+    width: 92px; height: 92px;
+    object-fit: contain;
+    margin-top: -26px;
+    filter: drop-shadow(0 0 8px rgba(244, 121, 32, 0.4)) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+  }
+
+  /* Body */
+  .nd-lane {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 4px 12px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(244, 121, 32, 0.4);
+    border-radius: 999px;
+    background: rgba(244, 121, 32, 0.1);
+  }
+  .nd-lane-tag {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: #FFB984;
+  }
+  .nd-lane-name {
+    font-family: Georgia, "Times New Roman", serif; font-style: italic;
+    font-size: 12.5px; color: #E4D7C8;
+  }
+  .nd-name {
+    display: inline-block;
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(26px, 3.4vw, 34px);
+    letter-spacing: 1px; text-transform: uppercase;
+    line-height: 1; margin: 0 0 6px;
+    color: #FFFFFF; text-decoration: none;
+  }
+  a.nd-name.link { border-bottom: 1px solid rgba(244, 121, 32, 0.45); padding-bottom: 2px; }
+  a.nd-name.link:hover { border-bottom-color: var(--orange); color: #FFE9D6; }
+  .nd-role {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 12.5px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--orange); margin-bottom: 14px;
+  }
+  .nd-bio {
+    font-size: 14.5px; line-height: 1.6; color: #C8BFB5;
+    margin: 0 0 18px; max-width: 54ch;
+  }
+  .nd-say {
+    position: relative;
+    margin: 0 0 20px;
+    padding: 2px 0 2px 20px;
+    border-left: 2px solid rgba(244, 121, 32, 0.5);
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-size: clamp(15px, 1.7vw, 18px);
+    line-height: 1.5;
+    color: #F0E6D8;
+    max-width: 56ch;
+  }
+  .nd-say::before {
+    content: '\201C';
+    position: absolute; left: 8px; top: -6px;
+    font-size: 34px; line-height: 1;
+    color: rgba(244, 121, 32, 0.45);
+    font-family: Georgia, serif;
+  }
+  .nd-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .nd-btn {
+    display: inline-block;
+    border: 1px solid rgba(244, 121, 32, 0.4);
+    border-radius: var(--r-sm);
+    padding: 7px 14px;
+    font-size: 12px; font-family: var(--font-display);
+    text-transform: uppercase; letter-spacing: 0.8px;
+    color: #FFB984; text-decoration: none;
+    background: rgba(244, 121, 32, 0.08);
+    transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+  }
+  .nd-btn:hover { background: rgba(244, 121, 32, 0.2); color: #FFF; }
+  .nd-btn.ghost { background: transparent; color: #E4D7C8; border-color: rgba(255, 255, 255, 0.2); }
+  .nd-btn.ghost:hover { border-color: var(--orange); color: #FFF; }
+
+  @media (max-width: 720px) {
+    .roster { padding: 44px 0 52px; }
+    .ninja-dossier,
+    .ninja-dossier.flip {
       grid-template-columns: 1fr;
+      gap: 18px;
+      text-align: center;
+      padding: 28px 22px;
     }
-    :global(.db .photo),
-    .db .photo.slot {
-      width: 120px;
-      height: 120px;
-    }
-    .dh .who .n {
-      font-size: 20px;
-    }
+    .ninja-dossier.flip .nd-portrait { order: 0; }
+    .ninja-dossier.flip .nd-body { order: 0; }
+    .nd-lane { margin-left: auto; margin-right: auto; }
+    .nd-bio, .nd-say { margin-left: auto; margin-right: auto; }
+    .nd-say { text-align: left; }
+    .nd-actions { justify-content: center; }
+    .nd-btn { padding: 12px 18px; min-height: 44px; display: inline-flex; align-items: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .roster-smoke .w { animation: none; }
+    .reveal { opacity: 1; transform: none; transition: none; }
   }
 </style>

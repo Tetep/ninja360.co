@@ -30,6 +30,6 @@ ref: "/scrolls/three-doors"
 
 ### Each ninja, each lane
 
-The doorcards below are the crew — each one a specialist, each one on their own roadmap, each one telling their part of the story. Fall in love with *their* true stories too; it's why the doorcards exist.
+Below is the crew — each one a specialist, each one keeper of a philosophy or a lane, each one on their own roadmap. Meet the person and their ninja both. Fall in love with *their* true stories too; that's the whole point.
 
 <span class="pill">Visible</span> <span class="pill">Paid fairly</span> <span class="pill">Growing on purpose</span>
