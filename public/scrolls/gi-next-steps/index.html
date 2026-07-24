@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generationally Incorrect · Next Steps · Ninja-360</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#F47920; --deep:#E05F00; --charcoal:#3D3D3D; --gray:#404040;
+    --warm:#F9F7F5; --line:#E0DCD8; --warn:#B03A2E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:#fff;line-height:1.55;font-size:16.5px}
+  .accent-top{height:4px;background:var(--orange)}
+  .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+  section{padding:38px 0}
+  h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif;line-height:1.1;text-transform:uppercase;letter-spacing:.5px}
+  h1{font-size:42px;font-weight:800}
+  h2{font-size:26px;font-weight:800;color:var(--deep);margin:0 0 14px;border-bottom:1px solid var(--line);padding-bottom:5px}
+  p{margin-bottom:11px}
+  .alt{background:var(--warm)}
+  .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:var(--orange)}
+  .kicker{font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:12.5px;color:var(--deep);margin-bottom:8px}
+  .sub{font-size:18px;color:var(--gray);max-width:700px}
+
+  .gate{border:2px solid var(--deep);padding:18px 22px;margin:8px 0 4px;background:#fff}
+  .gate .disp{color:var(--deep);font-size:21px;font-weight:800}
+  .decide{counter-reset:d;list-style:none;margin:12px 0 0}
+  .decide li{padding:10px 0 10px 44px;border-bottom:1px dashed var(--line);position:relative;font-size:15.5px}
+  .decide li:last-child{border-bottom:none}
+  .decide li::before{counter-increment:d;content:counter(d);position:absolute;left:4px;top:8px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:24px;color:var(--orange)}
+  .decide b{color:var(--deep)}
+
+  .moves{list-style:none;margin:8px 0 0}
+  .moves li{padding:9px 0 9px 34px;border-bottom:1px dashed var(--line);position:relative;font-size:15px}
+  .moves li:before{content:"☐";position:absolute;left:6px;top:7px;color:var(--orange);font-size:18px}
+  .moves li:last-child{border-bottom:none}
+  .moves b{color:var(--deep)}
+
+  .pill{display:inline-block;background:var(--warm);border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--deep)}
+  .footer{font-size:12.5px;color:#8a847e;margin-top:24px;border-top:1px solid var(--line);padding:14px 0 4px}
+  @media(max-width:720px){h1{font-size:32px}}
+  @media print{@page{margin:9mm}body{font-size:12px}}
+</style>
+<meta name="description" content="Generationally Incorrect · Next Steps — partner decisions, this-week actions, and open loops for the launch.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Ninja-360 Dojo">
+<meta property="og:title" content="Generationally Incorrect · Next Steps">
+<meta property="og:description" content="Partner decisions, this-week actions, and open loops — the living launch checklist.">
+
+<link rel='stylesheet' href='/share/responsive-patch.css'>
+</head>
+<body>
+<!-- n360-unav: unified dojo nav -->
+<style>
+  .n360bar{position:sticky;top:0;z-index:90;background:#3D3D3D;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;min-height:48px}
+  .n360bar .n360wm{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:#F47920;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav{display:flex;gap:3px;margin-left:auto}
+  .n360bar nav a{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:13px;color:#e8e2dc;padding:0 10px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav a:hover{background:rgba(244,121,32,.25);color:#fff}
+  .n360toggle{display:none;width:44px;height:44px;margin-left:auto;flex:0 0 auto;border:none;border-radius:6px;background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .n360toggle span{display:block;width:22px;height:2px;background:#fff;border-radius:1px}
+  .n360toggle:hover{background:rgba(244,121,32,.25)}
+  .n360accent{height:4px;background:#F47920}
+  .n360crumb{background:#F9F7F5;border-bottom:1px solid #E0DCD8;font-size:13px;padding:7px 18px;color:#404040}
+  .n360crumb a{color:#E05F00;text-decoration:none;font-weight:700}
+  .n360crumb a:hover{text-decoration:underline}
+  .n360crumb .sep{color:#9B948E;margin:0 5px}
+  @media(max-width:640px){
+    .n360bar{flex-wrap:nowrap}
+    .n360toggle{display:flex}
+    .n360bar nav{display:none;flex-direction:column;gap:0;margin-left:0;position:absolute;top:100%;left:0;right:0;background:#3D3D3D;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 12px 20px rgba(0,0,0,.25)}
+    .n360bar.open nav{display:flex}
+    .n360bar nav a{font-size:15px;padding:13px 18px;border-radius:0;border-bottom:1px solid rgba(255,255,255,.1);min-height:48px}
+    .n360bar nav a:last-child{border-bottom:none}
+  }
+</style>
+<div class="n360bar">
+  <a class="n360wm" href="/">NINJA-360</a>
+  <button class="n360toggle" type="button" aria-expanded="false" aria-controls="n360nav" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <nav id="n360nav">
+    <a href="/">Dojo</a>
+    <a href="/gameplan">Game Plan</a>
+    <a href="/scrolls">Scrolls</a>
+    <a href="/crew">Crew</a>
+  </nav>
+</div>
+<div class="n360accent"></div>
+<div class="n360crumb"><a href="/">Dojo</a><span class="sep">&rsaquo;</span><a href="/scrolls">Scrolls</a><span class="sep">&rsaquo;</span><span>GI · Next Steps</span></div>
+<script>
+  (function(){
+    var t=document.querySelector('.n360toggle'),b=document.querySelector('.n360bar');
+    if(t&&b)t.addEventListener('click',function(){var o=b.classList.toggle('open');t.setAttribute('aria-expanded',String(o));});
+  })();
+</script>
+
+<div class="accent-top"></div>
+
+<section>
+  <div class="wrap">
+    <div class="wordmark">NINJA-360</div>
+    <div class="kicker" style="margin-top:16px">The Podcast · The Living Launch Checklist</div>
+    <h1>Generationally Incorrect —<br>Next Steps</h1>
+    <p class="sub" style="margin-top:14px">What we actually do next. Four decisions gate everything downstream; the rest is execution. Check items off as they close — and leave this scroll sharper than you found it.</p>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>The Four Decisions — Erik · Gabe · Tim</h2>
+    <div class="gate">
+      <div class="disp">⚠ These gate the entity, the money model, and the calendar</div>
+      <ol class="decide">
+        <li><b>Logo direction</b> — pick 1–2 of the 6 concepts from the experiment sheet to finish.</li>
+        <li><b>Panel format</b> — fixed core panel, all-rotating guests, or the recommended hybrid: one recognizable voice per generation + a rotating 4th guest seat.</li>
+        <li><b>Equity &amp; roles</b> — confirm the split and who owns which lane. Terms tracked in the shared partnership doc; entity + financial model finalize after this.</li>
+        <li><b>Cadence</b> — confirmed direction: twice a month, 3-month sprint, then reassess for weekly. Anchor metric: hit every date we promise.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>This Week</h2>
+    <ul class="moves">
+      <li><b>Register the domain</b> — generationallyincorrect.com (+ .co / .tv as redirects).</li>
+      <li><b>Claim every handle in one sitting</b> — YouTube, IG, TikTok, Facebook, X, Spotify. Verify the bot-blocked four by hand at signup; fallbacks in the Master Plan.</li>
+      <li><b>Set up hello@generationallyincorrect.com</b> with the domain.</li>
+      <li><b>Fill the sponsor-spot brackets</b> — Erik: Lucky 13 facts + offer. Gabe: Lucid facts + capability. Tim: phone + audit CTA. Scripts on the <a href="/scrolls/gi-sponsor-spots" style="color:var(--deep);font-weight:700">Sponsor Spots scroll</a>.</li>
+      <li><b>Book the pilot panel</b> — lock the four seats for the first shoot.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>Build Phase · Weeks 3–4</h2>
+    <ul class="moves">
+      <li>Stand up GHL: dedicated podcast sub-account — social planner, calendar custom values (pillar / episode # / topic / status), source + topic tags, "Episode Launch" workflow.</li>
+      <li>Landing page + "Question of the Week" opt-in form: name / email / <b>which generation are you?</b> / optional phone.</li>
+      <li>Set the studio look with Lucid — lighting, framing, the cinematic bar.</li>
+      <li>Cut the clip + quote-card templates so every episode multiplies into ~40 assets.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Pilot &amp; Launch · Weeks 5–12</h2>
+    <ul class="moves">
+      <li>Shoot 2–3 pilots (apply the test-shoot learnings). <b>First episodes run the three house spots</b> — Lucky 13, Lucid, Ninja-360.</li>
+      <li>Build the sponsor one-pager.</li>
+      <li>Batch-record 4–6 episodes; pre-load the social calendar.</li>
+      <li>Soft-launch to warm networks; start the list.</li>
+      <li>Public launch on cadence; membership on; first sponsor conversations.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>Open Loops</h2>
+    <ul class="moves">
+      <li><b>Entity + operating agreement</b> — waits on the equity decision above.</li>
+      <li><b>Month-by-month financial model</b> — waits on equity + cadence.</li>
+      <li><b>Third Rail episodes</b> — membership / YouTube-first "special" drops only; keeps the main feed advertiser-safe.</li>
+      <li><b>Erik's emblem redo</b> — corrected spelling; drop-in replacement updates every page.</li>
+    </ul>
+    <p style="margin-top:18px"><span class="pill">Related</span> <a href="/scrolls/gi-master-plan" style="color:var(--deep);font-weight:700">GI · Master Plan</a> &nbsp;·&nbsp; <span class="pill">Related</span> <a href="/scrolls/gi-sponsor-spots" style="color:var(--deep);font-weight:700">GI · Sponsor Spots</a> &nbsp;·&nbsp; <span class="pill">Related</span> <a href="/scrolls/gi-ninja-lane" style="color:var(--deep);font-weight:700">GI · The Ninja-360 Lane</a></p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="footer">
+      Generationally Incorrect · Next Steps · Ninja-360 Digital Media LLC · Updated 2026-07-24<br>
+      Put them on the map · Tell the truth beautifully · Always sharpen the blade<br>
+      © 2026 Ninja-360 Digital Media LLC | Kansas City, MO
+    </div>
+  </div>
+</section>
+
+<script defer src='/share/responsive-patch.js'></script>
+</body>
+</html>
