@@ -194,6 +194,15 @@ const identities = [
 
   {/* ACT 3 · THE PHILOSOPHIES — the fancy scroll */}
   <section class="scene scene-philosophies" id="philosophies">
+    {/* Incense drift — decorative, never intercepts input */}
+    <div class="phil-smoke" aria-hidden="true">
+      <svg viewBox="0 0 900 600" preserveAspectRatio="none">
+        <path class="w"  d="M120 620 C 160 480, 60 420, 140 300 C 210 200, 120 140, 180 40"  fill="none" stroke="#F4C88E" stroke-width="26" stroke-linecap="round"/>
+        <path class="w w2" d="M460 640 C 420 500, 540 440, 470 320 C 400 210, 520 150, 460 60" fill="none" stroke="#F4C88E" stroke-width="20" stroke-linecap="round"/>
+        <path class="w w3" d="M780 620 C 820 470, 720 430, 790 310 C 850 210, 760 150, 820 50" fill="none" stroke="#F4C88E" stroke-width="24" stroke-linecap="round"/>
+      </svg>
+    </div>
+
     <div class="scene-wrap">
       <div class="phil-ornament" aria-hidden="true"><span>◆</span></div>
       <p class="phil-kicker">The Way of Ninja-360</p>
@@ -203,28 +212,75 @@ const identities = [
         <span class="phil-title-tail">— of Ninja-360.</span>
       </h2>
       <p class="phil-lede">
-        Ten years of work, distilled down to three sentences. Every project, every
-        pitch, every crew decision has to answer to one of these — or it doesn't
-        get a lane.
+        Every project, every pitch, every crew decision answers to one of these — or it doesn't get a lane.
       </p>
+
+      {/* Ink-brush stroke divider */}
+      <div class="phil-brush" aria-hidden="true">
+        <svg viewBox="0 0 320 24" preserveAspectRatio="none">
+          <path d="M4 14 C 60 8, 110 18, 160 12 C 214 6, 262 16, 316 10"
+                fill="none" stroke="var(--orange)" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/>
+          <path d="M40 17 C 100 13, 200 17, 280 13"
+                fill="none" stroke="var(--orange)" stroke-width="1.2" stroke-linecap="round" opacity="0.4"/>
+        </svg>
+      </div>
+
       <div class="phil-grid">
-        <article class="phil-card phil-card-1">
-          <div class="phil-numeral">ONE</div>
-          <div class="phil-divider" aria-hidden="true"></div>
-          <h3 class="phil-h"><em>Put people</em><br />on the map.</h3>
-          <p class="phil-body">Visible. Heard. Chosen. That's the outcome we sell — for our clients, for our crew, and for Ninja-360 itself.</p>
+        <article class="phil-card phil-card-1 kake">
+          <div class="kake-cord" aria-hidden="true"></div>
+          <div class="kake-rod" aria-hidden="true"></div>
+          <div class="kake-body">
+            <span class="kake-kanji" aria-hidden="true">一</span>
+            <div class="kake-content">
+              <div class="phil-numeral">ONE</div>
+              <h3 class="phil-h">Put People<br />on the Map.</h3>
+              <p class="phil-sub">Visible. Heard. Chosen.</p>
+              <ul class="phil-points">
+                <li>Deserving KC businesses, made visible</li>
+                <li>The M.A.P. Method — Make · Amplify · Promote</li>
+                <li>The outcome we sell: found &amp; chosen on Google</li>
+              </ul>
+            </div>
+          </div>
+          <div class="kake-rod kake-rod-b" aria-hidden="true"></div>
         </article>
-        <article class="phil-card phil-card-2">
-          <div class="phil-numeral">TWO</div>
-          <div class="phil-divider" aria-hidden="true"></div>
-          <h3 class="phil-h"><em>Fall in love</em><br />with the true story.</h3>
-          <p class="phil-body">Technology is the tool; connection is the goal. Drones, 360s, and cinema are how we tell it — never why we shoot.</p>
+
+        <article class="phil-card phil-card-2 kake">
+          <div class="kake-cord" aria-hidden="true"></div>
+          <div class="kake-rod" aria-hidden="true"></div>
+          <div class="kake-body">
+            <span class="kake-kanji" aria-hidden="true">二</span>
+            <div class="kake-content">
+              <div class="phil-numeral">TWO</div>
+              <h3 class="phil-h">Fall in Love with<br />the True Story.</h3>
+              <p class="phil-sub">Technology is the tool. Connection is the goal.</p>
+              <ul class="phil-points">
+                <li>Seek the authentic heart of every client</li>
+                <li>Drones, 360s &amp; cinema serve the story — never replace it</li>
+                <li>Real places, real people — never staged, never stock</li>
+              </ul>
+            </div>
+          </div>
+          <div class="kake-rod kake-rod-b" aria-hidden="true"></div>
         </article>
-        <article class="phil-card phil-card-3">
-          <div class="phil-numeral">THREE</div>
-          <div class="phil-divider" aria-hidden="true"></div>
-          <h3 class="phil-h"><em>Always sharpen</em><br />the blade.</h3>
-          <p class="phil-body">Try. Fail. Learn. Improve — responsibly. The Dojo exists so the whole crew gets sharper every week.</p>
+
+        <article class="phil-card phil-card-3 kake">
+          <div class="kake-cord" aria-hidden="true"></div>
+          <div class="kake-rod" aria-hidden="true"></div>
+          <div class="kake-body">
+            <span class="kake-kanji" aria-hidden="true">三</span>
+            <div class="kake-content">
+              <div class="phil-numeral">THREE</div>
+              <h3 class="phil-h">Always Sharpen<br />the Blade.</h3>
+              <p class="phil-sub">Cutting edge, never reckless.</p>
+              <ul class="phil-points">
+                <li>Research, experiment, disciplined execution</li>
+                <li>Try, fail, learn, improve — with honest reflection</li>
+                <li>Innovate responsibly, in service of the client</li>
+              </ul>
+            </div>
+          </div>
+          <div class="kake-rod kake-rod-b" aria-hidden="true"></div>
         </article>
       </div>
     </div>
@@ -656,8 +712,10 @@ const identities = [
     padding: 72px 0;
     scroll-margin-top: calc(var(--bar-h) + 8px);
     /* Full-bleed so per-scene background bands span the viewport,
-       breaking out of the layout's .wrap max-width + padding. */
-    width: 100%;
+       breaking out of the layout's .wrap max-width + padding.
+       Must be 100vw (not 100%) — 100% resolves to .wrap's 960px and
+       left-anchors the band on wide screens. */
+    width: 100vw;
     margin-left: calc(50% - 50vw);
   }
   .scene-wrap { max-width: var(--wrap-max); margin: 0 auto; padding: 0 24px; }
@@ -797,124 +855,222 @@ const identities = [
     text-align: center;
     color: #C8BFB5;
     max-width: 640px;
-    margin: 0 auto 52px;
+    margin: 0 auto 18px;
     font-size: 15.5px;
     line-height: 1.65;
     font-style: italic;
   }
 
-  /* Cards — cream on dark, scroll-like */
+  /* Incense drift layer — scoped to the section, taps pass through */
+  .phil-smoke {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .phil-smoke svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .phil-smoke .w {
+    filter: blur(14px);
+    opacity: 0.05;
+    animation: phil-drift 28s ease-in-out infinite;
+  }
+  .phil-smoke .w2 { animation-duration: 38s; animation-delay: -14s; opacity: 0.035; }
+  .phil-smoke .w3 { animation-duration: 46s; animation-delay: -24s; opacity: 0.045; }
+  @keyframes phil-drift {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50%      { transform: translate(30px, -54px) rotate(2deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .phil-smoke .w { animation: none; }
+  }
+
+  /* Ink-brush stroke under the header */
+  .phil-brush {
+    max-width: 320px;
+    margin: 0 auto 60px;
+  }
+  .phil-brush svg {
+    display: block; width: 100%; height: 24px;
+    filter: drop-shadow(0 0 10px rgba(244, 121, 32, 0.35));
+  }
+
+  /* =====================================================================
+     Kakemono — three hanging scrolls
+     ===================================================================== */
   .phil-grid {
     display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 22px; margin-top: 20px;
+    gap: 30px; margin-top: 8px;
+    align-items: start;
   }
   .phil-card {
     position: relative;
-    background: linear-gradient(180deg, #FBF6EC 0%, #F1E5CE 100%);
-    border: 1px solid rgba(232, 217, 188, 0.9);
-    border-radius: var(--r-lg);
-    padding: 40px 26px 32px;
-    color: var(--charcoal);
     text-align: center;
-    box-shadow:
-      0 24px 50px rgba(0, 0, 0, 0.45),
-      0 0 0 1px rgba(244, 121, 32, 0.18),
-      inset 0 1px 0 rgba(255, 255, 255, 0.6);
-    /* Off-screen for reveal-on-scroll */
+    /* Unroll reveal: clipped shut until in view */
+    clip-path: inset(0 -30px 100% -30px);
     opacity: 0;
-    transform: translateY(30px);
     transition:
-      transform var(--dur-slow) var(--ease-out),
-      opacity var(--dur-slow) var(--ease-out),
-      box-shadow var(--dur-med) var(--ease-out);
+      clip-path 900ms var(--ease-out),
+      opacity 500ms var(--ease-out);
   }
-  .phil-card.is-in-view { opacity: 1; transform: translateY(0); }
-  .phil-card.is-in-view.phil-card-1 { transition-delay: 100ms; }
-  .phil-card.is-in-view.phil-card-2 { transition-delay: 260ms; }
-  .phil-card.is-in-view.phil-card-3 { transition-delay: 420ms; }
-  .phil-card:hover {
-    transform: translateY(-6px);
-    box-shadow:
-      0 34px 68px rgba(0, 0, 0, 0.55),
-      0 0 0 1px var(--orange),
-      0 0 42px rgba(244, 121, 32, 0.28),
-      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  .phil-card.is-in-view {
+    clip-path: inset(-30px -30px -30px -30px);
+    opacity: 1;
   }
-  .phil-card::before {
-    /* orange rule at top of card */
+  .phil-card.is-in-view.phil-card-1 { transition-delay: 120ms; }
+  .phil-card.is-in-view.phil-card-2 { transition-delay: 300ms; }
+  .phil-card.is-in-view.phil-card-3 { transition-delay: 480ms; }
+
+  /* Hanging cord + knot above the top rod */
+  .kake-cord {
+    width: 2px; height: 26px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, rgba(244, 200, 142, 0.0), rgba(244, 200, 142, 0.55));
+    position: relative;
+  }
+  .kake-cord::after {
     content: '';
     position: absolute;
-    top: 0; left: 22%; right: 22%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--orange), transparent);
-    border-radius: 0 0 var(--r-sm) var(--r-sm);
+    bottom: -3px; left: 50%;
+    width: 7px; height: 7px;
+    transform: translateX(-50%) rotate(45deg);
+    background: #C48A3E;
+    box-shadow: 0 0 6px rgba(244, 121, 32, 0.5);
   }
+
+  /* Wooden rods — top + bottom, slightly wider than the parchment */
+  .kake-rod {
+    height: 13px;
+    width: calc(100% + 20px);
+    margin: 0 -10px;
+    border-radius: 7px;
+    background: linear-gradient(180deg, #4E3B2A 0%, #2C2018 55%, #1B130D 100%);
+    box-shadow:
+      0 3px 8px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(244, 200, 142, 0.25);
+    position: relative;
+    z-index: 2;
+  }
+  .kake-rod::before,
+  .kake-rod::after {
+    content: '';
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    width: 9px; height: 17px;
+    border-radius: 5px;
+    background: linear-gradient(180deg, #3A2B1E, #140E09);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  }
+  .kake-rod::before { left: -4px; }
+  .kake-rod::after  { right: -4px; }
+  .kake-rod-b { margin-top: 0; }
+
+  /* Parchment body */
+  .kake-body {
+    position: relative;
+    background: linear-gradient(180deg, #FBF6EC 0%, #F3E7D0 78%, #EBDCBE 100%);
+    margin: 0 2px;
+    padding: 34px 24px 30px;
+    color: var(--charcoal);
+    overflow: hidden;
+    box-shadow:
+      0 24px 50px rgba(0, 0, 0, 0.5),
+      inset 0 12px 18px -14px rgba(60, 40, 20, 0.5),
+      inset 0 -12px 18px -14px rgba(60, 40, 20, 0.45);
+    transition:
+      transform var(--dur-med) var(--ease-out),
+      box-shadow var(--dur-med) var(--ease-out);
+  }
+  .kake-body::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--texture-paper);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .phil-card:hover .kake-body {
+    transform: translateY(-5px);
+    box-shadow:
+      0 34px 64px rgba(0, 0, 0, 0.6),
+      0 0 36px rgba(244, 121, 32, 0.22),
+      inset 0 12px 18px -14px rgba(60, 40, 20, 0.5),
+      inset 0 -12px 18px -14px rgba(60, 40, 20, 0.45);
+  }
+
+  /* Faint kanji signature behind the content */
+  .kake-kanji {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 190px;
+    line-height: 1;
+    color: rgba(61, 61, 61, 0.055);
+    user-select: none;
+    pointer-events: none;
+  }
+  .kake-content { position: relative; z-index: 1; }
 
   .phil-numeral {
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: clamp(34px, 4.8vw, 46px);
+    font-size: clamp(30px, 4vw, 40px);
     letter-spacing: 8px;
     line-height: 1;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     text-transform: uppercase;
     background: linear-gradient(180deg, var(--orange) 0%, var(--deep) 60%, #A54200 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
-    text-shadow: 0 2px 12px rgba(244, 121, 32, 0.25);
-  }
-
-  .phil-divider {
-    width: 48px; height: 1px;
-    background: var(--orange);
-    margin: 0 auto 22px;
-    position: relative;
-    opacity: 0.7;
-  }
-  .phil-divider::after {
-    content: '◆';
-    position: absolute;
-    top: -8px; left: 50%;
-    transform: translateX(-50%);
-    font-size: 9px;
-    color: var(--orange);
-    background: #F7EBD3;
-    padding: 0 5px;
   }
 
   .phil-h {
-    font-size: clamp(19px, 2.2vw, 24px);
-    margin: 0 0 18px;
+    font-size: clamp(19px, 2.1vw, 23px);
+    margin: 0 0 10px;
     text-transform: none;
     letter-spacing: 0;
     line-height: 1.18;
     color: var(--charcoal);
     font-weight: 800;
   }
-  .phil-h em {
+
+  .phil-sub {
     font-family: Georgia, "Times New Roman", serif;
     font-style: italic;
-    font-weight: 400;
-    color: var(--deep);
-    letter-spacing: 0.5px;
-  }
-
-  .phil-body {
     font-size: 14.5px;
-    color: #5C544B;
-    line-height: 1.6;
-    margin: 0 auto;
-    max-width: 260px;
-    font-style: italic;
+    color: var(--deep);
+    margin: 0 0 18px;
+    letter-spacing: 0.4px;
   }
-  .phil-body::before {
+  .phil-sub::after {
     content: '';
     display: block;
-    width: 24px; height: 1px;
-    background: rgba(228, 105, 0, 0.4);
-    margin: 0 auto 12px;
+    width: 44px; height: 1px;
+    background: rgba(228, 105, 0, 0.45);
+    margin: 14px auto 0;
+  }
+
+  .phil-points {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 250px;
+    text-align: left;
+  }
+  .phil-points li {
+    position: relative;
+    padding: 5px 0 5px 18px;
+    font-size: 13.8px;
+    color: #4A423A;
+    line-height: 1.5;
+  }
+  .phil-points li::before {
+    content: '◆';
+    position: absolute;
+    left: 0; top: 7px;
+    font-size: 8px;
+    color: var(--orange);
   }
 
   /* Origin — portrait + moat (unchanged) */
@@ -995,7 +1151,16 @@ const identities = [
     .ninja-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
   }
   @media (max-width: 800px) {
-    .phil-grid { grid-template-columns: 1fr; }
+    .phil-grid { grid-template-columns: 1fr; gap: 40px; }
+    .kake-kanji { font-size: 150px; }
+    .phil-brush { margin-bottom: 44px; }
+    /* Single column: stagger reads as one long fall — tighten delays */
+    .phil-card.is-in-view.phil-card-2 { transition-delay: 160ms; }
+    .phil-card.is-in-view.phil-card-3 { transition-delay: 200ms; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .phil-card { transition: none; }
+    .kake-body { transition: none; }
   }
   @media (max-width: 900px) {
     .ninja-grid {
