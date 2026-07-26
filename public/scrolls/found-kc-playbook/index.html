@@ -85,6 +85,13 @@
 
   .pill{display:inline-block;background:var(--warm);border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--deep)}
 
+  /* the reel — responsive 16:9, padding-bottom ratio for max browser support */
+  .reel{margin-top:22px;max-width:760px}
+  .reel .frame{position:relative;width:100%;height:0;padding-bottom:56.25%;border:2px solid var(--orange);border-radius:8px;overflow:hidden;background:#000}
+  .reel .frame iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;display:block}
+  .reel .cap{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;font-size:12.5px;color:var(--deep);margin-top:9px}
+  @media print{.reel{display:none}}
+
   .footer{font-size:12.5px;color:#8a847e;margin-top:24px;border-top:1px solid var(--line);padding:14px 0 4px}
   .n360-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .n360-tw table{min-width:520px}
@@ -158,6 +165,18 @@
     <div class="tagline">
       <div class="line">"You can hire a web developer, a photographer, a videographer… <b>or you can just hire a ninja.</b>"</div>
       <div class="note">Lands at the end of every episode · cut to black</div>
+    </div>
+
+    <div class="reel">
+      <div class="frame">
+        <iframe
+          src="https://www.youtube.com/embed/nVWaaVwOBHU?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=nVWaaVwOBHU&amp;playsinline=1&amp;rel=0&amp;modestbranding=1"
+          title="Found KC — the reel"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen></iframe>
+      </div>
+      <div class="cap">The reel · loops muted — tap the speaker for sound</div>
     </div>
   </div>
 </section>
