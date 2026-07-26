@@ -113,39 +113,6 @@ const lanes: Record<string, { tag: string; name: string }> = {
     </div>
   </section>
 
-  <script is:inline>
-    /* Reveal each dossier as it scrolls into view (staggered by DOM order). */
-    (function () {
-      function reveal() {
-        var cards = document.querySelectorAll('.roster .reveal');
-        if (!cards.length) return;
-        if (!('IntersectionObserver' in window)) {
-          cards.forEach(function (c) { c.classList.add('is-in-view'); });
-          return;
-        }
-        var io = new IntersectionObserver(function (entries) {
-          entries.forEach(function (e) {
-            if (e.isIntersecting) {
-              var el = e.target;
-              var idx = [].indexOf.call(el.parentNode.children, el);
-              el.style.transitionDelay = Math.min(idx, 4) * 90 + 'ms';
-              el.classList.add('is-in-view');
-              io.unobserve(el);
-            }
-          });
-        }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
-        cards.forEach(function (c) { io.observe(c); });
-        // Safety net: nothing stays invisible. If the observer never fires
-        // (background tab, edge cases), force-reveal after a beat.
-        setTimeout(function () {
-          cards.forEach(function (c) { c.classList.add('is-in-view'); });
-        }, 1500);
-      }
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', reveal);
-      } else { reveal(); }
-    })();
-  </script>
 </DojoLayout>
 
 <style>
@@ -250,9 +217,8 @@ const lanes: Record<string, { tag: string; name: string }> = {
     box-shadow: 0 26px 56px rgba(0, 0, 0, 0.5), 0 0 40px rgba(244, 121, 32, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.07);
   }
 
-  /* reveal-on-scroll */
-  .reveal { opacity: 0; transform: translateY(28px); transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); }
-  .reveal.is-in-view { opacity: 1; transform: translateY(0); }
+  /* Always visible — the JS reveal-on-scroll was removed after it left
+     elements stuck invisible for real users. */
 
   /* Portrait: real photo framed + ninja emblem sigil */
   .nd-portrait {
@@ -378,6 +344,5 @@ const lanes: Record<string, { tag: string; name: string }> = {
   }
   @media (prefers-reduced-motion: reduce) {
     .roster-smoke .w { animation: none; }
-    .reveal { opacity: 1; transform: none; transition: none; }
   }
 </style>

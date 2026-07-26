@@ -978,23 +978,12 @@ const identities = [
     gap: 30px; margin-top: 8px;
     align-items: start;
   }
+  /* Cards are always visible — the JS-gated "unroll" reveal broke for real
+     users (script never fired → invisible scrolls), so it was removed. */
   .phil-card {
     position: relative;
     text-align: center;
-    /* Unroll reveal: clipped shut until in view */
-    clip-path: inset(0 -30px 100% -30px);
-    opacity: 0;
-    transition:
-      clip-path 900ms var(--ease-out),
-      opacity 500ms var(--ease-out);
   }
-  .phil-card.is-in-view {
-    clip-path: inset(-30px -30px -30px -30px);
-    opacity: 1;
-  }
-  .phil-card.is-in-view.phil-card-1 { transition-delay: 120ms; }
-  .phil-card.is-in-view.phil-card-2 { transition-delay: 300ms; }
-  .phil-card.is-in-view.phil-card-3 { transition-delay: 480ms; }
 
   /* Hanging cord + knot above the top rod */
   .kake-cord {
@@ -1273,12 +1262,8 @@ const identities = [
     .phil-grid { grid-template-columns: 1fr; gap: 40px; }
     .kake-kanji { font-size: 150px; }
     .phil-brush { margin-bottom: 44px; }
-    /* Single column: stagger reads as one long fall — tighten delays */
-    .phil-card.is-in-view.phil-card-2 { transition-delay: 160ms; }
-    .phil-card.is-in-view.phil-card-3 { transition-delay: 200ms; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .phil-card { transition: none; }
     .kake-body { transition: none; }
   }
   @media (max-width: 900px) {
@@ -1495,29 +1480,5 @@ const identities = [
     } else { wire(); }
 
     window.addEventListener('pageshow', syncPhaseFromStorage);
-  })();
-
-  /* Philosophy card reveal — trigger the fade+lift when cards scroll into view */
-  (function () {
-    function reveal() {
-      var cards = document.querySelectorAll('.phil-card');
-      if (!cards.length) return;
-      if (!('IntersectionObserver' in window)) {
-        cards.forEach(function (c) { c.classList.add('is-in-view'); });
-        return;
-      }
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          if (e.isIntersecting) {
-            e.target.classList.add('is-in-view');
-            io.unobserve(e.target);
-          }
-        });
-      }, { threshold: 0.2, rootMargin: '0px 0px -60px 0px' });
-      cards.forEach(function (c) { io.observe(c); });
-    }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', reveal);
-    } else { reveal(); }
   })();
 </script>
