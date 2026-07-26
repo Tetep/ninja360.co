@@ -13,7 +13,7 @@ ref: "/scrolls/three-doors"
 
 ### The philosophies start at home
 
-"Put People on the Map" isn't only for clients. Every person on this crew gets a lane, a roadmap, and a public byline on the work — visible, heard, chosen, starting with each other.
+"Put People on the Map" isn't only for clients. Every person on this crew gets a lane, a roadmap, and a public byline on the work — on the map, starting with each other.
 
 ### How the crew sharpens the blade together
 

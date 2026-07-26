@@ -22,11 +22,11 @@ Anyone can point a camera at a business. The Forge is where we find the reason i
 
 ### Philosophy #2 — Fall in Love with the Client's True Story
 
-We seek the **authentic heart** of every client and tell their story in a unique, beautiful, and emotionally compelling way.
+Every business has a real story — the reason it exists, the person behind the counter, the thing the regulars love. Our job is to **find that story and tell it beautifully.**
 
-<div class="stat">Technology is the tool. Genuine human connection is the goal.</div>
+<div class="stat">Listen first — the story comes before the shot list.</div>
 
-We shoot real places and real people — never staged, never stock, never someone else's footage with our client's logo on it. The drone, the 360 rig, the edit pipeline: all of it serves one thing, which is making a stranger feel something true about a local business.
+We shoot real people and real places — never staged, never stock, never someone else's footage with our client's logo on it. The drones and cameras serve the story, not the other way around: all of it exists to make a stranger feel something true about a local business.
 
 ### How the Forge works the story
 

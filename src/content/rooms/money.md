@@ -27,7 +27,7 @@ ref: "/scrolls/partner-pay"
 
 ### The cash rules are a sharpened blade
 
-Disciplined execution (Philosophy #3) applied to dollars: commissions only after client cash lands · margin floors on subcontracted builds · trades timeboxed with a written "done" · no cost in writing, no resale. The rules exist so the relationships never have to absorb a money surprise. <a class="moreinfo" href="/scrolls/partner-pay#rules" title="All seven cash rules">💡 the seven rules</a>
+Sharpen the Blade (Philosophy #3), applied to dollars: commissions only after client cash lands · margin floors on subcontracted builds · trades timeboxed with a written "done" · no cost in writing, no resale. The rules exist so the relationships never have to absorb a money surprise. <a class="moreinfo" href="/scrolls/partner-pay#rules" title="All seven cash rules">💡 the seven rules</a>
 
 ### Honest reflection, in numbers
 

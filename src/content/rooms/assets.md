@@ -24,7 +24,7 @@ Philosophy #1 says we put people on the map. Assets are how the map keeps workin
 <div class="box"><strong>Brand</strong> — The three philosophies, the identity, the ambassadors who repeat the triad when we're not in the room.</div>
 </div>
 <div class="grid2">
-<div class="box"><strong>Systems</strong> — The reddest zone on the heatmap and the sharpest blade-work underway: pipelines, checklists, automation. Disciplined execution made permanent.</div>
+<div class="box"><strong>Systems</strong> — The reddest zone on the heatmap and the sharpest blade-work underway: pipelines, checklists, automation. What works, written down and made permanent.</div>
 <div class="box"><strong>Product</strong> — The belt ladder: a clear path from first audit to full visibility system, priced in the open.</div>
 </div>
 
