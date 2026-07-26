@@ -22,7 +22,7 @@ Ninja-360 has been Tim — one man doing the selling, the shooting, the editing,
   </div>
   <div class="box">
     <div class="h">Phase 2 · The Build-Out — now</div>
-    Turn the proven hustle into a company: a machine that brings the customers, a show that makes Tim the name, and 24 assets that hold value without him. The 90-day sprint is the opening move.
+    Turn the proven hustle into a company: a machine that brings the customers, a show that makes Ninja-360 the name, and 24 assets that hold value without Tim in the room. The 90-day sprint is the opening move.
   </div>
 </div>
 
