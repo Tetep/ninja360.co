@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Found KC — Show Room | Ninja-360 Dojo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--orange:#F47920;--deep:#FF8D3E;--charcoal:#EDE6DD;--gray:#B8B0A7;--warm:#1A1714;--line:#3A342D;--ink:#12100E;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:radial-gradient(1100px 500px at 50% -80px,#1E1915 0%,var(--ink) 55%) fixed var(--ink);line-height:1.55;font-size:16px}
+  .accent-top{height:4px;background:var(--orange)}
+  .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+  section{padding:32px 0;position:relative;z-index:1}
+  .footer{position:relative;z-index:1}
+  h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif;line-height:1.1;text-transform:uppercase;letter-spacing:.5px}
+  h1{font-size:40px;font-weight:800}
+  h2{font-size:22px;font-weight:700;margin-bottom:4px}
+  h2 .num{color:var(--orange)}
+  p{margin-bottom:12px}
+  .alt{background:var(--warm)}
+  .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:19px;color:var(--orange)}
+  .backlink{display:inline-block;margin-top:14px;font-size:13.5px;color:var(--deep);text-decoration:none;font-weight:700}
+  .kicker{font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:13px;color:var(--deep);margin:22px 0 8px}
+  .sub{font-size:18px;color:var(--gray);max-width:680px}
+  .group{margin-bottom:26px}
+  .glabel{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:1px;font-size:17px;color:var(--charcoal);border-bottom:2px solid var(--orange);padding-bottom:5px;margin-bottom:12px}
+  summary.glabel{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;margin-bottom:0;-webkit-tap-highlight-color:transparent;background:linear-gradient(180deg,#26201A,#1A1714);border:1px solid var(--line);border-bottom:2px solid var(--orange);border-radius:6px;padding:12px 16px 10px;position:relative;overflow:hidden}
+  summary.glabel::after{content:"";position:absolute;top:0;right:0;border-style:solid;border-width:0 20px 20px 0;border-color:transparent #33291F transparent transparent}
+  details[open] > summary.glabel{border-radius:6px 6px 0 0}
+  details.group > .cards{padding:14px;border:1px solid var(--line);border-top:none;border-radius:0 0 6px 6px;background:linear-gradient(180deg,#151210,var(--ink));box-shadow:inset 0 10px 14px -12px rgba(0,0,0,.9)}
+  summary.glabel::-webkit-details-marker{display:none}
+  summary.glabel:hover{color:var(--deep)}
+  .glabel .chev{flex:0 0 auto;transition:transform .18s ease}
+  details[open] > summary .chev{transform:rotate(180deg)}
+  details.group > .cards{margin-top:0}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .card{border:1px solid var(--line);border-radius:6px;padding:14px 16px;text-decoration:none;color:var(--charcoal);display:block;background:linear-gradient(180deg,#1D1915,#171310);transition:border-color .15s,box-shadow .2s}
+  .card:hover{border-color:var(--orange);box-shadow:0 0 16px rgba(244,121,32,.18)}
+  .card .t{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:17px;color:var(--deep)}
+  .card .d{font-size:14px;color:var(--gray);margin-top:3px}
+  .card.person{display:flex;gap:12px;align-items:center}
+  .card.person img{width:56px;height:56px;flex:0 0 auto}
+  .card.person .ic{width:56px;height:56px;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+  .footer{font-size:13.5px;color:#8a847e;padding:24px 0;border-top:1px solid var(--line)}
+  @media(max-width:640px){h1{font-size:31px}.cards{grid-template-columns:1fr}}
+  /* incense smoke */
+  .smoke{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .smoke .ember{position:absolute;left:-120px;bottom:-140px;width:420px;height:420px;background:radial-gradient(circle,rgba(244,121,32,.10) 0%,rgba(244,121,32,0) 65%)}
+  .smoke svg{position:absolute;bottom:-40px;left:4%;width:92%;height:100%}
+  .smoke .w{filter:blur(13px);opacity:.07;animation:drift 26s ease-in-out infinite}
+  .smoke .w2{animation-duration:34s;animation-delay:-12s;opacity:.05}
+  .smoke .w3{animation-duration:44s;animation-delay:-22s;opacity:.04}
+  @keyframes drift{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(36px,-70px) rotate(2.5deg)}}
+  @media(prefers-reduced-motion:reduce){.smoke .w{animation:none}}
+  /* ember glow — orange family only (palette locked: no true gold) */
+  .card.person .ic svg{filter:drop-shadow(0 0 4px rgba(250,187,124,.50)) drop-shadow(0 0 12px rgba(244,121,32,.30));transition:filter 240ms cubic-bezier(0.16,1,0.3,1),transform 240ms cubic-bezier(0.16,1,0.3,1)}
+  .card.person img{filter:drop-shadow(0 0 5px rgba(244,121,32,.35));transition:filter 240ms cubic-bezier(0.16,1,0.3,1),transform 240ms cubic-bezier(0.16,1,0.3,1)}
+  .card:hover .ic svg,.card:hover img{filter:drop-shadow(0 0 6px rgba(250,187,124,.75)) drop-shadow(0 0 18px rgba(244,121,32,.45));transform:scale(1.06)}
+  .glabel .chev{filter:drop-shadow(0 0 5px rgba(250,187,124,.6))}
+  .hero-sharpen{filter:drop-shadow(0 0 4px rgba(250,187,124,.50)) drop-shadow(0 0 12px rgba(244,121,32,.30))}
+  summary.glabel{background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.96 0 0 0 0 0.85 0 0 0 0 0.66 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),linear-gradient(180deg,#26201A,#1A1714)}
+  .card{background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.96 0 0 0 0 0.85 0 0 0 0 0.66 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),linear-gradient(180deg,#1D1915,#171310)}
+  .hint{font-size:13.5px;color:#8A8178;font-style:italic;margin-top:10px}
+  .hint b{color:var(--deep);font-style:normal}
+
+  /* ---- Found KC show-room additions (new, palette-locked: orange family only) ---- */
+  .crew-badges{display:flex;flex-wrap:wrap;gap:22px;margin:22px 0 6px}
+  .crew-badges .badge{display:flex;flex-direction:column;align-items:center;text-align:center;width:96px}
+  .crew-badges img{width:96px;height:96px;border-radius:50%;object-fit:cover;display:block;filter:drop-shadow(0 0 5px rgba(244,121,32,.35));transition:filter 240ms cubic-bezier(0.16,1,0.3,1),transform 240ms cubic-bezier(0.16,1,0.3,1)}
+  .crew-badges .badge:hover img{filter:drop-shadow(0 0 6px rgba(250,187,124,.75)) drop-shadow(0 0 18px rgba(244,121,32,.45));transform:scale(1.06)}
+  .crew-badges .cap{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.5px;font-size:12.5px;text-transform:uppercase;color:var(--deep);margin-top:9px}
+
+  .tracker{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .stage{flex:1 1 150px;display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:linear-gradient(180deg,#1D1915,#171310)}
+  .stage-dot{width:13px;height:13px;border-radius:50%;border:2px solid var(--orange);background:transparent;flex:0 0 auto}
+  .stage-label{font-size:13px;font-weight:600;color:var(--charcoal);line-height:1.25}
+
+  .gate{display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--line)}
+  .gate:last-child{border-bottom:none}
+  .gate-num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:34px;color:var(--orange);line-height:1;flex:0 0 auto;min-width:38px}
+  .gate-status{display:inline-block;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;font-size:11px;text-transform:uppercase;color:var(--deep);border:1px solid var(--deep);border-radius:4px;padding:2px 8px;margin-bottom:6px}
+  .gate-body p{margin-bottom:0}
+
+  h3.subhead{font-size:16px;color:var(--charcoal);margin:22px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+  h3.subhead:first-of-type{margin-top:4px}
+
+  .checklist{list-style:none;margin-top:10px}
+  .checklist li{position:relative;padding:9px 0 9px 30px;border-bottom:1px solid var(--line);font-size:15px;color:var(--charcoal)}
+  .checklist li:last-child{border-bottom:none}
+  .checklist li::before{content:"";position:absolute;left:0;top:12px;width:16px;height:16px;border:2px solid var(--orange);border-radius:3px;background:transparent}
+</style>
+<!-- n360-og: share-card metadata -->
+<meta name="description" content="The Found KC Show Room — mission control for Ninja-360's flagship show: pre-production status, open gates, the shelf, and the crew running it.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Ninja-360 Dojo">
+<meta property="og:title" content="Found KC — Show Room | Ninja-360 Dojo">
+<meta property="og:description" content="The Found KC Show Room — mission control for Ninja-360's flagship show: pre-production status, open gates, the shelf, and the crew running it.">
+<meta property="og:image" content="https://dojo.ninja360.co/share/map-master.png">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="1024">
+<meta property="og:image:alt" content="M.A.P. Master — Full System Marketing badge">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Found KC — Show Room | Ninja-360 Dojo">
+<meta name="twitter:description" content="The Found KC Show Room — mission control for Ninja-360's flagship show: pre-production status, open gates, the shelf, and the crew running it.">
+<meta name="twitter:image" content="https://dojo.ninja360.co/share/map-master.png">
+
+<link rel='stylesheet' href='/share/responsive-patch.css'>
+</head>
+<body>
+<!-- n360-unav: unified dojo nav (injected) -->
+<style>
+  .n360bar{position:sticky;top:0;z-index:90;background:#3D3D3D;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;min-height:48px}
+  .n360bar .n360wm{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:#F47920;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav{display:flex;gap:3px;margin-left:auto}
+  .n360bar nav a{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:13px;color:#e8e2dc;padding:0 10px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav a:hover{background:rgba(244,121,32,.25);color:#fff}
+  .n360toggle{display:none;width:44px;height:44px;margin-left:auto;flex:0 0 auto;border:none;border-radius:6px;background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .n360toggle span{display:block;width:22px;height:2px;background:#fff;border-radius:1px}
+  .n360toggle:hover{background:rgba(244,121,32,.25)}
+  .n360accent{height:4px;background:#F47920}
+  .n360crumb{background:#F9F7F5;border-bottom:1px solid #E0DCD8;font-size:13px;padding:7px 18px;color:#404040}
+  .n360crumb a{color:#E05F00;text-decoration:none;font-weight:700}
+  .n360crumb a:hover{text-decoration:underline}
+  .n360crumb .sep{color:#9B948E;margin:0 5px}
+  .n360-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .n360-tw table{min-width:520px}
+  @media(max-width:640px){
+    .n360bar{flex-wrap:nowrap}
+    .n360toggle{display:flex}
+    .n360bar nav{display:none;flex-direction:column;gap:0;margin-left:0;position:absolute;top:100%;left:0;right:0;background:#3D3D3D;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 12px 20px rgba(0,0,0,.25)}
+    .n360bar.open nav{display:flex}
+    .n360bar nav a{font-size:15px;padding:13px 18px;border-radius:0;border-bottom:1px solid rgba(255,255,255,.1);min-height:48px}
+    .n360bar nav a:last-child{border-bottom:none}
+  }
+</style>
+<div class="n360bar">
+  <a class="n360wm" href="/">NINJA-360</a>
+  <button class="n360toggle" type="button" aria-expanded="false" aria-controls="n360nav" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <nav id="n360nav">
+    <a href="/">Dojo</a>
+    <a href="/gameplan">Game Plan</a>
+    <a href="/scrolls">Scrolls</a>
+    <a href="/crew">Crew</a>
+  </nav>
+</div>
+<div class="n360accent"></div>
+<div class="n360crumb"><a href="/">Dojo</a><span class="sep">&rsaquo;</span><span>Found in KC</span></div>
+<script>
+  (function(){
+    var t=document.querySelector('.n360toggle'),b=document.querySelector('.n360bar');
+    if(t&&b)t.addEventListener('click',function(){var o=b.classList.toggle('open');t.setAttribute('aria-expanded',String(o));});
+  })();
+</script>
+
+<style>.n360bar{background:#181512}.n360bar nav a{color:#CFC7BD}.n360crumb{background:#151210;border-bottom:1px solid #3A342D;color:#B8A78F}.n360crumb a{color:#FF8D3E}.n360crumb .sep{color:#6B645C}</style>
+<div class="smoke" aria-hidden="true"><div class="ember"></div><svg viewBox="0 0 1200 800" preserveAspectRatio="none"><path class="w" d="M140 820 C120 640 220 560 170 440 C130 340 230 300 210 200" stroke="#CBB89F" stroke-width="26" fill="none" stroke-linecap="round"/><path class="w w2" d="M620 840 C660 660 560 580 640 460 C700 370 600 320 660 210" stroke="#B8A78F" stroke-width="20" fill="none" stroke-linecap="round"/><path class="w w3" d="M1030 820 C990 660 1090 560 1030 440 C980 350 1080 300 1050 190" stroke="#CBB89F" stroke-width="30" fill="none" stroke-linecap="round"/></svg></div>
+<div class="accent-top"></div>
+<section>
+  <div class="wrap">
+    <div class="wordmark">NINJA-360</div>
+    <a class="backlink" href="/">← Ninja-360 Dojo</a> &nbsp;·&nbsp; <a class="backlink" href="/scrolls">The Scrolls</a>
+    <div class="kicker">The Flagship Show · Show Room</div>
+    <h1>Found in KC</h1>
+    <p class="sub" style="margin-top:12px">One client visit becomes the deliverable AND the feature — real KC businesses, told cinematically, found on Google.</p>
+
+    <div class="crew-badges">
+      <div class="badge"><img src="/assets/crew/web/crew-tim-emblem-96.webp" width="96" height="96" loading="lazy" alt="Tim Petet — Ninja-360"><div class="cap">Tim · Host + Capture</div></div>
+      <div class="badge"><img src="/assets/crew/web/crew-gabe-emblem-96.webp" width="96" height="96" loading="lazy" alt="Gabe Miller — Lucid Cinematics"><div class="cap">Gabe · Creative Director</div></div>
+      <div class="badge"><img src="/assets/crew/web/crew-erik-emblem-96.webp" width="96" height="96" loading="lazy" alt="Erik Juergensen — Lucky 13"><div class="cap">Erik · Studio Partner</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>Show Status</h2>
+    <div class="kicker" style="margin:6px 0 4px">Phase: Pre-Production — Episode 1 not yet locked.</div>
+    <div class="tracker">
+      <div class="stage"><span class="stage-dot"></span><span class="stage-label">Business picked</span></div>
+      <div class="stage"><span class="stage-dot"></span><span class="stage-label">Shot list drafted</span></div>
+      <div class="stage"><span class="stage-dot"></span><span class="stage-label">Studio/field split confirmed</span></div>
+      <div class="stage"><span class="stage-dot"></span><span class="stage-label">Shoot scheduled</span></div>
+    </div>
+    <p class="hint"><b>Status:</b> 0 of 4 pre-production steps locked.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Open Gates</h2>
+    <div class="gate">
+      <div class="gate-num">1</div>
+      <div class="gate-body">
+        <div class="gate-status">Open</div>
+        <p>Confirm the studio vs. field split with Erik for Episode #1.</p>
+      </div>
+    </div>
+    <div class="gate">
+      <div class="gate-num">2</div>
+      <div class="gate-body">
+        <div class="gate-status">Open</div>
+        <p>Gabe's terms (Gate 0) — his compensation structure isn't settled yet; it blocks his Creative Director role across every show he touches, including this one.</p>
+      </div>
+    </div>
+    <div class="gate">
+      <div class="gate-num">3</div>
+      <div class="gate-body">
+        <div class="gate-status">Open</div>
+        <p>Episode 1 subject — not yet locked.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>The Shelf</h2>
+    <p class="hint" style="margin-top:0">The source scrolls this show room pulls from — read the full playbooks in The Scrolls.</p>
+    <div class="cards">
+      <a class="card" href="/scrolls/found-kc-playbook"><div class="t">Found KC · Episode Playbook</div><div class="d">The flagship show — the three-act arc, the rules, the crew lanes.</div></a>
+      <a class="card" href="/scrolls/warp-speed"><div class="t">Ninja Warp Speed</div><div class="d">The production SOP — one visit, two tracks, faster-to-publish-than-anyone.</div></a>
+      <a class="card" href="/pipeline"><div class="t">Content Engine Pipeline</div><div class="d">Shoot once, publish everywhere — the nine stages from capture to funnel.</div></a>
+      <a class="card" href="/scrolls/kpi-gameplan"><div class="t">The KPI Strategy</div><div class="d">The 5 Ps strategy — elevating Ninja-360 from startup to KC’s visibility authority.</div></a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Format at a Glance</h2>
+
+    <h3 class="subhead">Two Tracks, One Visit</h3>
+    <div class="cards">
+      <div class="card"><div class="t">Visibility Capture · Tim</div><div class="d">Drone + 360, the client deliverable.</div></div>
+      <div class="card"><div class="t">Story Capture · Gabe</div><div class="d">Interview + cinematic shots, the show.</div></div>
+      <div class="card"><div class="t">Studio Segment · Lucky 13</div><div class="d">Erik's only entry point, when an episode needs the room.</div></div>
+    </div>
+
+    <h3 class="subhead">The Three-Act Arc</h3>
+    <div class="cards">
+      <div class="card"><div class="t">Act I · The Ache</div><div class="d">Cold open, no logo, no music: the business shown empty, the owner raw to camera.</div></div>
+      <div class="card"><div class="t">Act II · The Build</div><div class="d">The transformation engine: craft and connection intercut, pacing accelerates.</div></div>
+      <div class="card"><div class="t">Act III · The Payoff</div><div class="d">The reveal, held on the owner's reaction; the tagline lands, cut to black.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>This Week</h2>
+    <ul class="checklist">
+      <li>Pick the Episode #1 business — warm relationship, visually strong space.</li>
+      <li>Rough out the shot list with Gabe against the three-act arc.</li>
+      <li>Run the name / handle / domain check for "Found KC."</li>
+    </ul>
+  </div>
+</section>
+
+<div class="wrap footer">Found KC · Ninja-360 Dojo show room · <a href="/">Dojo home</a> · <a href="/scrolls">The Scrolls</a><br>Put them on the map · Tell the truth beautifully · Always sharpen the blade</div>
+
+<script defer src='/share/responsive-patch.js'></script>
+</body>
+</html>

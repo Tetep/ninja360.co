@@ -13,6 +13,7 @@ ref:
   - "/scrolls/warp-speed"
   - "/scrolls/found-kc-playbook"
   - "/pipeline"
+  - "/foundinkc"
 ---
 
 ### Where the story gets made

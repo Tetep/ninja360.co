@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Generationally Incorrect — Show Room | Ninja-360 Dojo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gi-ink:#111318; --gi-bone:#F2EDE1; --gi-red:#E23B2E; --gi-amber:#EBA83A; --gi-teal:#2E9AA6;
+    --gi-panel:#171A21; --gi-panel-2:#1D212A; --gi-line:#2A2E37; --gi-muted:#8F8B7F; --gi-soft:#C9C4B6;
+    --gi-radius:12px; --gi-radius-sm:8px; --gi-maxw:920px;
+    --gi-font-display:'Anton',Impact,'Arial Narrow Bold',sans-serif;
+    --gi-font-cond:'Oswald','Arial Narrow',Arial,sans-serif;
+    --gi-font-serif:Georgia,'Times New Roman',serif;
+    --gi-font-body:'Helvetica Neue',Arial,system-ui,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--gi-font-body);color:var(--gi-soft);background:radial-gradient(1100px 500px at 50% -80px,var(--gi-panel) 0%,var(--gi-ink) 55%) fixed var(--gi-ink);line-height:1.6;font-size:16px}
+  .accent-top{height:4px;background:var(--gi-red)}
+  .wrap{max-width:var(--gi-maxw);margin:0 auto;padding:0 24px}
+  section{padding:34px 0;position:relative;z-index:1}
+  .alt{background:var(--gi-panel)}
+  h1,h2,h3,.disp{font-family:var(--gi-font-display);line-height:1.05;text-transform:uppercase;letter-spacing:.01em}
+  h1{font-size:44px;color:var(--gi-bone)}
+  h2{font-size:24px;color:var(--gi-bone);border-left:5px solid var(--gi-red);padding-left:14px;margin-bottom:14px}
+  h3{font-size:14px;color:var(--gi-amber);letter-spacing:1px}
+  p{margin-bottom:11px}
+  .wordmark{font-family:var(--gi-font-cond);font-weight:700;letter-spacing:2.5px;font-size:15px;color:var(--gi-amber);text-transform:uppercase}
+  .backlink{display:inline-block;margin-top:12px;font-size:13px;color:var(--gi-teal);text-decoration:none;font-weight:600}
+  .backlink:hover{text-decoration:underline}
+  .kicker{font-family:var(--gi-font-cond);font-weight:700;text-transform:uppercase;letter-spacing:3px;font-size:12px;color:var(--gi-amber);margin:18px 0 6px}
+  .sub{font-size:16.5px;color:var(--gi-soft);max-width:680px}
+  .hint{font-size:13px;color:var(--gi-muted);font-style:italic}
+  .hint b{color:var(--gi-amber);font-style:normal}
+  @media(max-width:640px){h1{font-size:32px}}
+
+  /* masthead + taglines */
+  .gi-masthead{border-bottom:3px solid var(--gi-red);padding-bottom:18px;margin-bottom:14px}
+  .taglines{margin:10px 0 4px}
+  .taglines p{font-family:var(--gi-font-serif);font-style:italic;color:var(--gi-bone);font-size:16px;border-left:2px solid var(--gi-red);padding-left:14px;margin:6px 0}
+
+  /* producer trio */
+  .gi-producers{display:flex;flex-wrap:wrap;gap:12px;margin:22px 0 6px}
+  .gi-producer{display:flex;align-items:center;gap:12px;border:1px solid var(--gi-line);background:var(--gi-panel-2);border-radius:var(--gi-radius-sm);padding:10px 18px 10px 10px}
+  .gi-producer img{width:56px;height:56px;border-radius:50%;filter:drop-shadow(0 0 6px rgba(226,59,46,.45));flex:0 0 auto;transition:filter 240ms ease,transform 240ms ease}
+  .gi-producer:hover img{filter:drop-shadow(0 0 10px rgba(226,59,46,.7));transform:scale(1.05)}
+  .gi-producer-name{font-family:var(--gi-font-cond);font-weight:700;font-size:14px;color:var(--gi-bone);text-transform:uppercase;letter-spacing:.3px}
+  .gi-producer-role{font-size:12px;color:var(--gi-muted);margin-top:2px}
+
+  /* status strip */
+  .gi-status{max-width:640px}
+  .gi-status-phase{font-family:var(--gi-font-cond);font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:16px;color:var(--gi-bone)}
+  .gi-status-sub{color:var(--gi-muted);font-weight:500;text-transform:none;letter-spacing:0;font-size:13.5px;margin-left:6px;font-family:var(--gi-font-body)}
+  .gi-progress{height:10px;border-radius:6px;background:var(--gi-line);margin:12px 0 10px;overflow:hidden;border:1px solid var(--gi-line)}
+  .gi-progress-fill{height:100%;width:10%;background:linear-gradient(90deg,var(--gi-red),var(--gi-amber));border-radius:6px 0 0 6px}
+
+  /* decisions */
+  .gi-decisions{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+  .gi-decision{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--gi-line);border-radius:8px;padding:14px 16px;background:var(--gi-panel-2)}
+  .gi-num{flex:0 0 auto;font-family:var(--gi-font-display);font-size:22px;color:var(--gi-red);width:28px}
+  .gi-dtitle{font-family:var(--gi-font-cond);font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:14.5px;color:var(--gi-amber)}
+  .gi-dtext{font-size:13.5px;color:var(--gi-soft);margin-top:2px}
+
+  /* logo call — early lean callout */
+  .gi-lean{font-size:13.5px;color:var(--gi-soft);background:var(--gi-panel-2);border:1px solid var(--gi-line);border-left:3px solid var(--gi-red);padding:10px 14px;border-radius:6px;margin:16px 0}
+  .gi-lean b{color:var(--gi-bone)}
+
+  /* logo call rotator */
+  .gi-rotator{display:flex;overflow-x:auto;gap:16px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:8px 4px 18px;margin:6px 0 4px}
+  .gi-rotator::-webkit-scrollbar{height:8px}
+  .gi-rotator::-webkit-scrollbar-track{background:var(--gi-line);border-radius:4px}
+  .gi-rotator::-webkit-scrollbar-thumb{background:var(--gi-red);border-radius:4px}
+  .gi-rcard{flex:0 0 min(84vw,320px);scroll-snap-align:center;scroll-snap-stop:always;border:1px solid var(--gi-line);border-radius:var(--gi-radius);background:var(--gi-panel-2);padding:16px;display:flex;flex-direction:column}
+  .gi-reco{align-self:center;font-family:var(--gi-font-cond);font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px}
+  .gi-reco.lead{background:var(--gi-red);color:var(--gi-bone)}
+  .gi-reco.second{background:var(--gi-panel);border:1px solid var(--gi-amber);color:var(--gi-amber)}
+  .gi-stage{border-radius:10px;padding:16px;min-height:140px;display:flex;align-items:center;justify-content:center;border:1px solid var(--gi-line)}
+  .gi-stage-dark{background:#111318}
+  .gi-stage-light{background:#F2EDE1}
+  .gi-stage svg{width:100%;height:auto;max-width:230px;display:block}
+  .gi-stage-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gi-muted);text-align:center;margin-top:7px;font-family:var(--gi-font-cond)}
+  .gi-cname{font-family:var(--gi-font-display);font-size:16px;color:var(--gi-bone);margin-top:10px;text-align:center;letter-spacing:.02em}
+  .gi-cdesc{font-size:12.5px;color:var(--gi-soft);text-align:center;margin:6px 0 10px}
+  .gi-avatars{display:flex;align-items:center;justify-content:center;gap:8px;margin:2px 0 10px;flex-wrap:wrap}
+  .gi-avatar-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--gi-muted);font-family:var(--gi-font-cond);margin-right:2px;width:100%;text-align:center}
+  .gi-fits{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:2px}
+  .gi-fit{border:1px solid var(--gi-line);background:var(--gi-panel);color:var(--gi-soft);font-size:10px;padding:3px 9px;border-radius:20px;white-space:nowrap;font-family:var(--gi-font-cond);letter-spacing:.5px;text-transform:uppercase}
+  .gi-wall{color:var(--gi-amber);font-size:11.5px;font-weight:700;margin-top:auto;padding-top:12px;text-align:center;font-family:var(--gi-font-cond);letter-spacing:.5px;text-transform:uppercase}
+
+  .gi-criteria-line{font-size:14px;color:var(--gi-bone);line-height:1.7;margin-top:18px}
+  .gi-criteria-line .arrow{color:var(--gi-red);font-weight:700;margin:0 6px}
+
+  /* working palette + type voice */
+  .gi-palette{display:flex;flex-wrap:wrap;gap:14px;margin:20px 0 4px}
+  .gi-swatch{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .gi-chip{width:38px;height:38px;border-radius:8px;border:1px solid rgba(255,255,255,.14)}
+  .gi-swatch small{font-size:9.5px;color:var(--gi-muted);font-family:var(--gi-font-cond);letter-spacing:.05em}
+  .gi-typevoice{font-size:11.5px;color:var(--gi-muted);margin-top:12px}
+  .gi-typevoice b{color:var(--gi-soft);font-weight:600}
+  .gi-rawlink{font-size:12.5px;margin-top:14px}
+  .gi-rawlink a{color:var(--gi-teal);text-decoration:none;font-weight:600}
+  .gi-rawlink a:hover{text-decoration:underline}
+
+  /* shelf */
+  .gi-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .gi-shelfcard{border:1px solid var(--gi-line);border-radius:var(--gi-radius-sm);padding:14px 16px;text-decoration:none;color:var(--gi-soft);display:block;background:var(--gi-panel-2);transition:border-color .15s,box-shadow .2s}
+  .gi-shelfcard:hover{border-color:var(--gi-red);box-shadow:0 0 16px rgba(226,59,46,.18)}
+  .gi-shelfcard .t{font-family:var(--gi-font-cond);font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:15px;color:var(--gi-amber)}
+  .gi-shelfcard .d{font-size:12.5px;color:var(--gi-muted);margin-top:4px}
+  @media(max-width:640px){.gi-cards{grid-template-columns:1fr}}
+
+  /* format at a glance */
+  .gi-format-block{margin-bottom:24px}
+  .gi-format-block:last-child{margin-bottom:0}
+  .gi-format-block h3{margin-bottom:10px}
+  .gi-seats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .gi-seat{border:1px solid var(--gi-line);border-radius:8px;padding:12px 8px;text-align:center;background:var(--gi-panel-2)}
+  .gi-seat-name{font-family:var(--gi-font-cond);font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:13.5px;color:var(--gi-bone)}
+  .gi-seat-age{font-size:11px;color:var(--gi-muted);margin-top:3px}
+  .gi-spine{display:flex;flex-wrap:wrap;gap:8px 6px;align-items:center}
+  .gi-spine-step{border:1px solid var(--gi-line);border-radius:20px;padding:6px 14px;font-size:12.5px;color:var(--gi-soft);background:var(--gi-panel-2);white-space:nowrap;font-family:var(--gi-font-cond);text-transform:uppercase;letter-spacing:.3px}
+  .gi-arrow{color:var(--gi-red);font-weight:700}
+  @media(max-width:640px){.gi-seats{grid-template-columns:repeat(2,1fr)}}
+
+  /* this week */
+  .gi-checklist{list-style:none;margin-top:14px}
+  .gi-checklist li{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--gi-line);font-size:14px;color:var(--gi-soft)}
+  .gi-checklist li:last-child{border-bottom:none}
+  .gi-box{flex:0 0 auto;width:16px;height:16px;border:2px solid var(--gi-red);border-radius:3px;margin-top:3px}
+
+  /* footer */
+  .gi-footer{font-size:12.5px;color:var(--gi-muted);padding:24px 0;border-top:1px solid var(--gi-line);position:relative;z-index:1}
+  .gi-footer a{color:var(--gi-teal);text-decoration:none;font-weight:600}
+  .gi-footer a:hover{text-decoration:underline}
+</style>
+<meta name="description" content="Generationally Incorrect Show Room — mission control for the podcast launch: the open decisions, the logo call, the shelf, and this week's checklist.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Ninja-360 Dojo">
+<meta property="og:title" content="Generationally Incorrect — Show Room | Ninja-360 Dojo">
+<meta property="og:description" content="Generationally Incorrect Show Room — mission control for the podcast launch: the open decisions, the logo call, the shelf, and this week's checklist.">
+<meta property="og:image" content="https://dojo.ninja360.co/share/map-master.png">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="1024">
+<meta property="og:image:alt" content="M.A.P. Master — Full System Marketing badge">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Generationally Incorrect — Show Room | Ninja-360 Dojo">
+<meta name="twitter:description" content="Generationally Incorrect Show Room — mission control for the podcast launch: the open decisions, the logo call, the shelf, and this week's checklist.">
+<meta name="twitter:image" content="https://dojo.ninja360.co/share/map-master.png">
+
+<link rel='stylesheet' href='/share/responsive-patch.css'>
+</head>
+<body>
+<!-- n360-unav: unified dojo nav (injected) -->
+<style>
+  .n360bar{position:sticky;top:0;z-index:90;background:#3D3D3D;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;min-height:48px}
+  .n360bar .n360wm{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:#F47920;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav{display:flex;gap:3px;margin-left:auto}
+  .n360bar nav a{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:13px;color:#e8e2dc;padding:0 10px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav a:hover{background:rgba(244,121,32,.25);color:#fff}
+  .n360toggle{display:none;width:44px;height:44px;margin-left:auto;flex:0 0 auto;border:none;border-radius:6px;background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .n360toggle span{display:block;width:22px;height:2px;background:#fff;border-radius:1px}
+  .n360toggle:hover{background:rgba(244,121,32,.25)}
+  .n360accent{height:4px;background:#F47920}
+  .n360crumb{background:#F9F7F5;border-bottom:1px solid #E0DCD8;font-size:13px;padding:7px 18px;color:#404040}
+  .n360crumb a{color:#E05F00;text-decoration:none;font-weight:700}
+  .n360crumb a:hover{text-decoration:underline}
+  .n360crumb .sep{color:#9B948E;margin:0 5px}
+  .n360-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .n360-tw table{min-width:520px}
+  @media(max-width:640px){
+    .n360bar{flex-wrap:nowrap}
+    .n360toggle{display:flex}
+    .n360bar nav{display:none;flex-direction:column;gap:0;margin-left:0;position:absolute;top:100%;left:0;right:0;background:#3D3D3D;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 12px 20px rgba(0,0,0,.25)}
+    .n360bar.open nav{display:flex}
+    .n360bar nav a{font-size:15px;padding:13px 18px;border-radius:0;border-bottom:1px solid rgba(255,255,255,.1);min-height:48px}
+    .n360bar nav a:last-child{border-bottom:none}
+  }
+</style>
+<div class="n360bar">
+  <a class="n360wm" href="/">NINJA-360</a>
+  <button class="n360toggle" type="button" aria-expanded="false" aria-controls="n360nav" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <nav id="n360nav">
+    <a href="/">Dojo</a>
+    <a href="/gameplan">Game Plan</a>
+    <a href="/scrolls">Scrolls</a>
+    <a href="/crew">Crew</a>
+  </nav>
+</div>
+<div class="n360accent"></div>
+<div class="n360crumb"><a href="/">Dojo</a><span class="sep">&rsaquo;</span><span>Generationally Incorrect</span></div>
+<script>
+  (function(){
+    var t=document.querySelector('.n360toggle'),b=document.querySelector('.n360bar');
+    if(t&&b)t.addEventListener('click',function(){var o=b.classList.toggle('open');t.setAttribute('aria-expanded',String(o));});
+  })();
+</script>
+
+<style>.n360bar{background:#181512}.n360bar nav a{color:#CFC7BD}.n360crumb{background:#151210;border-bottom:1px solid #3A342D;color:#B8A78F}.n360crumb a{color:#FF8D3E}.n360crumb .sep{color:#6B645C}</style>
+<div class="accent-top"></div>
+
+<section>
+  <div class="wrap">
+    <div class="gi-masthead">
+      <div class="wordmark">NINJA-360</div>
+      <a class="backlink" href="/">← Ninja-360 Dojo</a> &nbsp;·&nbsp; <a class="backlink" href="/scrolls">The Scrolls</a>
+      <div class="kicker">The Podcast · Show Room</div>
+      <h1>Generationally Incorrect</h1>
+      <div class="taglines">
+        <p>"Every generation has something to fight about."</p>
+        <p>"Because the truth isn't always age-appropriate."</p>
+      </div>
+    </div>
+    <p class="sub">Four generations argue the questions everyone's afraid to ask out loud — and actually try to understand each other.</p>
+
+    <div class="gi-producers">
+      <div class="gi-producer">
+        <img src="/assets/crew/web/crew-erik-emblem-96.webp" width="56" height="56" loading="lazy" alt="Erik Juergensen — Lucky 13">
+        <div><div class="gi-producer-name">Erik Juergensen</div><div class="gi-producer-role">Lucky 13</div></div>
+      </div>
+      <div class="gi-producer">
+        <img src="/assets/crew/web/crew-gabe-emblem-96.webp" width="56" height="56" loading="lazy" alt="Gabe Miller — Lucid Cinematics">
+        <div><div class="gi-producer-name">Gabe Miller</div><div class="gi-producer-role">Lucid Cinematics</div></div>
+      </div>
+      <div class="gi-producer">
+        <img src="/assets/crew/web/crew-tim-emblem-96.webp" width="56" height="56" loading="lazy" alt="Tim Petet — Ninja-360">
+        <div><div class="gi-producer-name">Tim Petet</div><div class="gi-producer-role">Ninja-360</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="gi-status">
+      <div class="gi-status-phase">Phase: Lock <span class="gi-status-sub">(W1–2 of the 90-day launch arc)</span></div>
+      <div class="gi-progress"><div class="gi-progress-fill"></div></div>
+      <p class="hint">Gated on the <b>four open decisions</b> below — the clock starts once they're locked.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Open Decisions</h2>
+    <div class="gi-decisions">
+      <div class="gi-decision"><span class="gi-num">1</span><div><div class="gi-dtitle">Logo direction</div><div class="gi-dtext">pick 1–2 of the 6 concepts below to finish. Early lean: The Redaction (pending sign-off).</div></div></div>
+      <div class="gi-decision"><span class="gi-num">2</span><div><div class="gi-dtitle">Panel format</div><div class="gi-dtext">hybrid recommended: one fixed voice per generation + a rotating 4th seat.</div></div></div>
+      <div class="gi-decision"><span class="gi-num">3</span><div><div class="gi-dtitle">Equity &amp; roles</div><div class="gi-dtext">settle the split so the entity and financial model can finalize.</div></div></div>
+      <div class="gi-decision"><span class="gi-num">4</span><div><div class="gi-dtitle">Cadence</div><div class="gi-dtext">direction set: twice a month, 3-month sprint, then reassess for weekly.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="logo-call">
+  <div class="wrap">
+    <h2>The Logo Call</h2>
+    <p class="sub">Six directions to react to — not final art. Every mark is built to survive as a tiny circular avatar, the real test for a podcast. The question isn't "do you like it" — it's "does it work at 48 pixels, on a tee, and on a thumbnail you'd click."</p>
+    <div class="gi-lean"><b>Early lean (pending sign-off):</b> Concept 01 · The Redaction — one-color capable, instantly readable, on-brand for "truth that got struck out." Second choice for merch/stamp use: Concept 02 · The Versus Badge.</div>
+
+    <div class="gi-rotator" role="list" aria-label="Six logo concept directions">
+
+      <div class="gi-rcard" role="listitem">
+        <span class="gi-reco lead">Early lean</span>
+        <div class="gi-stage gi-stage-dark">
+          <svg viewBox="0 0 270 120" xmlns="http://www.w3.org/2000/svg">
+            <text x="135" y="42" text-anchor="middle" font-family="Impact,'Arial Black',sans-serif" font-size="26" letter-spacing="1" fill="#F2EDE1">GENERATIONALLY</text>
+            <g><rect x="35" y="58" width="200" height="34" fill="#E23B2E"/><text x="135" y="84" text-anchor="middle" font-family="Impact,'Arial Black',sans-serif" font-size="30" letter-spacing="2" fill="#111318">INCORRECT</text></g>
+            <text x="135" y="110" text-anchor="middle" font-family="'Arial Narrow',Arial" font-size="9" letter-spacing="4" fill="#8A8578">A GENERATIONAL DEBATE</text>
+          </svg>
+        </div>
+        <div class="gi-stage-label">Staged: dark ground</div>
+        <div class="gi-cname">Concept 01 · The Redaction</div>
+        <p class="gi-cdesc">"Incorrect" sits inside a red censor bar — the truth that got struck out. Newspaper-masthead authority meets banned-content edge. Reads instantly, works in one color.</p>
+        <div class="gi-avatars">
+          <span class="gi-avatar-lbl">Avatar test (46px)</span>
+          <svg width="42" height="42" viewBox="0 0 46 46"><circle cx="23" cy="23" r="23" fill="#111318"/><rect x="6" y="19" width="34" height="12" fill="#E23B2E"/><text x="23" y="28" text-anchor="middle" font-family="Impact" font-size="12" fill="#111318">GI</text></svg>
+          <svg width="42" height="42" viewBox="0 0 46 46"><circle cx="23" cy="23" r="23" fill="#E23B2E"/><rect x="6" y="19" width="34" height="12" fill="#111318"/><text x="23" y="28" text-anchor="middle" font-family="Impact" font-size="12" fill="#E23B2E">GI</text></svg>
+        </div>
+        <div class="gi-fits"><span class="gi-fit">avatar</span><span class="gi-fit">thumbnail</span><span class="gi-fit">merch</span><span class="gi-fit">lower-third</span></div>
+        <div class="gi-wall">Would you put this on the studio wall?</div>
+      </div>
+
+      <div class="gi-rcard" role="listitem">
+        <span class="gi-reco second">Second choice</span>
+        <div class="gi-stage gi-stage-light">
+          <svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="75" cy="75" r="70" fill="none" stroke="#111318" stroke-width="4"/>
+            <circle cx="75" cy="75" r="60" fill="none" stroke="#E23B2E" stroke-width="1.5"/>
+            <path d="M78 30 L60 78 L74 78 L70 118 L92 66 L77 66 Z" fill="#E23B2E" stroke="#111318" stroke-width="1"/>
+            <text x="75" y="70" text-anchor="middle" font-family="Impact,'Arial Black'" font-size="52" fill="#111318" opacity="0.12">GI</text>
+            <path id="gi-top-2" d="M22 75 A53 53 0 0 1 128 75" fill="none"/>
+            <path id="gi-bot-2" d="M25 78 A50 50 0 0 0 125 78" fill="none"/>
+            <text font-family="'Arial Narrow',Arial" font-size="10.5" letter-spacing="3" fill="#111318" font-weight="700"><textPath href="#gi-top-2" startOffset="50%" text-anchor="middle">GENERATIONALLY INCORRECT</textPath></text>
+            <text font-family="'Arial Narrow',Arial" font-size="9" letter-spacing="3" fill="#111318"><textPath href="#gi-bot-2" startOffset="50%" text-anchor="middle">EST. 2026 · NO FILTER</textPath></text>
+          </svg>
+        </div>
+        <div class="gi-stage-label">Staged: light ground</div>
+        <div class="gi-cname">Concept 02 · The Versus Badge</div>
+        <p class="gi-cdesc">An emblem for "something to fight about." A lightning bolt splits the GI monogram like a fight-card divider. Premium, merch-ready, timeless — great as a stamp on thumbnails and hats.</p>
+        <div class="gi-avatars">
+          <span class="gi-avatar-lbl">Avatar test (46px)</span>
+          <svg width="42" height="42" viewBox="0 0 46 46"><circle cx="23" cy="23" r="23" fill="#F2EDE1"/><circle cx="23" cy="23" r="20" fill="none" stroke="#111318" stroke-width="2"/><path d="M25 8 L18 25 L23 25 L21 38 L29 21 L24 21 Z" fill="#E23B2E"/></svg>
+        </div>
+        <div class="gi-fits"><span class="gi-fit">merch</span><span class="gi-fit">thumbnail</span><span class="gi-fit">avatar</span></div>
+        <div class="gi-wall">Would you put this on the studio wall?</div>
+      </div>
+
+      <div class="gi-rcard" role="listitem">
+        <div class="gi-stage gi-stage-dark">
+          <svg viewBox="0 0 220 130" xmlns="http://www.w3.org/2000/svg">
+            <rect x="30" y="20" width="160" height="90" rx="4" fill="#111318" stroke="#F2EDE1" stroke-width="3"/>
+            <rect x="30" y="20" width="160" height="30" rx="4" fill="#F2EDE1"/>
+            <text x="110" y="41" text-anchor="middle" font-family="Impact,'Arial Black'" font-size="17" letter-spacing="1" fill="#111318">GENERATIONALLY</text>
+            <text x="110" y="76" text-anchor="middle" font-family="Impact,'Arial Black'" font-size="26" letter-spacing="2" fill="#E23B2E">INCORRECT</text>
+            <text x="110" y="98" text-anchor="middle" font-family="'Arial Narrow',Arial" font-size="9" letter-spacing="2.5" fill="#F2EDE1">LISTENER DISCRETION ADVISED</text>
+          </svg>
+        </div>
+        <div class="gi-stage-label">Staged: dark ground</div>
+        <div class="gi-cname">Concept 03 · The Advisory Label</div>
+        <p class="gi-cdesc">Riffs on the "Parental Advisory / Explicit" sticker — pure "not age-appropriate." High recognition, built-in edge, instantly screenshot-able for social. Bold black-white-red.</p>
+        <div class="gi-avatars">
+          <span class="gi-avatar-lbl">Avatar test (46px)</span>
+          <svg width="42" height="42" viewBox="0 0 46 46"><rect width="46" height="46" rx="10" fill="#111318" stroke="#F2EDE1" stroke-width="2"/><rect x="4" y="6" width="38" height="10" fill="#F2EDE1"/><text x="23" y="14" text-anchor="middle" font-family="Impact" font-size="8" fill="#111318">GEN.</text><text x="23" y="34" text-anchor="middle" font-family="Impact" font-size="13" fill="#E23B2E">INC.</text></svg>
+        </div>
+        <div class="gi-fits"><span class="gi-fit">thumbnail</span><span class="gi-fit">merch</span><span class="gi-fit">avatar</span></div>
+        <div class="gi-wall">Would you put this on the studio wall?</div>
+      </div>
+
+      <div class="gi-rcard" role="listitem">
+        <div class="gi-stage gi-stage-dark">
+          <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+            <rect x="24" y="22" width="130" height="96" rx="12" fill="#1c1f26" stroke="#EBA83A" stroke-width="3"/>
+            <rect x="36" y="34" width="106" height="72" rx="6" fill="#111318"/>
+            <g opacity="0.5" stroke="#2E9AA6" stroke-width="1"><line x1="36" y1="46" x2="142" y2="46"/><line x1="36" y1="58" x2="142" y2="58"/><line x1="36" y1="70" x2="142" y2="70"/><line x1="36" y1="82" x2="142" y2="82"/><line x1="36" y1="94" x2="142" y2="94"/></g>
+            <text x="89" y="66" text-anchor="middle" font-family="Impact,'Arial Black'" font-size="30" fill="#EBA83A">GI</text>
+            <text x="89" y="86" text-anchor="middle" font-family="'Arial Narrow',Arial" font-size="8" letter-spacing="2" fill="#F2EDE1">CH. 1946–2012</text>
+            <circle cx="168" cy="44" r="7" fill="#E23B2E"/><circle cx="168" cy="66" r="7" fill="#EBA83A"/>
+            <rect x="162" y="82" width="12" height="4" rx="2" fill="#8A8578"/>
+          </svg>
+        </div>
+        <div class="gi-stage-label">Staged: dark ground</div>
+        <div class="gi-cname">Concept 04 · The Broadcast</div>
+        <p class="gi-cdesc">A CRT set tuned to "GI." The channel range (1946–2012) = the span of generations at the table. Warm nostalgia that still says "we broadcast uncomfortable truths." Plays to Lucid's cinematic side.</p>
+        <div class="gi-avatars">
+          <span class="gi-avatar-lbl">Avatar test (46px)</span>
+          <svg width="42" height="42" viewBox="0 0 46 46"><rect width="46" height="46" rx="10" fill="#1c1f26"/><rect x="8" y="10" width="30" height="24" rx="4" fill="#111318" stroke="#EBA83A" stroke-width="2"/><text x="23" y="28" text-anchor="middle" font-family="Impact" font-size="12" fill="#EBA83A">GI</text></svg>
+        </div>
+        <div class="gi-fits"><span class="gi-fit">lower-third</span><span class="gi-fit">thumbnail</span></div>
+        <div class="gi-wall">Would you put this on the studio wall?</div>
+      </div>
+
+      <div class="gi-rcard" role="listitem">
+        <div class="gi-stage gi-stage-light">
+          <svg viewBox="0 0 230 140" xmlns="http://www.w3.org/2000/svg">
+            <path d="M30 100 Q115 20 200 100" fill="none" stroke="#111318" stroke-width="2.5" stroke-dasharray="1 6" stroke-linecap="round" opacity="0.35"/>
+            <circle cx="30" cy="100" r="6" fill="#2E9AA6"/><circle cx="87" cy="55" r="6" fill="#EBA83A"/><circle cx="143" cy="55" r="6" fill="#E23B2E"/><circle cx="200" cy="100" r="6" fill="#111318"/>
+            <rect x="107" y="42" width="16" height="34" rx="8" fill="#111318"/>
+            <line x1="112" y1="50" x2="118" y2="50" stroke="#F2EDE1" stroke-width="1.5"/><line x1="112" y1="56" x2="118" y2="56" stroke="#F2EDE1" stroke-width="1.5"/><line x1="112" y1="62" x2="118" y2="62" stroke="#F2EDE1" stroke-width="1.5"/>
+            <path d="M102 70 a13 13 0 0 0 26 0" fill="none" stroke="#111318" stroke-width="2"/>
+            <line x1="115" y1="83" x2="115" y2="96" stroke="#111318" stroke-width="2"/>
+            <text x="115" y="120" text-anchor="middle" font-family="Impact,'Arial Black'" font-size="18" letter-spacing="1" fill="#111318">GENERATIONALLY INCORRECT</text>
+          </svg>
+        </div>
+        <div class="gi-stage-label">Staged: light ground</div>
+        <div class="gi-cname">Concept 05 · The Spectrum</div>
+        <p class="gi-cdesc">A mic under an arc of four dots — one per generation, teal to black. Cleanest and most "premium podcast." Scales down beautifully; the arc doubles as a waveform motif for animation.</p>
+        <div class="gi-avatars">
+          <span class="gi-avatar-lbl">Avatar test (46px)</span>
+          <svg width="42" height="42" viewBox="0 0 46 46"><circle cx="23" cy="23" r="23" fill="#F2EDE1"/><rect x="19" y="12" width="8" height="16" rx="4" fill="#111318"/><path d="M16 25 a7 7 0 0 0 14 0" fill="none" stroke="#111318" stroke-width="1.5"/><circle cx="10" cy="34" r="2.5" fill="#2E9AA6"/><circle cx="19" cy="34" r="2.5" fill="#EBA83A"/><circle cx="27" cy="34" r="2.5" fill="#E23B2E"/><circle cx="36" cy="34" r="2.5" fill="#111318"/></svg>
+        </div>
+        <div class="gi-fits"><span class="gi-fit">avatar</span><span class="gi-fit">audiogram</span><span class="gi-fit">thumbnail</span></div>
+        <div class="gi-wall">Would you put this on the studio wall?</div>
+      </div>
+
+      <div class="gi-rcard" role="listitem">
+        <div class="gi-stage gi-stage-dark">
+          <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+            <text x="100" y="46" text-anchor="middle" font-family="Impact,'Arial Black'" font-size="42" letter-spacing="-1" fill="#F2EDE1">GEN</text>
+            <rect x="26" y="58" width="148" height="4" fill="#E23B2E"/>
+            <text x="100" y="104" text-anchor="middle" font-family="Impact,'Arial Black'" font-size="42" letter-spacing="-2" fill="#F2EDE1">INC<tspan fill="#E23B2E">O</tspan>RRECT</text>
+            <text x="100" y="126" text-anchor="middle" font-family="'Arial Narrow',Arial" font-size="9" letter-spacing="5" fill="#8A8578">THE GENERATIONAL DEBATE</text>
+          </svg>
+        </div>
+        <div class="gi-stage-label">Staged: dark ground</div>
+        <div class="gi-cname">Concept 06 · The Protest Stack</div>
+        <p class="gi-cdesc">Heavy stacked type like a protest placard — loud, modern, unapologetic. The abbreviated "GEN / INCORRECT" is a natural social shorthand and hashtag (#GenIncorrect). Cheapest to animate.</p>
+        <div class="gi-avatars">
+          <span class="gi-avatar-lbl">Avatar test (46px)</span>
+          <svg width="42" height="42" viewBox="0 0 46 46"><rect width="46" height="46" rx="10" fill="#111318"/><text x="23" y="21" text-anchor="middle" font-family="Impact" font-size="13" fill="#F2EDE1">GEN</text><rect x="10" y="25" width="26" height="2" fill="#E23B2E"/><text x="23" y="40" text-anchor="middle" font-family="Impact" font-size="13" fill="#F2EDE1">INC.</text></svg>
+        </div>
+        <div class="gi-fits"><span class="gi-fit">thumbnail</span><span class="gi-fit">lower-third</span><span class="gi-fit">merch</span></div>
+        <div class="gi-wall">Would you put this on the studio wall?</div>
+      </div>
+
+    </div>
+
+    <p class="gi-criteria-line">Legible tiny — the avatar test <span class="arrow">→</span> Works in one color — the merch test <span class="arrow">→</span> Says "generational argument" without reading the name — the stranger test.</p>
+    <p class="hint">Reactions: text the group chat for now — voting buttons come later.</p>
+
+    <div class="gi-palette">
+      <div class="gi-swatch"><div class="gi-chip" style="background:#111318"></div><small>INK · #111318</small></div>
+      <div class="gi-swatch"><div class="gi-chip" style="background:#F2EDE1"></div><small>BONE · #F2EDE1</small></div>
+      <div class="gi-swatch"><div class="gi-chip" style="background:#E23B2E"></div><small>SIGNAL RED · #E23B2E</small></div>
+      <div class="gi-swatch"><div class="gi-chip" style="background:#EBA83A"></div><small>AMBER · #EBA83A</small></div>
+      <div class="gi-swatch"><div class="gi-chip" style="background:#2E9AA6"></div><small>SPECTRUM TEAL · #2E9AA6</small></div>
+    </div>
+    <p class="gi-typevoice"><b>Type voice:</b> Anton/Impact display · Oswald/Arial Narrow condensed (kickers, labels) · Georgia italic (taglines, pull-quotes). Black-white-red is the core identity; amber and teal are accents only.</p>
+    <p class="gi-rawlink"><a href="/assets/gi/logos/concept-sheet.html">View the full concept sheet, unstyled →</a></p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>The Shelf</h2>
+    <div class="gi-cards">
+      <a class="gi-shelfcard" href="/scrolls/gi-master-plan"><div class="t">Generationally Incorrect · Master Plan</div><div class="d">The full show build — positioning, format, clip engine, funnel, house spots, 90-day launch.</div></a>
+      <a class="gi-shelfcard" href="/scrolls/gi-sponsor-spots"><div class="t">GI · House Sponsor Spots</div><div class="d">The record-ready 60s + 30s reads — Lucky 13, Lucid, Ninja-360.</div></a>
+      <a class="gi-shelfcard" href="/scrolls/gi-next-steps"><div class="t">GI · Next Steps</div><div class="d">The living launch checklist — four decisions, this week, open loops.</div></a>
+      <a class="gi-shelfcard" href="/scrolls/gi-ninja-lane"><div class="t">Generationally Incorrect · The Ninja-360 Lane</div><div class="d">Our lane in the three-way co-production — distribution, clips, sponsors, rhythm.</div></a>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>Format at a Glance</h2>
+
+    <div class="gi-format-block">
+      <h3>The Four Seats</h3>
+      <div class="gi-seats">
+        <div class="gi-seat"><div class="gi-seat-name">Gen Z</div><div class="gi-seat-age">approx. 18–27</div></div>
+        <div class="gi-seat"><div class="gi-seat-name">Millennial</div><div class="gi-seat-age">approx. 28–43</div></div>
+        <div class="gi-seat"><div class="gi-seat-name">Gen X</div><div class="gi-seat-age">approx. 44–59</div></div>
+        <div class="gi-seat"><div class="gi-seat-name">Boomer</div><div class="gi-seat-age">approx. 60+</div></div>
+      </div>
+    </div>
+
+    <div class="gi-format-block">
+      <h3>The Episode Spine</h3>
+      <div class="gi-spine">
+        <span class="gi-spine-step">Cold open</span><span class="gi-arrow">→</span>
+        <span class="gi-spine-step">Opener</span><span class="gi-arrow">→</span>
+        <span class="gi-spine-step">Topic</span><span class="gi-arrow">→</span>
+        <span class="gi-spine-step">Steel-man</span><span class="gi-arrow">→</span>
+        <span class="gi-spine-step">Common Ground</span><span class="gi-arrow">→</span>
+        <span class="gi-spine-step">CTA</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>This Week</h2>
+    <ul class="gi-checklist">
+      <li><span class="gi-box"></span>Register the domain + all handles in one sitting.</li>
+      <li><span class="gi-box"></span>Fill the sponsor-spot brackets — Erik, Gabe, and Tim's parts.</li>
+      <li><span class="gi-box"></span>Book the pilot panel.</li>
+    </ul>
+  </div>
+</section>
+
+<div class="wrap gi-footer">Generationally Incorrect · Co-produced by Erik Juergensen (Lucky 13), Gabe Miller (Lucid Cinematics) &amp; Tim Petet (Ninja-360) · <a href="/scrolls">The Scrolls</a> · <a href="/">Dojo home</a><br>This Show Room runs Generationally Incorrect's own brand system — not the Dojo's internal palette.</div>
+
+<script defer src='/share/responsive-patch.js'></script>
+</body>
+</html>

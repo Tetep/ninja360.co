@@ -13,6 +13,8 @@ ref:
   - "/scrolls/gi-master-plan"
   - "/scrolls/gi-ninja-lane"
   - "/scrolls/found-kc-playbook"
+  - "/gi"
+  - "/foundinkc"
 ---
 
 ### Why alliances exist
