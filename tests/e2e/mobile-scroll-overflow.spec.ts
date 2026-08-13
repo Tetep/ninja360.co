@@ -29,6 +29,12 @@ const routes = [
   '/scrolls/warp-speed',
   '/legacy/roadmaps/gabe',
   '/legacy/roadmaps/pavan',
+  '/gi/site/',
+  '/gi/site/about/',
+  '/gi/site/episodes/',
+  '/gi/site/question-of-the-week/',
+  '/gi/site/membership/',
+  '/gi/site/contact/',
 ];
 
 test.describe('mobile scroll and overflow guardrails', () => {

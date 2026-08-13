@@ -197,13 +197,23 @@ Optimize for SEO (SSR/SSG), fast iteration, and easy GHL embedding.
 ---
 ## Appendix C — Relationship to the Ninja-360 Dojo `/gi` Show Room
 
-This spec describes the **future standalone marketing site** at `generationallyincorrect.com` — not yet built.
+This spec describes the **standalone marketing site** for `generationallyincorrect.com`.
 The Dojo's `/gi` page (`public/gi/index.html` in this repo) is a separate, smaller thing: an **internal
-mission-control page** for the three producers to track open decisions and react to the logo concepts before
-that site gets built. As of 2026-07-25, `/gi` has been re-themed to use this spec's §1 design tokens and §2
-typography (ink/bone/red/amber/teal, Anton/Oswald/Georgia) for its own content, while keeping the Dojo's
-shared site-wide nav bar for wayfinding. Building out §5–§9 (the actual routes, SEO templates, and GHL
-funnel) is future work, gated on the four Appendix B decisions — it has not been started.
+mission-control page** for the three producers to track open decisions and react to the logo concepts. As of
+2026-07-25, `/gi` has been re-themed to use this spec's §1 design tokens and §2 typography
+(ink/bone/red/amber/teal, Anton/Oswald/Georgia) for its own content, while keeping the Dojo's shared
+site-wide nav bar for wayfinding.
+
+**As of 2026-08-11 the site build exists** at `public/gi/site/` in this repo, served at `/gi/site/` on the
+Dojo (linked from the `/gi` shelf). It implements §1–§7 as a self-contained static build with relative
+links, so the folder can be lifted verbatim to the `generationallyincorrect.com` root when domains (§8) get
+wired. Launch state honestly reflects pre-episode reality: the episode index shows the in-production docket,
+the SEO episode page lives at `episodes/_template/` (noindexed) awaiting the first real episode, and every
+page ships `noindex` while mounted under the private Dojo — each head carries a LAUNCH CHECKLIST comment
+listing the flips (robots, canonical, GHL webhook). The §6 form is live UI: it posts to the
+`GI_GHL_WEBHOOK` constant in `assets/gi-site.js` once a GHL inbound-webhook URL is pasted there; until
+then submits fall back to a prefilled email to `hello@generationallyincorrect.com` so no contact is lost.
+Wordmark uses §3's recommended direction (The Redaction), pending final logo sign-off (Appendix B №1).
 
 The six logo concepts referenced in §3 live at `public/assets/gi/logos/concept-sheet.html` in this repo
 (the original, unstyled artifact) and are reproduced inline on `/gi`'s Logo Call section.
