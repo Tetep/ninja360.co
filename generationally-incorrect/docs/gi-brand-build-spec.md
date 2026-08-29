@@ -4,6 +4,10 @@
 > routes, SEO rules, and integrations — is defined here. No external context required.
 >
 > **Status:** Draft v1 · July 2026 · Source of truth for the web build.
+> **2026-08-29:** the visual direction in §1 (tokens), §2 (typography) and §3 (logo) is
+> **superseded** by the Emergency Broadcast brand update — see
+> `gi-brand-update-emergency-broadcast.md` in this folder. §4–§10 (components, routes,
+> SEO, funnel, DoD) still govern.
 ---
 ## 0. Project Overview
 **Generationally Incorrect** is a video-first debate podcast: four generations (Gen Z, Millennial, Gen X,

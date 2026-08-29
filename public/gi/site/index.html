@@ -21,7 +21,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Kalam:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/gi-site.css">
 <script type="application/ld+json">
 {
@@ -39,7 +39,7 @@
 <header class="masthead">
   <div class="bar">
     <a class="brand" href="./">
-      <svg class="mark" width="30" height="30" viewBox="0 0 46 46" aria-hidden="true"><circle cx="23" cy="23" r="23" fill="#111318" stroke="#2A2E37"/><rect x="6" y="19" width="34" height="12" fill="#E23B2E"/><text x="23" y="28.5" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="12" letter-spacing="1" fill="#111318">GI</text></svg>
+      <svg class="mark" width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect x="1" y="1" width="28" height="28" fill="#efe4cd" stroke="#17140f" stroke-width="2"/><rect x="2" y="2" width="26" height="6" fill="#17140f"/><g><rect x="2" y="8" width="4.33" height="5" fill="#17140f"/><rect x="6.33" y="8" width="4.33" height="5" fill="#4a4335"/><rect x="10.66" y="8" width="4.33" height="5" fill="#7d7260"/><rect x="15" y="8" width="4.33" height="5" fill="#b9ab8b"/><rect x="19.33" y="8" width="4.33" height="5" fill="#b4231f"/><rect x="23.66" y="8" width="4.34" height="5" fill="#efe4cd"/></g><text x="15" y="25" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="11" letter-spacing="1" fill="#17140f">GI</text></svg>
       <span class="name">Generationally Incorrect</span>
     </a>
     <nav class="nav" aria-label="Main">
@@ -53,10 +53,17 @@
 
 <section class="hero">
   <div class="wrap">
-    <div class="wordmark" role="img" aria-label="Generationally Incorrect">
-      <div class="top">Generationally</div>
-      <div class="bar"><b>Incorrect</b></div>
-      <div class="under">A Generational Debate</div>
+    <!-- Emergency Broadcast card — HTML recreation of the v2 logo direction.
+         When the master art lands in the repo, swap this block for:
+           <img src="assets/logo.png" alt="Generationally Incorrect" style="max-width:560px;width:100%">
+         (logo.png, 960×818 transparent, from the intro-animation asset kit)
+         When the intro loop exports to MP4, replace with muted autoplay video
+         per the brand doc ("Where it goes" №1). -->
+    <div class="ebcard" role="img" aria-label="Generationally Incorrect — Emergency Broadcast">
+      <div class="ebbar">Emergency Broadcast</div>
+      <div class="testbars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="ebword"><span class="gen">Generationally</span><span class="inc">Incorrect</span></div>
+      <div class="ebpodcast">— Podcast —</div>
     </div>
     <p class="tagline" data-taglines='["Every generation has something to fight about.","Because the truth isn&#39;t always age-appropriate."]'>“Every generation has something to fight about.”</p>
     <p class="lede">Four seats. Gen Z, a Millennial, Gen X, and a Boomer. One charged question per episode — and nobody leaves until somebody's mind actually moves.</p>
@@ -166,7 +173,7 @@
       <span class="pill pill-pillar">Family &amp; Community</span>
       <span class="pill pill-sensitive">The Third Rail</span>
     </div>
-    <p class="small muted" style="margin-top:14px">The Third Rail is the stuff nobody's supposed to touch — extended cuts run members-first. <a href="membership/" style="color:var(--gi-amber);text-decoration:none;font-weight:700">See membership →</a></p>
+    <p class="small muted" style="margin-top:14px">The Third Rail is the stuff nobody's supposed to touch — extended cuts run members-first. <a href="membership/" style="color:var(--gi-red);text-decoration:none;font-weight:700">See membership →</a></p>
   </div>
 </section>
 
