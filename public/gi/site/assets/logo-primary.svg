@@ -1,9 +1,19 @@
-<svg width="270" height="110" viewBox="0 0 270 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Generationally Incorrect">
-  <title>Generationally Incorrect</title>
-  <text x="135" y="38" text-anchor="middle" font-family="Anton,Impact,'Arial Black',sans-serif" font-size="26" letter-spacing="1" fill="#F2EDE1">GENERATIONALLY</text>
+<!-- Emergency Broadcast lockup — SVG recreation for web use.
+     The MASTER ART is logo.png (960×818, transparent) in the intro-animation
+     asset kit; prefer it for print/video. Direction per
+     gi-brand-update-emergency-broadcast.md (2026-08-29). -->
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Generationally Incorrect — Emergency Broadcast">
+  <title>Generationally Incorrect — Emergency Broadcast</title>
+  <rect x="2" y="2" width="296" height="196" fill="#efe4cd" stroke="#17140f" stroke-width="3"/>
+  <rect x="8" y="8" width="284" height="184" fill="none" stroke="#17140f" stroke-width="1"/>
+  <rect x="8" y="8" width="284" height="26" fill="#17140f"/>
+  <circle cx="26" cy="21" r="4" fill="#b4231f"/><circle cx="274" cy="21" r="4" fill="#b4231f"/>
+  <text x="150" y="26" text-anchor="middle" font-family="'Special Elite','Courier New',monospace" font-size="13" letter-spacing="5" fill="#efe4cd">EMERGENCY BROADCAST</text>
   <g>
-    <rect x="35" y="52" width="200" height="34" fill="#E23B2E"/>
-    <text x="135" y="78" text-anchor="middle" font-family="Anton,Impact,'Arial Black',sans-serif" font-size="30" letter-spacing="2" fill="#111318">INCORRECT</text>
+    <rect x="8" y="34" width="40.5" height="10" fill="#17140f"/><rect x="48.5" y="34" width="40.5" height="10" fill="#4a4335"/><rect x="89" y="34" width="40.5" height="10" fill="#7d7260"/><rect x="129.5" y="34" width="40.5" height="10" fill="#b9ab8b"/><rect x="170" y="34" width="40.5" height="10" fill="#d8caa9"/><rect x="210.5" y="34" width="40.5" height="10" fill="#b4231f"/><rect x="251" y="34" width="41" height="10" fill="#efe4cd"/>
+    <rect x="8" y="34" width="284" height="10" fill="none" stroke="#17140f" stroke-width="1"/>
   </g>
-  <text x="135" y="104" text-anchor="middle" font-family="'Arial Narrow',Arial,sans-serif" font-size="9" letter-spacing="4" fill="#8A8578">A GENERATIONAL DEBATE</text>
+  <text x="150" y="106" text-anchor="middle" font-family="Anton,Impact,'Arial Black',sans-serif" font-size="36" letter-spacing="1" fill="#17140f">GENERATIONALLY</text>
+  <text x="150" y="146" text-anchor="middle" font-family="Kalam,'Comic Sans MS',cursive" font-weight="700" font-size="40" fill="#b4231f" transform="rotate(-4 150 140)">Incorrect</text>
+  <text x="150" y="180" text-anchor="middle" font-family="'Special Elite','Courier New',monospace" font-size="12" letter-spacing="7" fill="#17140f">— PODCAST —</text>
 </svg>
