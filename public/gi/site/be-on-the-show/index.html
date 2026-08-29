@@ -4,23 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- ══════════════════════════════════════════════════════════════════════
-     GI CONTESTANT SIGNUP — public face of "GI Contestant Signup — GHL Build
-     Spec V01". This page is the sendable link (texts from a phone).
-     TWO WIRING POINTS, both in the script at the bottom:
-       1. GI_CONTESTANT_WEBHOOK — paste the GHL inbound-webhook URL from the
-          "GI Signup Intake V01" workflow (spec Section 5) and submits flow
-          straight into GHL: tags, pipeline card, notifications, SMS.
-          — OR, once the native GHL form "GI Contestant Signup V01" (spec
-          Section 3) is published, replace the <form> below with its embed
-          iframe. Either path satisfies the spec; the webhook keeps this
-          page's branding.
-       2. GI_TOPICS — paste the 31-topic list from the Candidate Survey in
-          the GI working doc (AI → Work Ethic), verbatim, one string per
-          topic. Until pasted the topics field stays hidden (we don't invent
-          the list) and signups capture name/phone/email/generation — the
-          sorting keys Erik filters on.
+     GI CONTESTANT SIGNUP — the sendable link (texts from a phone).
+     ONE WIRING POINT LEFT, in the script at the bottom:
+       GI_CONTESTANT_WEBHOOK — paste the inbound-webhook URL from the GI
+       sub-account's "Signup Intake V01" workflow and submits flow straight
+       into GHL: source tag from ?src=, generation tag, pipeline card,
+       notifications, SMS. — OR, once the native GHL form "Contestant Signup
+       V01" is published, replace the <form> below with its embed iframe.
+       Either path works; the webhook keeps this page's branding.
      Fallback while unwired: submit opens a prefilled email so no contestant
      is silently dropped.
+     Topics and generation options below match the GI sub-account's live
+     custom fields verbatim, plain-hyphen year ranges included, so values
+     line up exactly once the webhook is live.
      ══════════════════════════════════════════════════════════════════════ -->
 <meta name="robots" content="noindex, nofollow">
 <!-- <link rel="canonical" href="https://generationallyincorrect.com/be-on-the-show"> -->
@@ -89,16 +85,16 @@
           <label for="ct-gen">Select your generation</label>
           <select id="ct-gen" name="gi_generation" required>
             <option value="" selected disabled>Claim your seat</option>
-            <option>Silent Generation (1928–1945)</option>
-            <option>Baby Boomers (1946–1964)</option>
-            <option>Generation X (1965–1980)</option>
-            <option>Millennials (1981–1996)</option>
-            <option>Generation Z (1997–2012)</option>
-            <option>Generation Alpha (2013–2024)</option>
-            <option>Generation Beta (2025–2039)</option>
+            <option>Silent Generation (1928-1945)</option>
+            <option>Baby Boomers (1946-1964)</option>
+            <option>Generation X (1965-1980)</option>
+            <option>Millennials (1981-1996)</option>
+            <option>Generation Z (1997-2012)</option>
+            <option>Generation Alpha (2013-2024)</option>
+            <option>Generation Beta (2025-2039)</option>
           </select>
         </div>
-        <div id="ct-topics-block" hidden>
+        <div id="ct-topics-block">
           <label>Topics you're comfortable discussing</label>
           <div class="topics-grid" id="ct-topics"></div>
         </div>
@@ -155,41 +151,83 @@
 </footer>
 
 <script>
-/* ── WIRING POINT 1: GHL inbound webhook (spec Section 5 trigger) ─────────── */
+/* ── WIRING POINT: GHL inbound webhook (Signup Intake V01 workflow trigger) ─
+   Paste the URL and submits flow straight into the GI sub-account. */
 var GI_CONTESTANT_WEBHOOK = ''; /* ← paste GHL inbound-webhook URL to go live */
-/* ── WIRING POINT 2: the 31 topics from the Candidate Survey (GI working doc,
-      AI → Work Ethic, verbatim, in order). Field appears once this is filled. */
-var GI_TOPICS = [];
 var GI_CONTACT_EMAIL = 'hello@generationallyincorrect.com';
+
+/* The 31 topics from the Candidate Survey — matches the GI sub-account's
+   "GI Topic Choices" checkbox field verbatim, in order. */
+var GI_TOPICS = [
+  'AI',
+  'Cancel Culture vs. Accountability',
+  'Censorship in Schools and Libraries',
+  'Climate Change Responsibility Across Generations',
+  'College: Necessary Investment or Overpriced Tradition?',
+  'Dating Apps and Modern Relationships',
+  'Drugs and Alcohol',
+  'Education',
+  'Family',
+  'Free Speech vs. Harmful Speech',
+  'Homeownership: Dream, Trap, or Impossible Goal?',
+  'Immigration and National Identity',
+  'Leadership',
+  'Marriage: Outdated Institution or Still Essential?',
+  'Medicine and Health Care',
+  'Mental Health Awareness vs. Overdiagnosis',
+  'Money',
+  'Political Corruption',
+  'Political Correctness',
+  'Racism',
+  'Religion',
+  'Remote Work vs. Returning to the Office',
+  'Should Children Have Smartphones?',
+  'Social Media',
+  'Student Loan Forgiveness',
+  'The Decline of Religion in Public Life',
+  'Traditional Masculinity and Femininity',
+  'Transgenderism',
+  'Trust in Government, Media, and Institutions',
+  "Women's Rights",
+  'Work Ethic: Hustle Culture vs. Work-Life Balance'
+];
 
 (function () {
   'use strict';
 
-  /* Render topic checkboxes only when the real list is pasted in. */
-  var block = document.getElementById('ct-topics-block');
+  /* Render the topic checkboxes. */
   var grid = document.getElementById('ct-topics');
-  if (GI_TOPICS.length) {
-    GI_TOPICS.forEach(function (t) {
-      var label = document.createElement('label');
-      var cb = document.createElement('input');
-      cb.type = 'checkbox'; cb.name = 'gi_topic_choices'; cb.value = t;
-      label.appendChild(cb);
-      label.appendChild(document.createTextNode(' ' + t));
-      grid.appendChild(label);
-    });
-    block.hidden = false;
-  }
+  GI_TOPICS.forEach(function (t) {
+    var label = document.createElement('label');
+    var cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.name = 'gi_topic_choices'; cb.value = t;
+    label.appendChild(cb);
+    label.appendChild(document.createTextNode(' ' + t));
+    grid.appendChild(label);
+  });
 
-  /* spec Section 2 tag mapping — lowercase `category: value` convention */
+  /* GI sub-account tag convention — lowercase, no "gi " prefix (the whole
+     sub-account is GI now). Matches the live custom-field values exactly. */
   var GEN_TAG = {
-    'Silent Generation (1928–1945)': 'gi generation: silent',
-    'Baby Boomers (1946–1964)': 'gi generation: boomer',
-    'Generation X (1965–1980)': 'gi generation: gen x',
-    'Millennials (1981–1996)': 'gi generation: millennial',
-    'Generation Z (1997–2012)': 'gi generation: gen z',
-    'Generation Alpha (2013–2024)': 'gi generation: alpha',
-    'Generation Beta (2025–2039)': 'gi generation: beta'
+    'Silent Generation (1928-1945)': 'generation: silent',
+    'Baby Boomers (1946-1964)': 'generation: boomer',
+    'Generation X (1965-1980)': 'generation: gen x',
+    'Millennials (1981-1996)': 'generation: millennial',
+    'Generation Z (1997-2012)': 'generation: gen z',
+    'Generation Alpha (2013-2024)': 'generation: alpha',
+    'Generation Beta (2025-2039)': 'generation: beta'
   };
+
+  /* source: passthrough — QR codes and shared links land on this page as
+     ?src=northland / chamber / aca / realtor / social / card. The workflow
+     tags the contact from this param; we mirror the tag here too so it's
+     visible even on the mailto fallback. */
+  var SRC_SLUGS = ['northland', 'chamber', 'aca', 'realtor', 'social', 'card'];
+  function sourceTag() {
+    var params = new URLSearchParams(window.location.search);
+    var src = (params.get('src') || '').toLowerCase();
+    return SRC_SLUGS.indexOf(src) !== -1 ? 'source: ' + src : null;
+  }
 
   var form = document.querySelector('form.gi-contestant-form');
   var busy = false;
@@ -207,10 +245,14 @@ var GI_CONTACT_EMAIL = 'hello@generationallyincorrect.com';
     var generation = String(f.get('gi_generation') || '').trim();
     var topics = f.getAll('gi_topic_choices').map(String);
     if (!fullName || !phone || !email || !generation) return;
-    if (GI_TOPICS.length && !topics.length) {
+    if (!topics.length) {
       alert('Pick at least one topic you’re comfortable discussing.');
       return;
     }
+
+    var tags = [GEN_TAG[generation] || 'generation: other'];
+    var src = sourceTag();
+    if (src) tags.push(src);
 
     var payload = {
       full_name: fullName,
@@ -218,7 +260,7 @@ var GI_CONTACT_EMAIL = 'hello@generationallyincorrect.com';
       email: email,
       gi_generation: generation,
       gi_topic_choices: topics,
-      tags: ['source: gi signup form', GEN_TAG[generation] || 'gi generation: other'],
+      tags: tags,
       page: window.location.pathname
     };
 
@@ -248,7 +290,8 @@ var GI_CONTACT_EMAIL = 'hello@generationallyincorrect.com';
       '\nPhone: ' + p.phone +
       '\nEmail: ' + p.email +
       '\nGeneration: ' + p.gi_generation +
-      (p.gi_topic_choices.length ? '\nTopics: ' + p.gi_topic_choices.join('; ') : '');
+      '\nTopics: ' + p.gi_topic_choices.join('; ') +
+      '\nTags: ' + p.tags.join(', ');
     return 'mailto:' + GI_CONTACT_EMAIL +
       '?subject=' + encodeURIComponent('Be On The Show — contestant signup') +
       '&body=' + encodeURIComponent(body);
