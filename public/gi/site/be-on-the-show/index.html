@@ -3,21 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- ══════════════════════════════════════════════════════════════════════
-     GI CONTESTANT SIGNUP — the sendable link (texts from a phone).
-     ONE WIRING POINT LEFT, in the script at the bottom:
-       GI_CONTESTANT_WEBHOOK — paste the inbound-webhook URL from the GI
-       sub-account's "Signup Intake V01" workflow and submits flow straight
-       into GHL: source tag from ?src=, generation tag, pipeline card,
-       notifications, SMS. — OR, once the native GHL form "Contestant Signup
-       V01" is published, replace the <form> below with its embed iframe.
-       Either path works; the webhook keeps this page's branding.
-     Fallback while unwired: submit opens a prefilled email so no contestant
-     is silently dropped.
-     Topics and generation options below match the GI sub-account's live
-     custom fields verbatim, plain-hyphen year ranges included, so values
-     line up exactly once the webhook is live.
-     ══════════════════════════════════════════════════════════════════════ -->
+<script>
+  /* ══════════════════════════════════════════════════════════════════
+     GI CONTESTANT SIGNUP — live GHL embed.
+     GI_FORM_ID is TEMPORARY: a separate agent is building the permanent
+     GI sub-account, which will produce a replacement form with a new ID.
+     Swap the string below when it lands — nothing else in this file
+     needs to change. The ?src= query param (northland/chamber/aca/
+     realtor/social/card — the six QR codes) is read on load and passed
+     straight through to the embed so source tracking survives in GHL.
+     ══════════════════════════════════════════════════════════════════ */
+  var GI_FORM_ID = 'opZvykeXf7B6XOkP3wc5';
+</script>
 <meta name="robots" content="noindex, nofollow">
 <!-- <link rel="canonical" href="https://generationallyincorrect.com/be-on-the-show"> -->
 <title>Be On The Show — Generationally Incorrect</title>
@@ -34,10 +31,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Kalam:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/gi-site.css">
 <style>
-  .topics-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-top:4px}
-  .topics-grid label{display:flex;gap:8px;align-items:flex-start;font-family:var(--gi-font-body);font-size:13px;letter-spacing:0;text-transform:none;color:var(--gi-soft);font-weight:400;margin:0;line-height:1.4}
-  .topics-grid input{width:auto;margin-top:2px;accent-color:var(--gi-red)}
-  @media(max-width:520px){.topics-grid{grid-template-columns:1fr}}
+  /* The Pitch — the page's one dark-ground contrast moment (brand doc §5). */
+  .pitch-dark{background:var(--gi-deep)}
+  .pitch-dark .kicker{color:var(--gi-red)}
+  .pitch-dark h2{color:var(--gi-paper)}
+  .pitch-dark p{color:#d8caa9}
+  .pitch-dark .pullquote{color:var(--gi-paper);border-left-color:var(--gi-red)}
+  .pitch-dark .pullquote .cite{color:var(--gi-muted)}
 </style>
 </head>
 <body>
@@ -62,6 +62,19 @@
     <div class="kicker">Casting Is Open</div>
     <h1>Be on the show</h1>
     <p class="lede" style="margin-top:16px;max-width:600px"><b style="color:var(--gi-ink)">Generationally Incorrect — Be On The Show.</b> Relaxed, honest, entertaining, and respectful — across generations. Grab a seat at the table: tell us who you are, claim your generation, and Erik reaches out personally if you're picked for an upcoming episode.</p>
+    <div class="cta-row" style="margin-top:22px">
+      <a class="btn btn-ghost" href="https://www.youtube.com/@Gen.Incorrect" target="_blank" rel="noopener">▶ Watch</a>
+    </div>
+  </div>
+</section>
+
+<section class="pitch-dark">
+  <div class="wrap">
+    <div class="kicker">The Pitch</div>
+    <h2>Four generations, one table, one question nobody answers honestly in public.</h2>
+    <p>We're not looking for an expert. We're looking for someone who'll say what their generation actually thinks — and defend it.</p>
+    <p>Ninety minutes. Cinematic setup. You'll leave with a month of content.</p>
+    <blockquote class="pullquote">Nobody gets to just talk — you'll also have to argue the other generation's best point. That's the part people love.</blockquote>
   </div>
 </section>
 
@@ -76,32 +89,9 @@
       <div class="ebpodcast">— Podcast —</div>
     </div>
     <div class="signup-panel" style="margin-top:0;max-width:600px">
-      <form class="gi-contestant-form gi-form" novalidate>
-        <div class="hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
-        <div><label for="ct-name">Full name</label><input id="ct-name" name="full_name" type="text" autocomplete="name" required></div>
-        <div><label for="ct-phone">Phone</label><input id="ct-phone" name="phone" type="tel" autocomplete="tel" required></div>
-        <div><label for="ct-email">Email</label><input id="ct-email" name="email" type="email" autocomplete="email" required></div>
-        <div>
-          <label for="ct-gen">Select your generation</label>
-          <select id="ct-gen" name="gi_generation" required>
-            <option value="" selected disabled>Claim your seat</option>
-            <option>Silent Generation (1928-1945)</option>
-            <option>Baby Boomers (1946-1964)</option>
-            <option>Generation X (1965-1980)</option>
-            <option>Millennials (1981-1996)</option>
-            <option>Generation Z (1997-2012)</option>
-            <option>Generation Alpha (2013-2024)</option>
-            <option>Generation Beta (2025-2039)</option>
-          </select>
-        </div>
-        <div id="ct-topics-block">
-          <label>Topics you're comfortable discussing</label>
-          <div class="topics-grid" id="ct-topics"></div>
-        </div>
-        <p class="fine">Selected guests sign a recording release before taping.</p>
-        <button class="btn btn-red" type="submit" data-label="Sign Me Up">Sign Me Up</button>
-      </form>
+      <iframe id="gi-signup-iframe" style="width:100%;min-height:1180px;border:0;display:block" title="Contestant signup" loading="lazy"></iframe>
     </div>
+    <p class="small muted" style="margin-top:12px">Selected guests sign a recording release before taping.</p>
   </div>
 </section>
 
@@ -124,7 +114,7 @@
       <div>
         <div class="fh">Generationally Incorrect</div>
         <p style="max-width:340px">Four generations. One question. Common ground or bust. A video-first debate show — season one launches the week of Nov 2, 2026.</p>
-        <p class="small">#GenIncorrect · YouTube <b>@generationallyincorrect</b> (launching with Episode 001)</p>
+        <p class="small">#GenIncorrect · YouTube <a href="https://www.youtube.com/@Gen.Incorrect" target="_blank" rel="noopener"><b>@Gen.Incorrect</b></a></p>
       </div>
       <div>
         <div class="fh">The Show</div>
@@ -151,164 +141,16 @@
 </footer>
 
 <script>
-/* ── WIRING POINT: GHL inbound webhook (Signup Intake V01 workflow trigger) ─
-   Paste the URL and submits flow straight into the GI sub-account. */
-var GI_CONTESTANT_WEBHOOK = ''; /* ← paste GHL inbound-webhook URL to go live */
-var GI_CONTACT_EMAIL = 'hello@generationallyincorrect.com';
-
-/* The 31 topics from the Candidate Survey — matches the GI sub-account's
-   "GI Topic Choices" checkbox field verbatim, in order. */
-var GI_TOPICS = [
-  'AI',
-  'Cancel Culture vs. Accountability',
-  'Censorship in Schools and Libraries',
-  'Climate Change Responsibility Across Generations',
-  'College: Necessary Investment or Overpriced Tradition?',
-  'Dating Apps and Modern Relationships',
-  'Drugs and Alcohol',
-  'Education',
-  'Family',
-  'Free Speech vs. Harmful Speech',
-  'Homeownership: Dream, Trap, or Impossible Goal?',
-  'Immigration and National Identity',
-  'Leadership',
-  'Marriage: Outdated Institution or Still Essential?',
-  'Medicine and Health Care',
-  'Mental Health Awareness vs. Overdiagnosis',
-  'Money',
-  'Political Corruption',
-  'Political Correctness',
-  'Racism',
-  'Religion',
-  'Remote Work vs. Returning to the Office',
-  'Should Children Have Smartphones?',
-  'Social Media',
-  'Student Loan Forgiveness',
-  'The Decline of Religion in Public Life',
-  'Traditional Masculinity and Femininity',
-  'Transgenderism',
-  'Trust in Government, Media, and Institutions',
-  "Women's Rights",
-  'Work Ethic: Hustle Culture vs. Work-Life Balance'
-];
-
+/* Point the embed at GI_FORM_ID (defined at the top of <head>) and pass the
+   ?src= tracking param straight through — GHL's own workflow does the rest
+   (tagging, pipeline card, notifications, SMS). */
 (function () {
   'use strict';
-
-  /* Render the topic checkboxes. */
-  var grid = document.getElementById('ct-topics');
-  GI_TOPICS.forEach(function (t) {
-    var label = document.createElement('label');
-    var cb = document.createElement('input');
-    cb.type = 'checkbox'; cb.name = 'gi_topic_choices'; cb.value = t;
-    label.appendChild(cb);
-    label.appendChild(document.createTextNode(' ' + t));
-    grid.appendChild(label);
-  });
-
-  /* GI sub-account tag convention — lowercase, no "gi " prefix (the whole
-     sub-account is GI now). Matches the live custom-field values exactly. */
-  var GEN_TAG = {
-    'Silent Generation (1928-1945)': 'generation: silent',
-    'Baby Boomers (1946-1964)': 'generation: boomer',
-    'Generation X (1965-1980)': 'generation: gen x',
-    'Millennials (1981-1996)': 'generation: millennial',
-    'Generation Z (1997-2012)': 'generation: gen z',
-    'Generation Alpha (2013-2024)': 'generation: alpha',
-    'Generation Beta (2025-2039)': 'generation: beta'
-  };
-
-  /* source: passthrough — QR codes and shared links land on this page as
-     ?src=northland / chamber / aca / realtor / social / card. The workflow
-     tags the contact from this param; we mirror the tag here too so it's
-     visible even on the mailto fallback. */
-  var SRC_SLUGS = ['northland', 'chamber', 'aca', 'realtor', 'social', 'card'];
-  function sourceTag() {
-    var params = new URLSearchParams(window.location.search);
-    var src = (params.get('src') || '').toLowerCase();
-    return SRC_SLUGS.indexOf(src) !== -1 ? 'source: ' + src : null;
-  }
-
-  var form = document.querySelector('form.gi-contestant-form');
-  var busy = false;
-  form.addEventListener('submit', function (ev) {
-    ev.preventDefault();
-    if (busy) return;
-
-    var hp = form.querySelector('input[name="website"]');
-    if (hp && hp.value) { success(null); return; }
-
-    var f = new FormData(form);
-    var fullName = String(f.get('full_name') || '').trim();
-    var phone = String(f.get('phone') || '').trim();
-    var email = String(f.get('email') || '').trim();
-    var generation = String(f.get('gi_generation') || '').trim();
-    var topics = f.getAll('gi_topic_choices').map(String);
-    if (!fullName || !phone || !email || !generation) return;
-    if (!topics.length) {
-      alert('Pick at least one topic you’re comfortable discussing.');
-      return;
-    }
-
-    var tags = [GEN_TAG[generation] || 'generation: other'];
-    var src = sourceTag();
-    if (src) tags.push(src);
-
-    var payload = {
-      full_name: fullName,
-      phone: phone,
-      email: email,
-      gi_generation: generation,
-      gi_topic_choices: topics,
-      tags: tags,
-      page: window.location.pathname
-    };
-
-    if (GI_CONTESTANT_WEBHOOK) {
-      busy = true;
-      var btn = form.querySelector('button[type="submit"]');
-      if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
-      fetch(GI_CONTESTANT_WEBHOOK, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).then(function (res) {
-        if (!res.ok) throw new Error('bad status');
-        success(null);
-      }).catch(function () {
-        busy = false;
-        if (btn) { btn.disabled = false; btn.textContent = 'Sign Me Up'; }
-        success(mailto(payload));
-      });
-    } else {
-      success(mailto(payload));
-    }
-  });
-
-  function mailto(p) {
-    var body = 'GI contestant signup:\n\nName: ' + p.full_name +
-      '\nPhone: ' + p.phone +
-      '\nEmail: ' + p.email +
-      '\nGeneration: ' + p.gi_generation +
-      '\nTopics: ' + p.gi_topic_choices.join('; ') +
-      '\nTags: ' + p.tags.join(', ');
-    return 'mailto:' + GI_CONTACT_EMAIL +
-      '?subject=' + encodeURIComponent('Be On The Show — contestant signup') +
-      '&body=' + encodeURIComponent(body);
-  }
-
-  function success(mailtoHref) {
-    var box = document.createElement('div');
-    box.className = 'form-success';
-    if (mailtoHref) {
-      box.innerHTML = '<b>One tap left.</b> Our signup system is being wired up — ' +
-        'send the prefilled email and you’re in the contestant pool.<br><br>' +
-        '<a class="btn btn-red btn-sm" href="' + mailtoHref + '">Send the email →</a>';
-    } else {
-      box.innerHTML = '<b>You’re in.</b> We’ll reach out if you’re picked for an upcoming episode.';
-    }
-    form.replaceWith(box);
-  }
+  var params = new URLSearchParams(window.location.search);
+  var src = params.get('src');
+  var url = 'https://links.ninja360.net/widget/form/' + GI_FORM_ID;
+  if (src) url += '?src=' + encodeURIComponent(src);
+  document.getElementById('gi-signup-iframe').src = url;
 })();
 </script>
 </body>
