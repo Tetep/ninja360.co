@@ -35,6 +35,7 @@ const routes = [
   '/gi/site/question-of-the-week/',
   '/gi/site/membership/',
   '/gi/site/contact/',
+  '/gi/site/be-on-the-show/',
 ];
 
 test.describe('mobile scroll and overflow guardrails', () => {
