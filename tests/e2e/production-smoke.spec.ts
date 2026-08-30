@@ -22,6 +22,7 @@ const routes = [
   '/roadmaps/tim',
   '/scrolls/found-kc-playbook',
   '/scrolls/gi-ninja-lane',
+  '/scrolls/gi-domain-strategy',
   '/scrolls/kpi-gameplan',
   '/scrolls/mission-board',
   '/scrolls/operating-rhythm',
@@ -29,6 +30,10 @@ const routes = [
   '/scrolls/warp-speed',
   '/legacy/roadmaps/gabe',
   '/legacy/roadmaps/pavan',
+  // Cloudflare Pages _redirects rules — only real once deployed, hence checked
+  // here (daily cron against production) rather than in the local build suite.
+  '/gi/site/apply',
+  '/gi/site/audition',
 ];
 
 test.describe('production smoke checks', () => {

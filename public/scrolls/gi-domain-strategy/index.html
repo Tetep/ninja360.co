@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generationally Incorrect · Domain &amp; Launch Map · Ninja-360</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#F47920; --deep:#E05F00; --charcoal:#3D3D3D; --gray:#404040;
+    --warm:#F9F7F5; --line:#E0DCD8; --dead:#9b948e; --warn:#B03A2E; --blue:#3A6EA5;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:#fff;line-height:1.55;font-size:16.5px}
+  .accent-top{height:4px;background:var(--orange)}
+  .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+  section{padding:38px 0}
+  h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif;line-height:1.1;text-transform:uppercase;letter-spacing:.5px}
+  h1{font-size:42px;font-weight:800}
+  h2{font-size:26px;font-weight:800;color:var(--deep);margin:0 0 14px;border-bottom:1px solid var(--line);padding-bottom:5px}
+  h3{font-size:19px;font-weight:700;margin:16px 0 6px}
+  p{margin-bottom:11px}
+  .alt{background:var(--warm)}
+  .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:var(--orange)}
+  .kicker{font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:12.5px;color:var(--deep);margin-bottom:8px}
+  .sub{font-size:18px;color:var(--gray);max-width:700px}
+
+  .apex{background:var(--charcoal);color:#fff;text-align:center;border-radius:8px;padding:16px;margin:18px 0}
+  .apex .d{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;letter-spacing:1px}
+  .apex .d span{color:var(--orange)}
+  .apex .l{font-size:13px;color:#cfc9c3;text-transform:uppercase;letter-spacing:1px}
+
+  .isnot{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+  .isnot .card{border:2px solid var(--line);border-radius:8px;padding:14px 18px;background:#fff}
+  .isnot .card.is{border-color:var(--orange)}
+  .isnot .lbl{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+  .isnot .is .lbl{color:var(--deep)}
+  .isnot .not .lbl{color:var(--warn)}
+  .isnot p{margin:0;font-size:14.5px;color:var(--gray)}
+  .isnot b{color:var(--charcoal)}
+
+  .layer{border:1px solid var(--line);border-left:5px solid var(--orange);border-radius:6px;padding:14px 18px;margin-bottom:12px}
+  .layer h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:1px;font-size:16px;color:var(--deep);margin:0 0 4px}
+  .layer .p{font-size:14px;color:#7a746f;margin-bottom:8px}
+  .layer code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;background:var(--warm);border:1px solid var(--line);border-radius:3px;padding:1px 6px;display:inline-block;margin:2px 3px}
+  .layer.l-blue{border-left-color:var(--blue)}
+  .layer.l-warn{border-left-color:var(--warn)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+  .box{border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:#fff;font-size:14.5px}
+  .box .h{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:.5px;color:var(--deep);margin-bottom:3px}
+  .box b{color:var(--charcoal)}
+
+  .note{border-left:4px solid var(--orange);background:var(--warm);padding:14px 18px;margin:16px 0;font-size:15px}
+  .note b{color:var(--deep)}
+  .live{border-left:4px solid var(--blue);background:#eef3f8;padding:14px 18px;margin:16px 0;font-size:15px}
+  .live b{color:var(--charcoal)}
+  .warn{border-left:4px solid var(--warn);background:#fbeceb;padding:14px 18px;margin:16px 0;font-size:15px}
+  .warn b{color:var(--warn)}
+
+  .callout{background:var(--charcoal);color:#fff;border-radius:8px;padding:18px 22px;margin-top:20px}
+  .callout .disp{color:var(--orange);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .callout p{color:#e8e2dc;font-size:14.5px;margin:0}
+  .callout b{color:#fff}
+
+  .moves{list-style:none;margin:8px 0 0}
+  .moves li{padding:9px 0 9px 34px;border-bottom:1px dashed var(--line);position:relative;font-size:15px}
+  .moves li:before{content:"☐";position:absolute;left:6px;top:7px;color:var(--orange);font-size:18px}
+  .moves li:last-child{border-bottom:none}
+
+  .pill{display:inline-block;background:var(--warm);border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--deep)}
+
+  .footer{font-size:12.5px;color:#8a847e;margin-top:24px;border-top:1px solid var(--line);padding:14px 0 4px}
+  @media(max-width:720px){
+    .isnot,.grid2{grid-template-columns:1fr}
+    h1{font-size:32px}
+  }
+  @media print{@page{margin:9mm}body{font-size:11.5px}.callout,.apex{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+<meta name="description" content="Generationally Incorrect · Domain &amp; Launch Map — the canonical URL structure for generationallyincorrect.com, defensive + vanity domains, and current DNS state.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Ninja-360 Dojo">
+<meta property="og:title" content="Generationally Incorrect · Domain &amp; Launch Map">
+<meta property="og:description" content="One canonical apex, the redirect layer, and where /apply already lives today.">
+
+<link rel='stylesheet' href='/share/responsive-patch.css'>
+</head>
+<body>
+<!-- n360-unav: unified dojo nav -->
+<style>
+  .n360bar{position:sticky;top:0;z-index:90;background:#3D3D3D;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;min-height:48px}
+  .n360bar .n360wm{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:#F47920;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav{display:flex;gap:3px;margin-left:auto}
+  .n360bar nav a{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:13px;color:#e8e2dc;padding:0 10px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav a:hover{background:rgba(244,121,32,.25);color:#fff}
+  .n360toggle{display:none;width:44px;height:44px;margin-left:auto;flex:0 0 auto;border:none;border-radius:6px;background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .n360toggle span{display:block;width:22px;height:2px;background:#fff;border-radius:1px}
+  .n360toggle:hover{background:rgba(244,121,32,.25)}
+  .n360accent{height:4px;background:#F47920}
+  .n360crumb{background:#F9F7F5;border-bottom:1px solid #E0DCD8;font-size:13px;padding:7px 18px;color:#404040}
+  .n360crumb a{color:#E05F00;text-decoration:none;font-weight:700}
+  .n360crumb a:hover{text-decoration:underline}
+  .n360crumb .sep{color:#9B948E;margin:0 5px}
+  @media(max-width:640px){
+    .n360bar{flex-wrap:nowrap}
+    .n360toggle{display:flex}
+    .n360bar nav{display:none;flex-direction:column;gap:0;margin-left:0;position:absolute;top:100%;left:0;right:0;background:#3D3D3D;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 12px 20px rgba(0,0,0,.25)}
+    .n360bar.open nav{display:flex}
+    .n360bar nav a{font-size:15px;padding:13px 18px;border-radius:0;border-bottom:1px solid rgba(255,255,255,.1);min-height:48px}
+    .n360bar nav a:last-child{border-bottom:none}
+  }
+</style>
+<div class="n360bar">
+  <a class="n360wm" href="/">NINJA-360</a>
+  <button class="n360toggle" type="button" aria-expanded="false" aria-controls="n360nav" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <nav id="n360nav">
+    <a href="/">Dojo</a>
+    <a href="/gameplan">Game Plan</a>
+    <a href="/scrolls">Scrolls</a>
+    <a href="/crew">Crew</a>
+  </nav>
+</div>
+<div class="n360accent"></div>
+<div class="n360crumb"><a href="/">Dojo</a><span class="sep">&rsaquo;</span><a href="/scrolls">Scrolls</a><span class="sep">&rsaquo;</span><span>GI · Domain &amp; Launch Map</span></div>
+<script>
+  (function(){
+    var t=document.querySelector('.n360toggle'),b=document.querySelector('.n360bar');
+    if(t&&b)t.addEventListener('click',function(){var o=b.classList.toggle('open');t.setAttribute('aria-expanded',String(o));});
+  })();
+</script>
+
+<div class="accent-top"></div>
+
+<section>
+  <div class="wrap">
+    <div class="wordmark">NINJA-360</div>
+    <div class="kicker" style="margin-top:16px">Generationally Incorrect · Domain Strategy</div>
+    <h1>The GI Domain &amp; Launch Map</h1>
+    <p class="sub" style="margin-top:14px">The canonical URL structure for <b>generationallyincorrect.com</b> at public launch, filed as Tim sent it on 2026-08-30 — plus what's already true today on the interim build.</p>
+    <div class="apex"><div class="l">Canonical apex — everything resolves here</div><div class="d">generationally<span>incorrect</span>.com</div><div class="l">www resolves too — one forwards to the other</div></div>
+    <div class="isnot">
+      <div class="card is">
+        <div class="lbl">What this scroll is</div>
+        <p>The <b>target</b> URL structure and domain map for when GI moves off the Dojo onto its own domain.</p>
+      </div>
+      <div class="card not">
+        <div class="lbl">What this scroll is not</div>
+        <p><b>Not live yet.</b> No DNS action has been taken. The show still lives at <a href="/gi/site/" style="color:var(--deep);font-weight:700">dojo.ninja360.co/gi/site/</a> today.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 id="structure">1 · The Canonical Structure</h2>
+    <div class="layer l-blue"><h3>/ — Root / Home</h3><div class="p">What the show is · hosts · latest episode. Two CTAs: <b>Listen</b> + <b>Apply</b>.</div></div>
+    <div class="layer"><h3>/listen — Where To Listen</h3><div class="p">The one URL you say on air.</div><code>Spotify</code><code>Apple Podcasts</code><code>YouTube</code></div>
+    <div class="layer"><h3>/apply (or /audition) — Contestant Signup</h3><div class="p">Either a 301 straight to the GHL form, or embedded on a branded page.</div><code>→ GI Contestant Signup V01 (GHL)</code></div>
+    <div class="layer"><h3>/episodes — Show-Notes Archive</h3><div class="p">Optional · SEO.</div></div>
+    <div class="layer l-warn"><h3>✉ hello@ / team@ — Domain Email</h3><div class="p">Send contestant mail from <b>this</b> domain. SPF + DKIM + DMARC set up <b>before</b> first send, GHL authorized to send as the domain.</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 id="defensive">2 · Defensive &amp; Vanity Domains</h2>
+    <div class="grid2">
+      <div class="box"><div class="h">Defensive — park, 301 to canonical</div>Protect the brand: <b>.fm · .net · .co</b> all forward to <code>generationallyincorrect.com</code>.</div>
+      <div class="box"><div class="h">Short vanity — optional</div><code>genincorrect.com</code> 301s to canonical. Easy to say aloud on air or in a spot.</div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 id="state">3 · Current State &amp; Reconciliation</h2>
+    <div class="live"><b>Live today:</b> the show's interim home is <a href="/gi/site/" style="color:var(--deep);font-weight:700">dojo.ninja360.co/gi/site/</a> — the full six-page build plus the contestant signup page, on Cloudflare Pages, deployed from this Git repo. Every page in that build uses relative links on purpose, so the whole tree lifts to the domain root verbatim once it's wired — no code changes beyond flipping <code>robots</code> and uncommenting each page's canonical tag (the LAUNCH CHECKLIST comment already in every head).</div>
+    <div class="warn"><b>Domain registration — unresolved (content export Q6).</b> Checked from here on 2026-08-30: none of <code>generationallyincorrect.com</code>, <code>www.generationallyincorrect.com</code>, <code>.net</code>, <code>.fm</code>, <code>.co</code>, or <code>genincorrect.com</code> resolve — no A record on any of them. This sandbox has no <code>whois</code>, so that's consistent with "not registered yet," not full proof. Whoever holds registrar access should confirm directly and register the set above before it's a real gap.</div>
+    <div class="note"><b>Two separate SPF/DKIM/DMARC jobs, not one.</b> The GHL build spec already flags ninja360.net's email auth as unset (GHL system mail lands in spam until that's fixed). This scroll's domain-email item is a <b>different domain</b> — generationallyincorrect.com's own SPF/DKIM/DMARC, needed before contestant mail sends <i>from that domain</i>. Neither fixes the other.</div>
+    <div class="note"><b>/apply and /audition already work today.</b> Both now 301 to the built signup page inside the interim mount — <code>dojo.ninja360.co/gi/site/apply</code> and <code>/gi/site/audition</code> → <code>/gi/site/be-on-the-show/</code>, <code>?src=</code> tracking preserved. <a href="/gi/site/be-on-the-show/" style="color:var(--deep);font-weight:700">be-on-the-show/</a> stays the canonical page underneath either slug — nothing already printed or QR-coded against it breaks.</div>
+    <div class="note"><b>/listen — not built yet, on purpose.</b> Spotify and Apple Podcasts URLs don't exist until the show actually publishes somewhere on those platforms. Building the hub now would mean fabricating links or shipping dead ones. Ready to build the moment real platform URLs land — YouTube (<a href="https://www.youtube.com/@Gen.Incorrect" style="color:var(--deep);font-weight:700" target="_blank" rel="noopener">@Gen.Incorrect</a>) is the only one that's real today.</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 id="open">4 · Open Items</h2>
+    <ul class="moves">
+      <li>Register generationallyincorrect.com (or confirm it's already held) + the .fm/.net/.co defensive set + genincorrect.com</li>
+      <li>Point www at the apex, one direction, 301</li>
+      <li>DNS-level 301s for the defensive + vanity domains once registered</li>
+      <li>Create hello@ / team@ mailboxes on the domain</li>
+      <li>SPF + DKIM + DMARC on generationallyincorrect.com, authorize GHL to send as the domain — before the first contestant email goes out</li>
+      <li>Build /listen once Spotify and Apple Podcasts URLs exist</li>
+      <li>Final call on /apply vs. /audition as the one slug people hear on air (both work today — no rush)</li>
+    </ul>
+    <div class="callout">
+      <div class="disp">Runs through Creative Approvals</div>
+      <p>Per the Aug 8 settle logged in <a href="/scrolls/gi-next-steps" style="color:#fff;text-decoration:underline">GI · Next Steps</a>: domain and brand calls are a 2-of-3 partner vote (Erik · Gabe · Tim), 72-hour window, logged in the GHL pipeline. If it isn't in the pipeline, it isn't decided.</p>
+    </div>
+    <p style="margin-top:18px"><span class="pill">Related</span> <a href="/scrolls/gi-master-plan" style="color:var(--deep);font-weight:700">GI · Master Plan</a> &nbsp;·&nbsp; <span class="pill">Related</span> <a href="/scrolls/gi-next-steps" style="color:var(--deep);font-weight:700">GI · Next Steps</a> &nbsp;·&nbsp; <span class="pill">Related</span> <a href="/scrolls/gi-ninja-lane" style="color:var(--deep);font-weight:700">GI · The Ninja-360 Lane</a> &nbsp;·&nbsp; <span class="pill">Related</span> <a href="/domain-strategy" style="color:var(--deep);font-weight:700">Ninja-360 · Domain &amp; Brand Strategy</a> — the sibling doc for ninja360.net</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="footer">
+      Generationally Incorrect · Domain &amp; Launch Map · Ninja-360 Digital Media LLC · Filed 2026-08-30<br>
+      Put them on the map · Tell the truth beautifully · Always sharpen the blade<br>
+      © 2026 Ninja-360 Digital Media LLC | Kansas City, MO
+    </div>
+  </div>
+</section>
+
+<script defer src='/share/responsive-patch.js'></script>
+</body>
+</html>
