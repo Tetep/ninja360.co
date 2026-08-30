@@ -1,0 +1,8 @@
+# Generationally Incorrect — canonical-IA aliases (see /scrolls/gi-domain-strategy).
+# /apply and /audition are the domain map's launch slugs; the built page still
+# lives at be-on-the-show/, so both alias into it rather than forking content.
+# Query strings (?src=...) pass through automatically.
+/gi/site/apply       /gi/site/be-on-the-show/  301
+/gi/site/apply/      /gi/site/be-on-the-show/  301
+/gi/site/audition    /gi/site/be-on-the-show/  301
+/gi/site/audition/   /gi/site/be-on-the-show/  301
