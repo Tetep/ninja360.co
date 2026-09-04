@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>:root{color-scheme:light dark}body{margin:0;padding:0}img{max-width:100%}</style>
+</head>
+<body>
+<title>Ninja-360 Run Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F4F1ED; --surf:#FFFFFF; --surf2:#FAF7F4; --surf3:#EFE9E3;
+  --ink:#231E1A; --ink2:#6B6058; --ink3:#746A61; --line:#E3DAD1; --line2:#D2C6BA;
+  --accent:#B54903; --accent-ink:#FFFFFF; --accent-soft:#FCEADA;
+  --money:#2C6B4F; --money-soft:#E2F0E8;
+  --warn:#8F6410; --warn-soft:#FAEFD8;
+  --bad:#A2352A; --bad-soft:#F8E3E0;
+  --shadow:0 1px 2px rgba(60,42,28,.07),0 4px 14px rgba(60,42,28,.05);
+  --head-bg:#231E1A; --head-ink:#FBF7F3; --head-sub:#B9AC9F; --head-line:#4A4139;
+  --scrim:rgba(35,30,26,.45);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#151310; --surf:#1E1B17; --surf2:#232019; --surf3:#2C2820;
+  --ink:#F1EBE4; --ink2:#A99C90; --ink3:#9A8F83; --line:#332D25; --line2:#443C32;
+  --accent:#F4801F; --accent-ink:#1A1409; --accent-soft:#3A2410;
+  --money:#6FC49B; --money-soft:#1B3327;
+  --warn:#E0AC4C; --warn-soft:#33280F;
+  --bad:#EE8377; --bad-soft:#3A1F1B;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+  --head-bg:#0E0C0A; --head-ink:#F1EBE4; --head-sub:#95897E; --head-line:#3A332B;
+  --scrim:rgba(0,0,0,.55);
+}}
+:root[data-theme="dark"]{
+  --bg:#151310; --surf:#1E1B17; --surf2:#232019; --surf3:#2C2820;
+  --ink:#F1EBE4; --ink2:#A99C90; --ink3:#9A8F83; --line:#332D25; --line2:#443C32;
+  --accent:#F4801F; --accent-ink:#1A1409; --accent-soft:#3A2410;
+  --money:#6FC49B; --money-soft:#1B3327;
+  --warn:#E0AC4C; --warn-soft:#33280F;
+  --bad:#EE8377; --bad-soft:#3A1F1B;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+  --head-bg:#0E0C0A; --head-ink:#F1EBE4; --head-sub:#95897E; --head-line:#3A332B;
+  --scrim:rgba(0,0,0,.55);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:Archivo,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:15px;line-height:1.45;-webkit-text-size-adjust:100%;
+  padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:0 13px}
+h1,h2,h3{margin:0;text-wrap:balance;font-weight:600}
+h2{font-size:15px;margin:16px 0 7px}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lab{font-size:10px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;color:var(--ink3)}
+.hide{display:none!important}
+header{background:var(--head-bg);color:var(--head-ink);padding:12px 0 10px}
+header h1{font-size:18px;letter-spacing:-.2px;color:var(--head-ink)}
+header .sub{font-size:12px;color:var(--head-sub);margin-top:1px}
+.hrow{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.hbtns{display:flex;gap:6px;align-items:center}
+.tbtn{border:1px solid var(--head-line);color:var(--head-ink);border-radius:8px;padding:6px 10px;font-size:12px;min-height:32px}
+#syncChip{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px}
+#syncChip.ok{color:#9CD8B4;border-color:#3E594A}
+#syncChip.busy{color:var(--head-sub)}
+#syncChip.warn2{color:#E0AC4C;border-color:#5C4A1E}
+/* counters */
+.counters{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);
+  border-bottom:1px solid var(--line)}
+@media(min-width:560px){.counters{grid-template-columns:repeat(4,1fr)}}
+.cc{background:var(--surf);padding:7px 12px}
+.cc .v{font-size:16px;font-weight:700;letter-spacing:-.3px}
+.cc .v.g{color:var(--money)} .cc .v.o{color:var(--accent)} .cc .v.w{color:var(--warn)}
+/* strip */
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:11px;overflow:hidden;margin:9px 0}
+@media(min-width:640px){.strip{grid-template-columns:repeat(6,1fr)}}
+.strip.four{grid-template-columns:repeat(2,1fr)}
+@media(min-width:640px){.strip.four{grid-template-columns:repeat(4,1fr)}}
+.mcell{background:var(--surf);padding:7px 10px}
+.mcell .v{font-size:16px;font-weight:700;letter-spacing:-.3px;margin-top:1px}
+.mcell .v.g{color:var(--money)} .mcell .v.w{color:var(--warn)} .mcell .v.b{color:var(--bad)}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:11px;box-shadow:var(--shadow);margin-bottom:10px}
+.brand-hero{position:relative;display:flex;justify-content:center;align-items:center;margin:8px 0 14px;padding:6px 0;transition:opacity .7s ease,transform .7s ease,height .7s ease,margin .7s ease,padding .7s ease;overflow:hidden}
+.brand-hero.is-done{opacity:0;transform:translateY(-8px);height:0;margin:0;padding:0;pointer-events:none}
+.brand-video-frame{position:relative;width:min(100%,980px);margin:0 auto;border-radius:18px;overflow:hidden;background:#060808;box-shadow:0 18px 40px rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.04)}
+.brand-video-frame video{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#000}
+.brand-logo-overlay{position:absolute;right:14px;bottom:12px;width:92px;max-width:28%;height:auto;filter:drop-shadow(0 8px 16px rgba(0,0,0,.42));z-index:1}
+.brand-panel{background:transparent;border:none;border-radius:0;box-shadow:none;overflow:visible;padding:0}
+.brand-panel img,.brand-panel video{display:block;width:min(100%,760px);height:auto;object-fit:contain;filter:drop-shadow(0 10px 18px rgba(0,0,0,.38))}
+.brand-hero .brand-main img{max-height:440px}
+.brand-hero .brand-video{display:none}
+.brand-strip{display:none}
+.rail{display:flex;gap:6px;overflow-x:auto;padding:2px 0 7px}
+.rail::-webkit-scrollbar{height:5px}.rail::-webkit-scrollbar-thumb{background:var(--line2);border-radius:3px}
+.dchip{flex:0 0 auto;border:1px solid var(--line);background:var(--surf);border-radius:10px;
+  padding:6px 10px;text-align:left;min-width:100px;box-shadow:var(--shadow)}
+.dchip.on{border-color:var(--accent);background:var(--accent-soft)}
+.dchip .dd{font-size:10.5px;color:var(--ink2);font-weight:600}
+.dchip .dv{font-size:14px;font-weight:700}
+.dchip .dn{font-size:10px;color:var(--ink3)}
+.dchip.add{min-width:auto;display:flex;align-items:center;color:var(--accent);font-weight:600;border-style:dashed}
+.fld{display:flex;flex-direction:column;gap:3px}
+.row{display:flex;flex-wrap:wrap;gap:7px;align-items:end}
+select,input[type=date],input[type=time],input[type=text],input[type=number]{
+  padding:8px 9px;border:1px solid var(--line2);border-radius:8px;background:var(--surf2);
+  color:var(--ink);font-size:13.5px;font-family:inherit;max-width:210px;min-height:36px}
+.ghost{border:1px solid var(--line2);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;background:var(--surf2);min-height:36px}
+.ghost.danger{color:var(--bad);border-color:var(--bad)}
+.prim{background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:9px 14px;font-weight:600;font-size:13.5px;min-height:38px}
+.stop{display:grid;grid-template-columns:58px 1fr auto;gap:9px;align-items:start;
+  background:var(--surf);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:10px;padding:9px 10px;margin-bottom:6px;box-shadow:var(--shadow)}
+.stop.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.stop.wait{border-left-color:var(--warn)}
+.stop.done{border-left-color:var(--money);opacity:.72}
+.stop .tm{font-size:12px;font-weight:600;color:var(--ink2)}
+.stop .tm .to{display:block;color:var(--ink3);font-weight:400}
+.stop .nm{font-size:14px;font-weight:600;line-height:1.25}
+.stop .ad{font-size:12px;color:var(--ink2);margin-top:2px}
+.stop .hrs{font-size:11px;color:var(--ink3);margin-top:3px}
+.stop .pay{font-size:14px;font-weight:700;color:var(--money);white-space:nowrap}
+.acts{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.mini{border:1px solid var(--line2);border-radius:7px;min-width:30px;min-height:30px;padding:0 8px;font-size:12px;
+  display:inline-flex;align-items:center;justify-content:center;color:var(--ink2);background:var(--surf2)}
+.mini.x{color:var(--bad);border-color:var(--bad)}
+.mini.go{color:var(--accent);border-color:var(--accent);font-weight:600}
+.tset{font:inherit;color:var(--accent);text-decoration:underline dotted;
+  display:inline-flex;align-items:center;min-height:26px;padding:2px 6px;margin:-2px -2px}
+.job-note{font-size:12px;color:var(--ink2);margin-top:6px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surf2)}
+.job-note .mono{font-size:11px}
+.live-timer{display:inline-flex;align-items:center;gap:6px;padding:2px 6px;border-radius:999px;border:1px solid var(--line2);background:var(--surf2);font-size:11px;font-weight:600;color:var(--ink2)}
+.live-timer.running{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.badge{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+  padding:1px 5px;border-radius:4px;margin-left:5px;vertical-align:1px;white-space:nowrap}
+.badge.v{background:var(--money-soft);color:var(--money)}
+.badge.a{background:var(--surf3);color:var(--ink2)}
+.badge.warn{background:var(--warn-soft);color:var(--warn)}
+.badge.bad{background:var(--bad-soft);color:var(--bad)}
+.badge.acc{background:var(--accent-soft);color:var(--accent)}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.filters input{flex:1;min-width:130px;max-width:none}
+.pj{display:grid;grid-template-columns:1fr auto auto;gap:9px;align-items:center;
+  background:var(--surf);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin-bottom:6px}
+.pj.used{opacity:.45}
+.pj .nm{font-size:13.5px;font-weight:600;line-height:1.25}
+.pj .ad{font-size:11.5px;color:var(--ink2);margin-top:1px}
+.pj .dist{font-size:11.5px;color:var(--ink3);white-space:nowrap;text-align:right}
+.pjbtn{display:block;text-align:left;padding:0;color:inherit;width:100%}
+.addb{background:var(--accent);color:var(--accent-ink);border-radius:8px;width:34px;height:34px;
+  font-size:18px;font-weight:600;display:flex;align-items:center;justify-content:center;line-height:1}
+.addb.dis{background:var(--surf3);color:var(--ink2)}
+.mapbox{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:7px;box-shadow:var(--shadow)}
+svg{width:100%;height:auto;display:block}
+.mapbox circle.hit{cursor:pointer}
+.leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11px;color:var(--ink2);margin-top:6px;align-items:center}
+.leg i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:-1px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--surf);border-top:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(5,1fr);z-index:40;padding-bottom:env(safe-area-inset-bottom)}
+nav button{padding:8px 2px 9px;font-size:10.5px;font-weight:600;color:var(--ink3);
+  display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button.on{color:var(--accent)}
+nav .ic{font-size:16px;line-height:1}
+nav .dotN{position:absolute;top:4px;right:calc(50% - 22px);background:var(--accent);color:var(--accent-ink);
+  border-radius:9px;font-size:9px;padding:0 4px;font-weight:700}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(72px + env(safe-area-inset-bottom));background:var(--head-bg);color:var(--head-ink);
+  padding:9px 15px;border-radius:9px;font-size:13px;z-index:60;box-shadow:var(--shadow);max-width:88vw;
+  display:flex;gap:12px;align-items:center}
+.toast button{color:#FFB27A;font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.6px;padding:2px 0}
+.empty{color:var(--ink3);font-size:13.5px;padding:16px 2px;text-align:center}
+.note{font-size:12.5px;color:var(--ink2);margin:7px 0}
+.hint{font-size:12px;color:var(--ink3);margin:4px 0 9px}
+pre.req{background:var(--surf2);border:1px solid var(--line);border-radius:9px;padding:10px;
+  font-size:11.5px;white-space:pre-wrap;word-break:break-word;max-height:290px;overflow:auto;margin:0}
+.chk{width:19px;height:19px;accent-color:var(--accent)}
+.seg{display:flex;gap:3px;background:var(--surf3);padding:3px;border-radius:9px;margin-bottom:9px}
+.seg button{flex:1;padding:7px 4px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--ink2)}
+.seg button.on{background:var(--surf);color:var(--ink);box-shadow:var(--shadow)}
+.clus{border-left:3px solid var(--money)}
+table.pl{width:100%;border-collapse:collapse;font-size:13px}
+table.pl th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink3);
+  padding:5px 6px;border-bottom:1px solid var(--line)}
+table.pl td{padding:6px;border-bottom:1px solid var(--line);vertical-align:top}
+/* bottom sheet */
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:70}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:71;background:var(--surf);
+  border-radius:16px 16px 0 0;border:1px solid var(--line);border-bottom:none;
+  box-shadow:0 -8px 30px rgba(0,0,0,.18);max-height:78vh;overflow:auto;
+  padding:8px 15px calc(16px + env(safe-area-inset-bottom));max-width:640px;margin:0 auto}
+.sheet .grab{width:36px;height:4px;border-radius:2px;background:var(--line2);margin:2px auto 10px}
+.sheet h3{font-size:15px;margin-bottom:2px}
+.sheet .shsub{font-size:12px;color:var(--ink2);margin-bottom:10px}
+.shlist{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.shbtn{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;
+  border:1px solid var(--line2);border-radius:9px;padding:11px 12px;font-size:13.5px;font-weight:600;background:var(--surf2)}
+.shbtn small{color:var(--ink3);font-weight:400}
+.shbtn.danger{color:var(--bad);border-color:var(--bad)}
+.shbtn.cur{border-color:var(--accent);background:var(--accent-soft)}
+@media (prefers-reduced-motion:no-preference){
+  .toast{animation:pop .18s ease-out}
+  .sheet{animation:up .2s ease-out}
+  .scrim{animation:fade .2s ease-out}
+}
+@keyframes pop{from{opacity:0;transform:translate(-50%,6px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes up{from{transform:translateY(30px);opacity:.4}to{transform:translateY(0);opacity:1}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+</style>
+
+<header><div class="wrap"><div class="hrow">
+  <div><h1>Run Sheet</h1><div class="sub">Immersion Data subcontract &middot; route, re-route, and track</div></div>
+  <div class="hbtns">
+    <button class="tbtn" id="syncChip" title="Tap to save now" aria-live="polite">&hellip;</button>
+    <button class="tbtn" id="themeBtn">Theme</button>
+  </div>
+</div></div></header>
+<div class="counters" id="counters"></div>
+
+<div class="wrap">
+  <section id="s-now"></section>
+  <section id="s-plan" class="hide"></section>
+  <section id="s-clusters" class="hide"></section>
+  <section id="s-app" class="hide"></section>
+  <section id="s-board" class="hide"></section>
+</div>
+
+<nav id="nav">
+  <button data-s="now" class="on"><span class="ic">📍</span>Now</button>
+  <button data-s="plan"><span class="ic">🗓️</span>Plan</button>
+  <button data-s="clusters"><span class="ic">�</span>Clusters</button>
+  <button data-s="app"><span class="ic">📮</span>IDS app</button>
+  <button data-s="board"><span class="ic">✅</span>Board</button>
+</nav>
+
+<script>
+
+const DATA={"jobs":[{"id":"2026-3136","n":"Old Navy 5988 - Merriam, KS","a":"5820 Antioch Rd","c":"Merriam","s":"KS","cl":"Old Navy","ch":"Gap","p":250,"lat":39.0235,"lon":-94.689,"o":10.0,"x":20.0,"v":0,"hs":"Old Navy brand default","r":"KC Metro","st":"Confirmed with Store","sv":2.0,"wo":"351204846","site":"5988"},{"id":"2026-3142","n":"Gap 1211 - Wichita, KS","a":"2110 N Rock Road","c":"Wichita","s":"KS","cl":"Gap","ch":"Gap","p":300,"lat":37.687,"lon":-97.336,"o":10.0,"x":20.0,"v":0,"hs":"Gap brand default","r":"Wichita / S Central KS","st":"Confirmed with Store","sv":2.0,"wo":"351204279","site":"1211"},{"id":"2026-3842","n":"Target 1757 - Overland Park, KS","a":"12200 Blue Valley Pkwy","c":"Overland Park","s":"KS","cl":"Target","ch":"Target","p":3500,"lat":38.9,"lon":-94.662,"o":8.0,"x":22.0,"v":0,"hs":"Target brand default","r":"KC Metro","st":"","sv":5.0,"wo":"","site":"1757"},{"id":"2026-9221","n":"Valvoline - Saint Joseph, MO","a":"3717 Sherman Avenue","c":"Saint Joseph","s":"MO","cl":"Valvoline","ch":"Bureau Veritas","p":500,"lat":39.735,"lon":-94.835,"o":7.0,"x":19.0,"v":0,"hs":"Valvoline brand default","r":"NW MO","st":"","sv":1.5,"wo":"","site":""},{"id":"2026-6662","n":"TCC 104355 - Arnold, MO","a":"1276 Jeffco Blvd","c":"Arnold","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":38.432,"lon":-90.38,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"104355"},{"id":"2026-5761","n":"Victra 120040 - Aurora, MO","a":"2012 S Elliott Ave Ste D","c":"Aurora","s":"MO","cl":"Victra","ch":"Verizon","p":100,"lat":36.971,"lon":-93.718,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"SW MO","st":"","sv":0.9,"wo":"","site":"120040"},{"id":"2026-5726","n":"Russell 102758 - Ava, MO","a":"1308 Springfield Rd Unit 1","c":"Ava","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":36.952,"lon":-92.661,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"102758"},{"id":"2026-0785","n":"Verizon 74640 - Fairview Heights, IL","a":"5902 N Illinois St","c":"Fairview Heights","s":"IL","cl":"Verizon","ch":"Verizon","p":100,"lat":38.589,"lon":-89.994,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"74640"},{"id":"2026-0840","n":"Verizon 74660 - Wichita, KS","a":"2161 N Rock Rd Ste 120","c":"Wichita","s":"KS","cl":"Verizon","ch":"Verizon","p":100,"lat":37.687,"lon":-97.336,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"74660"},{"id":"2026-0853","n":"Verizon 74635 - Edwardsville, IL","a":"6695 Edwardsville Crossing Dr","c":"Edwardsville","s":"IL","cl":"Verizon","ch":"Verizon","p":100,"lat":38.811,"lon":-89.953,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"74635"},{"id":"2026-0938","n":"Verizon 99240 - Salina, KS","a":"2375 S 9th St Ste B","c":"Salina","s":"KS","cl":"Verizon","ch":"Verizon","p":100,"lat":38.84,"lon":-97.611,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"N Central KS","st":"","sv":0.9,"wo":"","site":"99240"},{"id":"2026-0944","n":"Verizon 94944 - Overland Park, KS","a":"6925 W 135th St","c":"Overland Park","s":"KS","cl":"Verizon","ch":"Verizon","p":100,"lat":38.883,"lon":-94.687,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"94944"},{"id":"2026-1001","n":"Verizon 92531 - Overland Park, KS","a":"11868 W 95th St","c":"Overland Park","s":"KS","cl":"Verizon","ch":"Verizon","p":100,"lat":38.9575,"lon":-94.736,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"92531"},{"id":"2026-1004","n":"Verizon 126577 - Kansas City, KS","a":"10621 Parallel Pkwy","c":"Kansas City","s":"KS","cl":"Verizon","ch":"Verizon","p":100,"lat":39.122,"lon":-94.777,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"126577"},{"id":"2026-5401","n":"Cellular Sales 132936 - Ballwin, MO","a":"13965 Manchester Rd","c":"Ballwin","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":38.596,"lon":-90.479,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"132936"},{"id":"2026-1225","n":"Verizon 74652 - Wichita, KS","a":"2441 N Maize Rd Suite 1509","c":"Wichita","s":"KS","cl":"Verizon","ch":"Verizon","p":100,"lat":37.687,"lon":-97.336,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"74652"},{"id":"2026-1314","n":"Verizon 101547 - Belton, MO","a":"1101 E North Ave","c":"Belton","s":"MO","cl":"Verizon","ch":"Verizon","p":100,"lat":38.825,"lon":-94.523,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"101547"},{"id":"2026-1902","n":"Verizon 75757 - Blue Springs, MO","a":"901 NE Coronado Dr","c":"Blue Springs","s":"MO","cl":"Verizon","ch":"Verizon","p":100,"lat":39.035,"lon":-94.281,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"75757"},{"id":"2026-1339","n":"Verizon 74651 - Topeka, KS","a":"1920 SW Wanamaker Rd Ste 130","c":"Topeka","s":"KS","cl":"Verizon","ch":"Verizon","p":100,"lat":39.03,"lon":-95.76,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"NE KS Corridor","st":"","sv":0.9,"wo":"","site":"74651"},{"id":"2026-1376","n":"Verizon 99238 - Hutchinson, KS","a":"1811 E 17th Ave","c":"Hutchinson","s":"KS","cl":"Verizon","ch":"Verizon","p":100,"lat":38.061,"lon":-97.93,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"99238"},{"id":"2026-4662","n":"TCC 131539 - Blue Springs, MO","a":"1095 S 7 Hy","c":"Blue Springs","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":39.0,"lon":-94.27,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"131539"},{"id":"2026-1610","n":"Verizon 74653 - Wichita, KS","a":"620 S West St","c":"Wichita","s":"KS","cl":"Verizon","ch":"Verizon","p":100,"lat":37.687,"lon":-97.336,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"74653"},{"id":"2026-5167","n":"Russell 102759 - Bolivar, MO","a":"1855 S Springfield Ave Ste A","c":"Bolivar","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.614,"lon":-93.41,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"102759"},{"id":"2026-7587","n":"Cellular Sales 108862 - Bolivar, MO","a":"920 S Springfield Ave Ste B","c":"Bolivar","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":37.614,"lon":-93.41,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"108862"},{"id":"2026-1823","n":"Victra 97911 - Branson, MO","a":"1394A State Highway 248","c":"Branson","s":"MO","cl":"Victra","ch":"Verizon","p":100,"lat":36.644,"lon":-93.219,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Springfield / Ozarks","st":"On Hold","sv":0.9,"wo":"","site":"97911"},{"id":"2026-1820","n":"Verizon 74623 - Olathe, KS","a":"15239 W 119Th St Suite B2","c":"Olathe","s":"KS","cl":"Verizon","ch":"Verizon","p":100,"lat":38.92,"lon":-94.77,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"74623"},{"id":"2026-1862","n":"Verizon 74620 - Merriam, KS","a":"5828 Antioch Rd","c":"Merriam","s":"KS","cl":"Verizon","ch":"Verizon","p":100,"lat":39.024,"lon":-94.689,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"74620"},{"id":"2026-1896","n":"Verizon 99246 - Manhattan, KS","a":"100 E Bluemont Ave Suite H","c":"Manhattan","s":"KS","cl":"Verizon","ch":"Verizon","p":100,"lat":39.184,"lon":-96.572,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"N Central KS","st":"","sv":0.9,"wo":"","site":"99246"},{"id":"2026-4909","n":"Russell 99397 - Branson West, MO","a":"10866 Hwy 76 Ste 2","c":"Branson West","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":36.7,"lon":-93.36,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"99397"},{"id":"2026-4283","n":"Wireless Zone 140320 - Bridgeton, MO","a":"12001 Saint Charles Rock Rd Ste B","c":"Bridgeton","s":"MO","cl":"Wireless Zone","ch":"Verizon","p":100,"lat":38.753,"lon":-90.427,"o":10.0,"x":19.0,"v":0,"hs":"Wireless Zone brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"140320"},{"id":"2026-6607","n":"Russell 102763 - Buffalo, MO","a":"1124 S Ash Ste 4","c":"Buffalo","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.644,"lon":-93.093,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"102763"},{"id":"2026-4049","n":"Russell 131502 - Topeka, KS","a":"5515 SW 21St St Ste B","c":"Topeka","s":"KS","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":39.03,"lon":-95.76,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"NE KS Corridor","st":"","sv":0.9,"wo":"","site":"131502"},{"id":"2026-4084","n":"Victra 118418 - Wamego, KS","a":"1505 W Us Highway 24","c":"Wamego","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":39.202,"lon":-96.305,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"N Central KS","st":"","sv":0.9,"wo":"","site":"118418"},{"id":"2026-8299","n":"Russell 131754 - Butler, MO","a":"1009 W Fort Scott St","c":"Butler","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":38.259,"lon":-94.332,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"SW MO","st":"","sv":0.9,"wo":"","site":"131754"},{"id":"2026-6398","n":"Victra 120041 - Camdenton, MO","a":"985 E Us Highway 54","c":"Camdenton","s":"MO","cl":"Victra","ch":"Verizon","p":100,"lat":38.006,"lon":-92.745,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"120041"},{"id":"2026-4275","n":"TCC 139482 - Shawnee, KS","a":"16010 W 65Th St","c":"Shawnee","s":"KS","cl":"TCC","ch":"Verizon","p":100,"lat":39.018,"lon":-94.778,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"139482"},{"id":"2026-4318","n":"TCC 111911 - Cameron, MO","a":"1313 N Walnut","c":"Cameron","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":39.748,"lon":-94.242,"o":9.0,"x":18.0,"v":1,"hs":"TCC Cameron, tccrocks.com - CLOSES 18:00","r":"NW MO","st":"","sv":0.9,"wo":"","site":"111911"},{"id":"2026-8272","n":"Cellular Sales 112134 - Cape Girardeau, MO","a":"188 Vantage Dr Ste 300","c":"Cape Girardeau","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":37.306,"lon":-89.518,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"SE MO","st":"","sv":0.9,"wo":"","site":"112134"},{"id":"2026-4299","n":"Victra 131275 - Wichita, KS","a":"2684 N Greenwich Rd","c":"Wichita","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":37.687,"lon":-97.336,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"131275"},{"id":"2026-6322","n":"Russell 132204 - Carthage, MO","a":"100 W George E Phelps Blvd","c":"Carthage","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.177,"lon":-94.31,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"SW MO","st":"","sv":0.9,"wo":"","site":"132204"},{"id":"2026-4326","n":"Russell 122958 - Belleville, IL","a":"1915 Carlyle Ave Ste A","c":"Belleville","s":"IL","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":38.52,"lon":-89.984,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"122958"},{"id":"2026-4479","n":"Russell 131499 - Lansing, KS","a":"100 E Kansas St Ste A","c":"Lansing","s":"KS","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":39.245,"lon":-94.9,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"131499"},{"id":"2026-5511","n":"Russell 102761 - Cassville, MO","a":"401 Main Street Ste H","c":"Cassville","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":36.677,"lon":-93.869,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"SW MO","st":"","sv":0.9,"wo":"","site":"102761"},{"id":"2026-4522","n":"Russell 126883 - Osage City, KS","a":"523 Market St","c":"Osage City","s":"KS","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":38.634,"lon":-95.826,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"NE KS Corridor","st":"","sv":0.9,"wo":"","site":"126883"},{"id":"2026-5745","n":"Russell 132935 - Chesterfield, MO","a":"17164 Chesterfield Airport Rd","c":"Chesterfield","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":38.664,"lon":-90.547,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"132935"},{"id":"2026-5178","n":"TCC 117659 - Chillicothe, MO","a":"714 South Washington Street","c":"Chillicothe","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":39.793,"lon":-93.552,"o":10.0,"x":19.0,"v":1,"hs":"TCC Chillicothe, tccrocks.com","r":"NW MO","st":"","sv":0.9,"wo":"","site":"117659"},{"id":"2026-7761","n":"Cellular Sales 109286 - Clinton, MO","a":"1724 E Ohio St","c":"Clinton","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":38.369,"lon":-93.778,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"109286"},{"id":"2026-7513","n":"Cellular Sales 129114 - Columbia, MO","a":"1413 Grindstone Plaza Dr Ste 103","c":"Columbia","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":38.92,"lon":-92.29,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"129114"},{"id":"2026-8947","n":"Cellular Sales 142016 - Columbia, MO","a":"303 N Stadium Blvd Ste 101","c":"Columbia","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":38.956,"lon":-92.363,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"142016"},{"id":"2026-1728","n":"TCC 74634 - Creve Coeur, MO","a":"11493 Olive Blvd","c":"Creve Coeur","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":38.661,"lon":-90.423,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"St. Louis Metro","st":"On Hold","sv":0.9,"wo":"","site":"74634"},{"id":"2026-6970","n":"Wireless Zone 130500 - Desloge, MO","a":"405 N State St Ste B","c":"Desloge","s":"MO","cl":"Wireless Zone","ch":"Verizon","p":100,"lat":37.874,"lon":-90.522,"o":10.0,"x":19.0,"v":0,"hs":"Wireless Zone brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"130500"},{"id":"2026-5804","n":"Victra 117653 - Dexter, MO","a":"1311 W Business Us Highway 60","c":"Dexter","s":"MO","cl":"Victra","ch":"Verizon","p":100,"lat":36.796,"lon":-89.958,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"SE MO","st":"","sv":0.9,"wo":"","site":"117653"},{"id":"2026-7575","n":"Cellular Sales 127057 - Ellisville, MO","a":"29 Clarkson Rd","c":"Ellisville","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":38.5945,"lon":-90.573,"o":9.0,"x":19.0,"v":1,"hs":"Cellular Sales Ellisville, verizon.com","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"127057"},{"id":"2026-6931","n":"Wireless Zone 130880 - Excelsior Springs, MO","a":"122 Corum Rd","c":"Excelsior Springs","s":"MO","cl":"Wireless Zone","ch":"Verizon","p":100,"lat":39.33,"lon":-94.245,"o":10.0,"x":19.0,"v":0,"hs":"Wireless Zone brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"130880"},{"id":"2026-5006","n":"TCC 131771 - Farmington, MO","a":"555 W Karsch Blvd","c":"Farmington","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":37.781,"lon":-90.422,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"131771"},{"id":"2026-5092","n":"TCC 132065 - Lawrence, KS","a":"4651 Bauer Farm Dr","c":"Lawrence","s":"KS","cl":"TCC","ch":"Verizon","p":100,"lat":38.958,"lon":-95.248,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"NE KS Corridor","st":"","sv":0.9,"wo":"","site":"132065"},{"id":"2026-7681","n":"TCC 132937 - Fenton, MO","a":"160 Gravois Bluffs Cir","c":"Fenton","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":38.512,"lon":-90.436,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"132937"},{"id":"2026-8161","n":"TCC 126856 - Festus, MO","a":"1127 W Gannon Dr.","c":"Festus","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":38.227,"lon":-90.418,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"126856"},{"id":"2026-5444","n":"Russell 133314 - Florissant, MO","a":"3055 N Lindbergh Blvd","c":"Florissant","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":38.801,"lon":-90.34,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"133314"},{"id":"2026-8475","n":"TCC 138627 - Florissant, MO","a":"238 N Highway 67 St","c":"Florissant","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":38.802,"lon":-90.323,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"138627"},{"id":"2026-5350","n":"TCC 132525 - Leawood, KS","a":"5280 W 119Th St","c":"Leawood","s":"KS","cl":"TCC","ch":"Verizon","p":100,"lat":38.92,"lon":-94.644,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"132525"},{"id":"2026-5995","n":"TCC 139018 - Hannibal, MO","a":"3525 Stardust Dr","c":"Hannibal","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":39.708,"lon":-91.358,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"139018"},{"id":"2026-5640","n":"Russell 131503 - Harrisonville, MO","a":"650 S Commercial St","c":"Harrisonville","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":38.648,"lon":-94.348,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"131503"},{"id":"2026-5425","n":"Russell 103902 - Parsons, KS","a":"805 North 16Th","c":"Parsons","s":"KS","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.34,"lon":-95.261,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"SE KS","st":"","sv":0.9,"wo":"","site":"103902"},{"id":"2026-4952","n":"Russell 131971 - Higginsville, MO","a":"6676 S Highway 13","c":"Higginsville","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":39.072,"lon":-93.717,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"131971"},{"id":"2026-7036","n":"Russell 102765 - Houston, MO","a":"1215 S Sam Houston Blvd Ste C","c":"Houston","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.326,"lon":-91.956,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"102765"},{"id":"2026-4278","n":"Wireless Zone 131968 - Independence, MO","a":"3901 S Bolger Rd Unit C","c":"Independence","s":"MO","cl":"Wireless Zone","ch":"Verizon","p":100,"lat":39.03,"lon":-94.39,"o":10.0,"x":19.0,"v":0,"hs":"Wireless Zone brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"131968"},{"id":"2026-5487","n":"TCC 139598 - Belleville, IL","a":"5630 Belleville Crossing St","c":"Belleville","s":"IL","cl":"TCC","ch":"Verizon","p":100,"lat":38.52,"lon":-89.984,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"139598"},{"id":"2026-6674","n":"Cellular Sales 98172 - Independence, MO","a":"2560 South State Route 291","c":"Independence","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":39.05,"lon":-94.41,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"98172"},{"id":"2026-5565","n":"TCC 131969 - Overland Park, KS","a":"8061 W 159Th St","c":"Overland Park","s":"KS","cl":"TCC","ch":"Verizon","p":100,"lat":38.811,"lon":-94.701,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"131969"},{"id":"2026-5597","n":"Russell 127860 - Paola, KS","a":"313 Angela Street","c":"Paola","s":"KS","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":38.576,"lon":-94.86,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"127860"},{"id":"2026-9269","n":"Valvoline - Jefferson City, MO","a":"3739 W Truman Boulevard","c":"Jefferson City","s":"MO","cl":"Valvoline","ch":"Bureau Veritas","p":650,"lat":38.577,"lon":-92.173,"o":7.0,"x":19.0,"v":0,"hs":"Valvoline brand default","r":"Central MO","st":"Postponed","sv":1.5,"wo":"","site":""},{"id":"2026-5683","n":"Russell 127685 - Chanute, KS","a":"2611 S Santa Fe Ave","c":"Chanute","s":"KS","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.679,"lon":-95.457,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"SE KS","st":"","sv":0.9,"wo":"","site":"127685"},{"id":"2026-5694","n":"TCC 132225 - Olathe, KS","a":"14325 W 135Th St","c":"Olathe","s":"KS","cl":"TCC","ch":"Verizon","p":100,"lat":38.883,"lon":-94.753,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"132225"},{"id":"2026-9270","n":"Valvoline - Jefferson City, MO","a":"1510 Missouri Boulevard","c":"Jefferson City","s":"MO","cl":"Valvoline","ch":"Bureau Veritas","p":650,"lat":38.577,"lon":-92.173,"o":7.0,"x":19.0,"v":0,"hs":"Valvoline brand default","r":"Central MO","st":"Postponed","sv":1.5,"wo":"","site":""},{"id":"2026-9271","n":"Valvoline - Jefferson City, MO","a":"2711 W Edgewood Drive","c":"Jefferson City","s":"MO","cl":"Valvoline","ch":"Bureau Veritas","p":650,"lat":38.577,"lon":-92.173,"o":7.0,"x":19.0,"v":0,"hs":"Valvoline brand default","r":"Central MO","st":"Postponed","sv":1.5,"wo":"","site":""},{"id":"2026-6557","n":"Cellular Sales 104252 - Jefferson City, MO","a":"2015 Missouri Blvd","c":"Jefferson City","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":38.577,"lon":-92.173,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"104252"},{"id":"2026-7338","n":"Russell 130835 - Joplin, MO","a":"11570 Highway Ff","c":"Joplin","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.084,"lon":-94.513,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"SW MO","st":"","sv":0.9,"wo":"","site":"130835"},{"id":"2026-8119","n":"Cellular Sales 131752 - Joplin, MO","a":"3405 S Range Line Rd","c":"Joplin","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":37.084,"lon":-94.513,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"SW MO","st":"","sv":0.9,"wo":"","site":"131752"},{"id":"2026-0726","n":"Verizon 74615 - Joplin, MO","a":"111 N Range Line Rd","c":"Joplin","s":"MO","cl":"Verizon","ch":"Verizon","p":100,"lat":37.084,"lon":-94.513,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"SW MO","st":"","sv":0.9,"wo":"","site":"74615"},{"id":"2026-1388","n":"Verizon 84120 - Kansas City, MO","a":"8501 N Church Rd","c":"Kansas City","s":"MO","cl":"Verizon","ch":"Verizon","p":100,"lat":39.253,"lon":-94.514,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"84120"},{"id":"2026-5933","n":"Victra 118412 - Concordia, KS","a":"1578 Lincoln St","c":"Concordia","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":39.571,"lon":-97.662,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"N Central KS","st":"","sv":0.9,"wo":"","site":"118412"},{"id":"2026-1668","n":"Verizon 74624 - Kansas City, MO","a":"8600 Ward Pky Suite 2150","c":"Kansas City","s":"MO","cl":"Verizon","ch":"Verizon","p":100,"lat":39.008,"lon":-94.599,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"74624"},{"id":"2026-1752","n":"Verizon 74619 - Kansas City, MO","a":"6505 NW Barry Rd","c":"Kansas City","s":"MO","cl":"Verizon","ch":"Verizon","p":100,"lat":39.247,"lon":-94.64,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"74619"},{"id":"2026-5976","n":"Victra 118416 - Newton, KS","a":"1400 S Kansas Ave","c":"Newton","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":38.047,"lon":-97.345,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"118416"},{"id":"2026-4963","n":"TCC 131329 - Kansas City, MO","a":"4153 Sterling Ave","c":"Kansas City","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":39.09,"lon":-94.49,"o":10.0,"x":19.0,"v":1,"hs":"TCC Sterling Ave KC, tccrocks.com","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"131329"},{"id":"2026-7412","n":"Russell 131500 - Kansas City, MO","a":"3385 Main St","c":"Kansas City","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":39.07,"lon":-94.586,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"131500"},{"id":"2026-6188","n":"Victra 139359 - Coffeyville, KS","a":"909 W 11Th St Ste D","c":"Coffeyville","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":37.037,"lon":-95.616,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"SE KS","st":"","sv":0.9,"wo":"","site":"139359"},{"id":"2026-7476","n":"Cellular Sales 132850 - Kansas City, MO","a":"9360 N Oak Trfy","c":"Kansas City","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":39.262,"lon":-94.576,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"132850"},{"id":"2026-8248","n":"Cellular Sales 94157 - Kansas City, MO","a":"5170 N Oak Trfy","c":"Kansas City","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":39.19,"lon":-94.572,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"94157"},{"id":"2026-5740","n":"Wireless Zone 127965 - Kearney, MO","a":"408 W 6Th St","c":"Kearney","s":"MO","cl":"Wireless Zone","ch":"Verizon","p":100,"lat":39.367,"lon":-94.365,"o":10.0,"x":19.0,"v":0,"hs":"Wireless Zone brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"127965"},{"id":"2026-5952","n":"TCC 104086 - Kirksville, MO","a":"2202 1/2 N Baltimore St","c":"Kirksville","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":40.205,"lon":-92.583,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"104086"},{"id":"2026-1430","n":"TCC 74639 - Kirkwood, MO","a":"1050 S Kirkwood Rd Unit C","c":"Kirkwood","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":38.583,"lon":-90.407,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"St. Louis Metro","st":"On Hold","sv":0.9,"wo":"","site":"74639"},{"id":"2026-4971","n":"TCC 138979 - Lake Saint Louis, MO","a":"6107 Ronald Reagan Dr Unit 1","c":"Lake Saint Louis","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":38.797,"lon":-90.786,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"138979"},{"id":"2026-1546","n":"TCC 99252 - Lebanon, MO","a":"809 S Jefferson Ave","c":"Lebanon","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":37.681,"lon":-92.664,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"Springfield / Ozarks","st":"On Hold","sv":0.9,"wo":"","site":"99252"},{"id":"2026-1803","n":"Verizon 74625 - Lees Summit, MO","a":"1706 NW Chipman Rd","c":"Lees Summit","s":"MO","cl":"Verizon","ch":"Verizon","p":100,"lat":38.926,"lon":-94.39,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"74625"},{"id":"2026-6638","n":"Victra 118417 - Pratt, KS","a":"103 S Parke St","c":"Pratt","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":37.644,"lon":-98.737,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"118417"},{"id":"2026-5264","n":"TCC 82079 - Marshall, MO","a":"941 Cherokee Dr Ste 3","c":"Marshall","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":39.115,"lon":-93.21,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"82079"},{"id":"2026-6230","n":"Victra 120034 - Marshfield, MO","a":"1350 Spur Dr Ste 270","c":"Marshfield","s":"MO","cl":"Victra","ch":"Verizon","p":100,"lat":37.339,"lon":-92.907,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"120034"},{"id":"2026-6736","n":"Wireless Zone 107598 - Gardner, KS","a":"335 N Moonlight Road","c":"Gardner","s":"KS","cl":"Wireless Zone","ch":"Verizon","p":100,"lat":38.82,"lon":-94.926,"o":10.0,"x":19.0,"v":0,"hs":"Wireless Zone brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"107598"},{"id":"2026-6830","n":"Cellular Sales 128653 - Liberal, KS","a":"2552 N Kansas Ave","c":"Liberal","s":"KS","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":37.043,"lon":-100.921,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"West KS","st":"","sv":0.9,"wo":"","site":"128653"},{"id":"2026-5866","n":"TCC 138266 - Maryville, MO","a":"1218 S Main St","c":"Maryville","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":40.335,"lon":-94.872,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"NW MO","st":"","sv":0.9,"wo":"","site":"138266"},{"id":"2026-6911","n":"Victra 118415 - Manhattan, KS","a":"319 Southwind Pl","c":"Manhattan","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":39.184,"lon":-96.572,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"N Central KS","st":"","sv":0.9,"wo":"","site":"118415"},{"id":"2026-5479","n":"TCC 133817 - Moberly, MO","a":"1320 E Highway 24 Ste J-K","c":"Moberly","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":39.418,"lon":-92.42,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"133817"},{"id":"2026-6488","n":"Russell 125427 - Monett, MO","a":"864 E. Highway 60","c":"Monett","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":36.929,"lon":-93.928,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"SW MO","st":"","sv":0.9,"wo":"","site":"125427"},{"id":"2026-6997","n":"Russell 131498 - Olathe, KS","a":"287 N K 7 Hwy","c":"Olathe","s":"KS","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":38.89,"lon":-94.877,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"131498"},{"id":"2026-5941","n":"Russell 102757 - Mountain Grove, MO","a":"100 West 17Th St Ste B","c":"Mountain Grove","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.131,"lon":-92.263,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"102757"},{"id":"2026-7301","n":"Russell 106954 - Neosho, MO","a":"3101 Lusk Drive Ste 111","c":"Neosho","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":36.869,"lon":-94.368,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"SW MO","st":"","sv":0.9,"wo":"","site":"106954"},{"id":"2026-7106","n":"Victra 118409 - El Dorado, KS","a":"2401 W Central Ave Ste D","c":"El Dorado","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":37.817,"lon":-96.862,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"118409"},{"id":"2026-7142","n":"Cellular Sales 104072 - Nevada, MO","a":"400 S Johnson Dr Ste A","c":"Nevada","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":37.839,"lon":-94.355,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"SW MO","st":"","sv":0.9,"wo":"","site":"104072"},{"id":"2026-7264","n":"Russell 110986 - Independence, KS","a":"106 Peter Pan Rd","c":"Independence","s":"KS","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.224,"lon":-95.708,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"SE KS","st":"","sv":0.9,"wo":"","site":"110986"},{"id":"2026-8706","n":"Victra 120036 - Nixa, MO","a":"316 N Massey Blvd","c":"Nixa","s":"MO","cl":"Victra","ch":"Verizon","p":100,"lat":37.044,"lon":-93.294,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"120036"},{"id":"2026-1229","n":"TCC 74622 - O Fallon, MO","a":"1318 Highway K","c":"O Fallon","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":38.811,"lon":-90.7,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"St. Louis Metro","st":"On Hold","sv":0.9,"wo":"","site":"74622"},{"id":"2026-7013","n":"TCC 142708 - Olivette, MO","a":"9091 Olive Blvd","c":"Olivette","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":38.672,"lon":-90.369,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"142708"},{"id":"2026-8597","n":"Cellular Sales 109287 - Osage Beach, MO","a":"3825 Highway 54","c":"Osage Beach","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":38.15,"lon":-92.618,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"109287"},{"id":"2026-7439","n":"Cellular Sales 107893 - Pittsburg, KS","a":"2826 N Broadway St","c":"Pittsburg","s":"KS","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":37.411,"lon":-94.704,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"SE KS","st":"","sv":0.9,"wo":"","site":"107893"},{"id":"2026-4041","n":"Victra 120039 - Ozark, MO","a":"1960 W Retail Ln","c":"Ozark","s":"MO","cl":"Victra","ch":"Verizon","p":100,"lat":37.021,"lon":-93.206,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"120039"},{"id":"2026-8316","n":"Cellular Sales 132731 - Parkville, MO","a":"9008 NW 45 Hwy Ste 100","c":"Parkville","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":39.2,"lon":-94.71,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"132731"},{"id":"2026-5855","n":"Russell 126595 - Perryville, MO","a":"1418 W St Joseph Street Ste 10","c":"Perryville","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.724,"lon":-89.861,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"SE MO","st":"","sv":0.9,"wo":"","site":"126595"},{"id":"2026-4493","n":"Wireless Zone 108872 - Platte City, MO","a":"1098 Branch St","c":"Platte City","s":"MO","cl":"Wireless Zone","ch":"Verizon","p":100,"lat":39.37,"lon":-94.78,"o":10.0,"x":19.0,"v":0,"hs":"Wireless Zone brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"108872"},{"id":"2026-8820","n":"Victra 119821 - Poplar Bluff, MO","a":"1339 N Westwood Blvd","c":"Poplar Bluff","s":"MO","cl":"Victra","ch":"Verizon","p":100,"lat":36.757,"lon":-90.393,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"SE MO","st":"","sv":0.9,"wo":"","site":"119821"},{"id":"2026-4622","n":"Wireless Zone 129483 - Potosi, MO","a":"828 E High St","c":"Potosi","s":"MO","cl":"Wireless Zone","ch":"Verizon","p":100,"lat":37.936,"lon":-90.788,"o":10.0,"x":19.0,"v":0,"hs":"Wireless Zone brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"129483"},{"id":"2026-7702","n":"Russell 111283 - Wellington, KS","a":"500 E 16Th Street","c":"Wellington","s":"KS","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.265,"lon":-97.396,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"111283"},{"id":"2026-7727","n":"Cellular Sales 128650 - Great Bend, KS","a":"3407 10Th St Ste A","c":"Great Bend","s":"KS","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":38.364,"lon":-98.765,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"West KS","st":"","sv":0.9,"wo":"","site":"128650"},{"id":"2026-4178","n":"Russell 102767 - Republic, MO","a":"1314 E Independence St","c":"Republic","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.12,"lon":-93.481,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"102767"},{"id":"2026-7860","n":"Cellular Sales 128652 - Dodge City, KS","a":"507 N 14Th Ave Ste C","c":"Dodge City","s":"KS","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":37.753,"lon":-100.017,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"West KS","st":"","sv":0.9,"wo":"","site":"128652"},{"id":"2026-1249","n":"Verizon 74631 - Richmond Heights, MO","a":"1030 S Brentwood Blvd","c":"Richmond Heights","s":"MO","cl":"Verizon","ch":"Verizon","p":100,"lat":38.628,"lon":-90.333,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"74631"},{"id":"2026-7953","n":"Cellular Sales 126442 - Wichita, KS","a":"5611 E Harry St","c":"Wichita","s":"KS","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":37.687,"lon":-97.336,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"126442"},{"id":"2026-7954","n":"Victra 107415 - Andover, KS","a":"229 N Andover Rd Ste 100","c":"Andover","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":37.713,"lon":-97.135,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"107415"},{"id":"2026-7983","n":"Victra 106868 - Mcpherson, KS","a":"1344 N Main St","c":"Mcpherson","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":38.371,"lon":-97.664,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"106868"},{"id":"2026-4866","n":"Russell 138161 - Rogersville, MO","a":"103 Johnstown Dr","c":"Rogersville","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.117,"lon":-93.056,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"138161"},{"id":"2026-8011","n":"Cellular Sales 106728 - Ottawa, KS","a":"1518 S Main St","c":"Ottawa","s":"KS","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":38.616,"lon":-95.267,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"NE KS Corridor","st":"","sv":0.9,"wo":"","site":"106728"},{"id":"2026-8093","n":"Victra 109861 - Salina, KS","a":"1200 E Crawford St Ste A","c":"Salina","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":38.84,"lon":-97.611,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"N Central KS","st":"","sv":0.9,"wo":"","site":"109861"},{"id":"2026-4877","n":"TCC 122172 - Rolla, MO","a":"201 S Bishop Ave Ste A","c":"Rolla","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":37.952,"lon":-91.771,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"122172"},{"id":"2026-8145","n":"Cellular Sales 108863 - Winfield, KS","a":"2126 Main St","c":"Winfield","s":"KS","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":37.24,"lon":-96.996,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"108863"},{"id":"2026-8443","n":"Cellular Sales 107255 - Saint Joseph, MO","a":"904 N Belt Hwy","c":"Saint Joseph","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":39.773,"lon":-94.818,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"NW MO","st":"","sv":0.9,"wo":"","site":"107255"},{"id":"2026-8172","n":"Victra 94784 - Wichita, KS","a":"311 S Maize Rd","c":"Wichita","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":37.687,"lon":-97.336,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"94784"},{"id":"2026-8197","n":"Cellular Sales 127808 - Wichita, KS","a":"2037 N. Amidon Ave","c":"Wichita","s":"KS","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":37.687,"lon":-97.336,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"127808"},{"id":"2026-6046","n":"TCC 128669 - Saint Louis, MO","a":"4008 Lemay Ferry Rd","c":"Saint Louis","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":38.523,"lon":-90.32,"o":10.0,"x":19.0,"v":1,"hs":"TCC Lemay Ferry, tccrocks.com","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"128669"},{"id":"2026-7464","n":"Wireless Zone 117823 - Saint Louis, MO","a":"4428 Telegraph Road Ste C","c":"Saint Louis","s":"MO","cl":"Wireless Zone","ch":"Verizon","p":100,"lat":38.481,"lon":-90.311,"o":10.0,"x":19.0,"v":0,"hs":"Wireless Zone brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"117823"},{"id":"2026-8213","n":"Russell 129647 - Saint Louis, MO","a":"4647 Chippewa Street","c":"Saint Louis","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":38.596,"lon":-90.286,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"129647"},{"id":"2026-6382","n":"Cellular Sales 119217 - Saint Peters, MO","a":"3971 Veterans Memorial Pkwy Ste 840","c":"Saint Peters","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":38.783,"lon":-90.607,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"119217"},{"id":"2026-1241","n":"TCC 85143 - Saint Peters, MO","a":"330 Mid Rivers Ctr","c":"Saint Peters","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":38.787,"lon":-90.626,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"St. Louis Metro","st":"On Hold","sv":0.9,"wo":"","site":"85143"},{"id":"2026-8317","n":"Victra 138836 - Park City, KS","a":"1510 E 61St St N","c":"Park City","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":37.799,"lon":-97.319,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"138836"},{"id":"2026-4576","n":"TCC 119743 - Saint Robert, MO","a":"658 Missouri Ave Ste 6","c":"Saint Robert","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":37.828,"lon":-92.176,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"119743"},{"id":"2026-8338","n":"Cellular Sales 108860 - Iola, KS","a":"621 N State St","c":"Iola","s":"KS","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":37.925,"lon":-95.4,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"SE KS","st":"","sv":0.9,"wo":"","site":"108860"},{"id":"2026-8402","n":"Victra 119955 - Hays, KS","a":"4325 Vine St","c":"Hays","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":38.879,"lon":-99.327,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"West KS","st":"","sv":0.9,"wo":"","site":"119955"},{"id":"2026-8406","n":"Russell 126712 - Fort Scott, KS","a":"2001 S Main St","c":"Fort Scott","s":"KS","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.84,"lon":-94.708,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"SE KS","st":"","sv":0.9,"wo":"","site":"126712"},{"id":"2026-5393","n":"TCC 107303 - Sedalia, MO","a":"1000 S Limit Ave","c":"Sedalia","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":38.704,"lon":-93.228,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"107303"},{"id":"2026-1173","n":"Verizon 91883 - Springfield, MO","a":"1286 E Battlefield St","c":"Springfield","s":"MO","cl":"Verizon","ch":"Verizon","p":100,"lat":37.209,"lon":-93.292,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"91883"},{"id":"2026-4135","n":"Russell 131781 - Springfield, MO","a":"3800 W Sunshine St Ste 112","c":"Springfield","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.209,"lon":-93.292,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"131781"},{"id":"2026-4815","n":"Victra 94085 - Springfield, MO","a":"3405 E Battlefield St Ste 132","c":"Springfield","s":"MO","cl":"Victra","ch":"Verizon","p":100,"lat":37.209,"lon":-93.292,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"94085"},{"id":"2026-7930","n":"Russell 102762 - Springfield, MO","a":"3121 East Sunshine","c":"Springfield","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.209,"lon":-93.292,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"102762"},{"id":"2026-8633","n":"Cellular Sales 128651 - Hays, KS","a":"1711 Vine St","c":"Hays","s":"KS","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":38.879,"lon":-99.327,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"West KS","st":"","sv":0.9,"wo":"","site":"128651"},{"id":"2026-8634","n":"Victra 118411 - Clay Center, KS","a":"501 Court St","c":"Clay Center","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":39.377,"lon":-97.125,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"N Central KS","st":"","sv":0.9,"wo":"","site":"118411"},{"id":"2026-8651","n":"Cellular Sales 133245 - Lenexa, KS","a":"16171 W 87Th St","c":"Lenexa","s":"KS","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":38.974,"lon":-94.78,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"KC Metro","st":"","sv":0.9,"wo":"","site":"133245"},{"id":"2026-8652","n":"Victra 122254 - Marysville, KS","a":"1075 Pony Express Hwy","c":"Marysville","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":39.841,"lon":-96.647,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"N Central KS","st":"","sv":0.9,"wo":"","site":"122254"},{"id":"2026-7988","n":"Russell 102766 - Springfield, MO","a":"1645 W Republic Road Ste A","c":"Springfield","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.209,"lon":-93.292,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"102766"},{"id":"2026-8804","n":"Victra 118410 - Abilene, KS","a":"202 NW 2Nd Street","c":"Abilene","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":38.917,"lon":-97.214,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"N Central KS","st":"","sv":0.9,"wo":"","site":"118410"},{"id":"2026-8321","n":"Russell 131927 - Springfield, MO","a":"4939 W Chestnut Expressway","c":"Springfield","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.209,"lon":-93.292,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"131927"},{"id":"2026-8835","n":"Cellular Sales 129021 - Wichita, KS","a":"4819 S Washington Ave","c":"Wichita","s":"KS","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":37.687,"lon":-97.336,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"Wichita / S Central KS","st":"","sv":0.9,"wo":"","site":"129021"},{"id":"2026-8888","n":"Cellular Sales 121991 - Emporia, KS","a":"2210 Industrial Rd","c":"Emporia","s":"KS","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":38.404,"lon":-96.181,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"NE KS Corridor","st":"","sv":0.9,"wo":"","site":"121991"},{"id":"2026-1616","n":"Victra 97909 - Springfield, MO","a":"2645 N Kansas Expy Suite 100","c":"Springfield","s":"MO","cl":"Victra","ch":"Verizon","p":100,"lat":37.209,"lon":-93.292,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Springfield / Ozarks","st":"On Hold","sv":0.9,"wo":"","site":"97909"},{"id":"2026-8981","n":"Cellular Sales 132918 - Garden City, KS","a":"3010 E Kansas Ave","c":"Garden City","s":"KS","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":37.972,"lon":-100.872,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"West KS","st":"","sv":0.9,"wo":"","site":"132918"},{"id":"2026-0747","n":"TCC 74630 - Lawrence, KS","a":"2301 Iowa St","c":"Lawrence","s":"KS","cl":"TCC","ch":"Verizon","p":100,"lat":38.958,"lon":-95.248,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"NE KS Corridor","st":"On Hold","sv":0.9,"wo":"","site":"74630"},{"id":"2026-1224","n":"Victra 99241 - Junction City, KS","a":"613 E Chestnut St","c":"Junction City","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":39.029,"lon":-96.831,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"N Central KS","st":"On Hold","sv":0.9,"wo":"","site":"99241"},{"id":"2026-7375","n":"Russell 102768 - Stockton, MO","a":"1201 S Ward St Ste C","c":"Stockton","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":37.699,"lon":-93.796,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"102768"},{"id":"2026-1237","n":"Victra 94596 - Derby, KS","a":"2100 N Rock Rd Suite 100","c":"Derby","s":"KS","cl":"Victra","ch":"Verizon","p":100,"lat":37.545,"lon":-97.268,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Wichita / S Central KS","st":"On Hold","sv":0.9,"wo":"","site":"94596"},{"id":"2026-6841","n":"Russell 131454 - Sullivan, MO","a":"825 Highway Af","c":"Sullivan","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":38.208,"lon":-91.161,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"131454"},{"id":"2026-5221","n":"TCC 123693 - Troy, MO","a":"143 N Lincoln Drive","c":"Troy","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":38.979,"lon":-90.981,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"123693"},{"id":"2026-5436","n":"TCC 82080 - Warrensburg, MO","a":"800 N Maguire St Ste B","c":"Warrensburg","s":"MO","cl":"TCC","ch":"Verizon","p":100,"lat":38.763,"lon":-93.736,"o":10.0,"x":19.0,"v":0,"hs":"TCC brand default","r":"Central MO","st":"","sv":0.9,"wo":"","site":"82080"},{"id":"2026-6238","n":"Russell 109038 - Washington, MO","a":"3000 Phoenix Center Drive","c":"Washington","s":"MO","cl":"Russell Cellular","ch":"Verizon","p":100,"lat":38.558,"lon":-91.012,"o":9.0,"x":19.0,"v":0,"hs":"Russell Cellular brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"109038"},{"id":"2026-1916","n":"Verizon 101483 - Wentzville, MO","a":"1859 Wentzville Pkwy","c":"Wentzville","s":"MO","cl":"Verizon","ch":"Verizon","p":100,"lat":38.818,"lon":-90.857,"o":10.0,"x":20.0,"v":0,"hs":"Verizon brand default","r":"St. Louis Metro","st":"","sv":0.9,"wo":"","site":"101483"},{"id":"2026-8615","n":"Cellular Sales 108861 - West Plains, MO","a":"1006 Worley Drive","c":"West Plains","s":"MO","cl":"Cellular Sales of Knoxville","ch":"Verizon","p":100,"lat":36.728,"lon":-91.852,"o":9.0,"x":19.0,"v":0,"hs":"Cellular Sales of Knoxville brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"108861"},{"id":"2026-9334","n":"Target 217 - Lincoln, NE","a":"333 N 48th St","c":"Lincoln","s":"NE","cl":"Target","ch":"Target","p":3000,"lat":40.809,"lon":-96.675,"o":8.0,"x":22.0,"v":0,"hs":"Target brand default","r":"Nebraska","st":"","sv":5.0,"wo":"","site":"68504"},{"id":"2026-9433","n":"Valvoline - Ellisville, MO","a":"15849 Manchester Rd","c":"Ellisville","s":"MO","cl":"Valvoline","ch":"","p":750,"lat":38.5905,"lon":-90.591,"o":7.0,"x":19.0,"v":1,"hs":"VIOC Ellisville, store.vioc.com","r":"St. Louis Metro","st":"","sv":1.5,"wo":"","site":""},{"id":"2026-8541","n":"Victra 120033 - Willard, MO","a":"500 South Miller Road Ste E","c":"Willard","s":"MO","cl":"Victra","ch":"Verizon","p":100,"lat":37.307,"lon":-93.428,"o":10.0,"x":19.0,"v":0,"hs":"Victra brand default","r":"Springfield / Ozarks","st":"","sv":0.9,"wo":"","site":"120033"},{"id":"2026-3933","n":"Old Navy 5738 - Sunset Hills, MO","a":"10940 Sunset Hills Plaza","c":"Sunset Hills","s":"MO","cl":"Old Navy","ch":"Gap","p":300,"lat":38.534,"lon":-90.411,"o":10.0,"x":20.0,"v":1,"hs":"Old Navy 5738, oldnavy.gap.com","r":"St. Louis Metro","st":"Confirmed with Store","sv":2.0,"wo":"351204789","site":"5738"}],"base":[38.98,-94.69],"columbia":[38.94,-92.328]};
+
+const J=DATA.jobs, BASE=DATA.base, COL=DATA.columbia;
+const BY={}; J.forEach(j=>BY[j.id]=j);
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const fmt=n=>'$'+Math.round(n).toLocaleString();
+const escHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+const hhmm=t=>{let m=Math.round(t*60);m=((m%1440)+1440)%1440;
+  return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
+const formatDuration=ms=>{const total=Math.max(0,Math.round(ms/1000)); const h=Math.floor(total/3600); const m=Math.floor((total%3600)/60); const s=total%60; return [h,m,s].map(v=>String(v).padStart(2,'0')).join(':');};
+const R=3958.8, ROAD=1.22;
+function mi(a,b){const dla=(b[0]-a[0])*Math.PI/180,dlo=(b[1]-a[1])*Math.PI/180,
+  l1=a[0]*Math.PI/180,l2=b[0]*Math.PI/180;
+  const h=Math.sin(dla/2)**2+Math.cos(l1)*Math.cos(l2)*Math.sin(dlo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h))*ROAD}
+const LL=j=>[j.lat,j.lon];
+const drive=m=>m>20?m/50:m/28;
+const HOLD=j=>j.st==='On Hold'||j.st==='Postponed';
+const PLACES={home:{name:'Home — Overland Park KS',ll:BASE},liberty:{name:'Liberty MO',ll:[39.2460,-94.4190]},
+  columbia:{name:'Columbia MO — dorm',ll:COL}};
+
+let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},here:{key:'home',time:8},nav:'now'};
+const svc=j=>(S.sv&&S.sv[j.id]!==undefined)?S.sv[j.id]:j.sv;
+const stat=id=>S.status[id]||'todo';
+const done=id=>stat(id)!=='todo';
+function jobTimerState(id){const rec=S.timers&&S.timers[id]; if(!rec)return{elapsedMs:0,running:false,label:'00:00:00'}; const elapsedMs=(rec.elapsedMs||0)+(rec.startedAt?Date.now()-rec.startedAt:0); return{elapsedMs,running:!!rec.startedAt,label:formatDuration(elapsedMs)};}
+function jobNoteText(id){return String(S.notes&&S.notes[id]||'').trim();}
+function jobTooltip(id){const note=jobNoteText(id); const t=jobTimerState(id); const bits=[]; if(note)bits.push('Note: '+note); bits.push(t.running?'Timer: '+t.label+' (running)':'Timer: '+t.label); return bits.join(' | ');}
+function toggleTimer(id){const rec=S.timers[id]||{elapsedMs:0}; if(rec.startedAt){ rec.elapsedMs=(rec.elapsedMs||0)+Date.now()-rec.startedAt; delete rec.startedAt; } else { rec.startedAt=Date.now(); } S.timers[id]=rec; return rec;}
+function resetTimer(id){delete S.timers[id];}
+function blankDay(date){return{id:'d'+Math.random().toString(36).slice(2,8),date:date||'',
+  startKey:'home',startTime:8,endKey:'home',ids:[]}}
+function placeLL(k){if(k==='gps'&&S.here.ll)return S.here.ll;
+  if(k&&k.startsWith('job:')){const j=BY[k.slice(4)];return j?LL(j):BASE}
+  return (PLACES[k]||PLACES.home).ll}
+function placeName(k){if(k==='gps')return 'Current location (GPS)';
+  if(k&&k.startsWith('job:')){const j=BY[k.slice(4)];return j?j.c+', '+j.s:'?'}
+  return (PLACES[k]||PLACES.home).name}
+function seed(){
+  S.sv={'2026-9221':0.5};
+  S.days=[
+   Object.assign(blankDay('2026-08-24'),{startKey:'liberty',startTime:12,endKey:'columbia',
+     ids:['2026-4493','2026-9221','2026-8443','2026-5740','2026-6931']}),
+   Object.assign(blankDay('2026-08-25'),{startKey:'columbia',startTime:5,endKey:'home',
+     ids:['2026-9433','2026-7575','2026-5401','2026-3933','2026-7681','2026-4971','2026-1916']}),
+   Object.assign(blankDay('2026-08-26'),{startTime:12,
+     ids:['2026-4275','2026-3136','2026-1862','2026-7412','2026-1668']}),
+   Object.assign(blankDay('2026-08-27'),{startTime:8,
+     ids:['2026-3842','2026-5350','2026-0944','2026-1820','2026-1001']}),
+   Object.assign(blankDay('2026-08-28'),{startTime:6,ids:['2026-9334']})];
+  S.days.forEach(d=>d.ids.forEach(i=>S.loaded[i]=1));
+  delete S.loaded['2026-3933'];   // Sunset Hills came in on 8/24 — not in the app yet
+  S.active=0;
+}
+/* ---------- core simulator ---------- */
+function simulate(d){
+  let cur=placeLL(d.startKey), t=d.startTime, miles=0, rows=[], svcTot=0, drv=0;
+  d.ids.forEach(id=>{const j=BY[id]; if(!j)return;
+    const m=mi(cur,LL(j)), h=drive(m); t+=h; miles+=m; drv+=h;
+    const wait=Math.max(0,j.o-t); t+=wait;
+    const arr=t, fin=t+svc(j);
+    rows.push({id,arr,fin,leg:m,wait,late:fin>j.x});
+    svcTot+=svc(j); t=fin; cur=LL(j)});
+  const tail=d.ids.length?mi(cur,placeLL(d.endKey)):0;
+  drv+=drive(tail); miles+=tail; t+=drive(tail);
+  return {rows,tail,end:t,miles,drv,svc:svcTot,
+    pay:d.ids.reduce((a,id)=>a+(BY[id]?BY[id].p:0),0),
+    span:t-d.startTime, bad:rows.filter(r=>r.late).length};
+}
+function score(d,seq){const s=simulate({...d,ids:seq});return{bad:s.bad,span:s.span,miles:s.miles}}
+function better(a,b){if(a.bad!==b.bad)return a.bad<b.bad;
+  if(Math.abs(a.span-b.span)>0.02)return a.span<b.span;return a.miles<b.miles-0.5}
+function nnTwoOpt(d,ids){
+  const pts=ids.map(i=>LL(BY[i])), s=placeLL(d.startKey), e=placeLL(d.endKey);
+  let un=ids.map((_,i)=>i),order=[],cur=s;
+  while(un.length){let b=0;for(let k=1;k<un.length;k++)if(mi(cur,pts[un[k]])<mi(cur,pts[un[b]]))b=k;
+    order.push(un[b]);cur=pts[un[b]];un.splice(b,1)}
+  const L=o=>{let t=mi(s,pts[o[0]]);for(let i=0;i<o.length-1;i++)t+=mi(pts[o[i]],pts[o[i+1]]);return t+mi(pts[o[o.length-1]],e)};
+  let imp=true,g=0;
+  while(imp&&g++<60){imp=false;
+    for(let i=0;i<order.length-1;i++)for(let k=i+1;k<order.length;k++){
+      const nw=order.slice(0,i).concat(order.slice(i,k+1).reverse(),order.slice(k+1));
+      if(L(nw)<L(order)-1e-9){order=nw;imp=true}}}
+  return order.map(i=>ids[i]);
+}
+function polish(d,seq){let cur=seq.slice(),cs=score(d,cur),g=0;
+  while(g++<80){let bs=null,bc=cs;
+    for(let i=0;i<cur.length;i++){
+      for(let p=0;p<cur.length;p++){if(p===i)continue;
+        const t=cur.slice();const[x]=t.splice(i,1);t.splice(p,0,x);
+        const sc=score(d,t);if(better(sc,bc)){bc=sc;bs=t}}
+      for(let k=i+1;k<cur.length;k++){const t=cur.slice();[t[i],t[k]]=[t[k],t[i]];
+        const sc=score(d,t);if(better(sc,bc)){bc=sc;bs=t}}}
+    if(!bs)break;cur=bs;cs=bc}
+  return{seq:cur,sc:cs}}
+function autoOrder(d){const ids=[...d.ids];if(ids.length<2)return ids;
+  const seeds=[ids,nnTwoOpt(d,ids),ids.slice().sort((a,b)=>BY[a].o-BY[b].o||BY[a].x-BY[b].x)];
+  let win=null;seeds.forEach(sd=>{const r=polish(d,sd);if(!win||better(r.sc,win.sc))win=r});
+  return win.seq}
+/* ---------- assignment helpers ---------- */
+function assigned(){const m={};S.days.forEach((d,i)=>d.ids.forEach(id=>m[id]=i));return m}
+function unscheduled(){const a=assigned();
+  return J.filter(j=>!HOLD(j)&&a[j.id]===undefined&&!done(j.id))}
+function day(){return S.days[S.active]}
+/* ---------- Google Maps: whole-day route ---------- */
+function gmapsPoint(k){
+  if(k&&k.startsWith('job:')){const j=BY[k.slice(4)];return j?(j.a+', '+j.c+', '+j.s):null}
+  const ll=placeLL(k);return ll[0].toFixed(5)+','+ll[1].toFixed(5);
+}
+function dayRouteUrls(d){
+  const stops=d.ids.filter(id=>BY[id]).map(id=>BY[id].a+', '+BY[id].c+', '+BY[id].s);
+  if(!stops.length)return[];
+  // points = every stop plus the end place; each URL takes origin + up to 9 waypoints + 1 destination
+  const points=stops.concat([gmapsPoint(d.endKey)]);
+  const urls=[]; let origin=gmapsPoint(d.startKey);
+  while(points.length){
+    const chunk=points.splice(0,10);
+    const dest=chunk[chunk.length-1], way=chunk.slice(0,-1);
+    urls.push('https://www.google.com/maps/dir/?api=1&travelmode=driving'
+      +'&origin='+encodeURIComponent(origin)
+      +(way.length?'&waypoints='+encodeURIComponent(way.join('|')):'')
+      +'&destination='+encodeURIComponent(dest));
+    origin=dest;
+  }
+  return urls;
+}
+function openDayRoute(d){
+  const urls=dayRouteUrls(d);
+  if(!urls.length){toast('No stops on this day yet');return}
+  if(urls.length===1){window.open(urls[0],'_blank','noopener');return}
+  sheet('Route in two legs','Google Maps takes 10 stops at a time.',
+    '<div class="shlist">'+urls.map((u,i)=>'<button class="shbtn" data-leg="'+i+'">Leg '+(i+1)+' <small>opens in Maps</small></button>').join('')+'</div>',
+    el=>{urls.forEach((u,i)=>{el.querySelector('[data-leg="'+i+'"]').onclick=()=>window.open(u,'_blank','noopener')})});
+}
+/* ---------- counters ---------- */
+function counters(){
+  const a=assigned();
+  const weekIds=[...new Set(S.days.flatMap(d=>d.ids))].filter(i=>BY[i]);
+  const weekPay=weekIds.reduce((t,i)=>t+BY[i].p,0);
+  const doneIds=Object.keys(S.status).filter(i=>done(i)&&BY[i]);
+  const donePay=doneIds.reduce((t,i)=>t+BY[i].p,0);
+  const openJobs=J.filter(j=>!HOLD(j)&&!done(j.id));
+  const openPay=openJobs.reduce((t,j)=>t+j.p,0);
+  const need=weekIds.filter(i=>!S.loaded[i]).length;
+  return{weekIds,weekPay,doneIds,donePay,openJobs,openPay,need};
+}
+function renderCounters(){
+  const c=counters();
+  $('#counters').innerHTML=[
+    ['Planned this week',fmt(c.weekPay),'o',c.weekIds.length+' stops'],
+    ['Captured',fmt(c.donePay),'g',c.doneIds.length+' done'],
+    ['Still on the board',fmt(c.openPay),'',c.openJobs.length+' open'],
+    ['Waiting on IDS',c.need,c.need?'w':'g',c.need?'to add to app':'all loaded']
+  ].map(([l,v,cl,sub])=>`<div class="cc"><div class="lab">${l}</div><div class="v ${cl}">${v}</div>
+     <div class="lab" style="letter-spacing:.3px;text-transform:none;font-weight:400">${sub}</div></div>`).join('');
+  const n=$('#nav').querySelector('[data-s="app"]');
+  n.style.position='relative';
+  n.querySelector('.dotN')?.remove();
+  if(c.need){const b=document.createElement('span');b.className='dotN';b.textContent=c.need;n.appendChild(b)}
+}
+/* ================= NOW ================= */
+function reachable(){
+  const d=day(), here=placeLL(S.here.key), t0=S.here.time;
+  const a=assigned();
+  const pool=unscheduled().concat(J.filter(j=>!HOLD(j)&&a[j.id]===S.active&&!done(j.id)));
+  const seen=new Set();
+  return pool.filter(j=>{if(seen.has(j.id))return false;seen.add(j.id);return true})
+    .map(j=>{const m=mi(here,LL(j)), dt=drive(m);
+      const arr=Math.max(t0+dt,j.o), fin=arr+svc(j);
+      return {j,m,dt,arr,fin,ok:fin<=j.x,rate:j.p/(dt+svc(j)),inday:d.ids.includes(j.id)}})
+    .sort((x,y)=>(y.ok-x.ok)||y.rate-x.rate);
+}
+function renderNow(){
+  const d=day(), list=reachable();
+  const open=list.filter(r=>r.ok), shut=list.filter(r=>!r.ok);
+  const opts=(S.here.key==='gps'?'<option value="gps" selected>Current location (GPS)</option>':'')
+    + Object.entries(PLACES).map(([k,v])=>`<option value="${k}" ${S.here.key===k?'selected':''}>${v.name}</option>`).join('')
+    + J.filter(j=>!HOLD(j)).slice().sort((a,b)=>a.c<b.c?-1:1)
+        .map(j=>`<option value="job:${j.id}" ${S.here.key==='job:'+j.id?'selected':''}>${j.c}, ${j.s} — ${j.n}</option>`).join('');
+  const s=simulate(d);
+  $('#s-now').innerHTML=`
+  <div id="brandHero" class="brand-hero">
+    <div class="brand-video-frame">
+      <video id="brandVideo" autoplay playsinline preload="auto" src="./assets/slice-sword-intro.mp4" aria-label="Ninja-360 intro video"></video>
+      <img class="brand-logo-overlay" src="/assets/crew/crew-tim-banner.png" alt="Ninja-360 Sensei / Head Ninja logo">
+    </div>
+  </div>
+  <div class="card">
+    <div class="lab" style="margin-bottom:6px">Where am I right now</div>
+    <div class="row">
+      <div class="fld" style="flex:1;min-width:190px"><span class="lab" id="lab-here">I'm at</span>
+        <select id="hereSel" aria-labelledby="lab-here" style="max-width:none;width:100%">${opts}</select></div>
+      <div class="fld"><span class="lab" id="lab-heret">Time now</span><input type="time" id="hereT" aria-labelledby="lab-heret" value="${hhmm(S.here.time)}"></div>
+      <button class="ghost" id="nowBtn">Use clock</button>
+      <button class="ghost" id="gpsBtn">📡 Locate me</button>
+    </div>
+    <div class="hint">Everything below is measured from there, at that time, against each store's own closing time.</div>
+  </div>
+  <div class="strip">
+    <div class="mcell"><div class="lab">Can still reach</div><div class="v g">${open.length}</div></div>
+    <div class="mcell"><div class="lab">Value in reach</div><div class="v g">${fmt(open.reduce((t,r)=>t+r.j.p,0))}</div></div>
+    <div class="mcell"><div class="lab">Shut by now</div><div class="v ${shut.length?'w':''}">${shut.length}</div></div>
+  </div>
+  <h2>Best next move</h2>
+  <div class="hint">Ranked by dollars per hour including the drive to get there.</div>
+  <div id="nowList"></div>
+  ${d.ids.length?`<h2>This day so far &mdash; ${fmt(s.pay)}, finish ${hhmm(s.end)}</h2>
+  <div class="row" style="margin:2px 0 8px"><button class="prim" id="navDayNow">🧭 Navigate this day</button></div>
+  <div id="nowRoute"></div>`:''}`;
+  const hero=document.getElementById('brandVideo');
+  const heroWrap=document.getElementById('brandHero');
+  if(hero&&heroWrap){
+    const seen=sessionStorage.getItem('ninja360-hero-played')==='1' || window.__ninjaHeroShown===true;
+    if(seen){heroWrap.classList.add('is-done');}
+    else{
+      window.__ninjaHeroShown=true;
+      const finish=()=>{
+        sessionStorage.setItem('ninja360-hero-played','1');
+        heroWrap.classList.add('is-done');
+        setTimeout(()=>{heroWrap.style.display='none';},700);
+      };
+      const unlockHeroAudio=()=>{
+        if(hero.muted){hero.muted=false; hero.play().catch(()=>{});} 
+        document.removeEventListener('pointerdown',unlockHeroAudio,true);
+        document.removeEventListener('touchstart',unlockHeroAudio,true);
+      };
+      hero.addEventListener('ended',finish,{once:true});
+      // No intro clip on this host yet — collapse the hero instead of parking a
+      // black 16:9 box at the top of Now on every render.
+      hero.addEventListener('error',finish,{once:true});
+      if(hero.error)finish();
+      hero.muted=false;
+      hero.play().catch(()=>{
+        hero.muted=true;
+        document.addEventListener('pointerdown',unlockHeroAudio,{once:true,capture:true});
+        document.addEventListener('touchstart',unlockHeroAudio,{once:true,capture:true});
+        hero.play().catch(()=>{});
+      });
+    }
+  }
+  $('#hereSel').onchange=e=>{S.here.key=e.target.value;delete S.here.ll;render();dirty()};
+  $('#hereT').onchange=e=>{if(!e.target.value)return;
+    const p=e.target.value.split(':');S.here.time=(+p[0])+(+p[1])/60;render();dirty()};
+  $('#nowBtn').onclick=()=>{const n=new Date();S.here.time=n.getHours()+n.getMinutes()/60;render();dirty()};
+  $('#gpsBtn').onclick=()=>{
+    if(!navigator.geolocation){toast('GPS is not available here — pick a spot from the list');return}
+    toast('Getting your location…');
+    navigator.geolocation.getCurrentPosition(pos=>{
+      S.here={key:'gps',ll:[pos.coords.latitude,pos.coords.longitude],time:S.here.time};
+      const n=new Date();S.here.time=n.getHours()+n.getMinutes()/60;
+      render();dirty();toast('Measuring from your GPS position')},
+      ()=>toast('Could not get a fix — pick a spot from the list'),{timeout:8000,maximumAge:60000});
+  };
+  const nd=$('#navDayNow'); if(nd)nd.onclick=()=>openDayRoute(d);
+  $('#nowList').innerHTML = open.slice(0,14).map(r=>{const j=r.j; const timer=jobTimerState(j.id), note=jobNoteText(j.id);
+    return `<div class="pj">
+      <button class="pjbtn" data-info="${j.id}" title="${escHTML(jobTooltip(j.id))}"><div class="nm">${j.n}${S.loaded[j.id]?'':'<span class="badge warn">not in app</span>'}${note?'<span class="badge acc">note</span>':''}</div>
+        <div class="ad">${j.a}, ${j.c}, ${j.s}</div>
+        <div class="ad mono">arrive ${hhmm(r.arr)} · out ${hhmm(r.fin)} · shuts ${hhmm(j.x)}</div>
+        <div class="ad mono"><span class="live-timer ${timer.running?'running':''}" data-live-timer="${j.id}">${timer.label}${timer.running?' • run':''}</span></div></button>
+      <div class="dist mono"><b style="color:var(--money)">${fmt(j.p)}</b><br>${r.m.toFixed(0)} mi<br>${fmt(r.rate)}/h</div>
+      <button class="addb ${r.inday?'dis':''}" data-take="${j.id}" aria-label="${r.inday?'Already on this day':'Add to this day'}">${r.inday?'✓':'+'}</button></div>`}).join('')
+    || '<div class="empty">Nothing is still open from here. Try an earlier time or a different starting point.</div>';
+  $$('#nowList [data-take]').forEach(b=>b.onclick=()=>{const id=b.dataset.take;
+    if(!day().ids.includes(id)){day().ids.push(id);toast('Added to this day')}
+    render();dirty()});
+  $$('#nowList [data-info]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.info));
+  if(d.ids.length)$('#nowRoute').innerHTML=stopCards(d,simulate(d));
+  wireStops();
+}
+/* ================= shared stop cards ================= */
+function stopCards(d,s){
+  return s.rows.map((r,i)=>{
+    const j=BY[r.id];
+    const cls=done(r.id)?'done':(r.late?'bad':(r.wait>0.02?'wait':''));
+    const hb=j.v?'<span class="badge v">hours verified</span>':'<span class="badge a">hours assumed</span>';
+    const lb=r.late?`<span class="badge bad">shuts ${hhmm(j.x)}</span>`:'';
+    const wb=r.wait>0.02?`<span class="badge warn">wait ${Math.round(r.wait*60)}m</span>`:'';
+    const ab=S.loaded[r.id]?'':'<span class="badge warn">not in app</span>';
+    const db=done(r.id)?`<span class="badge v">${stat(r.id)}</span>`:'';
+    const timer=jobTimerState(r.id); const note=jobNoteText(r.id);
+    return `<div class="stop ${cls}" title="${escHTML(jobTooltip(r.id))}">
+      <div class="tm mono">${hhmm(r.arr)}<span class="to">${hhmm(r.fin)}</span></div>
+      <div><div class="nm">${j.n}${lb}${wb}${ab}${db}${note?'<span class="badge acc">note</span>':''}</div>
+        <div class="ad">${j.a}, ${j.c}, ${j.s}</div>
+        <div class="hrs mono">${hhmm(j.o)}–${hhmm(j.x)} ${hb} · ${r.leg.toFixed(1)} mi · <button class="tset" data-sv="${r.id}">${Math.round(svc(j)*60)} min on site${S.sv[r.id]!==undefined?' ✎':''}</button></div>
+        <div class="job-note mono"><span class="live-timer ${timer.running?'running':''}" data-live-timer="${r.id}">${timer.label}${timer.running?' • run':''}</span>${note?`<span style="display:inline-block;margin-left:6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;">${escHTML(note)}</span>`:''}</div>
+        <div class="acts">
+          <button class="mini" data-up="${i}" ${i===0?'disabled':''} aria-label="Move up">↑</button>
+          <button class="mini" data-dn="${i}" ${i===s.rows.length-1?'disabled':''} aria-label="Move down">↓</button>
+          <button class="mini x" data-rm="${r.id}">remove</button>
+          <button class="mini" data-mv="${r.id}">move day</button>
+          <button class="mini go" data-nav="${r.id}">directions</button>
+          <button class="mini" data-timer="${r.id}">${timer.running?'stop':'start'} timer</button>
+          <button class="mini" data-note="${r.id}">note</button>
+          <button class="mini" data-done="${r.id}">${done(r.id)?'undo':'mark done'}</button>
+        </div></div>
+      <div class="pay mono">${fmt(j.p)}</div></div>`}).join('')
+   +`<div class="stop" style="border-left-color:var(--line2)">
+      <div class="tm mono">${hhmm(s.end)}</div>
+      <div><div class="nm" style="font-weight:500">Arrive ${placeName(d.endKey)}</div>
+      <div class="ad">${Math.round(s.tail)} mi final leg</div></div><div></div></div>`;
+}
+function wireStops(){
+  const d=day();
+  $$('[data-up]').forEach(b=>b.onclick=()=>{const i=+b.dataset.up;const t=d.ids[i-1];d.ids[i-1]=d.ids[i];d.ids[i]=t;render();dirty()});
+  $$('[data-dn]').forEach(b=>b.onclick=()=>{const i=+b.dataset.dn;const t=d.ids[i+1];d.ids[i+1]=d.ids[i];d.ids[i]=t;render();dirty()});
+  $$('[data-rm]').forEach(b=>b.onclick=()=>{const id=b.dataset.rm;const pos=d.ids.indexOf(id);
+    d.ids=d.ids.filter(x=>x!==id);render();dirty();
+    toast('Removed '+BY[id].c,{label:'Undo',fn:()=>{if(!d.ids.includes(id))d.ids.splice(Math.min(pos,d.ids.length),0,id);render();dirty()}})});
+  $$('[data-mv]').forEach(b=>b.onclick=()=>moveSheet(b.dataset.mv));
+  $$('[data-nav]').forEach(b=>b.onclick=()=>{const j=BY[b.dataset.nav];
+    window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(j.a+', '+j.c+', '+j.s),'_blank','noopener')});
+  $$('[data-done]').forEach(b=>b.onclick=()=>{const id=b.dataset.done;
+    if(done(id))delete S.status[id]; else S.status[id]='captured'; render();dirty()});
+  $$('[data-sv]').forEach(b=>b.onclick=()=>svSheet(b.dataset.sv));
+  $$('[data-timer]').forEach(b=>b.onclick=()=>{const id=b.dataset.timer; toggleTimer(id); render(); dirty(); toast(jobTimerState(id).running?'Timer started':'Timer stopped');});
+  $$('[data-note]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.note));
+}
+/* ================= bottom sheets ================= */
+let sheetEls=null,sheetPrevFocus=null;
+function closeSheet(){if(sheetEls){sheetEls.forEach(e=>e.remove());sheetEls=null;
+  document.removeEventListener('keydown',escSheet);
+  if(sheetPrevFocus&&document.contains(sheetPrevFocus)){try{sheetPrevFocus.focus()}catch(e){}}
+  sheetPrevFocus=null}}
+function escSheet(e){if(e.key==='Escape')closeSheet()}
+function sheet(title,sub,bodyHTML,wire){
+  closeSheet();
+  sheetPrevFocus=document.activeElement;
+  const sc=document.createElement('div');sc.className='scrim';
+  const sh=document.createElement('div');sh.className='sheet';
+  sh.setAttribute('role','dialog');sh.setAttribute('aria-label',title);sh.setAttribute('aria-modal','true');
+  sh.innerHTML=`<div class="grab"></div><h3>${title}</h3>${sub?`<div class="shsub">${sub}</div>`:''}${bodyHTML}
+    <div style="margin-top:12px"><button class="ghost" data-close style="width:100%">Close</button></div>`;
+  document.body.append(sc,sh);sheetEls=[sc,sh];
+  sc.onclick=closeSheet;sh.querySelector('[data-close]').onclick=closeSheet;
+  document.addEventListener('keydown',escSheet);
+  sh.addEventListener('keydown',e=>{
+    if(e.key!=='Tab')return;
+    const f=[...sh.querySelectorAll('button,input,select')].filter(x=>!x.disabled);
+    if(!f.length)return;
+    const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+  });
+  if(wire)wire(sh);
+  const f=sh.querySelector('button:not([data-close]),input,select');if(f)f.focus();
+}
+function moveSheet(id){
+  const j=BY[id];
+  const body='<div class="shlist">'
+    +S.days.map((d,i)=>{const dt=d.date?new Date(d.date+'T12:00:00'):null;
+      const lbl=dt?dt.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}):'Day '+(i+1)+' — no date';
+      return `<button class="shbtn ${i===S.active?'cur':''}" data-day="${i}">${lbl} <small>${d.ids.length} stop${d.ids.length===1?'':'s'}</small></button>`}).join('')
+    +'<button class="shbtn danger" data-day="-1">Take it off the plan</button></div>';
+  sheet('Move '+j.c+', '+j.s,j.n,body,el=>{
+    el.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{
+      const n=+b.dataset.day;
+      day().ids=day().ids.filter(x=>x!==id);
+      if(n>=0&&!S.days[n].ids.includes(id))S.days[n].ids.push(id);
+      closeSheet();render();dirty();
+      toast(n>=0?'Moved to '+(S.days[n].date||'day '+(n+1)):'Off the plan');
+    });
+  });
+}
+function svSheet(id){
+  const j=BY[id],cur=Math.round(svc(j)*60);
+  sheet('Minutes on site',j.n,
+    `<div class="row"><input type="number" id="svIn" aria-label="Minutes on site" value="${cur}" min="5" max="600" step="5" style="width:110px">
+     <button class="prim" id="svSave">Save</button>
+     <button class="ghost" id="svDef">Default (${Math.round(j.sv*60)}m)</button></div>`,
+    el=>{
+      const save=v=>{if(!isFinite(v)||v<=0){toast('Enter minutes as a number');return}
+        if(Math.abs(v/60-j.sv)<0.001)delete S.sv[id];else S.sv[id]=v/60;
+        closeSheet();render();dirty()};
+      el.querySelector('#svSave').onclick=()=>save(parseFloat(el.querySelector('#svIn').value));
+      el.querySelector('#svDef').onclick=()=>{delete S.sv[id];closeSheet();render();dirty()};
+      el.querySelector('#svIn').addEventListener('keydown',e=>{if(e.key==='Enter')save(parseFloat(e.target.value))});
+    });
+}
+function jobSheet(id){
+  const j=BY[id];if(!j)return;
+  const a=assigned(),onDay=a[id],mine=day().ids.includes(id);
+  const STATES=['todo','captured','uploaded','invoiced','paid'];
+  const note=jobNoteText(id), timer=jobTimerState(id);
+  sheet(j.n,j.cl+(j.ch&&j.ch!==j.cl?' · '+j.ch:'')+(j.wo?' · WO '+j.wo:''),
+    `<div class="note">${j.a}, ${j.c}, ${j.s}</div>
+     <div class="note mono">${hhmm(j.o)}–${hhmm(j.x)} ${j.v?'verified':'assumed'} · ${Math.round(svc(j)*60)} min on site · <b style="color:var(--money)">${fmt(j.p)}</b></div>
+     ${HOLD(j)?'<div class="note"><span class="badge warn">'+j.st+'</span></div>':''}
+     ${onDay!==undefined?'<div class="note">On '+(S.days[onDay].date||'day '+(onDay+1))+'</div>':''}
+     <div class="note" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><span>Timer</span>
+      <span class="live-timer ${timer.running?'running':''}" data-live-timer="${id}">${timer.label}${timer.running?' • running':''}</span>
+     </div>
+     <div class="note"><label for="jsNote" class="lab" style="display:block;margin-bottom:4px">Quick note</label>
+      <textarea id="jsNote" rows="3" style="width:100%;resize:vertical;min-height:76px;border:1px solid var(--line2);border-radius:8px;background:var(--surf2);color:var(--ink);padding:8px;box-sizing:border-box;">${escHTML(note)}</textarea></div>
+     <div class="row" style="margin-top:8px">
+       <button class="prim" id="jsAdd">${mine?'Remove from this day':'Add to this day'}</button>
+       <button class="ghost" id="jsDir">Directions</button>
+       <button class="ghost" id="jsTimer">${timer.running?'Stop timer':'Start timer'}</button>
+       <button class="ghost" id="jsReset" style="color:var(--bad)">Reset timer</button>
+       <select id="jsStat" aria-label="Status">${STATES.map(s=>`<option value="${s}" ${stat(id)===s?'selected':''}>${s}</option>`).join('')}</select>
+     </div>`,
+    el=>{
+     el.querySelector('#jsAdd').onclick=()=>{const dd=day();
+       if(dd.ids.includes(id))dd.ids=dd.ids.filter(x=>x!==id);else dd.ids.push(id);
+       closeSheet();render();dirty()};
+     el.querySelector('#jsDir').onclick=()=>window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(j.a+', '+j.c+', '+j.s),'_blank','noopener');
+     el.querySelector('#jsTimer').onclick=()=>{toggleTimer(id); closeSheet(); render(); dirty(); toast(jobTimerState(id).running?'Timer started':'Timer stopped');};
+     el.querySelector('#jsReset').onclick=()=>{resetTimer(id); closeSheet(); render(); dirty(); toast('Timer reset');};
+     el.querySelector('#jsStat').onchange=e=>{if(e.target.value==='todo')delete S.status[id];else S.status[id]=e.target.value;render();dirty()};
+     el.querySelector('#jsNote').oninput=e=>{const v=e.target.value.trim(); if(v) S.notes[id]=v; else delete S.notes[id]; dirty()};
+    });
+}
+/* ================= PLAN ================= */
+let F={q:'',st:'',cl:'',sort:'near'};
+function renderPlan(){
+  const d=day(), s=simulate(d);
+  const rate=s.span>0?s.pay/s.span:0;
+  const rail=S.days.map((dd,i)=>{const ss=simulate(dd);
+    const dt=dd.date?new Date(dd.date+'T12:00:00'):null;
+    const lbl=dt?dt.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}):'No date';
+    return `<button class="dchip ${i===S.active?'on':''}" data-i="${i}">
+      <div class="dd">${lbl}</div><div class="dv">${fmt(ss.pay)}</div>
+      <div class="dn">${dd.ids.length} stop${dd.ids.length===1?'':'s'}${ss.bad?' · '+ss.bad+' shut':''}</div></button>`}).join('')
+    +'<button class="dchip add" id="addDay">+ Day</button>';
+  const popts=k=>{
+    const cur=d[k];
+    // a job kept as start/end may no longer be a stop on this day — keep it selectable
+    const extra=(cur&&cur.startsWith('job:')&&!d.ids.includes(cur.slice(4))&&BY[cur.slice(4)])?[cur.slice(4)]:[];
+    return Object.entries(PLACES).map(([key,v])=>`<option value="${key}" ${cur===key?'selected':''}>${v.name}</option>`).join('')
+      +d.ids.concat(extra).map(id=>`<option value="job:${id}" ${cur==='job:'+id?'selected':''}>Overnight — ${BY[id].c}, ${BY[id].s}</option>`).join('');
+  };
+  $('#s-plan').innerHTML=`
+    <div class="lab" style="margin:8px 0 5px">Days</div><div class="rail">${rail}</div>
+    <div class="strip">
+      <div class="mcell"><div class="lab">Stops</div><div class="v">${d.ids.length}</div></div>
+      <div class="mcell"><div class="lab">Payout</div><div class="v g">${fmt(s.pay)}</div></div>
+      <div class="mcell"><div class="lab">Miles</div><div class="v">${Math.round(s.miles).toLocaleString()}</div></div>
+      <div class="mcell"><div class="lab">Day length</div><div class="v ${s.span>14?'b':s.span>12?'w':''}">${s.span.toFixed(1)} h</div></div>
+      <div class="mcell"><div class="lab">Finish</div><div class="v">${d.ids.length?hhmm(s.end):'—'}</div></div>
+      <div class="mcell"><div class="lab">$ / hour</div><div class="v ${rate&&rate<60?'w':'g'}">${s.span>0?fmt(rate):'—'}</div></div>
+    </div>
+    <div class="card"><div class="row">
+      <div class="fld"><span class="lab" id="lab-date">Date</span><input type="date" id="fDate" aria-labelledby="lab-date" value="${d.date}"></div>
+      <div class="fld"><span class="lab" id="lab-start">Start from</span><select id="fStart" aria-labelledby="lab-start">${popts('startKey')}</select></div>
+      <div class="fld"><span class="lab" id="lab-leave">Leave at</span><input type="time" id="fTime" aria-labelledby="lab-leave" value="${hhmm(d.startTime)}"></div>
+      <div class="fld"><span class="lab" id="lab-end">End at</span><select id="fEnd" aria-labelledby="lab-end">${popts('endKey')}</select></div>
+      <button class="ghost" id="bAuto">Auto-order</button>
+      <button class="ghost" id="bNav">🧭 Navigate</button>
+      <button class="ghost danger" id="bDel">Delete day</button>
+    </div></div>
+    <div id="stops">${d.ids.length?stopCards(d,s):'<div class="empty">No stops yet — add them below.</div>'}</div>
+    <div class="note" id="routeNote"></div>
+    <h2>Add stops</h2>
+    <div class="filters" id="filters"></div>
+    <div id="pool"></div>
+    <h2>Map</h2>
+    <div class="hint">Tap a dot for details. Dot size = payout.</div>
+    <div class="mapbox"><svg id="map" viewBox="0 0 720 470" role="img" aria-label="Job map"></svg></div>
+    <div class="leg"><span><i style="background:var(--accent)"></i>This day</span>
+      <span><i style="background:var(--money)"></i>Another day</span>
+      <span><i style="background:var(--ink3)"></i>Unscheduled</span>
+      <span><i style="background:var(--line2)"></i>On hold</span></div>`;
+  $$('#s-plan .dchip[data-i]').forEach(b=>b.onclick=()=>{S.active=+b.dataset.i;render()});
+  $('#addDay').onclick=()=>{const last=S.days[S.days.length-1];let nd='';
+    if(last&&last.date){const x=new Date(last.date+'T12:00:00');x.setDate(x.getDate()+1);nd=x.toISOString().slice(0,10)}
+    S.days.push(blankDay(nd));S.active=S.days.length-1;render();dirty()};
+  $('#fDate').onchange=e=>{d.date=e.target.value;render();dirty()};
+  $('#fStart').onchange=e=>{d.startKey=e.target.value;render();dirty()};
+  $('#fEnd').onchange=e=>{d.endKey=e.target.value;render();dirty()};
+  $('#fTime').onchange=e=>{if(!e.target.value)return;
+    const p=e.target.value.split(':');d.startTime=(+p[0])+(+p[1])/60;render();dirty()};
+  $('#bAuto').onclick=()=>{d.ids=autoOrder(d);render();dirty();
+    const s2=simulate(d);toast(s2.bad?(s2.bad+' still shuts too early'):(s2.span.toFixed(1)+' h day, finish '+hhmm(s2.end)))};
+  $('#bNav').onclick=()=>openDayRoute(d);
+  $('#bDel').onclick=()=>{if(S.days.length<2){toast('Keep at least one day');return}
+    const snap={idx:S.active,day:JSON.parse(JSON.stringify(d))};
+    S.days.splice(S.active,1);S.active=Math.max(0,S.active-1);render();dirty();
+    toast('Day deleted',{label:'Undo',fn:()=>{S.days.splice(Math.min(snap.idx,S.days.length),0,snap.day);S.active=Math.min(snap.idx,S.days.length-1);render();dirty()}})};
+  const late=s.rows.filter(r=>r.late).map(r=>BY[r.id].c);
+  $('#routeNote').innerHTML=late.length
+    ?`<b style="color:var(--bad)">${late.join(', ')} ${late.length===1?'shuts':'shut'} before you finish.</b> Hit Auto-order, leave earlier, or move ${late.length===1?'it':'them'} to another day.`
+    :(d.ids.length?('All '+d.ids.length+' stops land inside opening hours.'):'');
+  renderFilters(); renderPool(); renderMap(); wireStops();
+}
+function renderFilters(){
+  const states=[...new Set(J.map(j=>j.s))].sort(), cls=[...new Set(J.map(j=>j.cl))].sort();
+  $('#filters').innerHTML=`<input type="text" id="fq" aria-label="Search stops" placeholder="Search city, store, address…" value="${F.q}">
+    <select id="fst" aria-label="Filter by state"><option value="">All states</option>${states.map(x=>`<option ${F.st===x?'selected':''}>${x}</option>`).join('')}</select>
+    <select id="fcl" aria-label="Filter by client"><option value="">All clients</option>${cls.map(x=>`<option ${F.cl===x?'selected':''}>${x}</option>`).join('')}</select>
+    <select id="fsort" aria-label="Sort stops"><option value="near" ${F.sort==='near'?'selected':''}>Nearest to last stop</option>
+      <option value="pay" ${F.sort==='pay'?'selected':''}>Highest payout</option>
+      <option value="base" ${F.sort==='base'?'selected':''}>Nearest to home</option></select>`;
+  $('#fq').oninput=e=>{F.q=e.target.value;renderPool()};
+  $('#fst').onchange=e=>{F.st=e.target.value;renderPool()};
+  $('#fcl').onchange=e=>{F.cl=e.target.value;renderPool()};
+  $('#fsort').onchange=e=>{F.sort=e.target.value;renderPool()};
+}
+function renderPool(){
+  const d=day(), a=assigned();
+  const anchor=d.ids.length?LL(BY[d.ids[d.ids.length-1]]):placeLL(d.startKey);
+  const q=F.q.toLowerCase();
+  let list=J.filter(j=>{if(F.st&&j.s!==F.st)return false;if(F.cl&&j.cl!==F.cl)return false;
+    if(q&&!(j.n+' '+j.a+' '+j.c+' '+j.id).toLowerCase().includes(q))return false;return true});
+  list.forEach(j=>{j._d=mi(anchor,LL(j));j._b=mi(BASE,LL(j))});
+  list.sort((x,y)=>F.sort==='pay'?y.p-x.p||x._d-y._d:F.sort==='base'?x._b-y._b:x._d-y._d);
+  $('#pool').innerHTML=list.slice(0,120).map(j=>{
+    const on=a[j.id]!==undefined, mine=a[j.id]===S.active;
+    const note=jobNoteText(j.id), timer=jobTimerState(j.id);
+    return `<div class="pj ${on&&!mine?'used':''}">
+      <button class="pjbtn" data-info="${j.id}" title="${escHTML(jobTooltip(j.id))}"><div class="nm">${j.n}${HOLD(j)?'<span class="badge warn">'+j.st+'</span>':''}${done(j.id)?'<span class="badge v">done</span>':''}${S.loaded[j.id]?'':'<span class="badge warn">not in app</span>'}${note?'<span class="badge acc">note</span>':''}</div>
+        <div class="ad">${j.a}, ${j.c}, ${j.s} <span class="mono">· ${hhmm(j.o)}–${hhmm(j.x)}</span></div>
+        <div class="ad mono" style="margin-top:2px"><span class="live-timer ${timer.running?'running':''}" data-live-timer="${j.id}">${timer.label}${timer.running?' • run':''}</span></div></button>
+      <div class="dist mono"><b style="color:var(--money)">${fmt(j.p)}</b><br>${j._d.toFixed(0)} mi${on?'<br>'+(mine?'in this day':'day '+(a[j.id]+1)):''}</div>
+      <button class="addb ${on&&!mine?'dis':''}" data-add="${j.id}" aria-label="${mine?'Remove from this day':'Add to this day'}">${mine?'✓':'+'}</button></div>`}).join('')
+    ||'<div class="empty">Nothing matches that filter.</div>';
+  $$('#pool [data-add]').forEach(b=>b.onclick=()=>{const id=b.dataset.add,dd=day();
+    if(dd.ids.includes(id))dd.ids=dd.ids.filter(x=>x!==id); else dd.ids.push(id);
+    render();dirty()});
+  $$('#pool [data-info]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.info));
+}
+function renderMap(){
+  const el=$('#map'); if(!el)return;
+  const pad=24,W=720,H=470;
+  const lats=J.map(j=>j.lat).concat([BASE[0]]),lons=J.map(j=>j.lon).concat([BASE[1]]);
+  const la0=Math.min(...lats),la1=Math.max(...lats),lo0=Math.min(...lons),lo1=Math.max(...lons);
+  const k=Math.cos((la0+la1)/2*Math.PI/180);
+  const sc=Math.min((W-2*pad)/((lo1-lo0)*k),(H-2*pad)/(la1-la0));
+  const ox=pad+((W-2*pad)-(lo1-lo0)*k*sc)/2, oy=pad+((H-2*pad)-(la1-la0)*sc)/2;
+  const px=(la,lo)=>[ox+(lo-lo0)*k*sc,oy+(la1-la)*sc];
+  const d=day(),a=assigned(),mine=new Set(d.ids);let g='';
+  J.forEach(j=>{const p=px(j.lat,j.lon);
+    const r=j.p>=1000?7.5:j.p>=300?5:3.2;
+    let f='var(--ink3)',o=.5;
+    if(HOLD(j)){f='var(--line2)';o=.5}
+    else if(mine.has(j.id)){f='var(--accent)';o=1}
+    else if(a[j.id]!==undefined){f='var(--money)';o=.85}
+    g+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r}" fill="${f}" opacity="${o}"><title>${j.n} — ${fmt(j.p)}</title></circle>`});
+  if(d.ids.length){
+    const pts=[px(placeLL(d.startKey)[0],placeLL(d.startKey)[1])]
+      .concat(d.ids.map(i=>px(BY[i].lat,BY[i].lon)),[px(placeLL(d.endKey)[0],placeLL(d.endKey)[1])]);
+    g='<polyline points="'+pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')+'" fill="none" stroke="var(--accent)" stroke-width="2" stroke-opacity=".55" stroke-linejoin="round"/>'+g;
+    d.ids.forEach((id,i)=>{const p=px(BY[id].lat,BY[id].lon);
+      g+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="9" fill="var(--accent)"/><text x="${p[0].toFixed(1)}" y="${(p[1]+3.2).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="var(--accent-ink)" font-family="IBM Plex Mono, monospace">${i+1}</text>`})}
+  const b=px(BASE[0],BASE[1]);
+  g+=`<rect x="${(b[0]-5).toFixed(1)}" y="${(b[1]-5).toFixed(1)}" width="10" height="10" fill="var(--ink)" transform="rotate(45 ${b[0].toFixed(1)} ${b[1].toFixed(1)})"/>`;
+  el.innerHTML=g;
+  el.style.cursor='pointer';
+  el.onclick=ev=>{
+    const rc=el.getBoundingClientRect();
+    const x=(ev.clientX-rc.left)*(W/rc.width), y=(ev.clientY-rc.top)*(H/rc.height);
+    let best=null,bd=Infinity;
+    J.forEach(j=>{const p=px(j.lat,j.lon);const dd=(p[0]-x)**2+(p[1]-y)**2;if(dd<bd){bd=dd;best=j}});
+    if(best&&bd<=34*34)jobSheet(best.id);
+  };
+}
+/* ================= CLUSTERS ================= */
+function buildClusters(){
+  let pool=unscheduled().slice();
+  const out=[];
+  while(pool.length&&out.length<26){
+    pool.sort((a,b)=>b.p-a.p||mi(BASE,LL(a))-mi(BASE,LL(b)));
+    const seed=pool[0];
+    const far=mi(BASE,LL(seed))>95;
+    let d={id:'c',date:'',startKey:'home',startTime:far?7:8,endKey:'home',ids:[seed.id]};
+    const rest=pool.filter(j=>j.id!==seed.id).sort((a,b)=>mi(LL(seed),LL(a))-mi(LL(seed),LL(b)));
+    for(let n=0;n<rest.length;n++){
+      const j=rest[n];
+      if(mi(LL(seed),LL(j))>(far?70:38))continue;
+      const cand={...d,ids:d.ids.concat(j.id)};
+      cand.ids=autoOrder(cand);
+      const s=simulate(cand);
+      if(s.bad===0&&s.span<=(far?11.5:10)) d=cand;
+      if(d.ids.length>=10)break;
+    }
+    d.ids=autoOrder(d);
+    const s=simulate(d);
+    out.push({ids:d.ids,startTime:d.startTime,pay:s.pay,miles:s.miles,span:s.span,end:s.end,
+      area:[...new Set(d.ids.map(i=>BY[i].c))].slice(0,5).join(' · '),far:far});
+    const used=new Set(d.ids); pool=pool.filter(j=>!used.has(j.id));
+  }
+  return out.sort((a,b)=>(b.pay/b.span)-(a.pay/a.span));
+}
+let CLUS=null;
+function renderClusters(){
+  if(!CLUS){
+    // building is heavy (thousands of route simulations) — paint a status first so the tap responds
+    $('#s-clusters').innerHTML='<div class="card"><div class="lab">Building runs</div>'
+      +'<div style="font-size:15px;margin-top:3px">Grouping every unscheduled stop into legal days…</div>'
+      +'<div class="hint">A few seconds the first time.</div></div>';
+    setTimeout(()=>{CLUS=buildClusters();if(S.nav==='clusters')renderClusters()},50);
+    return;
+  }
+  const tot=CLUS.reduce((t,c)=>t+c.pay,0);
+  $('#s-clusters').innerHTML=`
+    <div class="card"><div class="lab">Everything not yet on a day</div>
+      <div style="font-size:15px;margin-top:3px">${CLUS.length} buildable runs · <b>${fmt(tot)}</b> · ${CLUS.reduce((t,c)=>t+c.ids.length,0)} stops</div>
+      <div class="hint">Each one is a legal day: every stop inside its own opening hours, home the same night. Ranked by dollars per hour.</div>
+      <button class="ghost" id="reclus">Rebuild</button></div>
+    ${CLUS.map((c,i)=>`<div class="stop clus" style="grid-template-columns:1fr auto">
+      <div><div class="nm">${c.area}${c.far?'<span class="badge acc">long day</span>':''}</div>
+        <div class="ad">${c.ids.length} stops · ${Math.round(c.miles)} mi · ${c.span.toFixed(1)} h · leave ${hhmm(c.startTime)}, back ${hhmm(c.end)}</div>
+        <div class="ad mono" style="color:var(--money)"><b>${fmt(c.pay/c.span)}/hour</b> · ${(c.pay/c.miles).toFixed(2)}/mile</div>
+        <div class="acts"><button class="mini go" data-mk="${i}">Make this a day</button>
+          <button class="mini" data-see="${i}">List stops</button></div>
+        <div id="cl${i}" class="hide" style="margin-top:6px;font-size:12px;color:var(--ink2)">
+          ${c.ids.map((id,n)=>(n+1)+'. '+BY[id].n+' — '+BY[id].c+', '+BY[id].s+' · '+fmt(BY[id].p)).join('<br>')}</div></div>
+      <div class="pay mono">${fmt(c.pay)}</div></div>`).join('')}`;
+  $('#reclus').onclick=()=>{CLUS=null;render();toast('Rebuilt')};
+  $$('#s-clusters [data-mk]').forEach(b=>b.onclick=()=>{
+    const c=CLUS[+b.dataset.mk];
+    const last=S.days[S.days.length-1];let nd='';
+    if(last&&last.date){const x=new Date(last.date+'T12:00:00');x.setDate(x.getDate()+1);nd=x.toISOString().slice(0,10)}
+    const d=blankDay(nd); d.startTime=c.startTime; d.ids=c.ids.slice();
+    S.days.push(d); S.active=S.days.length-1; CLUS=null; S.nav='plan';
+    render();dirty();toast('Added as a new day — set its date on Plan')});
+  $$('#s-clusters [data-see]').forEach(b=>b.onclick=()=>$('#cl'+b.dataset.see).classList.toggle('hide'));
+}
+/* ================= IDS APP ================= */
+function requestText(){
+  const weekIds=[...new Set(S.days.flatMap(d=>d.ids))].filter(i=>BY[i]);
+  const need=weekIds.filter(i=>!S.loaded[i]);
+  const spare=Object.keys(S.loaded).filter(i=>S.loaded[i]&&BY[i]&&weekIds.indexOf(i)<0&&!done(i));
+  if(!need.length&&!spare.length)return 'Everything on this plan is already loaded. Nothing to request.';
+  const dayOf={}; S.days.forEach((d,i)=>d.ids.forEach(id=>dayOf[id]=d.date||('Day '+(i+1))));
+  const grp={}; need.forEach(i=>{const k=dayOf[i];(grp[k]=grp[k]||[]).push(i)});
+  const L=['Hi Michelle, Betsy —','',
+    need.length?'Could you load these into the app for me? Grouped by the day I plan to shoot them.':'',''];
+  Object.keys(grp).sort().forEach(k=>{
+    L.push(k.toUpperCase());
+    grp[k].forEach(i=>{const j=BY[i];
+      L.push('  '+i+'   Site '+(j.site||'—')+'   '+j.n);
+      L.push('       '+j.a+', '+j.c+', '+j.s+'   |   '+(j.ch||'—')+' / '+j.cl+'   |   '+fmt(j.p)+(j.wo?'   |   WO '+j.wo:''));});
+    L.push('');});
+  if(spare.length){
+    L.push('These can come off — I am not getting to them in this window:');
+    spare.forEach(i=>L.push('  '+i+'   '+BY[i].n+' — '+BY[i].c+', '+BY[i].s));
+    L.push('');}
+  L.push('Thanks,','Tim');
+  return L.join('\n');
+}
+function renderApp(){
+  const weekIds=[...new Set(S.days.flatMap(d=>d.ids))].filter(i=>BY[i]);
+  const need=weekIds.filter(i=>!S.loaded[i]);
+  const spare=Object.keys(S.loaded).filter(i=>S.loaded[i]&&BY[i]&&weekIds.indexOf(i)<0&&!done(i));
+  const have=weekIds.filter(i=>S.loaded[i]);
+  const dayOf={}; S.days.forEach((d,i)=>d.ids.forEach(id=>dayOf[id]=d.date||('Day '+(i+1))));
+  const req=requestText();
+  const esc=t=>t.replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+  const rowFor=i=>`<tr><td><input class="chk" type="checkbox" data-ld="${i}" aria-label="IDS has ${BY[i].n}" ${S.loaded[i]?'checked':''}></td>
+    <td><button class="pjbtn" data-info="${i}"><b>${BY[i].n}</b><div class="ad">${BY[i].a}, ${BY[i].c}, ${BY[i].s}</div>
+    <div class="ad mono">${i}${BY[i].wo?' · WO '+BY[i].wo:''} · ${fmt(BY[i].p)}</div></button></td>
+    <td class="mono" style="text-align:right">${dayOf[i]||'—'}</td></tr>`;
+  $('#s-app').innerHTML=`
+    <div class="strip">
+      <div class="mcell"><div class="lab">To request</div><div class="v ${need.length?'w':'g'}">${need.length}</div></div>
+      <div class="mcell"><div class="lab">Already loaded</div><div class="v g">${have.length}</div></div>
+      <div class="mcell"><div class="lab">Can come off</div><div class="v">${spare.length}</div></div>
+    </div>
+    <div class="card"><div class="lab">Message for Michelle &amp; Betsy</div>
+      <div class="hint">Rewrites itself every time the plan changes.</div>
+      <pre class="req" id="reqTxt">${esc(req)}</pre>
+      <div class="row" style="margin-top:8px"><button class="prim" id="copyReq">Copy message</button>
+        <button class="ghost" id="allLoaded">Mark all loaded</button></div></div>
+    <h2>This plan &mdash; tick what IDS already has</h2>
+    <table class="pl"><thead><tr><th style="width:30px">App</th><th>Location</th><th style="text-align:right">Day</th></tr></thead>
+      <tbody>${weekIds.map(rowFor).join('')||'<tr><td colspan="3" class="empty">No days planned yet.</td></tr>'}</tbody></table>
+    ${spare.length?'<h2>Loaded but not on the plan</h2><table class="pl"><tbody>'+spare.map(rowFor).join('')+'</tbody></table>':''}`;
+  $$('#s-app [data-ld]').forEach(b=>b.onchange=()=>{const i=b.dataset.ld;
+    if(b.checked)S.loaded[i]=1; else delete S.loaded[i]; render();dirty()});
+  $$('#s-app [data-info]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.info));
+  $('#copyReq').onclick=()=>{
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(req).then(()=>toast('Message copied'),()=>toast('Select the text and copy'))}
+    else toast('Select the text and copy')};
+  $('#allLoaded').onclick=()=>{weekIds.forEach(i=>S.loaded[i]=1);render();dirty();toast('All marked loaded')};
+}
+setInterval(()=>{if(ready)refreshLiveTimers();},1000);
+/* ================= BOARD ================= */
+let BF='week';
+function renderBoard(){
+  const c=counters();
+  const weekIds=c.weekIds;
+  const ids = BF==='week'?weekIds : BF==='done'?c.doneIds : J.filter(j=>!HOLD(j)&&!done(j.id)).map(j=>j.id);
+  const dayOf={}; S.days.forEach((d,i)=>d.ids.forEach(id=>dayOf[id]=d.date||('Day '+(i+1))));
+  const STATES=['todo','captured','uploaded','invoiced','paid'];
+  const sumFor=st=>Object.keys(S.status).filter(i=>BY[i]&&stat(i)===st).reduce((t,i)=>t+BY[i].p,0);
+  const weekDonePay=weekIds.filter(i=>done(i)).reduce((t,i)=>t+BY[i].p,0);
+  $('#s-board').innerHTML=`
+    <div class="strip">
+      <div class="mcell"><div class="lab">Plan total</div><div class="v o">${fmt(c.weekPay)}</div></div>
+      <div class="mcell"><div class="lab">Captured</div><div class="v g">${fmt(c.donePay)}</div></div>
+      <div class="mcell"><div class="lab">Left on plan</div><div class="v">${fmt(c.weekPay-weekDonePay)}</div></div>
+      <div class="mcell"><div class="lab">Board left</div><div class="v">${fmt(c.openPay)}</div></div>
+      <div class="mcell"><div class="lab">Stops done</div><div class="v g">${c.doneIds.length}</div></div>
+      <div class="mcell"><div class="lab">Stops open</div><div class="v">${c.openJobs.length}</div></div>
+    </div>
+    <div class="card"><div class="lab">Cash pipeline</div>
+      <div class="strip four" style="margin:7px 0 0;border-radius:9px">
+        <div class="mcell"><div class="lab">Captured</div><div class="v">${fmt(sumFor('captured'))}</div></div>
+        <div class="mcell"><div class="lab">Uploaded</div><div class="v">${fmt(sumFor('uploaded'))}</div></div>
+        <div class="mcell"><div class="lab">Invoiced</div><div class="v w">${fmt(sumFor('invoiced'))}</div></div>
+        <div class="mcell"><div class="lab">Paid</div><div class="v g">${fmt(sumFor('paid'))}</div></div>
+      </div>
+      <div class="hint" style="margin-top:6px">Move each stop along: captured → uploaded → invoiced → paid.</div></div>
+    <div class="seg">
+      <button class="${BF==='week'?'on':''}" data-bf="week">On the plan</button>
+      <button class="${BF==='done'?'on':''}" data-bf="done">Done</button>
+      <button class="${BF==='all'?'on':''}" data-bf="all">Everything open</button></div>
+    <table class="pl"><thead><tr><th>Location</th><th style="width:106px">Status</th><th style="text-align:right;width:62px">$</th></tr></thead>
+    <tbody>${ids.slice(0,220).map(i=>`<tr>
+      <td><button class="pjbtn" data-info="${i}"><b>${BY[i].n}</b><div class="ad">${BY[i].c}, ${BY[i].s}${dayOf[i]?' · '+dayOf[i]:''}${S.loaded[i]?'':' · <span style="color:var(--warn)">not in app</span>'}</div></button></td>
+      <td><select data-stt="${i}" aria-label="Status for ${BY[i].n}" style="max-width:102px;font-size:12px;padding:4px 6px;min-height:32px">
+        ${STATES.map(s=>`<option value="${s}" ${stat(i)===s?'selected':''}>${s}</option>`).join('')}</select></td>
+      <td class="mono" style="text-align:right">${fmt(BY[i].p)}</td></tr>`).join('')
+      ||'<tr><td colspan="3" class="empty">Nothing here yet.</td></tr>'}</tbody></table>
+    <div class="row" style="margin-top:10px"><button class="ghost" id="csvBtn">Download CSV</button></div>`;
+  $$('#s-board [data-bf]').forEach(b=>b.onclick=()=>{BF=b.dataset.bf;render()});
+  $$('#s-board [data-info]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.info));
+  $$('#s-board [data-stt]').forEach(b=>b.onchange=()=>{const i=b.dataset.stt;
+    if(b.value==='todo')delete S.status[i]; else S.status[i]=b.value; render();dirty()});
+  $('#csvBtn').onclick=doCsv;
+}
+/* ================= SHELL ================= */
+let ready=false;
+function render(){
+  if(!ready||!S.days.length)return;
+  renderCounters();
+  NAVS.forEach(k=>$('#s-'+k).classList.toggle('hide',k!==S.nav));
+  $$('#nav button').forEach(b=>{const on=b.dataset.s===S.nav;
+    b.classList.toggle('on',on);
+    if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+  if(S.nav==='now')renderNow();
+  else if(S.nav==='plan')renderPlan();
+  else if(S.nav==='clusters')renderClusters();
+  else if(S.nav==='app')renderApp();
+  else if(S.nav==='board')renderBoard();
+  refreshLiveTimers();
+}
+$$('#nav button').forEach(b=>b.onclick=()=>{S.nav=b.dataset.s;render();window.scrollTo(0,0);dirty()});
+let toastT;
+function toast(m,act){const old=document.querySelector('.toast');if(old)old.remove();
+  const e=document.createElement('div');e.className='toast';
+  e.setAttribute('role','status');e.setAttribute('aria-live','polite');
+  const sp=document.createElement('span');sp.textContent=m;e.appendChild(sp);
+  if(act){const b=document.createElement('button');b.textContent=act.label;
+    b.onclick=()=>{e.remove();act.fn()};e.appendChild(b)}
+  document.body.appendChild(e);
+  clearTimeout(toastT);toastT=setTimeout(()=>e.remove(),act?6000:2600)}
+const TKEY='ninja360-runsheet-theme';
+try{const t=localStorage.getItem(TKEY);
+  if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)}catch(e){}
+$('#themeBtn').onclick=()=>{const cur=document.documentElement.getAttribute('data-theme');
+  const next=cur==='dark'?'light':cur==='light'?'dark':(window.matchMedia('(prefers-color-scheme: dark)').matches?'light':'dark');
+  document.documentElement.setAttribute('data-theme',next);
+  try{localStorage.setItem(TKEY,next)}catch(e){}};
+/* ---------- persistence: local to this browser ---------- */
+const LSKEY='ninja360-runsheet-v1', LEGACY_LSKEY='ninja360-runsheet';
+function chip(txt,cls){const e=$('#syncChip');if(!e)return;e.textContent=txt;e.className='tbtn '+(cls||'')}
+function stampNow(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+const NAVS=['now','plan','clusters','app','board'];
+function refreshLiveTimers(){
+   $$('.live-timer').forEach(el=>{const id=el.dataset.liveTimer; const st=jobTimerState(id); el.textContent=st.label+(st.running?' • run':''); el.classList.toggle('running',st.running); el.title=jobTooltip(id);});
+}
+function mergeState(j){
+  if(!j||!j.days||!j.days.length)return false;
+  S.days=j.days; S.active=Math.min(j.active||0,j.days.length-1);
+  S.sv=j.sv||{}; S.loaded=j.loaded||{}; S.status=j.status||{}; S.notes=j.notes||{}; S.timers=j.timers||{};
+  S.here=j.here||{key:'home',time:8};
+  S.nav=NAVS.includes(j.nav)?j.nav:'now';
+  if(!isFinite(S.here.time))S.here.time=8;
+  if(S.here.key==='gps'&&!S.here.ll)S.here={key:'home',time:S.here.time};
+  S.days.forEach(d=>{if(!isFinite(d.startTime))d.startTime=8;
+    if(!Array.isArray(d.ids))d.ids=[]});
+  return true;
+}
+function dirty(){
+  try{
+    localStorage.setItem(LSKEY,JSON.stringify(S));
+    chip('Saved '+stampNow(),'ok');
+  }catch(e){chip('Save blocked','warn2')}
+}
+$('#syncChip').onclick=()=>{
+  dirty();
+  toast('Saved on this device');
+};
+function boot(){
+  let local=null;
+  try{
+    const t=localStorage.getItem(LSKEY)||localStorage.getItem(LEGACY_LSKEY);
+    if(t)local=JSON.parse(t);
+  }catch(e){}
+  const loaded=local&&mergeState(local);
+  if(!loaded)seed();
+  if(loaded)dirty();
+  const today=new Date(), iso=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  const ti=S.days.findIndex(d=>d.date===iso);
+  if(ti>=0&&ti!==S.active)S.active=ti;
+  ready=true;
+  render();
+  chip(loaded?'Loaded your plan':'Ready to plan','ok');
+}
+function csvText(){
+  const rows=[['Day','Date','Stop','Arrive','Depart','Leg mi','Location ID','WO','Site','Location','Address','City','State','Channel','End client','Payout','Opens','Closes','Hours','Status','In app']];
+  S.days.forEach((d,di)=>{const s=simulate(d);
+    s.rows.forEach((r,i)=>{const j=BY[r.id];
+      rows.push([di+1,d.date,i+1,hhmm(r.arr),hhmm(r.fin),r.leg.toFixed(1),j.id,j.wo||'',j.site||'',j.n,j.a,j.c,j.s,j.ch||'',j.cl,j.p,hhmm(j.o),hhmm(j.x),j.v?'verified':'assumed',stat(j.id),S.loaded[j.id]?'yes':'no'])})});
+  return rows.map(r=>r.map(v=>{v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(',')).join('\n');
+}
+function doCsv(){
+  try{
+    const blob=new Blob([csvText()],{type:'text/csv;charset=utf-8'});
+    const url=URL.createObjectURL(blob),link=document.createElement('a');
+    link.href=url;link.download='ninja360-run-sheet.csv';
+    document.body.appendChild(link);link.click();link.remove();
+    URL.revokeObjectURL(url);toast('CSV downloaded');
+  }catch(e){toast('Could not download the CSV')}
+}
+boot();
+
+</script>
+
+</body>
+</html>
