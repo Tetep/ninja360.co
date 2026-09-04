@@ -275,19 +275,34 @@ function placeName(k){if(k==='gps')return 'Current location (GPS)';
   if(k&&k.startsWith('job:')){const j=BY[k.slice(4)];return j?j.c+', '+j.s:'?'}
   return (PLACES[k]||PLACES.home).name}
 function seed(){
-  S.sv={'2026-9221':0.5};
+  // The Kansas swing, Sep 8–11: Manhattan Target first, Gap 1211 Wichita on
+  // day 3, Verizon stops packed around both, home via Emporia + Topeka.
+  // Overnights anchor on the last stop of the prior day (startKey 'job:…').
+  S.sv={};
   S.days=[
-   Object.assign(blankDay('2026-08-24'),{startKey:'liberty',startTime:12,endKey:'columbia',
-     ids:['2026-4493','2026-9221','2026-8443','2026-5740','2026-6931']}),
-   Object.assign(blankDay('2026-08-25'),{startKey:'columbia',startTime:5,endKey:'home',
-     ids:['2026-9433','2026-7575','2026-5401','2026-3933','2026-7681','2026-4971','2026-1916']}),
-   Object.assign(blankDay('2026-08-26'),{startTime:12,
-     ids:['2026-4275','2026-3136','2026-1862','2026-7412','2026-1668']}),
-   Object.assign(blankDay('2026-08-27'),{startTime:8,
-     ids:['2026-3842','2026-5350','2026-0944','2026-1820','2026-1001']}),
-   Object.assign(blankDay('2026-08-28'),{startTime:6,ids:['2026-9334']})];
-  S.days.forEach(d=>d.ids.forEach(i=>S.loaded[i]=1));
-  delete S.loaded['2026-3933'];   // Sunset Hills came in on 8/24 — not in the app yet
+   Object.assign(blankDay('2026-09-08'),{startKey:'home',startTime:5.5,endKey:'home',
+     ids:['2026-0000','2026-1896','2026-6911','2026-8804','2026-8093','2026-0938']}),
+   Object.assign(blankDay('2026-09-09'),{startKey:'job:2026-0938',startTime:8.5,endKey:'home',
+     ids:['2026-7983','2026-1376','2026-5976','2026-8317','2026-8197','2026-1225','2026-8172']}),
+   Object.assign(blankDay('2026-09-10'),{startKey:'job:2026-8172',startTime:9,endKey:'home',
+     ids:['2026-3142','2026-0840','2026-4299','2026-7953','2026-8835','2026-1610','2026-7702']}),
+   Object.assign(blankDay('2026-09-11'),{startKey:'job:2026-7702',startTime:8,endKey:'home',
+     ids:['2026-7954','2026-7106','2026-8888','2026-1339','2026-4049']})];
+  // Billed, per IDS Open Invoices V07 (2026-09-04).
+  ['2026-3136','2026-3842','2026-9221','2026-9433','2026-3933','2026-5401','2026-7575',
+   '2026-6931','2026-6997','2026-1388','2026-1668','2026-4493','2026-8443','2026-4275',
+   '2026-0944','2026-1001','2026-1820','2026-1862','2026-1752','2026-7412','2026-4963',
+   '2026-5740'].forEach(i=>S.status[i]='invoiced');
+  S.status['2026-9334']='captured';   // Target Lincoln — shot, never invoiced
+  // What IDS has actually pushed to the field app (Tim's screenshots, 9/4).
+  // None of the Sep 8–11 route is loaded yet — that's the ask to Michelle + Betsy.
+  ['2026-0726','2026-1001','2026-1173','2026-1249','2026-1314','2026-1803','2026-1862',
+   '2026-1902','2026-1916','2026-4041','2026-4135','2026-4178','2026-4275','2026-4278',
+   '2026-4283','2026-4318','2026-4479','2026-4493','2026-4576','2026-4622','2026-4662',
+   '2026-4815','2026-4866','2026-4877','2026-4909','2026-4952','2026-4971','2026-5006',
+   '2026-5167','2026-5178','2026-5221','2026-5264','2026-5350','2026-5393','2026-5401',
+   '2026-5436','2026-5444','2026-5479','2026-5511','2026-5640','2026-5740','2026-6997',
+   '2026-8316','2026-8443'].forEach(i=>S.loaded[i]=1);
   S.active=0;
 }
 /* ---------- core simulator ---------- */
@@ -993,7 +1008,9 @@ $('#themeBtn').onclick=()=>{const cur=document.documentElement.getAttribute('dat
   document.documentElement.setAttribute('data-theme',next);
   try{localStorage.setItem(TKEY,next)}catch(e){}};
 /* ---------- persistence: local to this browser ---------- */
-const LSKEY='ninja360-runsheet-v1', LEGACY_LSKEY='ninja360-runsheet';
+// v2: fresh start on 2026-09-04. Old v1 / legacy plans are intentionally NOT
+// migrated — the seed() below is the plan now.
+const LSKEY='ninja360-runsheet-v2';
 function chip(txt,cls){const e=$('#syncChip');if(!e)return;e.textContent=txt;e.className='tbtn '+(cls||'')}
 function stampNow(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
 const NAVS=['now','plan','clusters','app','board'];
@@ -1025,7 +1042,7 @@ $('#syncChip').onclick=()=>{
 function boot(){
   let local=null;
   try{
-    const t=localStorage.getItem(LSKEY)||localStorage.getItem(LEGACY_LSKEY);
+    const t=localStorage.getItem(LSKEY);
     if(t)local=JSON.parse(t);
   }catch(e){}
   const loaded=local&&mergeState(local);
