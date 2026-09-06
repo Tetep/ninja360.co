@@ -164,13 +164,37 @@ svg{width:100%;height:auto;display:block}
    Leaflet's overlay svg to 0×0 and clip every dot and route line — restore the default */
 .leaflet-overlay-pane svg{width:auto;height:auto}
 .leaflet-container a{color:var(--accent)}
-.lnum{display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;
-  background:var(--accent);color:var(--accent-ink);font:700 11px 'IBM Plex Mono',ui-monospace,monospace;
-  border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer}
-.lnum.late{background:var(--bad)}
-.lnum.se{background:var(--ink);color:#fff;font-size:10px}
-.lnum.home{background:#fff;color:var(--ink);border-color:var(--ink);font-size:13px;cursor:default}
 .leaflet-tooltip{font-size:11.5px;padding:4px 7px}
+/* Ninja‑360 branded pins — geometry and colours from the "Ninja‑360 Branded Map Pins" design */
+.npx{background:none;border:0}
+.npin{display:flex;flex-direction:column;align-items:center;width:26px;filter:drop-shadow(0 5px 8px rgba(0,0,0,.45));cursor:pointer}
+.npin .head{position:relative;width:26px;height:26px;border-radius:50%;z-index:2;
+  background:radial-gradient(circle at 30% 25%,var(--l),var(--b) 55%,var(--d) 100%)}
+.npin .tail{width:13px;height:26px;margin-top:-9px;z-index:1;clip-path:polygon(50% 100%,0 0,100% 0);
+  background:radial-gradient(circle at 30% 0%,var(--l),var(--b) 55%,var(--d) 100%)}
+.npin.sel{width:52px;filter:drop-shadow(0 7px 10px rgba(0,0,0,.5))}
+.npin.sel .head{width:52px;height:52px;box-shadow:0 0 0 5px var(--r);
+  background:radial-gradient(circle at 30% 25%,var(--l),var(--b) 45%,var(--d) 100%)}
+.npin.sel .tail{width:26px;height:42px;margin-top:-17px;
+  background:radial-gradient(circle at 30% 0%,var(--l),var(--b) 45%,var(--d) 100%)}
+.npin.sel.late .head{box-shadow:0 0 0 5px rgba(162,53,42,.65)}   /* not in the design: store shuts before you arrive */
+.npin .disc{position:absolute;inset:14%;border-radius:50%;background:#fff;border:2px solid var(--a);box-sizing:border-box;
+  display:flex;align-items:center;justify-content:center}
+.npin .ini{font:800 15px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--b);letter-spacing:-.02em}
+.npin .nmark{width:80%;height:80%;object-fit:contain;display:block}
+.ndot{position:relative;width:22px;height:22px;border-radius:50%;cursor:pointer;
+  background:radial-gradient(circle at 30% 25%,var(--l),var(--b) 55%,var(--d) 100%);box-shadow:0 2px 5px rgba(0,0,0,.4)}
+.nbadge{position:absolute;left:100%;top:-4px;margin-left:-8px;z-index:3;display:flex;border-radius:16px;overflow:hidden;white-space:nowrap;
+  box-shadow:0 3px 8px rgba(0,0,0,.4);font:800 13px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.nbadge .dn{background:radial-gradient(circle at 30% 25%,#ffcf8a,#f7941d 55%,#c95f00 100%);padding:6px 9px;color:#fff}
+.nbadge .lf{background:#2b2e36;padding:6px 9px;color:#c7cad0}
+.ndot .nbadge{top:-8px;transform:scale(.8);transform-origin:left top}
+.ndot.sm{width:12px;height:12px;box-shadow:0 1px 3px rgba(0,0,0,.4)}   /* state-level zoom — not in the design */
+/* start / end / home — not in the design; kept in the badge's dark‑pill language */
+.lnum{display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;
+  background:#2b2e36;color:#fff;font:800 11px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  border:2px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.4)}
+.lnum.home{background:#fff;color:#2b2e36;border-color:#2b2e36;font-size:13px}
 .leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11px;color:var(--ink2);margin-top:6px;align-items:center}
 .leg i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:-1px}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--surf);border-top:1px solid var(--line);
@@ -823,10 +847,41 @@ function renderPool(){
     render();dirty()});
   $$('#pool [data-info]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.info));
 }
-/* ---------- MAP: Leaflet + free CARTO/OSM tiles when online; the drawn SVG when not ---------- */
-let LMAP=null, LLAYER=null, LFIT='';
+/* ---------- MAP: Leaflet + free CARTO/OSM tiles when online; the drawn SVG when not ----------
+   Pins follow Tim's "Ninja‑360 Branded Map Pins" design: a teardrop per job in the brand's
+   palette; stops on today's plan get the big Selected pin, which shows the store's initials
+   until the shot is done and then flips to the Ninja mark. Jobs sharing a location collapse
+   to one pin with a Done·Left badge (always Ninja‑orange, so mixed groups read as one system).
+   Below city zoom, jobs are the design's 22px dots. Start / End / Home and the "late" ring are
+   not in the design and are kept in the badge's dark‑pill language. */
+let LMAP=null, LLAYER=null, LFIT='', LZ=null;
 const TILES='https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
 const TILE_ATTR='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+const NINJA={ini:'N3',base:'#f7941d',dark:'#c95f00',light:'#ffcf8a',acc:'#ffffff'};
+const BRANDS={   // the design's brand cards, verbatim
+  'home depot':{ini:'HD', base:'#F96302',dark:'#8A3800',light:'#FFB877',acc:'#ffffff'},
+  'gap':       {ini:'GAP',base:'#0B2E59',dark:'#04141F',light:'#4A7FB8',acc:'#ffffff'},
+  'old navy':  {ini:'ON', base:'#0B4A8F',dark:'#03203F',light:'#5C9FE0',acc:'#ffffff'},
+  'verizon':   {ini:'VZ', base:'#EE0000',dark:'#7A0000',light:'#FF7A6E',acc:'#000000'},
+  'safelite':  {ini:'SL', base:'#0046AD',dark:'#001F52',light:'#5C9CFF',acc:'#FFCC00'},
+  'valvoline': {ini:'VAL',base:'#002664',dark:'#00102E',light:'#4D6FA8',acc:'#F47B20'}};
+// not in the design: Verizon‑channel agents ride the Verizon palette with their own initials; Target etc. take the default
+const AGENT_INI={'victra':'VIC','tcc':'TCC','russell':'RC','cellular sales':'CS','wireless zone':'WZ'};
+const EXTRA_INI={'target':'TGT','banana republic':'BR','athleta':'ATH'};
+function brandOf(j){
+  const lc=String(j.cl||'').trim().toLowerCase();
+  for(const k in BRANDS)if(lc.startsWith(k))return BRANDS[k];
+  for(const k in AGENT_INI)if(lc.includes(k))return Object.assign({},BRANDS.verizon,{ini:AGENT_INI[k]});
+  const words=lc.split(/\s+/).filter(Boolean);
+  const ini=(EXTRA_INI[lc]||(words.length>1?words.map(w=>w[0]).join('').slice(0,3):lc.slice(0,3))).toUpperCase();
+  return Object.assign({},j.ch==='Verizon'?BRANDS.verizon:NINJA,{ini});
+}
+const pinVars=b=>`--b:${b.base};--d:${b.dark};--l:${b.light};--a:${b.acc};--r:${b.base}4d`;
+const badgeHTML=(dn,lf)=>`<div class="nbadge"><span class="dn">✓${dn}</span><span class="lf">${lf}</span></div>`;
+function pinHTML(b,sel,allDone,badge,late){
+  const inner=sel?`<div class="disc">${allDone?'<img class="nmark" src="/assets/ninja-mark.png" alt="done">':'<b class="ini">'+escHTML(b.ini)+'</b>'}</div>`:'';
+  return `<div class="npin${sel?' sel':''}${late?' late':''}" style="${pinVars(b)}"><div class="head">${inner}${badge}</div><div class="tail"></div></div>`;
+}
 function renderMap(){
   const lm=$('#lmap'), sv=$('#map'); if(!lm&&!sv)return;
   const hasL=typeof window.L!=='undefined'&&!!L.map;
@@ -834,47 +889,66 @@ function renderMap(){
   if(sv)sv.classList.toggle('hide',hasL);
   if(!hasL){renderMapSVG();return}
   // the Plan tab rebuilds its markup on every render, so the container is usually a new node
-  if(LMAP&&LMAP.getContainer()!==lm){try{LMAP.remove()}catch(e){} LMAP=null;LLAYER=null;LFIT=''}
+  if(LMAP&&LMAP.getContainer()!==lm){try{LMAP.remove()}catch(e){} LMAP=null;LLAYER=null;LFIT='';LZ=null}
   if(!LMAP){
     LMAP=L.map(lm,{zoomSnap:.5});
     L.tileLayer(TILES,{subdomains:'abcd',maxZoom:19,attribution:TILE_ATTR}).addTo(LMAP);
     LLAYER=L.layerGroup().addTo(LMAP);
-  } else LLAYER.clearLayers();
-  const d=day(), a=assigned(), mine=new Set(d.ids);
-  const late=new Set(d.ids.length?simulate(d).rows.filter(r=>r.late).map(r=>r.id):[]);
-  // Leaflet writes colours as SVG attributes, where var() does not resolve — read the theme's real values
-  const cv=(n,f)=>(getComputedStyle(document.documentElement).getPropertyValue(n)||'').trim()||f;
-  const C={accent:cv('--accent','#b5460f'),ink3:cv('--ink3','#8a8580'),money:cv('--money','#2f6b4f'),line2:cv('--line2','#cfc9c2')};
-  // stops that share a location fan out into a row instead of stacking on top of each other
-  const seen=new Map();
-  const pin=(ll,cls,txt,tip,onclick)=>{
-    const key=(+ll[0]).toFixed(4)+','+(+ll[1]).toFixed(4), k=seen.get(key)||0; seen.set(key,k+1);
-    const m=L.marker(ll,{icon:L.divIcon({className:'lnum '+cls,html:'<b>'+txt+'</b>',iconSize:[22,22],iconAnchor:[11-15*k,11]}),
-      keyboard:false,zIndexOffset:k*10}).addTo(LLAYER);
-    if(tip)m.bindTooltip(tip,{direction:'top',offset:[15*k,-10]}); if(onclick)m.on('click',onclick); return m};
-  J.forEach(j=>{ if(!isFinite(j.lat)||!isFinite(j.lon)||mine.has(j.id))return;   // today's stops get numbered pins below
-    const r=j.p>=1000?8:j.p>=300?6:4.5;
-    let col=C.ink3,op=.55;
-    if(HOLD(j)){col=C.line2;op=.6} else if(a[j.id]!==undefined){col=C.money;op=.9}
-    L.circleMarker([j.lat,j.lon],{radius:r,color:'#fff',weight:1,fillColor:col,fillOpacity:op})
-      .bindTooltip(j.n+' — '+fmt(j.p),{direction:'top',offset:[0,-4]}).on('click',()=>jobSheet(j.id)).addTo(LLAYER);
-  });
-  const s0=placeLL(d.startKey), e0=placeLL(d.endKey), pts=[];
-  if(d.ids.length){
-    pts.push(s0); d.ids.forEach(i=>{const j=BY[i]; if(j&&isFinite(j.lat))pts.push([j.lat,j.lon])}); pts.push(e0);
-    L.polyline(pts,{color:C.accent,weight:3,opacity:.75,lineJoin:'round'}).addTo(LLAYER);
-    d.ids.forEach((id,i)=>{const j=BY[id]; if(!j||!isFinite(j.lat))return;
-      pin([j.lat,j.lon],late.has(id)?'late':'',i+1,(i+1)+'. '+j.n+' — '+fmt(j.p)+(late.has(id)?' · shuts before you finish':''),()=>jobSheet(id))});
-    pin(s0,'se','S','Start: '+placeName(d.startKey));
-    if(Math.abs(s0[0]-e0[0])+Math.abs(s0[1]-e0[1])>1e-6)pin(e0,'se','E','End: '+placeName(d.endKey));
+    LMAP.on('zoomend',()=>{if(zoomBand(LMAP.getZoom())!==LZ)drawPins()});   // small dots ↔ dots ↔ teardrops
   }
-  pin(BASE,'home','⌂','Home — Overland Park KS');
-  const key=S.active+'|'+d.ids.join(',')+'|'+d.startKey+'|'+d.endKey;
+  const d=day(), key=S.active+'|'+d.ids.join(',')+'|'+d.startKey+'|'+d.endKey;
   if(key!==LFIT){LFIT=key;   // only re-frame when the route itself changes, not on every status tick
+    const pts=[placeLL(d.startKey)].concat(d.ids.map(i=>BY[i]).filter(j=>j&&isFinite(j.lat)).map(j=>[j.lat,j.lon]),[placeLL(d.endKey)]);
     const b=d.ids.length?L.latLngBounds(pts):L.latLngBounds(J.filter(j=>isFinite(j.lat)).map(j=>[j.lat,j.lon]).concat([BASE]));
-    if(b.isValid())LMAP.fitBounds(b,{padding:[28,28],maxZoom:13});
+    if(b.isValid())LMAP.fitBounds(b,{padding:[36,36],maxZoom:13});
   }
+  drawPins();
   setTimeout(()=>{try{LMAP.invalidateSize()}catch(e){}},0);
+}
+// 0: state view — 12px dots, no badges (not in the design; 22px × 150 jobs is a blob)
+// 1: region view — the design's 22px dots + badges   2: city view — teardrops
+const zoomBand=z=>z>=10?2:z>=9?1:0;
+function drawPins(){
+  if(!LMAP||!LLAYER)return; LLAYER.clearLayers();
+  const d=day(), band=zoomBand(LMAP.getZoom()), close=band===2, mid=band>=1; LZ=band;
+  const late=new Set(d.ids.length?simulate(d).rows.filter(r=>r.late).map(r=>r.id):[]);
+  // jobs sharing a location become one pin
+  const groups=new Map();
+  J.forEach(j=>{ if(!isFinite(j.lat)||!isFinite(j.lon))return;
+    const k=j.lat.toFixed(4)+','+j.lon.toFixed(4); if(!groups.has(k))groups.set(k,[]); groups.get(k).push(j) });
+  groups.forEach(list=>{
+    const todays=d.ids.map(i=>BY[i]).filter(j=>j&&list.includes(j));
+    const sel=todays.length>0, n=list.length;
+    const doneN=list.filter(j=>done(j.id)).length, leftN=list.filter(j=>!done(j.id)&&!HOLD(j)).length;
+    const lead=sel?(todays.find(j=>!done(j.id))||todays[0]):(list.find(j=>!done(j.id)&&!HOLD(j))||list[0]);
+    const mixed=new Set(list.map(j=>brandOf(j).base)).size>1;
+    const b=sel?brandOf(lead):(mixed?NINJA:brandOf(lead));
+    const allDone=sel&&todays.every(j=>done(j.id));
+    const isLate=todays.some(j=>late.has(j.id));
+    const badge=n>1?badgeHTML(doneN,leftN):'';
+    const icon=(sel||close)
+      ?L.divIcon({className:'npx',html:pinHTML(b,sel,allDone,badge,isLate),iconSize:sel?[52,77]:[26,43],iconAnchor:sel?[26,77]:[13,43]})
+      :L.divIcon({className:'npx',html:`<div class="ndot${mid?'':' sm'}" style="${pinVars(b)}">${mid?badge:''}</div>`,
+                  iconSize:mid?[22,22]:[12,12],iconAnchor:mid?[11,11]:[6,6]});
+    const dim=!sel&&list.every(j=>HOLD(j));
+    const m=L.marker([lead.lat,lead.lon],{icon,keyboard:false,zIndexOffset:sel?1000:0,opacity:dim?.5:1}).addTo(LLAYER);
+    const names=list.slice(0,4).map(j=>(done(j.id)?'✓ ':'')+escHTML(j.n)).join('<br>')+(n>4?'<br>+'+(n-4)+' more':'');
+    m.bindTooltip(names,{direction:'top',offset:[0,sel?-70:close?-40:mid?-10:-6]});
+    m.on('click',()=>jobSheet(lead.id));
+  });
+  // route line + start / end / home
+  const s0=placeLL(d.startKey), e0=placeLL(d.endKey);
+  if(d.ids.length){
+    const pts=[s0].concat(d.ids.map(i=>BY[i]).filter(j=>j&&isFinite(j.lat)).map(j=>[j.lat,j.lon]),[e0]);
+    L.polyline(pts,{color:NINJA.base,weight:3,opacity:.8,lineJoin:'round'}).addTo(LLAYER);
+  }
+  const seen=new Map();
+  const mark=(ll,cls,txt,tip)=>{const k=(+ll[0]).toFixed(4)+','+(+ll[1]).toFixed(4), i=seen.get(k)||0; seen.set(k,i+1);
+    L.marker(ll,{icon:L.divIcon({className:'lnum '+cls,html:'<b>'+txt+'</b>',iconSize:[22,22],iconAnchor:[11-15*i,11]}),keyboard:false,zIndexOffset:500+i*10})
+      .bindTooltip(tip,{direction:'top',offset:[15*i,-10]}).addTo(LLAYER)};
+  if(d.ids.length){ mark(s0,'se','S','Start: '+placeName(d.startKey));
+    if(Math.abs(s0[0]-e0[0])+Math.abs(s0[1]-e0[1])>1e-6)mark(e0,'se','E','End: '+placeName(d.endKey)) }
+  mark(BASE,'home','⌂','Home — Overland Park KS');
 }
 function renderMapSVG(){
   const el=$('#map'); if(!el)return;
