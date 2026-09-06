@@ -303,7 +303,7 @@ const DATA={"jobs":[{"id":"2026-3136","n":"Old Navy 5988 - Merriam, KS","a":"582
 const J=DATA.jobs, BASE=DATA.base, COL=DATA.columbia;
 const BY={}; J.forEach(j=>BY[j.id]=j);
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const fmt=n=>'$'+Math.round(n).toLocaleString();
+const fmt=n=>Math.round(n).toLocaleString()+' pts';
 const escHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 const hhmm=t=>{let m=Math.round(t*60);m=((m%1440)+1440)%1440;
   return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
@@ -519,7 +519,7 @@ function renderNow(){
     <div class="mcell"><div class="lab">Shut by now</div><div class="v ${shut.length?'w':''}">${shut.length}</div></div>
   </div>
   <h2>Best next move</h2>
-  <div class="hint">Ranked by dollars per hour including the drive to get there.</div>
+  <div class="hint">Ranked by points per hour including the drive to get there.</div>
   <div id="nowList"></div>
   ${d.ids.length?`<h2>This day so far &mdash; ${fmt(s.pay)}, finish ${hhmm(s.end)}</h2>
   <div class="row" style="margin:2px 0 8px"><button class="prim" id="navDayNow">🧭 Navigate this day</button></div>
@@ -759,7 +759,7 @@ function renderPlan(){
       <div class="mcell"><div class="lab">Miles</div><div class="v">${Math.round(s.miles).toLocaleString()}</div></div>
       <div class="mcell"><div class="lab">Day length</div><div class="v ${s.span>14?'b':s.span>12?'w':''}">${s.span.toFixed(1)} h</div></div>
       <div class="mcell"><div class="lab">Finish</div><div class="v">${d.ids.length?hhmm(s.end):'—'}</div></div>
-      <div class="mcell"><div class="lab">$ / hour</div><div class="v ${rate&&rate<60?'w':'g'}">${s.span>0?fmt(rate):'—'}</div></div>
+      <div class="mcell"><div class="lab">Pts / hour</div><div class="v ${rate&&rate<60?'w':'g'}">${s.span>0?fmt(rate):'—'}</div></div>
     </div>
     <div class="card"><div class="row">
       <div class="fld"><span class="lab" id="lab-date">Date</span><input type="date" id="fDate" aria-labelledby="lab-date" value="${d.date}"></div>
@@ -1082,12 +1082,12 @@ function renderClusters(){
   $('#s-clusters').innerHTML=`
     <div class="card"><div class="lab">Everything not yet on a day</div>
       <div style="font-size:15px;margin-top:3px">${CLUS.length} buildable runs · <b>${fmt(tot)}</b> · ${CLUS.reduce((t,c)=>t+c.ids.length,0)} stops</div>
-      <div class="hint">Each one is a legal day: every stop inside its own opening hours, home the same night. Ranked by dollars per hour.</div>
+      <div class="hint">Each one is a legal day: every stop inside its own opening hours, home the same night. Ranked by points per hour.</div>
       <button class="ghost" id="reclus">Rebuild</button></div>
     ${CLUS.map((c,i)=>`<div class="stop clus" style="grid-template-columns:1fr auto">
       <div><div class="nm">${c.area}${c.far?'<span class="badge acc">long day</span>':''}</div>
         <div class="ad">${c.ids.length} stops · ${Math.round(c.miles)} mi · ${c.span.toFixed(1)} h · leave ${hhmm(c.startTime)}, back ${hhmm(c.end)}</div>
-        <div class="ad mono" style="color:var(--money)"><b>${fmt(c.pay/c.span)}/hour</b> · ${(c.pay/c.miles).toFixed(2)}/mile</div>
+        <div class="ad mono" style="color:var(--money)"><b>${fmt(c.pay/c.span)} / hour</b> · ${(c.pay/c.miles).toFixed(2)} pts/mile</div>
         <div class="acts"><button class="mini go" data-mk="${i}">Make this a day</button>
           <button class="mini" data-see="${i}">List stops</button></div>
         <div id="cl${i}" class="hide" style="margin-top:6px;font-size:12px;color:var(--ink2)">
@@ -1218,7 +1218,7 @@ function renderBoard(){
       <button class="${BF==='week'?'on':''}" data-bf="week">On the plan</button>
       <button class="${BF==='done'?'on':''}" data-bf="done">Done</button>
       <button class="${BF==='all'?'on':''}" data-bf="all">Everything open</button></div>
-    <table class="pl"><thead><tr><th>Location</th><th style="width:106px">Status</th><th style="text-align:right;width:62px">$</th></tr></thead>
+    <table class="pl"><thead><tr><th>Location</th><th style="width:106px">Status</th><th style="text-align:right;width:62px">Pts</th></tr></thead>
     <tbody>${ids.slice(0,220).map(i=>`<tr>
       <td><button class="pjbtn" data-info="${i}"><b>${BY[i].n}</b><div class="ad">${BY[i].c}, ${BY[i].s}${dayOf[i]?' · '+dayOf[i]:''}${S.loaded[i]?'':' · <span style="color:var(--warn)">not in app</span>'}</div></button></td>
       <td><select data-stt="${i}" aria-label="Status for ${BY[i].n}" style="max-width:102px;font-size:12px;padding:4px 6px;min-height:32px">
