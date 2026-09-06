@@ -304,6 +304,7 @@ const J=DATA.jobs, BASE=DATA.base, COL=DATA.columbia;
 const BY={}; J.forEach(j=>BY[j.id]=j);
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(n).toLocaleString()+' pts';
+const fmtUSD=n=>'$'+Math.round(n).toLocaleString(); // real dollars — the Michelle/Betsy IDS message only
 const escHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 const hhmm=t=>{let m=Math.round(t*60);m=((m%1440)+1440)%1440;
   return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
@@ -1117,7 +1118,7 @@ function requestText(){
     L.push(niceDate(k).toUpperCase());
     grp[k].forEach(i=>{const j=BY[i];
       L.push('  '+(/^new-/.test(i)?'(no IDS id yet)':i)+'   Site '+(j.site||'—')+'   '+j.n);
-      L.push('       '+j.a+', '+j.c+', '+j.s+'   |   '+(j.ch||'—')+' / '+j.cl+'   |   '+fmt(j.p)+(j.wo?'   |   WO '+j.wo:''));});
+      L.push('       '+j.a+', '+j.c+', '+j.s+'   |   '+(j.ch||'—')+' / '+j.cl+'   |   '+fmtUSD(j.p)+(j.wo?'   |   WO '+j.wo:''));});
     L.push('');});
   if(spare.length){
     L.push('These can come off — I am not getting to them in this window:');
