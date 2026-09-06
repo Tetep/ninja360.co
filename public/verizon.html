@@ -157,7 +157,7 @@ select,input[type=date],input[type=time],input[type=text],input[type=number]{
 svg{width:100%;height:auto;display:block}
 .mapbox circle.hit{cursor:pointer}
 /* Leaflet map (online) — the SVG below it is the offline fallback */
-#lmap{height:min(72vw,470px);min-height:300px;border-radius:8px;overflow:hidden;background:var(--surf2)}
+#lmap{height:clamp(320px,60vh,560px);border-radius:8px;overflow:hidden;background:var(--surf2)}
 #lmap.hide,#map.hide{display:none}
 .leaflet-container{font-family:inherit;font-size:12px}
 /* the global svg{width:100%;height:auto} rule (for the drawn fallback map) would collapse
@@ -191,6 +191,18 @@ svg{width:100%;height:auto;display:block}
 .nbadge .lf{background:#2b2e36;padding:6px 9px;color:#c7cad0}
 .ndot .nbadge{top:-8px;transform:scale(.8);transform-origin:left top}
 .ndot.sm{width:12px;height:12px;box-shadow:0 1px 3px rgba(0,0,0,.4)}   /* state-level zoom — not in the design */
+/* Selected pin at region / state zoom — smaller so a day's stops don't clump into one blob */
+.npin.sel.sel-m{width:44px}
+.npin.sel.sel-m .head{width:44px;height:44px;box-shadow:0 0 0 4px var(--r)}
+.npin.sel.sel-m .tail{width:22px;height:36px;margin-top:-15px}
+.npin.sel.sel-m .ini{font-size:13px}
+.npin.sel.sel-s{width:36px;filter:drop-shadow(0 5px 8px rgba(0,0,0,.45))}
+.npin.sel.sel-s .head{width:36px;height:36px;box-shadow:0 0 0 3px var(--r)}
+.npin.sel.sel-s .tail{width:18px;height:30px;margin-top:-13px}
+.npin.sel.sel-s .ini{font-size:11px}
+.npin.sel.sel-s .nbadge{top:-6px;transform:scale(.8);transform-origin:left top}
+/* on-site timer chips: only show once a timer has actually run */
+.live-timer.idle{display:none}
 /* start / end / home — not in the design; kept in the badge's dark‑pill language */
 .lnum{display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;
   background:#2b2e36;color:#fff;font:800 11px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
@@ -275,7 +287,7 @@ table.pl td{padding:6px;border-bottom:1px solid var(--line);vertical-align:top}
 <nav id="nav">
   <button data-s="now" class="on"><span class="ic">📍</span>Now</button>
   <button data-s="plan"><span class="ic">🗓️</span>Plan</button>
-  <button data-s="clusters"><span class="ic">�</span>Clusters</button>
+  <button data-s="clusters"><span class="ic">🗺️</span>Clusters</button>
   <button data-s="app"><span class="ic">📮</span>IDS app</button>
   <button data-s="board"><span class="ic">✅</span>Board</button>
 </nav>
@@ -561,7 +573,7 @@ function renderNow(){
       <button class="pjbtn" data-info="${j.id}" title="${escHTML(jobTooltip(j.id))}"><div class="nm">${j.n}${S.loaded[j.id]?'':'<span class="badge warn">not in app</span>'}${note?'<span class="badge acc">note</span>':''}</div>
         <div class="ad">${j.a}, ${j.c}, ${j.s}</div>
         <div class="ad mono">arrive ${hhmm(r.arr)} · out ${hhmm(r.fin)} · shuts ${hhmm(j.x)}</div>
-        <div class="ad mono"><span class="live-timer ${timer.running?'running':''}" data-live-timer="${j.id}">${timer.label}${timer.running?' • run':''}</span></div></button>
+        <div class="ad mono"><span class="live-timer ${timer.running?'running':(timer.elapsedMs?'':'idle')}" data-live-timer="${j.id}">${timer.label}${timer.running?' • run':''}</span></div></button>
       <div class="dist mono"><b style="color:var(--money)">${fmt(j.p)}</b><br>${r.m.toFixed(0)} mi<br>${fmt(r.rate)}/h</div>
       <button class="addb ${r.inday?'dis':''}" data-take="${j.id}" aria-label="${r.inday?'Already on this day':'Add to this day'}">${r.inday?'✓':'+'}</button></div>`}).join('')
     || '<div class="empty">Nothing is still open from here. Try an earlier time or a different starting point.</div>';
@@ -588,7 +600,7 @@ function stopCards(d,s){
       <div><div class="nm">${j.n}${lb}${wb}${ab}${db}${note?'<span class="badge acc">note</span>':''}</div>
         <div class="ad">${j.a}, ${j.c}, ${j.s}</div>
         <div class="hrs mono">${hhmm(j.o)}–${hhmm(j.x)} ${hb} · ${r.leg.toFixed(1)} mi · <button class="tset" data-sv="${r.id}">${Math.round(svc(j)*60)} min on site${S.sv[r.id]!==undefined?' ✎':''}</button></div>
-        <div class="job-note mono"><span class="live-timer ${timer.running?'running':''}" data-live-timer="${r.id}">${timer.label}${timer.running?' • run':''}</span>${note?`<span style="display:inline-block;margin-left:6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;">${escHTML(note)}</span>`:''}</div>
+        <div class="job-note mono"><span class="live-timer ${timer.running?'running':(timer.elapsedMs?'':'idle')}" data-live-timer="${r.id}">${timer.label}${timer.running?' • run':''}</span>${note?`<span style="display:inline-block;margin-left:6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;">${escHTML(note)}</span>`:''}</div>
         <div class="acts">
           <button class="mini" data-up="${i}" ${i===0?'disabled':''} aria-label="Move up">↑</button>
           <button class="mini" data-dn="${i}" ${i===s.rows.length-1?'disabled':''} aria-label="Move down">↓</button>
@@ -835,7 +847,7 @@ function renderPool(){
     return `<div class="pj ${on&&!mine?'used':''}">
       <button class="pjbtn" data-info="${j.id}" title="${escHTML(jobTooltip(j.id))}"><div class="nm">${j.n}${HOLD(j)?'<span class="badge warn">'+j.st+'</span>':''}${done(j.id)?'<span class="badge v">done</span>':''}${S.loaded[j.id]?'':'<span class="badge warn">not in app</span>'}${note?'<span class="badge acc">note</span>':''}</div>
         <div class="ad">${j.a}, ${j.c}, ${j.s} <span class="mono">· ${hhmm(j.o)}–${hhmm(j.x)}</span></div>
-        <div class="ad mono" style="margin-top:2px"><span class="live-timer ${timer.running?'running':''}" data-live-timer="${j.id}">${timer.label}${timer.running?' • run':''}</span></div></button>
+        <div class="ad mono" style="margin-top:2px"><span class="live-timer ${timer.running?'running':(timer.elapsedMs?'':'idle')}" data-live-timer="${j.id}">${timer.label}${timer.running?' • run':''}</span></div></button>
       <div class="dist mono"><b style="color:var(--money)">${fmt(j.p)}</b><br>${j._d.toFixed(0)} mi${on?'<br>'+(mine?'in this day':'day '+(a[j.id]+1)):''}</div>
       <button class="addb ${on&&!mine?'dis':''}" data-add="${j.id}" aria-label="${mine?'Remove from this day':'Add to this day'}">${mine?'✓':'+'}</button></div>`}).join('')
     ||'<div class="empty">Nothing matches that filter.</div>';
@@ -844,7 +856,7 @@ function renderPool(){
     render();dirty()});
   $$('#pool [data-info]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.info));
 }
-/* ---------- MAP: Leaflet + free CARTO/OSM tiles when online; the drawn SVG when not ----------
+/* ---------- MAP: Leaflet + OpenStreetMap tiles when online; the drawn SVG when not ----------
    Pins follow Tim's "Ninja‑360 Branded Map Pins" design: a teardrop per job in the brand's
    palette; stops on today's plan get the big Selected pin, which shows the store's initials
    until the shot is done and then flips to the Ninja mark. Jobs sharing a location collapse
@@ -852,8 +864,10 @@ function renderPool(){
    Below city zoom, jobs are the design's 22px dots. Start / End / Home and the "late" ring are
    not in the design and are kept in the badge's dark‑pill language. */
 let LMAP=null, LLAYER=null, LFIT='', LZ=null;
-const TILES='https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-const TILE_ATTR='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+// OpenStreetMap's standard tiles: no API key. (CARTO's voyager endpoint now watermarks unkeyed
+// requests "API KEY REQUIRED" — which the sandbox never showed because it can't reach tile hosts.)
+const TILES='https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const TILE_ATTR='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const NINJA={ini:'N3',base:'#f7941d',dark:'#c95f00',light:'#ffcf8a',acc:'#ffffff'};
 const BRANDS={   // the design's brand cards, verbatim
   'home depot':{ini:'HD', base:'#F96302',dark:'#8A3800',light:'#FFB877',acc:'#ffffff'},
@@ -879,11 +893,11 @@ function brandOf(j){
 }
 const pinVars=b=>`--b:${b.base};--d:${b.dark};--l:${b.light};--a:${b.acc};--r:${b.base}4d`;
 const badgeHTML=(dn,lf)=>`<div class="nbadge"><span class="dn">✓${dn}</span><span class="lf">${lf}</span></div>`;
-function pinHTML(b,sel,allDone,badge,late){
+function pinHTML(b,sel,allDone,badge,late,size){
   const glyph=allDone?'<img class="nmark" src="/assets/ninja-mark.png" alt="done">'
              :(b.sym&&SYMBOLS[b.sym])||('<b class="ini">'+escHTML(b.ini)+'</b>');   // brand symbol beats initials
   const inner=sel?`<div class="disc">${glyph}</div>`:'';
-  return `<div class="npin${sel?' sel':''}${late?' late':''}" style="${pinVars(b)}"><div class="head">${inner}${badge}</div><div class="tail"></div></div>`;
+  return `<div class="npin${sel?' sel':''}${size||''}${late?' late':''}" style="${pinVars(b)}"><div class="head">${inner}${badge}</div><div class="tail"></div></div>`;
 }
 function renderMap(){
   const lm=$('#lmap'), sv=$('#map'); if(!lm&&!sv)return;
@@ -895,7 +909,7 @@ function renderMap(){
   if(LMAP&&LMAP.getContainer()!==lm){try{LMAP.remove()}catch(e){} LMAP=null;LLAYER=null;LFIT='';LZ=null}
   if(!LMAP){
     LMAP=L.map(lm,{zoomSnap:.5});
-    L.tileLayer(TILES,{subdomains:'abcd',maxZoom:19,attribution:TILE_ATTR}).addTo(LMAP);
+    L.tileLayer(TILES,{maxZoom:19,attribution:TILE_ATTR}).addTo(LMAP);
     LLAYER=L.layerGroup().addTo(LMAP);
     LMAP.on('zoomend',()=>{if(zoomBand(LMAP.getZoom())!==LZ)drawPins()});   // small dots ↔ dots ↔ teardrops
   }
@@ -929,14 +943,16 @@ function drawPins(){
     const allDone=sel&&todays.every(j=>done(j.id));
     const isLate=todays.some(j=>late.has(j.id));
     const badge=n>1?badgeHTML(doneN,leftN):'';
+    // Selected pins scale with zoom like the dots do: the design's 52px at city zoom, 44 at region, 36 at state
+    const SZ=sel?(close?[52,77,'']:mid?[44,65,' sel-m']:[36,53,' sel-s']):[26,43,''];
     const icon=(sel||close)
-      ?L.divIcon({className:'npx',html:pinHTML(b,sel,allDone,badge,isLate),iconSize:sel?[52,77]:[26,43],iconAnchor:sel?[26,77]:[13,43]})
+      ?L.divIcon({className:'npx',html:pinHTML(b,sel,allDone,badge,isLate,SZ[2]),iconSize:[SZ[0],SZ[1]],iconAnchor:[SZ[0]/2,SZ[1]]})
       :L.divIcon({className:'npx',html:`<div class="ndot${mid?'':' sm'}" style="${pinVars(b)}">${mid?badge:''}</div>`,
                   iconSize:mid?[22,22]:[12,12],iconAnchor:mid?[11,11]:[6,6]});
     const dim=!sel&&list.every(j=>HOLD(j));
     const m=L.marker([lead.lat,lead.lon],{icon,keyboard:false,zIndexOffset:sel?1000:0,opacity:dim?.5:1}).addTo(LLAYER);
     const names=list.slice(0,4).map(j=>(done(j.id)?'✓ ':'')+escHTML(j.n)).join('<br>')+(n>4?'<br>+'+(n-4)+' more':'');
-    m.bindTooltip(names,{direction:'top',offset:[0,sel?-70:close?-40:mid?-10:-6]});
+    m.bindTooltip(names,{direction:'top',offset:[0,sel?-(SZ[1]-7):close?-40:mid?-10:-6]});
     m.on('click',()=>jobSheet(lead.id));
   });
   // route line + start / end / home
