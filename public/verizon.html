@@ -157,7 +157,7 @@ select,input[type=date],input[type=time],input[type=text],input[type=number]{
 svg{width:100%;height:auto;display:block}
 .mapbox circle.hit{cursor:pointer}
 /* Leaflet map (online) — the SVG below it is the offline fallback */
-#lmap{height:min(64vw,470px);min-height:260px;border-radius:8px;overflow:hidden;background:var(--surf2)}
+#lmap{height:min(72vw,470px);min-height:300px;border-radius:8px;overflow:hidden;background:var(--surf2)}
 #lmap.hide,#map.hide{display:none}
 .leaflet-container{font-family:inherit;font-size:12px}
 /* the global svg{width:100%;height:auto} rule (for the drawn fallback map) would collapse
@@ -182,6 +182,7 @@ svg{width:100%;height:auto;display:block}
   display:flex;align-items:center;justify-content:center}
 .npin .ini{font:800 15px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--b);letter-spacing:-.02em}
 .npin .nmark{width:80%;height:80%;object-fit:contain;display:block}
+.npin .nsym{width:80%;height:80%;display:block}
 .ndot{position:relative;width:22px;height:22px;border-radius:50%;cursor:pointer;
   background:radial-gradient(circle at 30% 25%,var(--l),var(--b) 55%,var(--d) 100%);box-shadow:0 2px 5px rgba(0,0,0,.4)}
 .nbadge{position:absolute;left:100%;top:-4px;margin-left:-8px;z-index:3;display:flex;border-radius:16px;overflow:hidden;white-space:nowrap;
@@ -735,6 +736,8 @@ function renderPlan(){
   };
   $('#s-plan').innerHTML=`
     <div class="lab" style="margin:8px 0 5px">Days</div><div class="rail">${rail}</div>
+    <div class="mapbox" style="margin:8px 0 4px"><div id="lmap" role="region" aria-label="Job map"></div><svg id="map" viewBox="0 0 720 470" role="img" aria-label="Job map (offline)"></svg></div>
+    <div class="hint" style="margin:0 0 10px">Tap a pin for details. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left.</div>
     <div class="strip">
       <div class="mcell"><div class="lab">Stops</div><div class="v">${d.ids.length}</div></div>
       <div class="mcell"><div class="lab">Payout</div><div class="v g">${fmt(s.pay)}</div></div>
@@ -773,13 +776,7 @@ function renderPlan(){
     <h2>Add stops</h2>
     <div class="filters" id="filters"></div>
     <div id="pool"></div>
-    <h2>Map</h2>
-    <div class="hint">Tap a dot for details. Dot size = payout.</div>
-    <div class="mapbox"><div id="lmap" role="region" aria-label="Job map"></div><svg id="map" viewBox="0 0 720 470" role="img" aria-label="Job map (offline)"></svg></div>
-    <div class="leg"><span><i style="background:var(--accent)"></i>This day</span>
-      <span><i style="background:var(--money)"></i>Another day</span>
-      <span><i style="background:var(--ink3)"></i>Unscheduled</span>
-      <span><i style="background:var(--line2)"></i>On hold</span></div>`;
+`;
   $$('#s-plan .dchip[data-i]').forEach(b=>b.onclick=()=>{S.active=+b.dataset.i;render()});
   $('#addDay').onclick=()=>{const last=S.days[S.days.length-1];let nd='';
     if(last&&last.date){const x=new Date(last.date+'T12:00:00');x.setDate(x.getDate()+1);nd=x.toISOString().slice(0,10)}
@@ -864,10 +861,14 @@ const BRANDS={   // the design's brand cards, verbatim
   'old navy':  {ini:'ON', base:'#0B4A8F',dark:'#03203F',light:'#5C9FE0',acc:'#ffffff'},
   'verizon':   {ini:'VZ', base:'#EE0000',dark:'#7A0000',light:'#FF7A6E',acc:'#000000'},
   'safelite':  {ini:'SL', base:'#0046AD',dark:'#001F52',light:'#5C9CFF',acc:'#FFCC00'},
-  'valvoline': {ini:'VAL',base:'#002664',dark:'#00102E',light:'#4D6FA8',acc:'#F47B20'}};
-// not in the design: Verizon‑channel agents ride the Verizon palette with their own initials; Target etc. take the default
+  'valvoline': {ini:'VAL',base:'#002664',dark:'#00102E',light:'#4D6FA8',acc:'#F47B20'},
+  // Tim's call: Target shows its bullseye as the symbol instead of initials (still flips to the Ninja mark when done)
+  'target':    {ini:'TGT',base:'#CC0000',dark:'#7A0000',light:'#FF6E6E',acc:'#ffffff',sym:'target'}};
+const SYMBOLS={
+  target:'<svg class="nsym" viewBox="0 0 20 20" role="img" aria-label="Target"><circle cx="10" cy="10" r="10" fill="#CC0000"/><circle cx="10" cy="10" r="6.6" fill="#fff"/><circle cx="10" cy="10" r="3.3" fill="#CC0000"/></svg>'};
+// not in the design: Verizon‑channel agents ride the Verizon palette with their own initials; other unlisted brands take the default
 const AGENT_INI={'victra':'VIC','tcc':'TCC','russell':'RC','cellular sales':'CS','wireless zone':'WZ'};
-const EXTRA_INI={'target':'TGT','banana republic':'BR','athleta':'ATH'};
+const EXTRA_INI={'banana republic':'BR','athleta':'ATH'};
 function brandOf(j){
   const lc=String(j.cl||'').trim().toLowerCase();
   for(const k in BRANDS)if(lc.startsWith(k))return BRANDS[k];
@@ -879,7 +880,9 @@ function brandOf(j){
 const pinVars=b=>`--b:${b.base};--d:${b.dark};--l:${b.light};--a:${b.acc};--r:${b.base}4d`;
 const badgeHTML=(dn,lf)=>`<div class="nbadge"><span class="dn">✓${dn}</span><span class="lf">${lf}</span></div>`;
 function pinHTML(b,sel,allDone,badge,late){
-  const inner=sel?`<div class="disc">${allDone?'<img class="nmark" src="/assets/ninja-mark.png" alt="done">':'<b class="ini">'+escHTML(b.ini)+'</b>'}</div>`:'';
+  const glyph=allDone?'<img class="nmark" src="/assets/ninja-mark.png" alt="done">'
+             :(b.sym&&SYMBOLS[b.sym])||('<b class="ini">'+escHTML(b.ini)+'</b>');   // brand symbol beats initials
+  const inner=sel?`<div class="disc">${glyph}</div>`:'';
   return `<div class="npin${sel?' sel':''}${late?' late':''}" style="${pinVars(b)}"><div class="head">${inner}${badge}</div><div class="tail"></div></div>`;
 }
 function renderMap(){
