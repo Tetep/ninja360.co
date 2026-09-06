@@ -334,7 +334,7 @@ function placeLL(k){if(k==='gps'&&S.here.ll)return S.here.ll;
   if(k&&k.startsWith('job:')){const j=BY[k.slice(4)];return j?LL(j):BASE}
   return (PLACES[k]||PLACES.home).ll}
 function placeName(k){if(k==='gps')return 'Current location (GPS)';
-  if(k&&k.startsWith('job:')){const j=BY[k.slice(4)];return j?j.c+', '+j.s:'?'}
+  if(k&&k.startsWith('job:')){const j=BY[k.slice(4)];return j?(j.wp?j.n:j.c+', '+j.s):'?'}   // a waypoint is named, a job is placed
   return (PLACES[k]||PLACES.home).name}
 function seed(){
   // The Kansas swing, Sep 8–11: Manhattan Target first, Gap 1211 Wichita on
@@ -451,11 +451,12 @@ function openDayRoute(d){
 /* ---------- counters ---------- */
 function counters(){
   const a=assigned();
-  const weekIds=[...new Set(S.days.flatMap(d=>d.ids))].filter(i=>BY[i]);
+  // waypoints (wp) — lunch, a hotel — ride the days but are not billable work
+  const weekIds=[...new Set(S.days.flatMap(d=>d.ids))].filter(i=>BY[i]&&!BY[i].wp);
   const weekPay=weekIds.reduce((t,i)=>t+BY[i].p,0);
-  const doneIds=Object.keys(S.status).filter(i=>done(i)&&BY[i]);
+  const doneIds=Object.keys(S.status).filter(i=>done(i)&&BY[i]&&!BY[i].wp);
   const donePay=doneIds.reduce((t,i)=>t+BY[i].p,0);
-  const openJobs=J.filter(j=>!HOLD(j)&&!done(j.id));
+  const openJobs=J.filter(j=>!HOLD(j)&&!done(j.id)&&!j.wp);
   const openPay=openJobs.reduce((t,j)=>t+j.p,0);
   const need=weekIds.filter(i=>!S.loaded[i]).length;
   return{weekIds,weekPay,doneIds,donePay,openJobs,openPay,need};
@@ -589,7 +590,8 @@ function stopCards(d,s){
   return s.rows.map((r,i)=>{
     const j=BY[r.id];
     const cls=done(r.id)?'done':(r.late?'bad':(r.wait>0.02?'wait':''));
-    const hb=j.v?'<span class="badge v">hours verified</span>':'<span class="badge a">hours assumed</span>';
+    const wp=!!j.wp;
+    const hb=wp?'<span class="badge">stop</span>':(j.v?'<span class="badge v">hours verified</span>':'<span class="badge a">hours assumed</span>');
     const lb=r.late?`<span class="badge bad">shuts ${hhmm(j.x)}</span>`:'';
     const wb=r.wait>0.02?`<span class="badge warn">wait ${Math.round(r.wait*60)}m</span>`:'';
     const ab=S.loaded[r.id]?'':'<span class="badge warn">not in app</span>';
@@ -599,7 +601,7 @@ function stopCards(d,s){
       <div class="tm mono">${hhmm(r.arr)}<span class="to">${hhmm(r.fin)}</span></div>
       <div><div class="nm">${j.n}${lb}${wb}${ab}${db}${note?'<span class="badge acc">note</span>':''}</div>
         <div class="ad">${j.a}, ${j.c}, ${j.s}</div>
-        <div class="hrs mono">${hhmm(j.o)}–${hhmm(j.x)} ${hb} · ${r.leg.toFixed(1)} mi · <button class="tset" data-sv="${r.id}">${Math.round(svc(j)*60)} min on site${S.sv[r.id]!==undefined?' ✎':''}</button></div>
+        <div class="hrs mono">${wp?'any time':hhmm(j.o)+'–'+hhmm(j.x)} ${hb} · ${r.leg.toFixed(1)} mi ·<button class="tset" data-sv="${r.id}">${Math.round(svc(j)*60)} min on site${S.sv[r.id]!==undefined?' ✎':''}</button></div>
         <div class="job-note mono"><span class="live-timer ${timer.running?'running':(timer.elapsedMs?'':'idle')}" data-live-timer="${r.id}">${timer.label}${timer.running?' • run':''}</span>${note?`<span style="display:inline-block;margin-left:6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;">${escHTML(note)}</span>`:''}</div>
         <div class="acts">
           <button class="mini" data-up="${i}" ${i===0?'disabled':''} aria-label="Move up">↑</button>
@@ -743,8 +745,9 @@ function renderPlan(){
     const cur=d[k];
     // a job kept as start/end may no longer be a stop on this day — keep it selectable
     const extra=(cur&&cur.startsWith('job:')&&!d.ids.includes(cur.slice(4))&&BY[cur.slice(4)])?[cur.slice(4)]:[];
-    return Object.entries(PLACES).map(([key,v])=>`<option value="${key}" ${cur===key?'selected':''}>${v.name}</option>`).join('')
-      +d.ids.concat(extra).map(id=>`<option value="job:${id}" ${cur==='job:'+id?'selected':''}>Overnight — ${BY[id].c}, ${BY[id].s}</option>`).join('');
+    return (k==='startKey'?`<option value="gps" ${cur==='gps'?'selected':''}>📍 My location (GPS)</option>`:'')
+      +Object.entries(PLACES).map(([key,v])=>`<option value="${key}" ${cur===key?'selected':''}>${v.name}</option>`).join('')
+      +d.ids.concat(extra).map(id=>`<option value="job:${id}" ${cur==='job:'+id?'selected':''}>${BY[id].wp?escHTML(BY[id].n):'Overnight — '+BY[id].c+', '+BY[id].s}</option>`).join('');
   };
   $('#s-plan').innerHTML=`
     <div class="lab" style="margin:8px 0 5px">Days</div><div class="rail">${rail}</div>
@@ -767,6 +770,7 @@ function renderPlan(){
       <button class="ghost" id="bNav">🧭 Navigate</button>
       <button class="ghost danger" id="bDel">Delete day</button>
       <button class="ghost" id="bPlace" aria-expanded="${PL_OPEN?'true':'false'}">＋ Place</button>
+      <button class="ghost" id="bStop" aria-expanded="${ST_OPEN?'true':'false'}">＋ Stop</button>
     </div></div>
     ${PL_OPEN?`<div class="card cj"><div class="lab">Add a place to start from or stay at</div>
       <div class="hint" style="margin:4px 0 8px">Friends, family, a motel. It shows up under Start from and End at on every day.</div>
@@ -783,6 +787,19 @@ function renderPlan(){
         <div class="pj"><div style="flex:1;min-width:0"><div class="nm">${escHTML(v.name)}</div><div class="ad">${escHTML(v.a||'')}</div></div>
           <button class="ghost" data-plrm="${escHTML(k)}" aria-label="Remove ${escHTML(v.name)}">Remove</button></div>`).join(''):''}
     </div>`:''}
+    ${ST_OPEN?`<div class="card cj"><div class="lab">Add a stop that isn't a job</div>
+      <div class="hint" style="margin:4px 0 8px">Lunch, a hotel, a hardware run, a friend's. Goes on this day, timed and routed like any stop — no payout, never sent to IDS. Pick it under End at to sleep there.</div>
+      <div class="row" style="align-items:flex-end">
+        <div class="fld"><span class="lab">Name</span><input id="stName" placeholder="Lunch — Salina" style="width:150px"></div>
+        <div class="fld"><span class="lab">Address</span><input id="stAddr" placeholder="optional" style="width:160px"></div>
+        <div class="fld"><span class="lab">City</span><input id="stCity" style="width:120px"></div>
+        <div class="fld"><span class="lab">ST</span><input id="stSt" maxlength="2" style="width:48px;text-transform:uppercase"></div>
+        <div class="fld"><span class="lab">Minutes</span><input id="stMin" type="number" inputmode="numeric" value="30" min="5" step="5" style="width:80px"></div>
+        <div class="fld"><span class="lab">lat, lon (optional)</span><input id="stLL" placeholder="38.84, -97.61" style="width:140px"></div>
+        <button class="prim" id="stAdd">Add to this day</button>
+      </div>
+      <div id="stMsg" class="hint" style="margin-top:6px"></div>
+    </div>`:''}
     <div id="stops">${d.ids.length?stopCards(d,s):'<div class="empty">No stops yet — add them below.</div>'}</div>
     <div class="note" id="routeNote"></div>
     <h2>Add stops</h2>
@@ -794,7 +811,16 @@ function renderPlan(){
     if(last&&last.date){const x=new Date(last.date+'T12:00:00');x.setDate(x.getDate()+1);nd=x.toISOString().slice(0,10)}
     S.days.push(blankDay(nd));S.active=S.days.length-1;render();dirty()};
   $('#fDate').onchange=e=>{d.date=e.target.value;render();dirty()};
-  $('#fStart').onchange=e=>{d.startKey=e.target.value;render();dirty()};
+  $('#fStart').onchange=e=>{const v=e.target.value;
+    if(v==='gps'){   // start from wherever the phone is right now
+      if(!navigator.geolocation){toast('GPS is not available here — pick a place from the list');render();return}
+      toast('Getting your location…');
+      navigator.geolocation.getCurrentPosition(pos=>{
+        S.here={key:'gps',ll:[pos.coords.latitude,pos.coords.longitude],time:S.here.time};
+        d.startKey='gps';render();dirty();toast('Starting from your GPS position')},
+        ()=>{toast('Could not get a fix — pick a place from the list');render()},{timeout:8000,maximumAge:60000});
+      return}
+    d.startKey=v;render();dirty()};
   $('#fEnd').onchange=e=>{d.endKey=e.target.value;render();dirty()};
   $('#fTime').onchange=e=>{if(!e.target.value)return;
     const p=e.target.value.split(':');d.startTime=(+p[0])+(+p[1])/60;render();dirty()};
@@ -818,6 +844,13 @@ function renderPlan(){
   };
   $$('#s-plan [data-plrm]').forEach(b=>b.onclick=()=>{const k=b.dataset.plrm;
     if(confirm(`Remove ${(S.places[k]||{}).name||k}? Days using it go back to Home.`))removePlace(k)});
+  const bSt=$('#bStop'); if(bSt)bSt.onclick=()=>{ST_OPEN=!ST_OPEN;render()};
+  const stAdd=$('#stAdd'); if(stAdd)stAdd.onclick=async()=>{
+    stAdd.disabled=true; const msg=$('#stMsg'); if(msg){msg.textContent='Placing on the map…';msg.style.color=''}
+    const r=await addWaypoint($('#stName').value,$('#stAddr').value,$('#stCity').value,$('#stSt').value,$('#stMin').value,$('#stLL').value);
+    if(r.err){const m=$('#stMsg'); if(m){m.textContent=r.err;m.style.color='var(--warn)'} stAdd.disabled=false}
+    else {ST_OPEN=false; render(); toast('Added to this day — drag it into order, or Auto-order')}
+  };
   renderFilters(); renderPool(); renderMap(); wireStops();
 }
 function renderFilters(){
@@ -837,7 +870,8 @@ function renderPool(){
   const d=day(), a=assigned();
   const anchor=d.ids.length?LL(BY[d.ids[d.ids.length-1]]):placeLL(d.startKey);
   const q=F.q.toLowerCase();
-  let list=J.filter(j=>{if(F.st&&j.s!==F.st)return false;if(F.cl&&j.cl!==F.cl)return false;
+  let list=J.filter(j=>{if(j.wp)return false;   // waypoints are added from "＋ Stop", not the pool
+    if(F.st&&j.s!==F.st)return false;if(F.cl&&j.cl!==F.cl)return false;
     if(q&&!(j.n+' '+j.a+' '+j.c+' '+j.id).toLowerCase().includes(q))return false;return true});
   list.forEach(j=>{j._d=mi(anchor,LL(j));j._b=mi(BASE,LL(j))});
   list.sort((x,y)=>F.sort==='pay'?y.p-x.p||x._d-y._d:F.sort==='base'?x._b-y._b:x._d-y._d);
@@ -884,6 +918,7 @@ const SYMBOLS={
 const AGENT_INI={'victra':'VIC','tcc':'TCC','russell':'RC','cellular sales':'CS','wireless zone':'WZ'};
 const EXTRA_INI={'banana republic':'BR','athleta':'ATH'};
 function brandOf(j){
+  if(j.wp)return {ini:initialsOf(j.n),base:'#2b2e36',dark:'#14161a',light:'#6b7078',acc:'#ffffff'};   // a waypoint, not a client
   const lc=String(j.cl||'').trim().toLowerCase();
   for(const k in BRANDS)if(lc.startsWith(k))return BRANDS[k];
   for(const k in AGENT_INI)if(lc.includes(k))return Object.assign({},BRANDS.verizon,{ini:AGENT_INI[k]});
@@ -936,13 +971,15 @@ function drawPins(){
   groups.forEach(list=>{
     const todays=d.ids.map(i=>BY[i]).filter(j=>j&&list.includes(j));
     const sel=todays.length>0, n=list.length;
-    const doneN=list.filter(j=>done(j.id)).length, leftN=list.filter(j=>!done(j.id)&&!HOLD(j)).length;
-    const lead=sel?(todays.find(j=>!done(j.id))||todays[0]):(list.find(j=>!done(j.id)&&!HOLD(j))||list[0]);
-    const mixed=new Set(list.map(j=>brandOf(j).base)).size>1;
+    const shots=list.filter(j=>!j.wp), todayShots=todays.filter(j=>!j.wp);   // waypoints aren't shots
+    const doneN=shots.filter(j=>done(j.id)).length, leftN=shots.filter(j=>!done(j.id)&&!HOLD(j)).length;
+    const pick=arr=>arr.find(j=>!j.wp&&!done(j.id)&&!HOLD(j))||arr.find(j=>!j.wp)||arr[0];   // a job fronts a shared pin, not the lunch
+    const lead=sel?pick(todays):pick(list);
+    const mixed=new Set((shots.length?shots:list).map(j=>brandOf(j).base)).size>1;
     const b=sel?brandOf(lead):(mixed?NINJA:brandOf(lead));
-    const allDone=sel&&todays.every(j=>done(j.id));
+    const allDone=sel&&todayShots.length>0&&todayShots.every(j=>done(j.id));
     const isLate=todays.some(j=>late.has(j.id));
-    const badge=n>1?badgeHTML(doneN,leftN):'';
+    const badge=shots.length>1?badgeHTML(doneN,leftN):'';
     // Selected pins scale with zoom like the dots do: the design's 52px at city zoom, 44 at region, 36 at state
     const SZ=sel?(close?[52,77,'']:mid?[44,65,' sel-m']:[36,53,' sel-s']):[26,43,''];
     const icon=(sel||close)
@@ -1068,9 +1105,9 @@ function renderClusters(){
 }
 /* ================= IDS APP ================= */
 function requestText(){
-  const weekIds=[...new Set(S.days.flatMap(d=>d.ids))].filter(i=>BY[i]);
+  const weekIds=[...new Set(S.days.flatMap(d=>d.ids))].filter(i=>BY[i]&&!BY[i].wp);
   const need=weekIds.filter(i=>!S.loaded[i]);
-  const spare=Object.keys(S.loaded).filter(i=>S.loaded[i]&&BY[i]&&weekIds.indexOf(i)<0&&!done(i));
+  const spare=Object.keys(S.loaded).filter(i=>S.loaded[i]&&BY[i]&&!BY[i].wp&&weekIds.indexOf(i)<0&&!done(i));
   if(!need.length&&!spare.length)return 'Everything on this plan is already loaded. Nothing to request.';
   const dayOf={}; S.days.forEach((d,i)=>d.ids.forEach(id=>dayOf[id]=d.date||('Day '+(i+1))));
   const grp={}; need.forEach(i=>{const k=dayOf[i];(grp[k]=grp[k]||[]).push(i)});
@@ -1090,9 +1127,9 @@ function requestText(){
   return L.join('\n');
 }
 function renderApp(){
-  const weekIds=[...new Set(S.days.flatMap(d=>d.ids))].filter(i=>BY[i]);
+  const weekIds=[...new Set(S.days.flatMap(d=>d.ids))].filter(i=>BY[i]&&!BY[i].wp);
   const need=weekIds.filter(i=>!S.loaded[i]);
-  const spare=Object.keys(S.loaded).filter(i=>S.loaded[i]&&BY[i]&&weekIds.indexOf(i)<0&&!done(i));
+  const spare=Object.keys(S.loaded).filter(i=>S.loaded[i]&&BY[i]&&!BY[i].wp&&weekIds.indexOf(i)<0&&!done(i));
   const have=weekIds.filter(i=>S.loaded[i]);
   const dayOf={}; S.days.forEach((d,i)=>d.ids.forEach(id=>dayOf[id]=d.date||('Day '+(i+1))));
   const req=requestText();
@@ -1140,7 +1177,7 @@ let BF='week';
 function renderBoard(){
   const c=counters();
   const weekIds=c.weekIds;
-  const ids = BF==='week'?weekIds : BF==='done'?c.doneIds : J.filter(j=>!HOLD(j)&&!done(j.id)).map(j=>j.id);
+  const ids = BF==='week'?weekIds : BF==='done'?c.doneIds : J.filter(j=>!HOLD(j)&&!done(j.id)&&!j.wp).map(j=>j.id);
   const dayOf={}; S.days.forEach((d,i)=>d.ids.forEach(id=>dayOf[id]=d.date||('Day '+(i+1))));
   const STATES=['todo','captured','uploaded','invoiced','paid'];
   const sumFor=st=>Object.keys(S.status).filter(i=>BY[i]&&stat(i)===st).reduce((t,i)=>t+BY[i].p,0);
@@ -1386,7 +1423,28 @@ async function copyText(t,preEl){
   return false;   // caller tells Tim the text is selected
 }
 function noteRequest(ids){ if(ids&&ids.length){S.lastRequest={at:Date.now(),ids:[...ids]}; dirty()} }
-let CJ_OPEN=false, PL_OPEN=false;
+/* ---------- waypoints: stops that aren't field jobs (lunch, a hotel, a hardware run, a friend's) ----------
+   Modelled as a custom job with wp:1 and $0, so routing, timing, the map and the stop list work
+   unchanged; kept out of the IDS request, the Board, the pool and the payout counters. */
+const initialsOf=name=>{const w=String(name||'').split(/[^a-z0-9]+/i).filter(Boolean);
+  return ((w.length>1?w.map(x=>x[0]).join(''):String(name||'')).slice(0,3)).toUpperCase()||'•'};
+async function addWaypoint(name,a,c,s,mins,latlon){
+  name=String(name||'').trim(); a=String(a||'').trim(); c=String(c||'').trim(); s=String(s||'').trim().toUpperCase();
+  if(!name||!c||!s)return {err:'Need at least a name, a city and a state.'};
+  let ll=null, approx=false;
+  const m=String(latlon||'').match(/(-?\d+(?:\.\d+)?)[,\s]+(-?\d+(?:\.\d+)?)/);
+  if(m&&Math.abs(+m[1])<=90&&Math.abs(+m[2])<=180)ll=[+m[1],+m[2]];
+  if(!ll&&a)ll=await geocode(a,c,s);
+  if(!ll){const inf=inferFrom('',c,s); if(inf.ll){ll=inf.ll;approx=true}}
+  if(!ll)return {err:`Couldn't place ${c}, ${s}. Add "lat, lon" or try a fuller address.`};
+  const id=uniqueId('stop-'+(name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,20)||'stop'));
+  const job={id,n:name,a:a||c,c,s,cl:'Stop',ch:'Stop',p:0,lat:ll[0],lon:ll[1],o:0,x:24,v:1,
+    hs:'any time'+(approx?' · coords ≈ '+c:''),r:'Stop',st:'',sv:Math.max(5,+mins||30)/60,wo:'',site:'',custom:1,wp:1};
+  S.custom.push(job); J.push(job); BY[id]=job; S.loaded[id]=1;   // never "not in app" — IDS doesn't know it exists
+  const d=day(); if(!d.ids.includes(id))d.ids.push(id);
+  dirty(); render(); return {id};
+}
+let CJ_OPEN=false, PL_OPEN=false, ST_OPEN=false;
 function boot(){
   let local=null;
   try{
