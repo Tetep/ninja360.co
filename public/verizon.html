@@ -233,6 +233,11 @@ svg{width:100%;height:auto;display:block}
 .chg.md{width:16px;height:16px;border-radius:5px;border-width:1.25px}
 .chg.sm{width:11px;height:11px;border-radius:3px;border-width:1px;box-shadow:0 1px 2px rgba(0,0,0,.3)}
 .chg.ts{box-shadow:0 0 0 2px #FF8D2D,0 2px 6px rgba(0,0,0,.35)}      /* truck stop at an interstate exit: orange halo */
+.chg{position:relative}
+.chg.fav{box-shadow:0 0 0 2px #FFC220,0 0 10px rgba(255,194,32,.75),0 2px 6px rgba(0,0,0,.35)}   /* IONNA — Tim's network: gold */
+.chg .star{position:absolute;top:-8px;right:-8px;font-size:12px;line-height:1;color:#FFC220;text-shadow:0 1px 2px rgba(0,0,0,.55);font-style:normal}
+.chg.md .star{top:-7px;right:-7px;font-size:10px}
+.leg .ci.fav{box-shadow:0 0 0 1.5px #FFC220}
 .leg .ci{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:5px;margin-right:5px;
   background:var(--b);color:var(--a);font:800 7.5px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;border:1px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.3)}
 .leg .ci.ts{box-shadow:0 0 0 1.5px #FF8D2D}
@@ -475,8 +480,13 @@ function gmapsPoint(k){
 // the free-text waypoint to a real nearby station. No API key, no origin (Maps uses
 // wherever you're standing), just a waypoint ahead of the destination.
 function chargerDirUrl(j){
+  // a favorite network (IONNA) we already know about within 15 mi beats a generic search
+  let way='EV fast charging station near '+j.c+', '+j.s, best=null;
+  if(typeof CLIST!=='undefined')CLIST.forEach(p=>{const a=p.AddressInfo; if(!a||!chgBrand(p).fav||!isFinite(a.Latitude))return;
+    const d=mi(LL(j),[a.Latitude,a.Longitude]); if(d<=15&&(!best||d<best.d))best={d,a}});
+  if(best)way=best.a.Latitude.toFixed(5)+','+best.a.Longitude.toFixed(5);
   return 'https://www.google.com/maps/dir/?api=1&travelmode=driving'
-    +'&waypoints='+encodeURIComponent('EV fast charging station near '+j.c+', '+j.s)
+    +'&waypoints='+encodeURIComponent(way)
     +'&destination='+encodeURIComponent(j.a+', '+j.c+', '+j.s);
 }
 function dayRouteUrls(d){
@@ -827,7 +837,7 @@ function renderPlan(){
     </div>
     <div class="lab" style="margin:8px 0 5px">Days</div><div class="rail">${rail}</div>
     <div class="mapbox" style="margin:8px 0 4px"><div id="lmap" role="region" aria-label="Job map"></div><svg id="map" viewBox="0 0 720 470" role="img" aria-label="Job map (offline)"></svg></div>
-    <div class="hint" style="margin:0 0 10px">Tap a pin for details. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left. ⚡ chips are DC fast chargers only (50kW+) — on the road and near your stops; chips wear the network’s colors (Love’s red, EVgo navy) and an orange halo means a truck stop at an interstate exit. Tap one for plugs, power, and directions.</div>
+    <div class="hint" style="margin:0 0 10px">Tap a pin for details. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left. ⚡ chips are DC fast chargers only (50kW+) — on the road and near your stops; chips wear the network’s colors (Love’s red, EVgo navy) an orange halo means a truck stop at an interstate exit, and gold ★ is IONNA — your network. Tap one for plugs, power, and directions.</div>
     <div class="leg" id="chgLeg" hidden></div>
     <div class="strip">
       <div class="mcell"><div class="lab">Stops</div><div class="v">${d.ids.length}</div></div>
@@ -1134,7 +1144,7 @@ const CHG_BRANDS=[
  [/francis/i,                                  {ini:'FE', base:'#2E7D32',acc:'#ffffff',name:'Francis Energy'}],
  [/blink/i,                                    {ini:'BLK',base:'#00A9A5',acc:'#ffffff',name:'Blink'}],
  [/7-?eleven|7charge/i,                        {ini:'7',  base:'#008062',acc:'#F58220',name:'7Charge'}],
- [/ionna/i,                                    {ini:'ION',base:'#5B2E91',acc:'#ffffff',name:'IONNA'}]];
+ [/ionna|rechargery/i,                         {ini:'ION',base:'#5B2E91',acc:'#ffffff',fav:1,name:'IONNA'}]];
 const CHG_DEFAULT={ini:'⚡',base:'#1671F2',acc:'#ffffff',name:'Fast charger'};
 const chgHay=p=>{const a=p.AddressInfo||{}; return [a.Title,(p.OperatorInfo||{}).Title,a.AddressLine1,p.GeneralComments].join(' ')};
 const chgBrand=p=>{const hay=chgHay(p), hit=CHG_BRANDS.find(([re])=>re.test(hay)); return hit?hit[1]:CHG_DEFAULT};
@@ -1188,12 +1198,12 @@ function renderChargers(){
   const band=zoomBand(LMAP.getZoom()), sz=band===2?22:band===1?16:11;
   CLIST.forEach(p=>{
     const a=p.AddressInfo; if(!a||!isFinite(a.Latitude)||!isFinite(a.Longitude))return;
-    const ts=isTruckStop(p), br=chgBrand(p), S2=band===2?26:sz;
-    const inner=band===2?'<span class="ini">'+escHTML(br.ini)+'</span>':BOLT;   // letters up close, a bolt further out
+    const ts=isTruckStop(p), br=chgBrand(p), fav=!!br.fav, S2=band===2?26:sz;
+    const inner=(band===2?'<span class="ini">'+escHTML(br.ini)+'</span>':BOLT)+(fav&&band>=1?'<i class="star">★</i>':'');   // letters up close, a bolt further out
     const icon=L.divIcon({className:'chgx',iconSize:[S2,S2],iconAnchor:[S2/2,S2/2],
-      html:'<div class="chg'+(band===2?' c':band===1?' md':' sm')+(ts?' ts':'')+'" style="--b:'+br.base+';--a:'+br.acc+'">'+inner+'</div>'});
-    L.marker([a.Latitude,a.Longitude],{icon,keyboard:false,zIndexOffset:ts?-50:-100}).addTo(CLAYER)   // quietly under the job pins; truck stops on top of other chargers
-      .bindTooltip('⚡ '+escHTML(chargerBrief(p)),{direction:'top',offset:[0,-S2/2-2]})
+      html:'<div class="chg'+(band===2?' c':band===1?' md':' sm')+(ts?' ts':'')+(fav?' fav':'')+'" style="--b:'+br.base+';--a:'+br.acc+'">'+inner+'</div>'});
+    L.marker([a.Latitude,a.Longitude],{icon,keyboard:false,zIndexOffset:fav?0:ts?-50:-100}).addTo(CLAYER)   // quietly under the job pins; favorites over truck stops over the rest
+      .bindTooltip((fav?'★ ':'⚡ ')+escHTML(chargerBrief(p)),{direction:'top',offset:[0,-S2/2-2]})
       .bindPopup(chargerPopupHTML(p));
   });
   renderChargerLegend();
@@ -1203,8 +1213,9 @@ function renderChargerLegend(){
   const el=$('#chgLeg'); if(!el)return;
   const seen=new Map(); CLIST.forEach(p=>{const b=chgBrand(p); if(!seen.has(b.name))seen.set(b.name,b)});
   el.hidden=!seen.size;
-  el.innerHTML=[...seen.values()].sort((x,y)=>(y.ts?1:0)-(x.ts?1:0)||x.name.localeCompare(y.name))
-    .map(b=>'<span><i class="ci'+(b.ts?' ts':'')+'" style="--b:'+b.base+';--a:'+b.acc+'">'+escHTML(b.ini)+'</i>'+escHTML(b.name)+'</span>').join('');
+  const rank=b=>b.fav?2:b.ts?1:0;   // favorite, then truck stops, then the rest
+  el.innerHTML=[...seen.values()].sort((x,y)=>rank(y)-rank(x)||x.name.localeCompare(y.name))
+    .map(b=>'<span><i class="ci'+(b.ts?' ts':'')+(b.fav?' fav':'')+'" style="--b:'+b.base+';--a:'+b.acc+'">'+escHTML(b.ini)+'</i>'+escHTML(b.name)+(b.fav?' ★':'')+'</span>').join('');
 }
 function chargerPopupHTML(p){
   const a=p.AddressInfo||{}, op=(p.OperatorInfo&&p.OperatorInfo.Title)||'Unknown network', br=chgBrand(p);
@@ -1217,7 +1228,7 @@ function chargerPopupHTML(p){
   const dir='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(a.Latitude+','+a.Longitude);
   return '<div style="font:600 12px/1.4 -apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif;max-width:200px">'
     +'<span class="chg c" style="--b:'+br.base+';--a:'+br.acc+';display:inline-flex;vertical-align:middle;margin:0 6px 2px 0"><span class="ini">'+escHTML(br.ini)+'</span></span><b>'+escHTML(a.Title||'Charging station')+'</b><br>'
-    +'<span style="color:#666">'+escHTML(op)+' · DC fast'+(isTruckStop(p)?' · <b style="color:#E67A1C">truck stop</b>, interstate exit':'')+'</span><br><br>'
+    +'<span style="color:#666">'+escHTML(op)+' · DC fast'+(br.fav?' · <b style="color:#C48A00">★ your network</b>':'')+(isTruckStop(p)?' · <b style="color:#E67A1C">truck stop</b>, interstate exit':'')+'</span><br><br>'
     +conns+'<br><br>'
     +'<a href="'+dir+'" target="_blank" rel="noopener">Directions →</a></div>';
 }
