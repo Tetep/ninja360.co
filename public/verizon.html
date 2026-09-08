@@ -90,6 +90,21 @@ header .sub{font-size:12px;color:var(--head-sub);margin-top:1px}
 .brand-video-frame video{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#000}
 .brand-logo-overlay{position:absolute;right:14px;bottom:12px;width:92px;max-width:28%;height:auto;filter:drop-shadow(0 8px 16px rgba(0,0,0,.42));z-index:1}
 .brand-panel{background:transparent;border:none;border-radius:0;box-shadow:none;overflow:visible;padding:0}
+/* the brand, always on: header lockup + the Plan tab's entry panel (ninja360.net tokens: charcoal + orange) */
+.hbrand{display:flex;align-items:center;gap:10px;min-width:0}
+.hmark{width:38px;height:38px;object-fit:contain;flex:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))}
+.hbrand h1{letter-spacing:-.01em;white-space:nowrap}
+.h360{color:#FF8D2D}
+.h1sub{font-weight:500;opacity:.7;font-size:.78em}
+.brand-static{position:relative;display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 14px;margin:6px 0 12px;padding:14px 16px;
+  border-radius:16px;background:linear-gradient(135deg,#31343B,#1d1f24);color:#fff;box-shadow:0 12px 28px rgba(0,0,0,.22);overflow:hidden}
+.brand-static .bs-word{font:800 clamp(26px,7vw,40px)/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:-.02em}
+.brand-static .bs-word span{color:#FF8D2D}
+.brand-static .bs-tag{font-weight:600;font-size:13px;letter-spacing:.02em;color:#d4d7dd;grid-column:1}
+.brand-static img{grid-column:2;grid-row:1/3;width:min(34vw,150px);height:auto;max-height:96px;object-fit:contain;filter:drop-shadow(0 8px 16px rgba(0,0,0,.45))}
+.evin{display:inline-flex;align-items:center;gap:6px}
+.evin input{width:66px}
+.mcell .bat{text-transform:none;letter-spacing:0;font-weight:600;margin-top:2px}
 .brand-panel img,.brand-panel video{display:block;width:min(100%,760px);height:auto;object-fit:contain;filter:drop-shadow(0 10px 18px rgba(0,0,0,.38))}
 .brand-hero .brand-main img{max-height:440px}
 .brand-hero .brand-video{display:none}
@@ -209,9 +224,11 @@ svg{width:100%;height:auto;display:block}
   border:2px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.4)}
 .lnum.home{background:#fff;color:#2b2e36;border-color:#2b2e36;font-size:13px}
 /* real chargers, pulled from Open Charge Map — distinct blue so they never read as a job */
-.chg-pin{width:22px;height:22px;border-radius:50%;background:#1671f2;color:#fff;display:flex;
-  align-items:center;justify-content:center;font-size:12px;line-height:1;cursor:pointer;
-  border:2px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.4)}
+.chg-pin{width:22px;height:22px;border-radius:7px;background:#fff;color:#1671f2;display:flex;
+  align-items:center;justify-content:center;cursor:pointer;border:1.5px solid #1671f2;box-shadow:0 2px 5px rgba(0,0,0,.3)}
+.chg-pin svg{width:72%;height:72%;display:block}
+.chg-pin.md{width:16px;height:16px;border-radius:5px;border-width:1.25px}
+.chg-pin.sm{width:11px;height:11px;border-radius:3px;border-width:1px;box-shadow:0 1px 2px rgba(0,0,0,.3)}
 .leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11px;color:var(--ink2);margin-top:6px;align-items:center}
 .leg i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:-1px}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--surf);border-top:1px solid var(--line);
@@ -272,7 +289,7 @@ table.pl td{padding:6px;border-bottom:1px solid var(--line);vertical-align:top}
 </style>
 
 <header><div class="wrap"><div class="hrow">
-  <div><h1>Run Sheet</h1><div class="sub">Immersion Data subcontract &middot; route, re-route, and track</div></div>
+  <div class="hbrand"><img class="hmark" src="/assets/ninja-mark.png" alt=""><div><h1>NINJA<span class="h360">360</span> <span class="h1sub">Run Sheet</span></h1><div class="sub">We put you on the M.A.P. &middot; route, re-route, and track</div></div></div>
   <div class="hbtns">
     <button class="tbtn" id="syncChip" title="Tap to save now" aria-live="polite">&hellip;</button>
     <button class="tbtn" id="themeBtn">Theme</button>
@@ -324,7 +341,7 @@ const HOLD=j=>j.st==='On Hold'||j.st==='Postponed';
 const PLACES={home:{name:'Home — Overland Park KS',ll:BASE},liberty:{name:'Liberty MO',ll:[39.2460,-94.4190]},
   columbia:{name:'Columbia MO — dorm',ll:COL}};
 
-let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},here:{key:'home',time:8},nav:'now',custom:[],places:{},lastRequest:null};
+let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},here:{key:'home',time:8},nav:'plan',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{}};
 const svc=j=>(S.sv&&S.sv[j.id]!==undefined)?S.sv[j.id]:j.sv;
 const stat=id=>S.status[id]||'todo';
 const done=id=>stat(id)!=='todo';
@@ -334,7 +351,7 @@ function jobTooltip(id){const note=jobNoteText(id); const t=jobTimerState(id); c
 function toggleTimer(id){const rec=S.timers[id]||{elapsedMs:0}; if(rec.startedAt){ rec.elapsedMs=(rec.elapsedMs||0)+Date.now()-rec.startedAt; delete rec.startedAt; } else { rec.startedAt=Date.now(); } S.timers[id]=rec; return rec;}
 function resetTimer(id){delete S.timers[id];}
 function blankDay(date){return{id:'d'+Math.random().toString(36).slice(2,8),date:date||'',
-  startKey:'home',startTime:8,endKey:'home',ids:[]}}
+  startKey:'home',startTime:8,endKey:'home',ids:[],startCharge:100}}
 function placeLL(k){if(k==='gps'&&S.here.ll)return S.here.ll;
   if(k&&k.startsWith('job:')){const j=BY[k.slice(4)];return j?LL(j):BASE}
   return (PLACES[k]||PLACES.home).ll}
@@ -345,7 +362,7 @@ function seed(){
   // The Kansas swing, Sep 8–11: Manhattan Target first, Gap 1211 Wichita on
   // day 3, Verizon stops packed around both, home via Emporia + Topeka.
   // Overnights anchor on the last stop of the prior day (startKey 'job:…').
-  S.sv={};
+  S.sv={}; S.evRange=260; S.chargeAt={}; S.nav='plan';
   S.days=[
    Object.assign(blankDay('2026-09-08'),{startKey:'home',startTime:5.5,endKey:'job:2026-0938',
      ids:['2026-0000','2026-1896','2026-6911','2026-8804','2026-8093','2026-0938']}),
@@ -375,17 +392,23 @@ function seed(){
   S.active=0;
 }
 /* ---------- core simulator ---------- */
+const EV_RESERVE=25;   // miles of buffer before a stop reads "low" — enough to reach a charger, not enough to relax
 function simulate(d){
   let cur=placeLL(d.startKey), t=d.startTime, miles=0, rows=[], svcTot=0, drv=0;
+  // battery: leave with startCharge% of a real-world full charge; a "charge here" stop refills it
+  let range=(S.evRange||260)*((isFinite(d.startCharge)?d.startCharge:100)/100), lowN=0;
   d.ids.forEach(id=>{const j=BY[id]; if(!j)return;
     const m=mi(cur,LL(j)), h=drive(m); t+=h; miles+=m; drv+=h;
+    range-=m; const low=range<EV_RESERVE; if(low)lowN++;
     const wait=Math.max(0,j.o-t); t+=wait;
-    const arr=t, fin=t+svc(j);
-    rows.push({id,arr,fin,leg:m,wait,late:fin>j.x});
+    const arr=t, fin=t+svc(j), charged=!!(S.chargeAt&&S.chargeAt[id]);
+    rows.push({id,arr,fin,leg:m,wait,late:fin>j.x,range,low,charged});
+    if(charged)range=S.evRange||260;
     svcTot+=svc(j); t=fin; cur=LL(j)});
   const tail=d.ids.length?mi(cur,placeLL(d.endKey)):0;
   drv+=drive(tail); miles+=tail; t+=drive(tail);
-  return {rows,tail,end:t,miles,drv,svc:svcTot,
+  const rangeEnd=range-tail;
+  return {rows,tail,end:t,miles,drv,svc:svcTot,rangeEnd,lowN:lowN+(d.ids.length&&rangeEnd<EV_RESERVE?1:0),
     pay:d.ids.reduce((a,id)=>a+(BY[id]?BY[id].p:0),0),
     span:t-d.startTime, bad:rows.filter(r=>r.late).length};
 }
@@ -513,7 +536,7 @@ function renderNow(){
   $('#s-now').innerHTML=`
   <div id="brandHero" class="brand-hero">
     <div class="brand-video-frame">
-      <video id="brandVideo" autoplay playsinline preload="auto" src="./assets/slice-sword-intro.mp4" aria-label="Ninja-360 intro video"></video>
+      <video id="brandVideo" autoplay playsinline preload="auto" src="/assets/video/ninja-hero-16x9-V01.mp4" aria-label="Ninja-360 intro video"></video>
       <img class="brand-logo-overlay" src="/assets/crew/crew-tim-banner.png" alt="Ninja-360 Sensei / Head Ninja logo">
     </div>
   </div>
@@ -557,7 +580,7 @@ function renderNow(){
         document.removeEventListener('touchstart',unlockHeroAudio,true);
       };
       hero.addEventListener('ended',finish,{once:true});
-      // No intro clip on this host yet — collapse the hero instead of parking a
+      // If the clip can't load (no signal), collapse the hero instead of parking a
       // black 16:9 box at the top of Now on every render.
       hero.addEventListener('error',finish,{once:true});
       if(hero.error)finish();
@@ -604,20 +627,26 @@ function renderNow(){
 function stopCards(d,s){
   return s.rows.map((r,i)=>{
     const j=BY[r.id];
-    const cls=done(r.id)?'done':(r.late?'bad':(r.wait>0.02?'wait':''));
+    const cls=done(r.id)?'done':((r.late||r.range<0)?'bad':(r.wait>0.02?'wait':''));
     const wp=!!j.wp;
     const hb=wp?'<span class="badge">stop</span>':(j.v?'<span class="badge v">hours verified</span>':'<span class="badge a">hours assumed</span>');
     const lb=r.late?`<span class="badge bad">shuts ${hhmm(j.x)}</span>`:'';
     const wb=r.wait>0.02?`<span class="badge warn">wait ${Math.round(r.wait*60)}m</span>`:'';
     const ab=S.loaded[r.id]?'':'<span class="badge warn">not in app</span>';
     const db=done(r.id)?`<span class="badge v">${stat(r.id)}</span>`:'';
+    const rb=r.range<0?'<span class="badge bad">⚡ charge before this</span>':(r.low?'<span class="badge warn">🔋 low</span>':'');
+    const cb=r.charged?'<span class="badge v">⚡ charging here</span>':'';
+    // the e‑scooter play: while the car drinks, what else is within a couple of miles?
+    const near=r.charged?J.filter(o=>o!==j&&!o.wp&&!done(o.id)&&!HOLD(o)&&isFinite(o.lat)&&mi(LL(j),LL(o))<=2).length:0;
+    const batc=r.range<0?'--bad':r.low?'--warn':'--ink2';
     const timer=jobTimerState(r.id); const note=jobNoteText(r.id);
     return `<div class="stop ${cls}" title="${escHTML(jobTooltip(r.id))}">
       <div class="tm mono">${hhmm(r.arr)}<span class="to">${hhmm(r.fin)}</span></div>
-      <div><div class="nm">${j.n}${lb}${wb}${ab}${db}${note?'<span class="badge acc">note</span>':''}</div>
+      <div><div class="nm">${j.n}${lb}${wb}${rb}${cb}${ab}${db}${note?'<span class="badge acc">note</span>':''}</div>
         <div class="ad">${j.a}, ${j.c}, ${j.s}</div>
-        <div class="hrs mono">${wp?'any time':hhmm(j.o)+'–'+hhmm(j.x)} ${hb} · ${r.leg.toFixed(1)} mi ·<button class="tset" data-sv="${r.id}">${Math.round(svc(j)*60)} min on site${S.sv[r.id]!==undefined?' ✎':''}</button></div>
+        <div class="hrs mono">${wp?'any time':hhmm(j.o)+'–'+hhmm(j.x)} ${hb} · ${r.leg.toFixed(1)} mi · <span style="color:var(${batc})">🔋 ${Math.round(r.range)} mi</span> ·<button class="tset" data-sv="${r.id}">${Math.round(svc(j)*60)} min on site${S.sv[r.id]!==undefined?' ✎':''}</button></div>
         <div class="job-note mono"><span class="live-timer ${timer.running?'running':(timer.elapsedMs?'':'idle')}" data-live-timer="${r.id}">${timer.label}${timer.running?' • run':''}</span>${note?`<span style="display:inline-block;margin-left:6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;">${escHTML(note)}</span>`:''}</div>
+        ${r.charged?`<div class="hint" style="margin:4px 0 2px">Charging window ≈ ${Math.round(svc(j)*60)} min on site · ${near} other stop${near===1?'':'s'} within 2 mi — scooter range.</div>`:''}
         <div class="acts">
           <button class="mini" data-up="${i}" ${i===0?'disabled':''} aria-label="Move up">↑</button>
           <button class="mini" data-dn="${i}" ${i===s.rows.length-1?'disabled':''} aria-label="Move down">↓</button>
@@ -625,6 +654,7 @@ function stopCards(d,s){
           <button class="mini" data-mv="${r.id}">move day</button>
           <button class="mini go" data-nav="${r.id}">directions</button>
           <button class="mini" data-navchg="${r.id}" title="Directions via a fast charger near here">⚡ charger</button>
+          <button class="mini${r.charged?' go':''}" data-chg="${r.id}" aria-pressed="${r.charged?'true':'false'}">${r.charged?'⚡ charging here':'⚡ charge here'}</button>
           <button class="mini" data-timer="${r.id}">${timer.running?'stop':'start'} timer</button>
           <button class="mini" data-note="${r.id}">note</button>
           <button class="mini" data-done="${r.id}">${done(r.id)?'undo':'mark done'}</button>
@@ -633,7 +663,7 @@ function stopCards(d,s){
    +`<div class="stop" style="border-left-color:var(--line2)">
       <div class="tm mono">${hhmm(s.end)}</div>
       <div><div class="nm" style="font-weight:500">Arrive ${placeName(d.endKey)}</div>
-      <div class="ad">${Math.round(s.tail)} mi final leg</div></div><div></div></div>`;
+      <div class="ad">${Math.round(s.tail)} mi final leg · <span style="color:var(${s.rangeEnd<0?'--bad':s.rangeEnd<EV_RESERVE?'--warn':'--ink2'})">🔋 ${Math.round(s.rangeEnd)} mi left</span></div></div><div></div></div>`;
 }
 function wireStops(){
   const d=day();
@@ -646,6 +676,9 @@ function wireStops(){
   $$('[data-nav]').forEach(b=>b.onclick=()=>{const j=BY[b.dataset.nav];
     window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(j.a+', '+j.c+', '+j.s),'_blank','noopener')});
   $$('[data-navchg]').forEach(b=>b.onclick=()=>window.open(chargerDirUrl(BY[b.dataset.navchg]),'_blank','noopener'));
+  $$('[data-chg]').forEach(b=>b.onclick=()=>{const id=b.dataset.chg;
+    if(S.chargeAt[id])delete S.chargeAt[id]; else S.chargeAt[id]=1;
+    render();dirty(); toast(S.chargeAt[id]?'Charging here — the battery reads full from this stop on':'Not charging here')});
   $$('[data-done]').forEach(b=>b.onclick=()=>{const id=b.dataset.done;
     if(done(id))delete S.status[id]; else S.status[id]='captured'; render();dirty()});
   $$('[data-sv]').forEach(b=>b.onclick=()=>svSheet(b.dataset.sv));
@@ -769,13 +802,19 @@ function renderPlan(){
       +d.ids.concat(extra).map(id=>`<option value="job:${id}" ${cur==='job:'+id?'selected':''}>${BY[id].wp?escHTML(BY[id].n):'Overnight — '+BY[id].c+', '+BY[id].s}</option>`).join('');
   };
   $('#s-plan').innerHTML=`
+    <div class="brand-static">
+      <div class="bs-word">NINJA<span>360</span></div>
+      <div class="bs-tag">We put you on the M.A.P.</div>
+      <img src="/assets/crew/crew-tim-banner.png" alt="Tim — Head Ninja">
+    </div>
     <div class="lab" style="margin:8px 0 5px">Days</div><div class="rail">${rail}</div>
     <div class="mapbox" style="margin:8px 0 4px"><div id="lmap" role="region" aria-label="Job map"></div><svg id="map" viewBox="0 0 720 470" role="img" aria-label="Job map (offline)"></svg></div>
-    <div class="hint" style="margin:0 0 10px">Tap a pin for details. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left.</div>
+    <div class="hint" style="margin:0 0 10px">Tap a pin for details. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left. Small blue ⚡ chips are real fast chargers — tap one for plugs, power, and directions.</div>
     <div class="strip">
       <div class="mcell"><div class="lab">Stops</div><div class="v">${d.ids.length}</div></div>
       <div class="mcell"><div class="lab">Payout</div><div class="v g">${fmt(s.pay)}</div></div>
-      <div class="mcell"><div class="lab">Miles</div><div class="v">${Math.round(s.miles).toLocaleString()}</div></div>
+      <div class="mcell"><div class="lab">Miles</div><div class="v">${Math.round(s.miles).toLocaleString()}</div>
+        <div class="lab bat" style="color:var(${s.rangeEnd<0?'--bad':s.rangeEnd<EV_RESERVE?'--warn':'--money'})">🔋 ${d.ids.length?Math.round(s.rangeEnd)+' mi left at finish':'—'}</div></div>
       <div class="mcell"><div class="lab">Day length</div><div class="v ${s.span>14?'b':s.span>12?'w':''}">${s.span.toFixed(1)} h</div></div>
       <div class="mcell"><div class="lab">Finish</div><div class="v">${d.ids.length?hhmm(s.end):'—'}</div></div>
       <div class="mcell"><div class="lab">Pts / hour</div><div class="v ${rate&&rate<60?'w':'g'}">${s.span>0?fmt(rate):'—'}</div></div>
@@ -785,6 +824,8 @@ function renderPlan(){
       <div class="fld"><span class="lab" id="lab-start">Start from</span><select id="fStart" aria-labelledby="lab-start">${popts('startKey')}</select></div>
       <div class="fld"><span class="lab" id="lab-leave">Leave at</span><input type="time" id="fTime" aria-labelledby="lab-leave" value="${hhmm(d.startTime)}"></div>
       <div class="fld"><span class="lab" id="lab-end">End at</span><select id="fEnd" aria-labelledby="lab-end">${popts('endKey')}</select></div>
+      <div class="fld"><span class="lab" id="lab-charge">Leave with</span><span class="evin"><input type="number" id="fCharge" aria-labelledby="lab-charge" min="10" max="100" step="5" value="${isFinite(d.startCharge)?d.startCharge:100}"><span class="mono">% charge</span></span></div>
+      <div class="fld"><span class="lab" id="lab-range">Full charge</span><span class="evin"><input type="number" id="fRange" aria-labelledby="lab-range" min="50" max="600" step="10" value="${S.evRange}"><span class="mono">mi, real world</span></span></div>
       <button class="ghost" id="bAuto">Auto-order</button>
       <button class="ghost" id="bNav">🧭 Navigate</button>
       <button class="ghost danger" id="bDel">Delete day</button>
@@ -864,6 +905,8 @@ function renderPlan(){
   $$('#s-plan [data-plrm]').forEach(b=>b.onclick=()=>{const k=b.dataset.plrm;
     if(confirm(`Remove ${(S.places[k]||{}).name||k}? Days using it go back to Home.`))removePlace(k)});
   const bSt=$('#bStop'); if(bSt)bSt.onclick=()=>{ST_OPEN=!ST_OPEN;render()};
+  const fC=$('#fCharge'); if(fC)fC.onchange=e=>{d.startCharge=Math.max(10,Math.min(100,+e.target.value||100));render();dirty()};
+  const fR=$('#fRange'); if(fR)fR.onchange=e=>{S.evRange=Math.max(50,Math.min(600,+e.target.value||260));render();dirty()};
   const stAdd=$('#stAdd'); if(stAdd)stAdd.onclick=async()=>{
     stAdd.disabled=true; const msg=$('#stMsg'); if(msg){msg.textContent='Placing on the map…';msg.style.color=''}
     const r=await addWaypoint($('#stName').value,$('#stAddr').value,$('#stCity').value,$('#stSt').value,$('#stMin').value,$('#stLL').value);
@@ -971,7 +1014,7 @@ function renderMap(){
     L.tileLayer(TILES,{maxZoom:19,attribution:TILE_ATTR}).addTo(LMAP);
     LLAYER=L.layerGroup().addTo(LMAP);
     CLAYER=L.layerGroup().addTo(LMAP);
-    LMAP.on('zoomend',()=>{if(zoomBand(LMAP.getZoom())!==LZ)drawPins()});   // small dots ↔ dots ↔ teardrops
+    LMAP.on('zoomend',()=>{if(zoomBand(LMAP.getZoom())!==LZ){drawPins();renderChargers()}});   // small dots ↔ dots ↔ teardrops
     LMAP.on('moveend',()=>{clearTimeout(CTIMER);CTIMER=setTimeout(loadChargers,450)});   // real chargers, debounced
   }
   const d=day(), key=S.active+'|'+d.ids.join(',')+'|'+d.startKey+'|'+d.endKey;
@@ -979,6 +1022,7 @@ function renderMap(){
     const pts=[placeLL(d.startKey)].concat(d.ids.map(i=>BY[i]).filter(j=>j&&isFinite(j.lat)).map(j=>[j.lat,j.lon]),[placeLL(d.endKey)]);
     const b=d.ids.length?L.latLngBounds(pts):L.latLngBounds(J.filter(j=>isFinite(j.lat)).map(j=>[j.lat,j.lon]).concat([BASE]));
     if(b.isValid())LMAP.fitBounds(b,{padding:[36,36],maxZoom:13});
+    loadRouteChargers(d);   // the chargers that matter — around every stop — at any zoom
   }
   drawPins();
   loadChargers();
@@ -1033,32 +1077,54 @@ function drawPins(){
     if(Math.abs(s0[0]-e0[0])+Math.abs(s0[1]-e0[1])>1e-6)mark(e0,'se','E','End: '+placeName(d.endKey)) }
   mark(BASE,'home','⌂','Home — Overland Park KS');
 }
-// Real charger pins from Open Charge Map, for whatever's on screen — cached by rounded
-// center+radius so panning a little doesn't refetch. Skips at a wide zoom (too big an
-// area to be useful) and fails silently offline or if OCM is unreachable.
-function chargerKey(c,r){return c.lat.toFixed(2)+','+c.lng.toFixed(2)+':'+r.toFixed(0)}
+// Real charger pins from Open Charge Map. Two sources, one layer: every stop on today's
+// route gets a 6‑mile pull (so the chargers that matter show at any zoom), and at
+// region/city zoom the viewport gets one too. Cached per rounded point so re-renders and
+// small pans don't refetch. Fails silently offline — the map just shows no chargers.
+const BOLT='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>';
+const CLIST=new Map();   // OCM id -> station, merged from every pull this session
+async function fetchOCM(lat,lng,miles,max,key){
+  const keep=list=>list.forEach(p=>{const a=p.AddressInfo||{}; CLIST.set(p.ID||(a.Latitude+','+a.Longitude),p)});
+  if(CCACHE[key]){keep(CCACHE[key]);return true}
+  try{
+    const url='https://api.openchargemap.io/v3/poi/?output=json&latitude='+(+lat).toFixed(4)+'&longitude='+(+lng).toFixed(4)
+      +'&distance='+miles.toFixed(1)+'&distanceunit=Miles&maxresults='+max+'&compact=true&verbose=false&key='+OCM_KEY;
+    const r=await fetch(url); if(!r.ok)throw 0;
+    const list=await r.json(); if(!Array.isArray(list))throw 0;
+    CCACHE[key]=list; keep(list); return true;
+  }catch(e){return false}
+}
+async function loadRouteChargers(d){
+  const pts=[placeLL(d.startKey)].concat(d.ids.map(i=>BY[i]).filter(j=>j&&isFinite(j.lat)).map(j=>[j.lat,j.lon]),[placeLL(d.endKey)]);
+  const seen=new Set(); let any=false;
+  for(const ll of pts){const k='r:'+(+ll[0]).toFixed(2)+','+(+ll[1]).toFixed(2); if(seen.has(k))continue; seen.add(k);
+    if(await fetchOCM(ll[0],ll[1],6,12,k))any=true}
+  if(any)renderChargers();
+}
+function chargerKey(c,r){return 'v:'+c.lat.toFixed(2)+','+c.lng.toFixed(2)+':'+r.toFixed(0)}
 async function loadChargers(){
   if(!LMAP||!CLAYER)return;
-  if(LMAP.getZoom()<9){CLAYER.clearLayers();CKEY='';return}
+  renderChargers();   // whatever we already know, sized for this zoom
+  if(LMAP.getZoom()<9){CKEY='';return}   // too wide an area for a viewport pull
   const b=LMAP.getBounds(), c=LMAP.getCenter();
   const miles=Math.max(3,Math.min(40,b.getNorthEast().distanceTo(b.getSouthWest())/2/1609.34));
   const key=chargerKey(c,miles);
   if(key===CKEY)return; CKEY=key;
-  if(CCACHE[key]){renderChargers(CCACHE[key]);return}
-  try{
-    const url='https://api.openchargemap.io/v3/poi/?output=json&latitude='+c.lat.toFixed(4)+'&longitude='+c.lng.toFixed(4)
-      +'&distance='+miles.toFixed(1)+'&distanceunit=Miles&maxresults=60&compact=true&verbose=false&key='+OCM_KEY;
-    const r=await fetch(url); if(!r.ok)throw 0;
-    const list=await r.json();
-    CCACHE[key]=list; renderChargers(list);
-  }catch(e){ /* offline, blocked, or OCM down — leave whatever's already plotted */ }
+  if(await fetchOCM(c.lat,c.lng,miles,60,key))renderChargers();
 }
-function renderChargers(list){
-  if(!CLAYER)return; CLAYER.clearLayers();
-  (list||[]).forEach(p=>{
+function chargerBrief(p){
+  const op=((p.OperatorInfo&&p.OperatorInfo.Title)||'Charger').replace(/\s*\(.*?\)\s*/g,'').slice(0,28);
+  const kw=Math.max(0,...(p.Connections||[]).map(c=>+c.PowerKW||0));
+  return op+(kw?' · '+Math.round(kw)+'kW':'');
+}
+function renderChargers(){
+  if(!LMAP||!CLAYER)return; CLAYER.clearLayers();
+  const band=zoomBand(LMAP.getZoom()), cls='chg-pin'+(band===2?'':band===1?' md':' sm'), sz=band===2?22:band===1?16:11;
+  CLIST.forEach(p=>{
     const a=p.AddressInfo; if(!a||!isFinite(a.Latitude)||!isFinite(a.Longitude))return;
-    const icon=L.divIcon({className:'chg-pin',html:'⚡',iconSize:[22,22],iconAnchor:[11,11]});
-    L.marker([a.Latitude,a.Longitude],{icon,keyboard:false,zIndexOffset:200}).addTo(CLAYER)
+    const icon=L.divIcon({className:cls,html:BOLT,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]});
+    L.marker([a.Latitude,a.Longitude],{icon,keyboard:false,zIndexOffset:-100}).addTo(CLAYER)   // quietly under the job pins
+      .bindTooltip('⚡ '+escHTML(chargerBrief(p)),{direction:'top',offset:[0,-sz/2-2]})
       .bindPopup(chargerPopupHTML(p));
   });
 }
@@ -1364,13 +1430,16 @@ function mergeState(j){
   S.days=j.days; S.active=Math.min(j.active||0,j.days.length-1);
   S.sv=j.sv||{}; S.loaded=j.loaded||{}; S.status=j.status||{}; S.notes=j.notes||{}; S.timers=j.timers||{};
   S.here=j.here||{key:'home',time:8};
-  S.nav=NAVS.includes(j.nav)?j.nav:'now';
+  S.nav=NAVS.includes(j.nav)?j.nav:'plan';
   S.custom=Array.isArray(j.custom)?j.custom:[];   // jobs pasted from email — not in the baked DATA
   S.places=(j.places&&typeof j.places==='object'&&!Array.isArray(j.places))?j.places:{};   // where Tim stays / starts
   S.lastRequest=(j.lastRequest&&j.lastRequest.at)?j.lastRequest:null;   // last "please load" sent to IDS
+  S.evRange=(isFinite(j.evRange)&&j.evRange>=50)?+j.evRange:260;   // the Equinox's real-world full charge, miles
+  S.chargeAt=(j.chargeAt&&typeof j.chargeAt==='object'&&!Array.isArray(j.chargeAt))?j.chargeAt:{};   // stops where Tim plugs in
   if(!isFinite(S.here.time))S.here.time=8;
   if(S.here.key==='gps'&&!S.here.ll)S.here={key:'home',time:S.here.time};
   S.days.forEach(d=>{if(!isFinite(d.startTime))d.startTime=8;
+    if(!isFinite(d.startCharge))d.startCharge=100;
     if(!Array.isArray(d.ids))d.ids=[]});
   return true;
 }
