@@ -426,6 +426,14 @@ function gmapsPoint(k){
   if(PLACES[k]&&PLACES[k].a)return PLACES[k].a;      // a custom place navigates by its address
   const ll=placeLL(k);return ll[0].toFixed(5)+','+ll[1].toFixed(5);
 }
+// Directions that route through a fast charger near the stop first — Google resolves
+// the free-text waypoint to a real nearby station. No API key, no origin (Maps uses
+// wherever you're standing), just a waypoint ahead of the destination.
+function chargerDirUrl(j){
+  return 'https://www.google.com/maps/dir/?api=1&travelmode=driving'
+    +'&waypoints='+encodeURIComponent('EV fast charging station near '+j.c+', '+j.s)
+    +'&destination='+encodeURIComponent(j.a+', '+j.c+', '+j.s);
+}
 function dayRouteUrls(d){
   const stops=d.ids.filter(id=>BY[id]).map(id=>BY[id].a+', '+BY[id].c+', '+BY[id].s);
   if(!stops.length)return[];
@@ -612,6 +620,7 @@ function stopCards(d,s){
           <button class="mini x" data-rm="${r.id}">remove</button>
           <button class="mini" data-mv="${r.id}">move day</button>
           <button class="mini go" data-nav="${r.id}">directions</button>
+          <button class="mini" data-navchg="${r.id}" title="Directions via a fast charger near here">⚡ charger</button>
           <button class="mini" data-timer="${r.id}">${timer.running?'stop':'start'} timer</button>
           <button class="mini" data-note="${r.id}">note</button>
           <button class="mini" data-done="${r.id}">${done(r.id)?'undo':'mark done'}</button>
@@ -632,6 +641,7 @@ function wireStops(){
   $$('[data-mv]').forEach(b=>b.onclick=()=>moveSheet(b.dataset.mv));
   $$('[data-nav]').forEach(b=>b.onclick=()=>{const j=BY[b.dataset.nav];
     window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(j.a+', '+j.c+', '+j.s),'_blank','noopener')});
+  $$('[data-navchg]').forEach(b=>b.onclick=()=>window.open(chargerDirUrl(BY[b.dataset.navchg]),'_blank','noopener'));
   $$('[data-done]').forEach(b=>b.onclick=()=>{const id=b.dataset.done;
     if(done(id))delete S.status[id]; else S.status[id]='captured'; render();dirty()});
   $$('[data-sv]').forEach(b=>b.onclick=()=>svSheet(b.dataset.sv));
@@ -717,6 +727,7 @@ function jobSheet(id){
      <div class="row" style="margin-top:8px">
        <button class="prim" id="jsAdd">${mine?'Remove from this day':'Add to this day'}</button>
        <button class="ghost" id="jsDir">Directions</button>
+       <button class="ghost" id="jsDirChg" title="Directions via a fast charger near here">⚡ Charger</button>
        <button class="ghost" id="jsTimer">${timer.running?'Stop timer':'Start timer'}</button>
        <button class="ghost" id="jsReset" style="color:var(--bad)">Reset timer</button>
        <select id="jsStat" aria-label="Status">${STATES.map(s=>`<option value="${s}" ${stat(id)===s?'selected':''}>${s}</option>`).join('')}</select>
@@ -726,6 +737,7 @@ function jobSheet(id){
        if(dd.ids.includes(id))dd.ids=dd.ids.filter(x=>x!==id);else dd.ids.push(id);
        closeSheet();render();dirty()};
      el.querySelector('#jsDir').onclick=()=>window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(j.a+', '+j.c+', '+j.s),'_blank','noopener');
+     el.querySelector('#jsDirChg').onclick=()=>window.open(chargerDirUrl(j),'_blank','noopener');
      el.querySelector('#jsTimer').onclick=()=>{toggleTimer(id); closeSheet(); render(); dirty(); toast(jobTimerState(id).running?'Timer started':'Timer stopped');};
      el.querySelector('#jsReset').onclick=()=>{resetTimer(id); closeSheet(); render(); dirty(); toast('Timer reset');};
      el.querySelector('#jsStat').onchange=e=>{if(e.target.value==='todo')delete S.status[id];else S.status[id]=e.target.value;render();dirty()};
