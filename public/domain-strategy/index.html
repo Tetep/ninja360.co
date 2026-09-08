@@ -118,7 +118,7 @@
   <div class="wrap">
     <h2><span class="num">01 ·</span> The Layers</h2>
 
-    <div class="layer l-blue"><h3>Redirect Layer — brand protection + SEO consolidation</h3><div class="p">Capture mistyped traffic, consolidate authority, keep old links alive.</div><code>ninja-360.com → 301</code><code>ninja360.co → 301</code><code>ninja360.org → 301</code> → <code>ninja360.net</code></div>
+    <div class="layer l-blue"><h3>Redirect Layer — brand protection + SEO consolidation</h3><div class="p">Capture mistyped traffic, consolidate authority, keep old links alive.</div><code>ninja-360.com → 301</code><code>ninja360.co → 301</code> → <code>ninja360.net</code><div class="p" style="margin-top:8px"><b>ninja360.org</b> left this layer on Sep 6, 2026 — it now serves the field run sheet (public, same Cloudflare Pages project as the Dojo, host-routed). See 02.</div></div>
 
     <div class="layer"><h3>HighLevel SaaS Infrastructure (white-label)</h3><div class="p">Clean separation of system functions; max deliverability; matches HighLevel's recommended architecture.</div><code>app.ninja360.net</code><code>links.ninja360.net</code><code>noreply.ninja360.net</code><code>crm.ninja360.net</code><code>clients.ninja360.net</code></div>
 
@@ -133,7 +133,7 @@
 <section>
   <div class="wrap">
     <h2><span class="num">02 ·</span> Current State &amp; Reconciliation</h2>
-    <div class="live"><b>Live today:</b> the Dojo runs at <b>dojo.ninja360.co</b> (private). The <b>ninja360.co apex 301-redirects to ninja360.net</b> and doubles as the dedicated <b>cold-send domain</b> for outbound (its own SPF/DKIM/DMARC, warmed through August) — so cold campaigns never touch the ninja360.net reputation.</div>
+    <div class="live"><b>Live today:</b> the Dojo runs at <b>dojo.ninja360.co</b> (private). The <b>ninja360.co apex 301-redirects to ninja360.net</b> and doubles as the dedicated <b>cold-send domain</b> for outbound (its own SPF/DKIM/DMARC, warmed through August) — so cold campaigns never touch the ninja360.net reputation. <b>ninja360.org</b> serves the <b>field run sheet</b> (public, no Access gate; /map, /runsheet and /verizon all land there) from the same Pages project as the Dojo — its Bulk Redirect entry to ninja360.net was removed Sep 6, 2026. The ninja360.co redirect and cold-send setup are untouched.</div>
     <ul>
       <li><b>Blog home</b> migrates to <code>blog.ninja360.net</code> with 301s so existing SEO + the embed-don't-copy mechanism stay intact.</li>
       <li><b>Email subdomains</b> (<code>noreply.</code> + <code>mail.</code>) reinforce the same deliverability work flagged in the engine build (M1).</li>
