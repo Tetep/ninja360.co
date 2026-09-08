@@ -224,12 +224,18 @@ svg{width:100%;height:auto;display:block}
   border:2px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.4)}
 .lnum.home{background:#fff;color:#2b2e36;border-color:#2b2e36;font-size:13px}
 /* real chargers, pulled from Open Charge Map — distinct blue so they never read as a job */
-.chg-pin{width:22px;height:22px;border-radius:7px;background:#fff;color:#1671f2;display:flex;
-  align-items:center;justify-content:center;cursor:pointer;border:1.5px solid #1671f2;box-shadow:0 2px 5px rgba(0,0,0,.3)}
-.chg-pin svg{width:72%;height:72%;display:block}
-.chg-pin.md{width:16px;height:16px;border-radius:5px;border-width:1.25px}
-.chg-pin.sm{width:11px;height:11px;border-radius:3px;border-width:1px;box-shadow:0 1px 2px rgba(0,0,0,.3)}
-.chg-pin.ts{border-color:#FF8D2D;color:#E67A1C;box-shadow:0 2px 6px rgba(255,141,45,.5)}   /* Love's / Pilot / Buc-ee's — the interstate ones */
+.chgx{background:none;border:none}
+.chg{width:22px;height:22px;border-radius:7px;background:var(--b);color:var(--a);display:flex;align-items:center;justify-content:center;
+  font:800 10px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:-.03em;border:1.5px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.35);cursor:pointer}
+.chg svg{width:66%;height:66%;display:block}
+.chg .ini{transform:translateY(.5px)}
+.chg.c{width:26px;height:26px;border-radius:8px;font-size:10.5px}    /* city zoom: the network's letters */
+.chg.md{width:16px;height:16px;border-radius:5px;border-width:1.25px}
+.chg.sm{width:11px;height:11px;border-radius:3px;border-width:1px;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.chg.ts{box-shadow:0 0 0 2px #FF8D2D,0 2px 6px rgba(0,0,0,.35)}      /* truck stop at an interstate exit: orange halo */
+.leg .ci{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:5px;margin-right:5px;
+  background:var(--b);color:var(--a);font:800 7.5px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;border:1px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.leg .ci.ts{box-shadow:0 0 0 1.5px #FF8D2D}
 .leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11px;color:var(--ink2);margin-top:6px;align-items:center}
 .leg i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:-1px}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--surf);border-top:1px solid var(--line);
@@ -821,7 +827,8 @@ function renderPlan(){
     </div>
     <div class="lab" style="margin:8px 0 5px">Days</div><div class="rail">${rail}</div>
     <div class="mapbox" style="margin:8px 0 4px"><div id="lmap" role="region" aria-label="Job map"></div><svg id="map" viewBox="0 0 720 470" role="img" aria-label="Job map (offline)"></svg></div>
-    <div class="hint" style="margin:0 0 10px">Tap a pin for details. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left. ⚡ chips are DC fast chargers only (50kW+) — on the road and near your stops; an orange ring means a truck stop at an interstate exit. Tap one for plugs, power, and directions.</div>
+    <div class="hint" style="margin:0 0 10px">Tap a pin for details. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left. ⚡ chips are DC fast chargers only (50kW+) — on the road and near your stops; chips wear the network’s colors (Love’s red, EVgo navy) and an orange halo means a truck stop at an interstate exit. Tap one for plugs, power, and directions.</div>
+    <div class="leg" id="chgLeg" hidden></div>
     <div class="strip">
       <div class="mcell"><div class="lab">Stops</div><div class="v">${d.ids.length}</div></div>
       <div class="mcell"><div class="lab">Payout</div><div class="v g">${fmt(s.pay)}</div></div>
@@ -1098,8 +1105,40 @@ const BOLT='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor
 // Tim runs interstates and charges at big truck stops. Love's, Pilot / Flying J (GM Energy and
 // EVgo eXtend — the Equinox's own network), Buc-ee's, TA/Petro, and the big c-store chains
 // get an orange ring and a "truck stop" tag so they read first at a glance.
-const TRUCK=/love'?s|pilot|flying ?j|buc-?ee|\bta\b|travel ?centers? of america|petro\b|sheetz|wawa|casey'?s|kum ?& ?go|quiktrip|\bqt\b|sapp bros|walmart|gm energy|evgo extend|travel ?(center|stop|plaza)|truck ?stop/i;
-const isTruckStop=p=>{const a=p.AddressInfo||{}; return TRUCK.test([a.Title,(p.OperatorInfo||{}).Title,a.AddressLine1,p.GeneralComments].join(' '))};
+const TRUCK=/travel ?(center|stop|plaza)|truck ?stop/i;
+// Networks and truck stops in their own colors + initials — the same language as the store
+// pins, so a Love's reads red-and-yellow at a glance. Truck stops are listed first so the
+// site wins over whoever runs its plugs (Love's over EVgo). No logo art: colors + letters.
+const CHG_BRANDS=[
+ [/love'?s/i,                                  {ini:'L♥', base:'#E4002B',acc:'#FFD100',ts:1,name:"Love's"}],
+ [/pilot|flying ?j/i,                          {ini:'PJ', base:'#D52B1E',acc:'#FFD100',ts:1,name:'Pilot / Flying J'}],
+ [/buc-?ee/i,                                  {ini:'BUC',base:'#F9C80E',acc:'#111111',ts:1,name:"Buc-ee's"}],
+ [/\bta\b|travel ?centers? of america|petro\b/i,{ini:'TA', base:'#003DA5',acc:'#ffffff',ts:1,name:'TA / Petro'}],
+ [/casey'?s/i,                                 {ini:'CAS',base:'#C8102E',acc:'#ffffff',ts:1,name:"Casey's"}],
+ [/kum ?& ?go/i,                               {ini:'K&G',base:'#DA291C',acc:'#ffffff',ts:1,name:'Kum & Go'}],
+ [/quiktrip|\bqt\b/i,                        {ini:'QT', base:'#D71920',acc:'#ffffff',ts:1,name:'QuikTrip'}],
+ [/sheetz/i,                                   {ini:'SHZ',base:'#ED1C24',acc:'#ffffff',ts:1,name:'Sheetz'}],
+ [/wawa/i,                                     {ini:'WW', base:'#C41230',acc:'#FFD100',ts:1,name:'Wawa'}],
+ [/sapp bros/i,                                {ini:'SB', base:'#B71C1C',acc:'#ffffff',ts:1,name:'Sapp Bros'}],
+ [/walmart/i,                                  {ini:'WM', base:'#0071CE',acc:'#FFC220',ts:1,name:'Walmart'}],
+ [/gm energy/i,                                {ini:'GM', base:'#0170CE',acc:'#ffffff',ts:1,name:'GM Energy'}],
+ [/evgo/i,                                     {ini:'EVG',base:'#0A2240',acc:'#6CC24A',name:'EVgo'}],
+ [/chargepoint/i,                              {ini:'CP', base:'#F26722',acc:'#ffffff',name:'ChargePoint'}],
+ [/electrify america/i,                        {ini:'EA', base:'#0AD3A5',acc:'#0B2B2A',name:'Electrify America'}],
+ [/tesla|supercharger/i,                       {ini:'T',  base:'#E82127',acc:'#ffffff',name:'Tesla Supercharger'}],
+ [/shell/i,                                    {ini:'SH', base:'#FBCE07',acc:'#DD1D21',name:'Shell Recharge'}],
+ [/\bbp\b/i,                                 {ini:'BP', base:'#009900',acc:'#FFE600',name:'bp pulse'}],
+ [/circle ?k/i,                                {ini:'CK', base:'#EE3124',acc:'#ffffff',name:'Circle K'}],
+ [/rivian/i,                                   {ini:'RIV',base:'#F4C542',acc:'#111111',name:'Rivian Adventure'}],
+ [/mercedes/i,                                 {ini:'MB', base:'#111111',acc:'#ffffff',name:'Mercedes-Benz HPC'}],
+ [/francis/i,                                  {ini:'FE', base:'#2E7D32',acc:'#ffffff',name:'Francis Energy'}],
+ [/blink/i,                                    {ini:'BLK',base:'#00A9A5',acc:'#ffffff',name:'Blink'}],
+ [/7-?eleven|7charge/i,                        {ini:'7',  base:'#008062',acc:'#F58220',name:'7Charge'}],
+ [/ionna/i,                                    {ini:'ION',base:'#5B2E91',acc:'#ffffff',name:'IONNA'}]];
+const CHG_DEFAULT={ini:'⚡',base:'#1671F2',acc:'#ffffff',name:'Fast charger'};
+const chgHay=p=>{const a=p.AddressInfo||{}; return [a.Title,(p.OperatorInfo||{}).Title,a.AddressLine1,p.GeneralComments].join(' ')};
+const chgBrand=p=>{const hay=chgHay(p), hit=CHG_BRANDS.find(([re])=>re.test(hay)); return hit?hit[1]:CHG_DEFAULT};
+const isTruckStop=p=>!!chgBrand(p).ts||TRUCK.test(chgHay(p));
 const CLIST=new Map();   // OCM id -> station, merged from every pull this session
 async function fetchOCM(lat,lng,miles,max,key){
   // Level 2 doesn't help on a time crunch: DC fast only (50kW+ or Level 3); unknown power is dropped too
@@ -1146,18 +1185,29 @@ function chargerBrief(p){
 }
 function renderChargers(){
   if(!LMAP||!CLAYER)return; CLAYER.clearLayers();
-  const band=zoomBand(LMAP.getZoom()), cls='chg-pin'+(band===2?'':band===1?' md':' sm'), sz=band===2?22:band===1?16:11;
+  const band=zoomBand(LMAP.getZoom()), sz=band===2?22:band===1?16:11;
   CLIST.forEach(p=>{
     const a=p.AddressInfo; if(!a||!isFinite(a.Latitude)||!isFinite(a.Longitude))return;
-    const ts=isTruckStop(p);
-    const icon=L.divIcon({className:cls+(ts?' ts':''),html:BOLT,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]});
+    const ts=isTruckStop(p), br=chgBrand(p), S2=band===2?26:sz;
+    const inner=band===2?'<span class="ini">'+escHTML(br.ini)+'</span>':BOLT;   // letters up close, a bolt further out
+    const icon=L.divIcon({className:'chgx',iconSize:[S2,S2],iconAnchor:[S2/2,S2/2],
+      html:'<div class="chg'+(band===2?' c':band===1?' md':' sm')+(ts?' ts':'')+'" style="--b:'+br.base+';--a:'+br.acc+'">'+inner+'</div>'});
     L.marker([a.Latitude,a.Longitude],{icon,keyboard:false,zIndexOffset:ts?-50:-100}).addTo(CLAYER)   // quietly under the job pins; truck stops on top of other chargers
-      .bindTooltip('⚡ '+escHTML(chargerBrief(p)),{direction:'top',offset:[0,-sz/2-2]})
+      .bindTooltip('⚡ '+escHTML(chargerBrief(p)),{direction:'top',offset:[0,-S2/2-2]})
       .bindPopup(chargerPopupHTML(p));
   });
+  renderChargerLegend();
+}
+// only the networks actually on the map right now
+function renderChargerLegend(){
+  const el=$('#chgLeg'); if(!el)return;
+  const seen=new Map(); CLIST.forEach(p=>{const b=chgBrand(p); if(!seen.has(b.name))seen.set(b.name,b)});
+  el.hidden=!seen.size;
+  el.innerHTML=[...seen.values()].sort((x,y)=>(y.ts?1:0)-(x.ts?1:0)||x.name.localeCompare(y.name))
+    .map(b=>'<span><i class="ci'+(b.ts?' ts':'')+'" style="--b:'+b.base+';--a:'+b.acc+'">'+escHTML(b.ini)+'</i>'+escHTML(b.name)+'</span>').join('');
 }
 function chargerPopupHTML(p){
-  const a=p.AddressInfo||{}, op=(p.OperatorInfo&&p.OperatorInfo.Title)||'Unknown network';
+  const a=p.AddressInfo||{}, op=(p.OperatorInfo&&p.OperatorInfo.Title)||'Unknown network', br=chgBrand(p);
   const conns=(p.Connections||[]).slice().sort((x,y)=>(+y.PowerKW||0)-(+x.PowerKW||0)).map(c=>{
     const t=(c.ConnectionType&&c.ConnectionType.Title)||'Unknown plug';
     const kw=c.PowerKW?Math.round(c.PowerKW)+'kW':'';
@@ -1166,7 +1216,7 @@ function chargerPopupHTML(p){
   }).join('<br>')||'Connector info not listed';
   const dir='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(a.Latitude+','+a.Longitude);
   return '<div style="font:600 12px/1.4 -apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif;max-width:200px">'
-    +'<b>'+escHTML(a.Title||'Charging station')+'</b><br>'
+    +'<span class="chg c" style="--b:'+br.base+';--a:'+br.acc+';display:inline-flex;vertical-align:middle;margin:0 6px 2px 0"><span class="ini">'+escHTML(br.ini)+'</span></span><b>'+escHTML(a.Title||'Charging station')+'</b><br>'
     +'<span style="color:#666">'+escHTML(op)+' · DC fast'+(isTruckStop(p)?' · <b style="color:#E67A1C">truck stop</b>, interstate exit':'')+'</span><br><br>'
     +conns+'<br><br>'
     +'<a href="'+dir+'" target="_blank" rel="noopener">Directions →</a></div>';
