@@ -392,14 +392,22 @@ function seed(){
   S.active=0;
 }
 /* ---------- core simulator ---------- */
-const EV_RESERVE=25;   // miles of buffer before a stop reads "low" — enough to reach a charger, not enough to relax
+// Tim's rule: get home with 10–20% left. Under 10% at any stop reads "low"; at the finish,
+// 10–20% is on target, more is charging time he didn't need to buy, less is a scramble.
+const EV_LO=.10, EV_HI=.20;
+const evFull=()=>S.evRange||260, evPct=r=>Math.round(r/evFull()*100), evReserve=()=>evFull()*EV_LO;
+function evFinish(s){const r=s.rangeEnd, p=evPct(r);
+  if(r<0)return {c:'--bad',t:'won’t make it — '+Math.round(-r)+' mi short'};
+  if(p<EV_LO*100)return {c:'--bad',t:p+'% ('+Math.round(r)+' mi) at finish — under 10%'};
+  if(p<=EV_HI*100)return {c:'--money',t:p+'% ('+Math.round(r)+' mi) at finish — on target'};
+  return {c:'--ink2',t:p+'% ('+Math.round(r)+' mi) at finish · spare '+(p-EV_HI*100)+'%'}}
 function simulate(d){
   let cur=placeLL(d.startKey), t=d.startTime, miles=0, rows=[], svcTot=0, drv=0;
   // battery: leave with startCharge% of a real-world full charge; a "charge here" stop refills it
   let range=(S.evRange||260)*((isFinite(d.startCharge)?d.startCharge:100)/100), lowN=0;
   d.ids.forEach(id=>{const j=BY[id]; if(!j)return;
     const m=mi(cur,LL(j)), h=drive(m); t+=h; miles+=m; drv+=h;
-    range-=m; const low=range<EV_RESERVE; if(low)lowN++;
+    range-=m; const low=range<evReserve(); if(low)lowN++;
     const wait=Math.max(0,j.o-t); t+=wait;
     const arr=t, fin=t+svc(j), charged=!!(S.chargeAt&&S.chargeAt[id]);
     rows.push({id,arr,fin,leg:m,wait,late:fin>j.x,range,low,charged});
@@ -408,7 +416,7 @@ function simulate(d){
   const tail=d.ids.length?mi(cur,placeLL(d.endKey)):0;
   drv+=drive(tail); miles+=tail; t+=drive(tail);
   const rangeEnd=range-tail;
-  return {rows,tail,end:t,miles,drv,svc:svcTot,rangeEnd,lowN:lowN+(d.ids.length&&rangeEnd<EV_RESERVE?1:0),
+  return {rows,tail,end:t,miles,drv,svc:svcTot,rangeEnd,lowN:lowN+(d.ids.length&&rangeEnd<evReserve()?1:0),
     pay:d.ids.reduce((a,id)=>a+(BY[id]?BY[id].p:0),0),
     span:t-d.startTime, bad:rows.filter(r=>r.late).length};
 }
@@ -634,7 +642,7 @@ function stopCards(d,s){
     const wb=r.wait>0.02?`<span class="badge warn">wait ${Math.round(r.wait*60)}m</span>`:'';
     const ab=S.loaded[r.id]?'':'<span class="badge warn">not in app</span>';
     const db=done(r.id)?`<span class="badge v">${stat(r.id)}</span>`:'';
-    const rb=r.range<0?'<span class="badge bad">⚡ charge before this</span>':(r.low?'<span class="badge warn">🔋 low</span>':'');
+    const rb=r.range<0?'<span class="badge bad">⚡ charge before this</span>':(r.low?'<span class="badge warn">🔋 under 10%</span>':'');
     const cb=r.charged?'<span class="badge v">⚡ charging here</span>':'';
     // the e‑scooter play: while the car drinks, what else is within a couple of miles?
     const near=r.charged?J.filter(o=>o!==j&&!o.wp&&!done(o.id)&&!HOLD(o)&&isFinite(o.lat)&&mi(LL(j),LL(o))<=2).length:0;
@@ -644,7 +652,7 @@ function stopCards(d,s){
       <div class="tm mono">${hhmm(r.arr)}<span class="to">${hhmm(r.fin)}</span></div>
       <div><div class="nm">${j.n}${lb}${wb}${rb}${cb}${ab}${db}${note?'<span class="badge acc">note</span>':''}</div>
         <div class="ad">${j.a}, ${j.c}, ${j.s}</div>
-        <div class="hrs mono">${wp?'any time':hhmm(j.o)+'–'+hhmm(j.x)} ${hb} · ${r.leg.toFixed(1)} mi · <span style="color:var(${batc})">🔋 ${Math.round(r.range)} mi</span> ·<button class="tset" data-sv="${r.id}">${Math.round(svc(j)*60)} min on site${S.sv[r.id]!==undefined?' ✎':''}</button></div>
+        <div class="hrs mono">${wp?'any time':hhmm(j.o)+'–'+hhmm(j.x)} ${hb} · ${r.leg.toFixed(1)} mi · <span style="color:var(${batc})">🔋 ${evPct(r.range)}% · ${Math.round(r.range)} mi</span> ·<button class="tset" data-sv="${r.id}">${Math.round(svc(j)*60)} min on site${S.sv[r.id]!==undefined?' ✎':''}</button></div>
         <div class="job-note mono"><span class="live-timer ${timer.running?'running':(timer.elapsedMs?'':'idle')}" data-live-timer="${r.id}">${timer.label}${timer.running?' • run':''}</span>${note?`<span style="display:inline-block;margin-left:6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;">${escHTML(note)}</span>`:''}</div>
         ${r.charged?`<div class="hint" style="margin:4px 0 2px">Charging window ≈ ${Math.round(svc(j)*60)} min on site · ${near} other stop${near===1?'':'s'} within 2 mi — scooter range.</div>`:''}
         <div class="acts">
@@ -663,7 +671,7 @@ function stopCards(d,s){
    +`<div class="stop" style="border-left-color:var(--line2)">
       <div class="tm mono">${hhmm(s.end)}</div>
       <div><div class="nm" style="font-weight:500">Arrive ${placeName(d.endKey)}</div>
-      <div class="ad">${Math.round(s.tail)} mi final leg · <span style="color:var(${s.rangeEnd<0?'--bad':s.rangeEnd<EV_RESERVE?'--warn':'--ink2'})">🔋 ${Math.round(s.rangeEnd)} mi left</span></div></div><div></div></div>`;
+      <div class="ad">${Math.round(s.tail)} mi final leg · <span style="color:var(${evFinish(s).c})">🔋 ${evFinish(s).t}</span></div></div><div></div></div>`;
 }
 function wireStops(){
   const d=day();
@@ -814,7 +822,7 @@ function renderPlan(){
       <div class="mcell"><div class="lab">Stops</div><div class="v">${d.ids.length}</div></div>
       <div class="mcell"><div class="lab">Payout</div><div class="v g">${fmt(s.pay)}</div></div>
       <div class="mcell"><div class="lab">Miles</div><div class="v">${Math.round(s.miles).toLocaleString()}</div>
-        <div class="lab bat" style="color:var(${s.rangeEnd<0?'--bad':s.rangeEnd<EV_RESERVE?'--warn':'--money'})">🔋 ${d.ids.length?Math.round(s.rangeEnd)+' mi left at finish':'—'}</div></div>
+        <div class="lab bat" style="color:var(${evFinish(s).c})">🔋 ${d.ids.length?evFinish(s).t:'—'}</div></div>
       <div class="mcell"><div class="lab">Day length</div><div class="v ${s.span>14?'b':s.span>12?'w':''}">${s.span.toFixed(1)} h</div></div>
       <div class="mcell"><div class="lab">Finish</div><div class="v">${d.ids.length?hhmm(s.end):'—'}</div></div>
       <div class="mcell"><div class="lab">Pts / hour</div><div class="v ${rate&&rate<60?'w':'g'}">${s.span>0?fmt(rate):'—'}</div></div>
@@ -826,6 +834,7 @@ function renderPlan(){
       <div class="fld"><span class="lab" id="lab-end">End at</span><select id="fEnd" aria-labelledby="lab-end">${popts('endKey')}</select></div>
       <div class="fld"><span class="lab" id="lab-charge">Leave with</span><span class="evin"><input type="number" id="fCharge" aria-labelledby="lab-charge" min="10" max="100" step="5" value="${isFinite(d.startCharge)?d.startCharge:100}"><span class="mono">% charge</span></span></div>
       <div class="fld"><span class="lab" id="lab-range">Full charge</span><span class="evin"><input type="number" id="fRange" aria-labelledby="lab-range" min="50" max="600" step="10" value="${S.evRange}"><span class="mono">mi, real world</span></span></div>
+      <span class="hint" style="flex-basis:100%;margin:0">Goal: home with 10–20% left. Under 10% anywhere reads low; over 20% at the finish is charging time you didn’t need.</span>
       <button class="ghost" id="bAuto">Auto-order</button>
       <button class="ghost" id="bNav">🧭 Navigate</button>
       <button class="ghost danger" id="bDel">Delete day</button>
