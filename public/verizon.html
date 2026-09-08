@@ -809,7 +809,7 @@ function renderPlan(){
     </div>
     <div class="lab" style="margin:8px 0 5px">Days</div><div class="rail">${rail}</div>
     <div class="mapbox" style="margin:8px 0 4px"><div id="lmap" role="region" aria-label="Job map"></div><svg id="map" viewBox="0 0 720 470" role="img" aria-label="Job map (offline)"></svg></div>
-    <div class="hint" style="margin:0 0 10px">Tap a pin for details. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left. Small blue ⚡ chips are real fast chargers — tap one for plugs, power, and directions.</div>
+    <div class="hint" style="margin:0 0 10px">Tap a pin for details. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left. Blue ⚡ chips are DC fast chargers only (50kW+) — on the road and near your stops. Tap one for plugs, power, and directions.</div>
     <div class="strip">
       <div class="mcell"><div class="lab">Stops</div><div class="v">${d.ids.length}</div></div>
       <div class="mcell"><div class="lab">Payout</div><div class="v g">${fmt(s.pay)}</div></div>
@@ -1077,28 +1077,35 @@ function drawPins(){
     if(Math.abs(s0[0]-e0[0])+Math.abs(s0[1]-e0[1])>1e-6)mark(e0,'se','E','End: '+placeName(d.endKey)) }
   mark(BASE,'home','⌂','Home — Overland Park KS');
 }
-// Real charger pins from Open Charge Map. Two sources, one layer: every stop on today's
-// route gets a 6‑mile pull (so the chargers that matter show at any zoom), and at
-// region/city zoom the viewport gets one too. Cached per rounded point so re-renders and
+// Real DC fast chargers from Open Charge Map — Level 2 is filtered out, it doesn't help
+// in the field. Two sources, one layer: every stop on today's route (6 mi) plus samples
+// along long legs (8 mi) at any zoom, and the viewport at region/city zoom. Cached per rounded point so re-renders and
 // small pans don't refetch. Fails silently offline — the map just shows no chargers.
 const BOLT='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>';
 const CLIST=new Map();   // OCM id -> station, merged from every pull this session
 async function fetchOCM(lat,lng,miles,max,key){
-  const keep=list=>list.forEach(p=>{const a=p.AddressInfo||{}; CLIST.set(p.ID||(a.Latitude+','+a.Longitude),p)});
+  // Level 2 doesn't help on a time crunch: DC fast only (50kW+ or Level 3); unknown power is dropped too
+  const fast=p=>(p.Connections||[]).some(c=>(+c.PowerKW||0)>=50||c.LevelID===3||(c.Level&&c.Level.IsFastChargeCapable));
+  const keep=list=>list.filter(fast).forEach(p=>{const a=p.AddressInfo||{}; CLIST.set(p.ID||(a.Latitude+','+a.Longitude),p)});
   if(CCACHE[key]){keep(CCACHE[key]);return true}
   try{
     const url='https://api.openchargemap.io/v3/poi/?output=json&latitude='+(+lat).toFixed(4)+'&longitude='+(+lng).toFixed(4)
-      +'&distance='+miles.toFixed(1)+'&distanceunit=Miles&maxresults='+max+'&compact=true&verbose=false&key='+OCM_KEY;
+      +'&distance='+miles.toFixed(1)+'&distanceunit=Miles&maxresults='+max+'&levelid=3&minpowerkw=50&compact=true&verbose=false&key='+OCM_KEY;
     const r=await fetch(url); if(!r.ok)throw 0;
     const list=await r.json(); if(!Array.isArray(list))throw 0;
     CCACHE[key]=list; keep(list); return true;
   }catch(e){return false}
 }
 async function loadRouteChargers(d){
-  const pts=[placeLL(d.startKey)].concat(d.ids.map(i=>BY[i]).filter(j=>j&&isFinite(j.lat)).map(j=>[j.lat,j.lon]),[placeLL(d.endKey)]);
-  const seen=new Set(); let any=false;
-  for(const ll of pts){const k='r:'+(+ll[0]).toFixed(2)+','+(+ll[1]).toFixed(2); if(seen.has(k))continue; seen.add(k);
-    if(await fetchOCM(ll[0],ll[1],6,12,k))any=true}
+  const stops=[placeLL(d.startKey)].concat(d.ids.map(i=>BY[i]).filter(j=>j&&isFinite(j.lat)).map(j=>[j.lat,j.lon]),[placeLL(d.endKey)]);
+  // "on the road": sample legs over 40 mi every ~30 mi so a fast charger mid-drive shows too
+  const pts=[]; stops.forEach((ll,i)=>{ if(i){const a=stops[i-1], m=mi(a,ll);
+      if(m>40){const n=Math.floor(m/30); for(let k=1;k<=n;k++){const f=k/(n+1); pts.push([a[0]+(ll[0]-a[0])*f, a[1]+(ll[1]-a[1])*f, 8])}}}
+    pts.push([ll[0],ll[1],6]) });
+  const seen=new Set(); let any=false, n=0;
+  for(const [lat,lng,r] of pts){const k='r:'+(+lat).toFixed(2)+','+(+lng).toFixed(2); if(seen.has(k))continue; seen.add(k);
+    if(n++>=14)break;   // a good citizen on the free tier
+    if(await fetchOCM(lat,lng,r,12,k))any=true}
   if(any)renderChargers();
 }
 function chargerKey(c,r){return 'v:'+c.lat.toFixed(2)+','+c.lng.toFixed(2)+':'+r.toFixed(0)}
@@ -1115,7 +1122,7 @@ async function loadChargers(){
 function chargerBrief(p){
   const op=((p.OperatorInfo&&p.OperatorInfo.Title)||'Charger').replace(/\s*\(.*?\)\s*/g,'').slice(0,28);
   const kw=Math.max(0,...(p.Connections||[]).map(c=>+c.PowerKW||0));
-  return op+(kw?' · '+Math.round(kw)+'kW':'');
+  return op+(kw?' · '+Math.round(kw)+'kW DC':'');
 }
 function renderChargers(){
   if(!LMAP||!CLAYER)return; CLAYER.clearLayers();
@@ -1130,7 +1137,7 @@ function renderChargers(){
 }
 function chargerPopupHTML(p){
   const a=p.AddressInfo||{}, op=(p.OperatorInfo&&p.OperatorInfo.Title)||'Unknown network';
-  const conns=(p.Connections||[]).map(c=>{
+  const conns=(p.Connections||[]).slice().sort((x,y)=>(+y.PowerKW||0)-(+x.PowerKW||0)).map(c=>{
     const t=(c.ConnectionType&&c.ConnectionType.Title)||'Unknown plug';
     const kw=c.PowerKW?Math.round(c.PowerKW)+'kW':'';
     const q=c.Quantity>1?' ×'+c.Quantity:'';
@@ -1139,7 +1146,7 @@ function chargerPopupHTML(p){
   const dir='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(a.Latitude+','+a.Longitude);
   return '<div style="font:600 12px/1.4 -apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif;max-width:200px">'
     +'<b>'+escHTML(a.Title||'Charging station')+'</b><br>'
-    +'<span style="color:#666">'+escHTML(op)+'</span><br><br>'
+    +'<span style="color:#666">'+escHTML(op)+' · DC fast</span><br><br>'
     +conns+'<br><br>'
     +'<a href="'+dir+'" target="_blank" rel="noopener">Directions →</a></div>';
 }
