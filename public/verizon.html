@@ -229,6 +229,7 @@ svg{width:100%;height:auto;display:block}
 .chg-pin svg{width:72%;height:72%;display:block}
 .chg-pin.md{width:16px;height:16px;border-radius:5px;border-width:1.25px}
 .chg-pin.sm{width:11px;height:11px;border-radius:3px;border-width:1px;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.chg-pin.ts{border-color:#FF8D2D;color:#E67A1C;box-shadow:0 2px 6px rgba(255,141,45,.5)}   /* Love's / Pilot / Buc-ee's — the interstate ones */
 .leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11px;color:var(--ink2);margin-top:6px;align-items:center}
 .leg i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:-1px}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--surf);border-top:1px solid var(--line);
@@ -396,11 +397,14 @@ function seed(){
 // 10–20% is on target, more is charging time he didn't need to buy, less is a scramble.
 const EV_LO=.10, EV_HI=.20;
 const evFull=()=>S.evRange||260, evPct=r=>Math.round(r/evFull()*100), evReserve=()=>evFull()*EV_LO;
-function evFinish(s){const r=s.rangeEnd, p=evPct(r);
+function evFinish(s,d){const r=s.rangeEnd, p=evPct(r), at=p+'% ('+Math.round(r)+' mi) at finish';
   if(r<0)return {c:'--bad',t:'won’t make it — '+Math.round(-r)+' mi short'};
-  if(p<EV_LO*100)return {c:'--bad',t:p+'% ('+Math.round(r)+' mi) at finish — under 10%'};
-  if(p<=EV_HI*100)return {c:'--money',t:p+'% ('+Math.round(r)+' mi) at finish — on target'};
-  return {c:'--ink2',t:p+'% ('+Math.round(r)+' mi) at finish · spare '+(p-EV_HI*100)+'%'}}
+  if(p<EV_LO*100)return {c:'--bad',t:at+' — under 10%'};
+  if(p<=EV_HI*100)return {c:'--money',t:at+' — on target'};
+  // over 20%: home charge is cheap, so arriving high on it is fine. It only costs something
+  // when a road charger paid for it — then say where the time could come back from.
+  const road=((d&&d.ids)||[]).filter(id=>S.chargeAt[id]&&BY[id]).map(id=>BY[id].c);
+  return road.length?{c:'--ink2',t:at+' · charge ~'+(p-EV_HI*100)+'% less at '+road[road.length-1]}:{c:'--ink2',t:at}}
 function simulate(d){
   let cur=placeLL(d.startKey), t=d.startTime, miles=0, rows=[], svcTot=0, drv=0;
   // battery: leave with startCharge% of a real-world full charge; a "charge here" stop refills it
@@ -671,7 +675,7 @@ function stopCards(d,s){
    +`<div class="stop" style="border-left-color:var(--line2)">
       <div class="tm mono">${hhmm(s.end)}</div>
       <div><div class="nm" style="font-weight:500">Arrive ${placeName(d.endKey)}</div>
-      <div class="ad">${Math.round(s.tail)} mi final leg · <span style="color:var(${evFinish(s).c})">🔋 ${evFinish(s).t}</span></div></div><div></div></div>`;
+      <div class="ad">${Math.round(s.tail)} mi final leg · <span style="color:var(${evFinish(s,d).c})">🔋 ${evFinish(s,d).t}</span></div></div><div></div></div>`;
 }
 function wireStops(){
   const d=day();
@@ -817,12 +821,12 @@ function renderPlan(){
     </div>
     <div class="lab" style="margin:8px 0 5px">Days</div><div class="rail">${rail}</div>
     <div class="mapbox" style="margin:8px 0 4px"><div id="lmap" role="region" aria-label="Job map"></div><svg id="map" viewBox="0 0 720 470" role="img" aria-label="Job map (offline)"></svg></div>
-    <div class="hint" style="margin:0 0 10px">Tap a pin for details. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left. Blue ⚡ chips are DC fast chargers only (50kW+) — on the road and near your stops. Tap one for plugs, power, and directions.</div>
+    <div class="hint" style="margin:0 0 10px">Tap a pin for details. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left. ⚡ chips are DC fast chargers only (50kW+) — on the road and near your stops; an orange ring means a truck stop at an interstate exit. Tap one for plugs, power, and directions.</div>
     <div class="strip">
       <div class="mcell"><div class="lab">Stops</div><div class="v">${d.ids.length}</div></div>
       <div class="mcell"><div class="lab">Payout</div><div class="v g">${fmt(s.pay)}</div></div>
       <div class="mcell"><div class="lab">Miles</div><div class="v">${Math.round(s.miles).toLocaleString()}</div>
-        <div class="lab bat" style="color:var(${evFinish(s).c})">🔋 ${d.ids.length?evFinish(s).t:'—'}</div></div>
+        <div class="lab bat" style="color:var(${evFinish(s,d).c})">🔋 ${d.ids.length?evFinish(s,d).t:'—'}</div></div>
       <div class="mcell"><div class="lab">Day length</div><div class="v ${s.span>14?'b':s.span>12?'w':''}">${s.span.toFixed(1)} h</div></div>
       <div class="mcell"><div class="lab">Finish</div><div class="v">${d.ids.length?hhmm(s.end):'—'}</div></div>
       <div class="mcell"><div class="lab">Pts / hour</div><div class="v ${rate&&rate<60?'w':'g'}">${s.span>0?fmt(rate):'—'}</div></div>
@@ -834,7 +838,7 @@ function renderPlan(){
       <div class="fld"><span class="lab" id="lab-end">End at</span><select id="fEnd" aria-labelledby="lab-end">${popts('endKey')}</select></div>
       <div class="fld"><span class="lab" id="lab-charge">Leave with</span><span class="evin"><input type="number" id="fCharge" aria-labelledby="lab-charge" min="10" max="100" step="5" value="${isFinite(d.startCharge)?d.startCharge:100}"><span class="mono">% charge</span></span></div>
       <div class="fld"><span class="lab" id="lab-range">Full charge</span><span class="evin"><input type="number" id="fRange" aria-labelledby="lab-range" min="50" max="600" step="10" value="${S.evRange}"><span class="mono">mi, real world</span></span></div>
-      <span class="hint" style="flex-basis:100%;margin:0">Goal: home with 10–20% left. Under 10% anywhere reads low; over 20% at the finish is charging time you didn’t need.</span>
+      <span class="hint" style="flex-basis:100%;margin:0">Leave home full — home charge is cheap. On the road, buy only enough to land home at 10–20%; under 10% anywhere reads low.</span>
       <button class="ghost" id="bAuto">Auto-order</button>
       <button class="ghost" id="bNav">🧭 Navigate</button>
       <button class="ghost danger" id="bDel">Delete day</button>
@@ -1091,6 +1095,11 @@ function drawPins(){
 // along long legs (8 mi) at any zoom, and the viewport at region/city zoom. Cached per rounded point so re-renders and
 // small pans don't refetch. Fails silently offline — the map just shows no chargers.
 const BOLT='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>';
+// Tim runs interstates and charges at big truck stops. Love's, Pilot / Flying J (GM Energy and
+// EVgo eXtend — the Equinox's own network), Buc-ee's, TA/Petro, and the big c-store chains
+// get an orange ring and a "truck stop" tag so they read first at a glance.
+const TRUCK=/love'?s|pilot|flying ?j|buc-?ee|\bta\b|travel ?centers? of america|petro\b|sheetz|wawa|casey'?s|kum ?& ?go|quiktrip|\bqt\b|sapp bros|walmart|gm energy|evgo extend|travel ?(center|stop|plaza)|truck ?stop/i;
+const isTruckStop=p=>{const a=p.AddressInfo||{}; return TRUCK.test([a.Title,(p.OperatorInfo||{}).Title,a.AddressLine1,p.GeneralComments].join(' '))};
 const CLIST=new Map();   // OCM id -> station, merged from every pull this session
 async function fetchOCM(lat,lng,miles,max,key){
   // Level 2 doesn't help on a time crunch: DC fast only (50kW+ or Level 3); unknown power is dropped too
@@ -1129,17 +1138,20 @@ async function loadChargers(){
   if(await fetchOCM(c.lat,c.lng,miles,60,key))renderChargers();
 }
 function chargerBrief(p){
-  const op=((p.OperatorInfo&&p.OperatorInfo.Title)||'Charger').replace(/\s*\(.*?\)\s*/g,'').slice(0,28);
+  const ts=isTruckStop(p), a=p.AddressInfo||{};
+  // a truck stop reads by its name (Love's, Pilot); anything else by its network
+  const who=(ts&&a.Title?a.Title:((p.OperatorInfo&&p.OperatorInfo.Title)||'Charger')).replace(/\s*\(.*?\)\s*/g,'').replace(/\s*#\d+\s*$/,'').slice(0,28);
   const kw=Math.max(0,...(p.Connections||[]).map(c=>+c.PowerKW||0));
-  return op+(kw?' · '+Math.round(kw)+'kW DC':'');
+  return who+(kw?' · '+Math.round(kw)+'kW DC':'')+(ts?' · truck stop':'');
 }
 function renderChargers(){
   if(!LMAP||!CLAYER)return; CLAYER.clearLayers();
   const band=zoomBand(LMAP.getZoom()), cls='chg-pin'+(band===2?'':band===1?' md':' sm'), sz=band===2?22:band===1?16:11;
   CLIST.forEach(p=>{
     const a=p.AddressInfo; if(!a||!isFinite(a.Latitude)||!isFinite(a.Longitude))return;
-    const icon=L.divIcon({className:cls,html:BOLT,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]});
-    L.marker([a.Latitude,a.Longitude],{icon,keyboard:false,zIndexOffset:-100}).addTo(CLAYER)   // quietly under the job pins
+    const ts=isTruckStop(p);
+    const icon=L.divIcon({className:cls+(ts?' ts':''),html:BOLT,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]});
+    L.marker([a.Latitude,a.Longitude],{icon,keyboard:false,zIndexOffset:ts?-50:-100}).addTo(CLAYER)   // quietly under the job pins; truck stops on top of other chargers
       .bindTooltip('⚡ '+escHTML(chargerBrief(p)),{direction:'top',offset:[0,-sz/2-2]})
       .bindPopup(chargerPopupHTML(p));
   });
@@ -1155,7 +1167,7 @@ function chargerPopupHTML(p){
   const dir='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(a.Latitude+','+a.Longitude);
   return '<div style="font:600 12px/1.4 -apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif;max-width:200px">'
     +'<b>'+escHTML(a.Title||'Charging station')+'</b><br>'
-    +'<span style="color:#666">'+escHTML(op)+' · DC fast</span><br><br>'
+    +'<span style="color:#666">'+escHTML(op)+' · DC fast'+(isTruckStop(p)?' · <b style="color:#E67A1C">truck stop</b>, interstate exit':'')+'</span><br><br>'
     +conns+'<br><br>'
     +'<a href="'+dir+'" target="_blank" rel="noopener">Directions →</a></div>';
 }
