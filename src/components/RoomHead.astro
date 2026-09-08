@@ -35,7 +35,7 @@ function labelFor(url: string): string {
     {plain && <p class="plain">{plain}</p>}
     <div class="guide-row">
       <Guide guide={guide} variant="chip" size={44} />
-      <span class="caption">{guide === 'sensei' ? 'Tim' : guide === 'creative' ? 'Gabe' : guide === 'architect' ? 'Pavan' : 'Erik'} guides you here</span>
+      <span class="caption">{guide === 'sensei' ? 'Tim' : guide === 'creative' ? 'Gabe' : guide === 'architect' ? 'Pavan' : guide === 'field' ? 'Cody' : 'Erik'} guides you here</span>
     </div>
     {sources.length > 0 && (
       <div class="source-row" aria-label="Source artifacts">

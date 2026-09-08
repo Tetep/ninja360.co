@@ -11,7 +11,7 @@ const rooms = defineCollection({
     subtitle: z.string(),                                                // door sub on the wall
     plain: z.string().optional(),                                        // plain-English one-liner under the title
     order: z.number(),                                                   // ordering on the wall
-    guide: z.enum(['sensei', 'creative', 'architect', 'ally']),          // which lil-ninja leads
+    guide: z.enum(['sensei', 'creative', 'architect', 'ally', 'field']), // which lil-ninja leads
     accent: z.enum(['orange', 'deep']).default('orange'),                // door lintel accent
     parked: z.boolean().default(false),                                  // "Someday" tiles
     variant: z.enum(['content', 'crew', 'floor']).default('content'),    // page template
@@ -28,16 +28,16 @@ const partners = defineCollection({
   schema: z.object({
     name: z.string(),                                                    // "Gabe"
     role: z.string(),                                                    // "Creative Director"
-    avatar: z.enum(['sensei', 'creative', 'architect', 'ally']),         // which lil-ninja chip renders
+    avatar: z.enum(['sensei', 'creative', 'architect', 'ally', 'field']),// which lil-ninja chip renders
     order: z.number(),                                                   // display order on the Crew page
     emblem: z.string(),                                                  // crew emblem asset filename
     banner: z.string(),                                                  // crew banner asset filename
     photo: z.string(),                                                   // headshot asset filename
-    linkedin: z.string().url(),                                          // LinkedIn profile URL
+    linkedin: z.string().url().optional(),                               // LinkedIn profile URL (button hides without it)
     bio: z.string(),                                                     // one-line bio
     roadmap: z.string().optional(),                                      // optional roadmap route
     pitch: z.string(),                                                   // one-line framing (renders above the quote)
-    say: z.string(),                                                     // the italic quote (orange box)
+    say: z.string().optional(),                                          // the italic quote (orange box) — omit until the person has said it
   }),
 });
 

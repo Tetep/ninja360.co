@@ -1,6 +1,6 @@
 ---
 // Home — three-act cinematic story:
-//   ACT 0 · PICKER   Who are you? (5 cards — 4 ninjas + guest)
+//   ACT 0 · PICKER   Who are you? (6 cards — 5 ninjas + guest)
 //   ACT 1 · CALL     Do you accept? (personalized by identity)
 //   ACT 2+ · ORIGIN / PHILOSOPHIES / NEXT PHASE / DOJO
 //
@@ -10,7 +10,7 @@
 //   (unset)   → everything visible (accepted OR guest)
 //
 // localStorage keys:
-//   dojo:identity  → 'tim' | 'gabe' | 'pavan' | 'erik' | 'guest'
+//   dojo:identity  → 'tim' | 'gabe' | 'pavan' | 'erik' | 'cody' | 'guest'
 //   dojo:accepted  → 'true'
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
@@ -32,6 +32,7 @@ const identities = [
   { id: 'gabe',  name: 'Gabriel Miller',  role: 'Creative · Video Ninja',   accent: 'creative',  emblem: crewEmblems['crew-gabe-emblem.png'],  action: 'TELL',      sub: 'Every frame is your canvas.' },
   { id: 'pavan', name: 'Pavan Ganta',     role: 'Architect · Dev Ninja',    accent: 'architect', emblem: crewEmblems['crew-pavan-emblem.png'], action: 'BUILD',     sub: 'The systems are yours to wire.' },
   { id: 'erik',  name: 'Erik Juergensen', role: 'Ally · Podcast Ninja',     accent: 'ally',      emblem: crewEmblems['crew-erik-emblem.png'],  action: 'BROADCAST', sub: 'Lucky 13 is the home stage.' },
+  { id: 'cody',  name: 'Cody Petet',      role: 'Field Ninja · Photo & Driver', accent: 'field', emblem: crewEmblems['crew-cody-emblem.png'],  action: 'ROLL',      sub: 'Every mile is a frame.' },
 ];
 ---
 
@@ -500,7 +501,7 @@ const identities = [
 
   .ninja-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 20px;
     margin: 38px 0 24px;
   }
@@ -554,6 +555,7 @@ const identities = [
   .accent-creative  { --card-accent: var(--role-creative); }
   .accent-architect { --card-accent: #C48A3E; }  /* brighter bronze on dark bg */
   .accent-ally      { --card-accent: #B5AFA6; }  /* lighter charcoal on dark bg */
+  .accent-field     { --card-accent: #A6B45E; }  /* brighter olive on dark bg */
 
   .card-glow {
     position: absolute; inset: -2px;
@@ -1364,6 +1366,7 @@ const identities = [
       gabe:  { name: 'Gabe',  action: 'TELL',      sub: 'Every frame is your canvas.' },
       pavan: { name: 'Pavan', action: 'BUILD',     sub: 'The systems are yours to wire.' },
       erik:  { name: 'Erik',  action: 'BROADCAST', sub: 'Lucky 13 is the home stage.' },
+      cody:  { name: 'Cody',  action: 'ROLL',      sub: 'Every mile is a frame.' },
       guest: { name: 'Guest', action: 'EXPLORE',   sub: 'Take a look around.' }
     };
 

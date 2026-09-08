@@ -24,6 +24,7 @@ const lanes: Record<string, { tag: string; name: string }> = {
   gabe:  { tag: 'Philosophy II', name: 'Fall in Love with the True Story' },
   pavan: { tag: 'Philosophy III', name: 'Always Sharpen the Blade' },
   erik:  { tag: 'The Alliance',  name: 'Big Leagues to Main Street' },
+  cody:  { tag: 'Philosophy I',  name: 'Put People on the Map' },
 };
 ---
 
@@ -101,9 +102,9 @@ const lanes: Record<string, { tag: string; name: string }> = {
               )}
               <div class="nd-role">{p.data.role}</div>
               <p class="nd-bio">{p.data.bio}</p>
-              <blockquote class="nd-say">{p.data.say}</blockquote>
+              {p.data.say && <blockquote class="nd-say">{p.data.say}</blockquote>}
               <div class="nd-actions">
-                <a class="nd-btn" href={p.data.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+                {p.data.linkedin && <a class="nd-btn" href={p.data.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>}
                 {p.data.roadmap && <a class="nd-btn ghost" href={p.data.roadmap}>See the roadmap →</a>}
               </div>
             </div>

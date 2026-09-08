@@ -8,6 +8,8 @@ import pavanEmblem from './crew-pavan-emblem.png';
 import pavanBanner from './crew-pavan-banner.png';
 import erikEmblem from './crew-erik-emblem.png';
 import erikBanner from './crew-erik-banner.png';
+import codyEmblem from './crew-cody-emblem.png';
+import codyBanner from './crew-cody-banner.png';
 import gabePhoto from './crew-gabe-photo.jpg';
 import pavanPhoto from './crew-pavan-photo.jpg';
 import timPhoto from './crew-tim-photo.jpg';
@@ -18,6 +20,7 @@ export const crewEmblems: Record<string, ImageMetadata> = {
   'crew-gabe-emblem.png': gabeEmblem,
   'crew-pavan-emblem.png': pavanEmblem,
   'crew-erik-emblem.png': erikEmblem,
+  'crew-cody-emblem.png': codyEmblem,
 };
 
 export const crewBanners: Record<string, ImageMetadata> = {
@@ -25,6 +28,7 @@ export const crewBanners: Record<string, ImageMetadata> = {
   'crew-gabe-banner.png': gabeBanner,
   'crew-pavan-banner.png': pavanBanner,
   'crew-erik-banner.png': erikBanner,
+  'crew-cody-banner.png': codyBanner,
 };
 
 export const crewPhotos: Record<string, ImageMetadata> = {
