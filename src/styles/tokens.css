@@ -34,6 +34,7 @@
   --role-creative: #C74A1F; /* Gabe — deeper amber-red-ish (still no red red) */
   --role-architect: #7A5A2E; /* Pavan — bronze */
   --role-ally: #3D3D3D;     /* Erik — charcoal (partner-adjacent, cooler) */
+  --role-field: #6B7A3D;    /* Cody — olive (field / Army), still an earth tone */
 
   /* ==== Type ==== */
   --font-display: 'Barlow Condensed', system-ui, sans-serif;

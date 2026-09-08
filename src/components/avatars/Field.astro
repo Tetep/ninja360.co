@@ -1,0 +1,59 @@
+---
+// Field — Cody. The photographer-driver ninja.
+// Motif: camera on a strap / steering wheel / the road.
+// Role accent: olive (--role-field) — field, and a nod to the Army.
+type Variant = 'guide' | 'chip';
+interface Props { variant?: Variant; size?: number; label?: string; }
+const { variant = 'guide', size = variant === 'chip' ? 44 : 120, label = 'Cody — the Field Ninja' } = Astro.props;
+---
+
+{variant === 'guide' ? (
+  <svg viewBox="0 0 120 160" width={size} height={size * (160/120)} role="img" aria-label={label} class="ninja ninja-field">
+    {/* body */}
+    <path d="M35 90 L85 90 L95 145 L25 145 Z" fill="#3D3D3D"/>
+    {/* belt (field accent) */}
+    <rect x="30" y="105" width="60" height="6" fill="#6B7A3D"/>
+    {/* camera on a strap, chest height */}
+    <path d="M44 92 Q60 84 76 92" fill="none" stroke="#6B7A3D" stroke-width="2.2"/>
+    <rect x="46" y="96" width="28" height="18" rx="2" fill="#2A2A2A" stroke="#F9F7F5" stroke-width="1.2"/>
+    <circle cx="60" cy="105" r="6" fill="#F9F7F5"/>
+    <circle cx="60" cy="105" r="3.2" fill="#2A2A2A"/>
+    <rect x="66" y="93" width="6" height="4" fill="#6B7A3D"/>
+    {/* steering wheel, right hand */}
+    <circle cx="96" cy="98" r="11" fill="none" stroke="#3D3D3D" stroke-width="4"/>
+    <circle cx="96" cy="98" r="3" fill="#3D3D3D"/>
+    <path d="M85 98 L107 98 M96 98 L96 109" stroke="#3D3D3D" stroke-width="3"/>
+    {/* head — hood */}
+    <path d="M42 78 Q42 45 60 45 Q78 45 78 78 L78 88 L42 88 Z" fill="#3D3D3D"/>
+    {/* headband — field accent, tail */}
+    <rect x="40" y="62" width="40" height="6" fill="#6B7A3D"/>
+    <path d="M80 63 L92 58 L90 68 Z" fill="#6B7A3D"/>
+    {/* eye strip — hazel eyes */}
+    <rect x="46" y="70" width="28" height="6" fill="#F9F7F5"/>
+    <circle cx="53" cy="73" r="1.8" fill="#6E5A2E"/>
+    <circle cx="67" cy="73" r="1.8" fill="#6E5A2E"/>
+    <circle cx="53" cy="73" r="0.8" fill="#4F6B3A"/>
+    <circle cx="67" cy="73" r="0.8" fill="#4F6B3A"/>
+    {/* road motif above — two lane lines on a curve */}
+    <g transform="translate(36 22)" fill="none" stroke-linecap="round">
+      <path d="M0 22 Q24 -6 48 22" stroke="#3D3D3D" stroke-width="7"/>
+      <path d="M0 22 Q24 -6 48 22" stroke="#F9F7F5" stroke-width="1.4" stroke-dasharray="4 4"/>
+    </g>
+  </svg>
+) : (
+  <svg viewBox="0 0 44 44" width={size} height={size} role="img" aria-label={label} class="chip-avatar chip-field">
+    <circle cx="22" cy="22" r="20" fill="#3D3D3D"/>
+    <path d="M8 22 Q8 8 22 8 Q36 8 36 22 L36 32 L8 32 Z" fill="#3D3D3D"/>
+    <rect x="7" y="16" width="30" height="4" fill="#6B7A3D"/>
+    <rect x="10" y="21" width="24" height="4" fill="#F9F7F5"/>
+    <circle cx="16" cy="23" r="1.3" fill="#6E5A2E"/>
+    <circle cx="28" cy="23" r="1.3" fill="#6E5A2E"/>
+    <circle cx="16" cy="23" r="0.6" fill="#4F6B3A"/>
+    <circle cx="28" cy="23" r="0.6" fill="#4F6B3A"/>
+  </svg>
+)}
+
+<style>
+  .ninja, .chip-avatar { display: block; }
+  .chip-avatar { border-radius: 50%; }
+</style>
