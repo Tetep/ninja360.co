@@ -208,6 +208,10 @@ svg{width:100%;height:auto;display:block}
   background:#2b2e36;color:#fff;font:800 11px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   border:2px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.4)}
 .lnum.home{background:#fff;color:#2b2e36;border-color:#2b2e36;font-size:13px}
+/* real chargers, pulled from Open Charge Map — distinct blue so they never read as a job */
+.chg-pin{width:22px;height:22px;border-radius:50%;background:#1671f2;color:#fff;display:flex;
+  align-items:center;justify-content:center;font-size:12px;line-height:1;cursor:pointer;
+  border:2px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.4)}
 .leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11px;color:var(--ink2);margin-top:6px;align-items:center}
 .leg i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:-1px}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--surf);border-top:1px solid var(--line);
@@ -913,10 +917,15 @@ function renderPool(){
    Below city zoom, jobs are the design's 22px dots. Start / End / Home and the "late" ring are
    not in the design and are kept in the badge's dark‑pill language. */
 let LMAP=null, LLAYER=null, LFIT='', LZ=null;
+let CLAYER=null, CCACHE={}, CKEY='', CTIMER=null;
 // OpenStreetMap's standard tiles: no API key. (CARTO's voyager endpoint now watermarks unkeyed
 // requests "API KEY REQUIRED" — which the sandbox never showed because it can't reach tile hosts.)
 const TILES='https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const TILE_ATTR='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+// Open Charge Map — free tier, no billing account. This is a client-side key by nature (it
+// ships in the page source, same as any browser-only API key); OCM's are rate-limit
+// identifiers, not billing secrets, so that's expected, not a leak.
+const OCM_KEY='63f3daca-353c-461b-8932-00b0244c54ed';
 const NINJA={ini:'N3',base:'#f7941d',dark:'#c95f00',light:'#ffcf8a',acc:'#ffffff'};
 const BRANDS={   // the design's brand cards, verbatim
   'home depot':{ini:'HD', base:'#F96302',dark:'#8A3800',light:'#FFB877',acc:'#ffffff'},
@@ -956,12 +965,14 @@ function renderMap(){
   if(sv)sv.classList.toggle('hide',hasL);
   if(!hasL){renderMapSVG();return}
   // the Plan tab rebuilds its markup on every render, so the container is usually a new node
-  if(LMAP&&LMAP.getContainer()!==lm){try{LMAP.remove()}catch(e){} LMAP=null;LLAYER=null;LFIT='';LZ=null}
+  if(LMAP&&LMAP.getContainer()!==lm){try{LMAP.remove()}catch(e){} LMAP=null;LLAYER=null;LFIT='';LZ=null;CLAYER=null;CKEY=''}
   if(!LMAP){
     LMAP=L.map(lm,{zoomSnap:.5});
     L.tileLayer(TILES,{maxZoom:19,attribution:TILE_ATTR}).addTo(LMAP);
     LLAYER=L.layerGroup().addTo(LMAP);
+    CLAYER=L.layerGroup().addTo(LMAP);
     LMAP.on('zoomend',()=>{if(zoomBand(LMAP.getZoom())!==LZ)drawPins()});   // small dots ↔ dots ↔ teardrops
+    LMAP.on('moveend',()=>{clearTimeout(CTIMER);CTIMER=setTimeout(loadChargers,450)});   // real chargers, debounced
   }
   const d=day(), key=S.active+'|'+d.ids.join(',')+'|'+d.startKey+'|'+d.endKey;
   if(key!==LFIT){LFIT=key;   // only re-frame when the route itself changes, not on every status tick
@@ -970,6 +981,7 @@ function renderMap(){
     if(b.isValid())LMAP.fitBounds(b,{padding:[36,36],maxZoom:13});
   }
   drawPins();
+  loadChargers();
   setTimeout(()=>{try{LMAP.invalidateSize()}catch(e){}},0);
 }
 // 0: state view — 12px dots, no badges (not in the design; 22px × 150 jobs is a blob)
@@ -1020,6 +1032,50 @@ function drawPins(){
   if(d.ids.length){ mark(s0,'se','S','Start: '+placeName(d.startKey));
     if(Math.abs(s0[0]-e0[0])+Math.abs(s0[1]-e0[1])>1e-6)mark(e0,'se','E','End: '+placeName(d.endKey)) }
   mark(BASE,'home','⌂','Home — Overland Park KS');
+}
+// Real charger pins from Open Charge Map, for whatever's on screen — cached by rounded
+// center+radius so panning a little doesn't refetch. Skips at a wide zoom (too big an
+// area to be useful) and fails silently offline or if OCM is unreachable.
+function chargerKey(c,r){return c.lat.toFixed(2)+','+c.lng.toFixed(2)+':'+r.toFixed(0)}
+async function loadChargers(){
+  if(!LMAP||!CLAYER)return;
+  if(LMAP.getZoom()<9){CLAYER.clearLayers();CKEY='';return}
+  const b=LMAP.getBounds(), c=LMAP.getCenter();
+  const miles=Math.max(3,Math.min(40,b.getNorthEast().distanceTo(b.getSouthWest())/2/1609.34));
+  const key=chargerKey(c,miles);
+  if(key===CKEY)return; CKEY=key;
+  if(CCACHE[key]){renderChargers(CCACHE[key]);return}
+  try{
+    const url='https://api.openchargemap.io/v3/poi/?output=json&latitude='+c.lat.toFixed(4)+'&longitude='+c.lng.toFixed(4)
+      +'&distance='+miles.toFixed(1)+'&distanceunit=Miles&maxresults=60&compact=true&verbose=false&key='+OCM_KEY;
+    const r=await fetch(url); if(!r.ok)throw 0;
+    const list=await r.json();
+    CCACHE[key]=list; renderChargers(list);
+  }catch(e){ /* offline, blocked, or OCM down — leave whatever's already plotted */ }
+}
+function renderChargers(list){
+  if(!CLAYER)return; CLAYER.clearLayers();
+  (list||[]).forEach(p=>{
+    const a=p.AddressInfo; if(!a||!isFinite(a.Latitude)||!isFinite(a.Longitude))return;
+    const icon=L.divIcon({className:'chg-pin',html:'⚡',iconSize:[22,22],iconAnchor:[11,11]});
+    L.marker([a.Latitude,a.Longitude],{icon,keyboard:false,zIndexOffset:200}).addTo(CLAYER)
+      .bindPopup(chargerPopupHTML(p));
+  });
+}
+function chargerPopupHTML(p){
+  const a=p.AddressInfo||{}, op=(p.OperatorInfo&&p.OperatorInfo.Title)||'Unknown network';
+  const conns=(p.Connections||[]).map(c=>{
+    const t=(c.ConnectionType&&c.ConnectionType.Title)||'Unknown plug';
+    const kw=c.PowerKW?Math.round(c.PowerKW)+'kW':'';
+    const q=c.Quantity>1?' ×'+c.Quantity:'';
+    return escHTML(t)+(kw?' '+kw:'')+q;
+  }).join('<br>')||'Connector info not listed';
+  const dir='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(a.Latitude+','+a.Longitude);
+  return '<div style="font:600 12px/1.4 -apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif;max-width:200px">'
+    +'<b>'+escHTML(a.Title||'Charging station')+'</b><br>'
+    +'<span style="color:#666">'+escHTML(op)+'</span><br><br>'
+    +conns+'<br><br>'
+    +'<a href="'+dir+'" target="_blank" rel="noopener">Directions →</a></div>';
 }
 function renderMapSVG(){
   const el=$('#map'); if(!el)return;
