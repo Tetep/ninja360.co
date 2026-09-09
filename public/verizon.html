@@ -294,6 +294,32 @@ table.pl td{padding:6px;border-bottom:1px solid var(--line);vertical-align:top}
   box-shadow:0 -8px 30px rgba(0,0,0,.18);max-height:78vh;overflow:auto;
   padding:8px 15px calc(16px + env(safe-area-inset-bottom));max-width:640px;margin:0 auto}
 .sheet .grab{width:36px;height:4px;border-radius:2px;background:var(--line2);margin:2px auto 10px}
+.sheet.tall{max-height:88vh;overflow:auto;-webkit-overflow-scrolling:touch}
+/* the Philosophy — three lanes */
+.oath .ph{position:relative;border-left:3px solid var(--accent);padding:7px 44px 8px 14px;margin:10px 0;background:var(--surf2);border-radius:0 10px 10px 0}
+.oath .phn{position:absolute;right:12px;top:8px;font:800 12px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--accent);letter-spacing:.1em}
+.oath h4{margin:0 0 2px;font-size:16px;line-height:1.15}
+.oath .lead{font-size:13px;color:var(--ink2);margin:0 0 6px}
+.oath ul{margin:0;padding-left:18px;font-size:12.5px;color:var(--ink2)}
+.oath li{margin:2px 0}
+.oath-daily{margin:14px 0 0;padding:10px 14px;border-radius:10px;background:var(--surf2);font-size:14px;line-height:1.5}
+.oath-daily .lab{margin-bottom:4px}
+.oath-daily .fs{font-weight:800;font-size:16px;margin-top:4px;color:var(--accent)}
+.oath-ask{margin:14px 0 8px;padding:10px 12px;border:1px solid var(--line2);border-radius:10px;text-align:center}
+.oath-ask b{display:block;font-size:16px;margin-bottom:2px}
+.oath-ask div{font-size:13px;color:var(--ink2)}
+.oath-yn{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.oath-yn button{min-height:48px;font-size:16px;font-weight:700}
+/* the gate — between the app (below) and the sheet (above) */
+#gate{position:fixed;inset:0;z-index:1160;background:radial-gradient(900px 600px at 50% 30%,#2a1c0e,#141210 70%);color:#f2eae0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center}
+#gate img{width:min(64vw,300px);height:auto;filter:drop-shadow(0 12px 28px rgba(0,0,0,.65))}
+#gate .gt{font:800 24px/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:.01em}
+#gate .gd{font-size:15px;line-height:1.55;max-width:340px}
+#gate .gd .lab{color:#FABB7C;margin-bottom:4px}
+#gate .gd .fs{font-weight:800;font-size:18px;color:#F47920;margin-top:6px}
+#gate .gc{font-size:14px;opacity:.8}
+#gate button{background:transparent;color:#f2eae0;border:1px solid rgba(242,234,224,.45);margin-top:4px;padding:10px 18px;font-weight:700}
 .sheet h3{font-size:15px;margin-bottom:2px}
 .sheet .shsub{font-size:12px;color:var(--ink2);margin-bottom:10px}
 .shlist{display:flex;flex-direction:column;gap:6px;margin:8px 0}
@@ -365,7 +391,7 @@ const HOLD=j=>j.st==='On Hold'||j.st==='Postponed';
 const PLACES={home:{name:'Home — Overland Park KS',ll:BASE},liberty:{name:'Liberty MO',ll:[39.2460,-94.4190]},
   columbia:{name:'Columbia MO — dorm',ll:COL}};
 
-let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},here:{key:'home',time:8},nav:'plan',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{},who:null,by:{}};
+let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},here:{key:'home',time:8},nav:'plan',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{},who:null,by:{},oath:null};
 const svc=j=>(S.sv&&S.sv[j.id]!==undefined)?S.sv[j.id]:j.sv;
 const stat=id=>S.status[id]||'todo';
 const done=id=>stat(id)!=='todo';
@@ -388,7 +414,7 @@ function matchCrew(email,name){
 async function detectWho(){
   try{const r=await fetch('/cdn-cgi/access/get-identity',{credentials:'same-origin'}); if(!r.ok)return false;
     const j=await r.json(); const id=matchCrew(j.email,j.name);
-    if(id&&id!==S.who){S.who=id; dirty(); renderWho(); toast('Signed in as '+CREW[id].short)}
+    if(id&&id!==S.who){S.who=id; dirty(); renderWho(); toast('Signed in as '+CREW[id].short); afterSignIn()}
     return !!id;
   }catch(e){return false}   // not behind Access (local, offline) — the chip still works by hand
 }
@@ -400,9 +426,51 @@ function renderWho(){
 }
 function whoSheet(){
   sheet('Who\'s running today?','Your emblem goes on every stop you mark done.',
-    '<div class="shlist">'+Object.entries(CREW).map(([id,c])=>'<button class="shbtn who'+(id===S.who?' cur':'')+'" data-who="'+id+'"><img src="'+c.emblem+'" alt="">'+escHTML(c.name)+' <small>'+escHTML(c.role)+'</small></button>').join('')+'</div>',
-    el=>{el.querySelectorAll('[data-who]').forEach(b=>b.onclick=()=>{S.who=b.dataset.who; dirty(); closeSheet(); renderWho(); render(); toast(CREW[S.who].short+' is running today')})});
+    '<div class="shlist">'+Object.entries(CREW).map(([id,c])=>'<button class="shbtn who'+(id===S.who?' cur':'')+'" data-who="'+id+'"><img src="'+c.emblem+'" alt="">'+escHTML(c.name)+' <small>'+escHTML(c.role)+'</small></button>').join('')+'</div><button class="ghost" id="whoPhil" style="width:100%;margin-top:8px">The Philosophy of the Ninja 360</button>',
+    el=>{el.querySelectorAll('[data-who]').forEach(b=>b.onclick=()=>{S.who=b.dataset.who; dirty(); closeSheet(); renderWho(); render(); if(!needsOath())toast(CREW[S.who].short+' is running today'); afterSignIn()});   // the call is the confirmation
+        el.querySelector('#whoPhil').onclick=()=>oathSheet()});
 }
+/* ---------- the call ----------
+   After sign-in, the Philosophy — the same beat as the Dojo: pick who you are, read
+   what we answer to, accept once. Verbatim from Tim. Shown again if a different
+   ninja signs in on this device; re-readable any time from the who chip. */
+const PHIL=[
+ {n:'I',  t:'Put People on the Map.',            lead:'When someone nearby searches, our client is who they find — and who they choose.',
+  pts:['Great KC businesses deserve to be seen','We capture, optimize, and promote until they are','The proof lives on Google: found first, chosen more']},
+ {n:'II', t:'Fall in Love with the True Story.', lead:'Every business has a real story. Our job is to find it and tell it beautifully.',
+  pts:['Listen first — the story comes before the shot list','Real people, real places — never staged, never stock','The drones and cameras serve the story, not the other way around']},
+ {n:'III',t:'Always Sharpen the Blade.',         lead:'Get a little better every week — the craft, the tools, the results.',
+  pts:['Try it, test it, keep what works','Own the misses and write down the lessons','New tech earns its place by serving the client, not the hype']}];
+const needsOath=()=>!!S.who&&(!S.oath||S.oath.who!==S.who);
+function oathSheet(){
+  const c=who(), nm=c?c.short:'Ninja';
+  if(needsOath())showGate();   // under the sheet: any way out but "Yes" lands here
+  sheet('The Philosophy of the Ninja 360','Every project, every pitch, every crew decision answers to one of these — or it doesn’t get a lane.',
+    '<div class="oath">'+PHIL.map(p=>'<div class="ph"><div class="phn">'+p.n+'</div><h4>'+escHTML(p.t)+'</h4><div class="lead">'+escHTML(p.lead)+'</div><ul>'+p.pts.map(x=>'<li>'+escHTML(x)+'</li>').join('')+'</ul></div>').join('')
+    +'</div><div class="oath-daily"><div class="lab">Basic daily responsibilities</div>'
+    +'<div>Be Positive, Be Professional, Be Humble.</div><div>Be Open and Flexible.</div><div class="fs">Finish Strong.</div></div>'
+    +(needsOath()?'<div class="oath-ask"><b>Do you accept?</b><div>Will you commit to being “Curious and not Judgemental”?</div></div>'
+      +'<div class="oath-yn"><button class="ghost" id="oathNo">No</button><button class="prim" id="oathOk">Yes</button></div>':''),
+    el=>{el.classList.add('tall'); setTimeout(()=>{el.scrollTop=0},0);   // sheet() focuses the first button, which is at the bottom — start at the top
+      const ok=el.querySelector('#oathOk'), no=el.querySelector('#oathNo');
+      if(ok)ok.onclick=()=>{S.oath={who:S.who,at:Date.now()}; dirty(); closeSheet(); hideGate(); toast('Let’s roll, '+nm+'.')};   // Yes → open
+      if(no)no.onclick=()=>closeSheet();                                                                              // No → the gate: "You are not ready."
+    });
+}
+function afterSignIn(){ if(needsOath())setTimeout(oathSheet,250) }
+// Not accepted → the app stays behind the gate. /assets/ninja-not-ready.png is the Ninja mark
+// with the thumb turned down (Tim's call); swap the file by name to change it.
+function showGate(){
+  if($('#gate'))return;
+  const g=document.createElement('div'); g.id='gate';
+  g.innerHTML='<img src="/assets/ninja-not-ready.png" alt="" onerror="this.onerror=null;this.src=\'/assets/ninja-mark.png\'">'
+    +'<div class="gt">You are not ready.</div>'
+    +'<div class="gd"><div class="lab">Basic daily responsibilities</div><div>Be Positive, Be Professional, Be Humble.</div><div>Be Open and Flexible.</div><div class="fs">Finish Strong.</div></div>'
+    +'<div class="gc">Come back when you can do this.</div>'
+    +'<button class="ghost" id="gateRead">Read the Philosophy</button>';
+  document.body.appendChild(g); g.querySelector('#gateRead').onclick=()=>oathSheet();
+}
+function hideGate(){const g=$('#gate'); if(g)g.remove()}
 // one place sets status so the attribution always follows it
 function setStatus(id,st){
   if(!st||st==='todo'){delete S.status[id]; delete S.by[id]; return}
@@ -1581,6 +1649,7 @@ function mergeState(j){
   S.chargeAt=(j.chargeAt&&typeof j.chargeAt==='object'&&!Array.isArray(j.chargeAt))?j.chargeAt:{};   // stops where Tim plugs in
   S.who=(j.who&&CREW[j.who])?j.who:null;                                                              // which Field Ninja is signed in on this device
   S.by=(j.by&&typeof j.by==='object'&&!Array.isArray(j.by))?j.by:{};                                 // who marked each stop done
+  S.oath=(j.oath&&j.oath.who)?j.oath:null;                                                           // who on this device has read the Philosophy
   if(!isFinite(S.here.time))S.here.time=8;
   if(S.here.key==='gps'&&!S.here.ll)S.here={key:'home',time:S.here.time};
   S.days.forEach(d=>{if(!isFinite(d.startTime))d.startTime=8;
@@ -1747,7 +1816,7 @@ function boot(){
   ready=true;
   render();
   renderWho(); $('#whoChip').onclick=whoSheet;
-  detectWho().then(ok=>{ if(!ok&&!S.who)whoSheet() });   // like the Dojo's "Who are you?": first open asks, then it sticks
+  detectWho().then(ok=>{ if(!ok&&!S.who)whoSheet(); else if(needsOath())oathSheet() });   // like the Dojo: who are you → the Philosophy → I'm in
   chip(loaded?'Loaded your plan':'Ready to plan','ok');
 }
 function csvText(){
