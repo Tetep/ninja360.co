@@ -255,7 +255,7 @@ svg{width:100%;height:auto;display:block}
 .leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11px;color:var(--ink2);margin-top:6px;align-items:center}
 .leg i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:-1px}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--surf);border-top:1px solid var(--line);
-  display:grid;grid-template-columns:repeat(5,1fr);z-index:40;padding-bottom:env(safe-area-inset-bottom)}
+  display:grid;grid-template-columns:repeat(5,1fr);z-index:1100;padding-bottom:env(safe-area-inset-bottom)}
 nav button{padding:8px 2px 9px;font-size:10.5px;font-weight:600;color:var(--ink3);
   display:flex;flex-direction:column;align-items:center;gap:2px}
 nav button.on{color:var(--accent)}
@@ -263,7 +263,7 @@ nav .ic{font-size:16px;line-height:1}
 nav .dotN{position:absolute;top:4px;right:calc(50% - 22px);background:var(--accent);color:var(--accent-ink);
   border-radius:9px;font-size:9px;padding:0 4px;font-weight:700}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(72px + env(safe-area-inset-bottom));background:var(--head-bg);color:var(--head-ink);
-  padding:9px 15px;border-radius:9px;font-size:13px;z-index:60;box-shadow:var(--shadow);max-width:88vw;
+  padding:9px 15px;border-radius:9px;font-size:13px;z-index:1180;box-shadow:var(--shadow);max-width:88vw;
   display:flex;gap:12px;align-items:center}
 .toast button{color:#FFB27A;font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.6px;padding:2px 0}
 .empty{color:var(--ink3);font-size:13.5px;padding:16px 2px;text-align:center}
@@ -287,8 +287,9 @@ table.pl th{text-align:left;font-size:10px;text-transform:uppercase;letter-spaci
   padding:5px 6px;border-bottom:1px solid var(--line)}
 table.pl td{padding:6px;border-bottom:1px solid var(--line);vertical-align:top}
 /* bottom sheet */
-.scrim{position:fixed;inset:0;background:var(--scrim);z-index:70}
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:71;background:var(--surf);
+/* Leaflet's panes and controls sit at 400–1000: everything fixed over the map lives above that */
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:1170}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:1171;background:var(--surf);
   border-radius:16px 16px 0 0;border:1px solid var(--line);border-bottom:none;
   box-shadow:0 -8px 30px rgba(0,0,0,.18);max-height:78vh;overflow:auto;
   padding:8px 15px calc(16px + env(safe-area-inset-bottom));max-width:640px;margin:0 auto}
@@ -385,10 +386,11 @@ function matchCrew(email,name){
   return null;
 }
 async function detectWho(){
-  try{const r=await fetch('/cdn-cgi/access/get-identity',{credentials:'same-origin'}); if(!r.ok)return;
+  try{const r=await fetch('/cdn-cgi/access/get-identity',{credentials:'same-origin'}); if(!r.ok)return false;
     const j=await r.json(); const id=matchCrew(j.email,j.name);
     if(id&&id!==S.who){S.who=id; dirty(); renderWho(); toast('Signed in as '+CREW[id].short)}
-  }catch(e){}   // not behind Access (local, offline) — the chip still works by hand
+    return !!id;
+  }catch(e){return false}   // not behind Access (local, offline) — the chip still works by hand
 }
 function renderWho(){
   const el=$('#whoChip'); if(!el)return; const c=who();
@@ -1745,7 +1747,7 @@ function boot(){
   ready=true;
   render();
   renderWho(); $('#whoChip').onclick=whoSheet;
-  detectWho();                 // Cloudflare Access tells us who this is; otherwise the chip asks
+  detectWho().then(ok=>{ if(!ok&&!S.who)whoSheet() });   // like the Dojo's "Who are you?": first open asks, then it sticks
   chip(loaded?'Loaded your plan':'Ready to plan','ok');
 }
 function csvText(){
