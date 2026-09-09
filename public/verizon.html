@@ -63,6 +63,16 @@ header .sub{font-size:12px;color:var(--head-sub);margin-top:1px}
 .hrow{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .hbtns{display:flex;gap:6px;align-items:center}
 .tbtn{border:1px solid var(--head-line);color:var(--head-ink);border-radius:8px;padding:6px 10px;font-size:12px;min-height:32px}
+/* who's running: their emblem sits right beside the Ninja mark — one tap to switch */
+.whochip{width:38px;height:38px;border-radius:50%;padding:0;flex:none;overflow:hidden;margin-left:-4px;
+  border:2px solid var(--accent);background:#141414;color:var(--head-ink);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 4px rgba(0,0,0,.25)}
+.whochip img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.whochip .wn{font-weight:800;font-size:15px;line-height:1}
+.whochip.empty{border-style:dashed;opacity:.85}
+.shbtn.who{display:flex;align-items:center;gap:10px}
+.shbtn.who img{width:36px;height:36px;border-radius:50%;object-fit:cover;background:#111;flex:none}
+.bychip{width:16px;height:16px;border-radius:50%;object-fit:cover;vertical-align:-3px;margin-left:4px;background:#111}
 #syncChip{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px}
 #syncChip.ok{color:#9CD8B4;border-color:#3E594A}
 #syncChip.busy{color:var(--head-sub)}
@@ -302,7 +312,7 @@ table.pl td{padding:6px;border-bottom:1px solid var(--line);vertical-align:top}
 </style>
 
 <header><div class="wrap"><div class="hrow">
-  <div class="hbrand"><img class="hmark" src="/assets/ninja-mark.png" alt=""><div><h1>NINJA<span class="h360">360</span> <span class="h1sub">Run Sheet</span></h1><div class="sub">We put you on the M.A.P. &middot; route, re-route, and track</div></div></div>
+  <div class="hbrand"><img class="hmark" src="/assets/ninja-mark.png" alt=""><button class="whochip" id="whoChip" aria-label="Who is running today"></button><div><h1>NINJA<span class="h360">360</span> <span class="h1sub">Run Sheet</span></h1><div class="sub">We put you on the M.A.P. &middot; route, re-route, and track</div></div></div>
   <div class="hbtns">
     <button class="tbtn" id="syncChip" title="Tap to save now" aria-live="polite">&hellip;</button>
     <button class="tbtn" id="themeBtn">Theme</button>
@@ -354,10 +364,50 @@ const HOLD=j=>j.st==='On Hold'||j.st==='Postponed';
 const PLACES={home:{name:'Home — Overland Park KS',ll:BASE},liberty:{name:'Liberty MO',ll:[39.2460,-94.4190]},
   columbia:{name:'Columbia MO — dorm',ll:COL}};
 
-let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},here:{key:'home',time:8},nav:'plan',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{}};
+let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},here:{key:'home',time:8},nav:'plan',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{},who:null,by:{}};
 const svc=j=>(S.sv&&S.sv[j.id]!==undefined)?S.sv[j.id]:j.sv;
 const stat=id=>S.status[id]||'todo';
 const done=id=>stat(id)!=='todo';
+/* ---------- who's running today ----------
+   The Field Ninjas. Behind Cloudflare Access the sign-in tells us who this is
+   (/cdn-cgi/access/get-identity); match by email, then by name. Off Access, or
+   for an email not listed yet, a tap on the header chip picks — and sticks. */
+const CREW={
+  tim: {short:'Tim', name:'Tim Petet',      role:'Sensei · Head Ninja',     emblem:'/assets/crew/web/crew-tim-emblem-96.webp',  emails:[]},
+  gabe:{short:'Gabe',name:'Gabriel Miller', role:'Creative · Video Ninja',  emblem:'/assets/crew/web/crew-gabe-emblem-96.webp', emails:[]},
+  cody:{short:'Cody',name:'Cody Petet',     role:'Field Ninja · Photo & Driver', emblem:'/assets/crew/web/crew-cody-emblem-96.webp', emails:[]}};
+const who=()=>S.who&&CREW[S.who]?CREW[S.who]:null;
+function matchCrew(email,name){
+  const e=String(email||'').toLowerCase(), n=String(name||'').toLowerCase();
+  for(const [id,c] of Object.entries(CREW)){ if(c.emails.some(x=>x.toLowerCase()===e))return id }
+  for(const [id,c] of Object.entries(CREW)){ const [first,last]=c.name.toLowerCase().split(' ');
+    if(n&&n.includes(last)&&(n.includes(first)||n.includes(c.short.toLowerCase())))return id }
+  return null;
+}
+async function detectWho(){
+  try{const r=await fetch('/cdn-cgi/access/get-identity',{credentials:'same-origin'}); if(!r.ok)return;
+    const j=await r.json(); const id=matchCrew(j.email,j.name);
+    if(id&&id!==S.who){S.who=id; dirty(); renderWho(); toast('Signed in as '+CREW[id].short)}
+  }catch(e){}   // not behind Access (local, offline) — the chip still works by hand
+}
+function renderWho(){
+  const el=$('#whoChip'); if(!el)return; const c=who();
+  el.innerHTML=c?'<img src="'+c.emblem+'" alt="'+escHTML(c.short)+'">':'<span class="wn">?</span>';
+  el.classList.toggle('empty',!c);
+  el.title=c?c.name+' — '+c.role+' · tap to switch':'Tap to pick who is running today';
+}
+function whoSheet(){
+  sheet('Who\'s running today?','Your emblem goes on every stop you mark done.',
+    '<div class="shlist">'+Object.entries(CREW).map(([id,c])=>'<button class="shbtn who'+(id===S.who?' cur':'')+'" data-who="'+id+'"><img src="'+c.emblem+'" alt="">'+escHTML(c.name)+' <small>'+escHTML(c.role)+'</small></button>').join('')+'</div>',
+    el=>{el.querySelectorAll('[data-who]').forEach(b=>b.onclick=()=>{S.who=b.dataset.who; dirty(); closeSheet(); renderWho(); render(); toast(CREW[S.who].short+' is running today')})});
+}
+// one place sets status so the attribution always follows it
+function setStatus(id,st){
+  if(!st||st==='todo'){delete S.status[id]; delete S.by[id]; return}
+  const was=done(id); S.status[id]=st;
+  if(!was||!S.by[id]){ if(S.who)S.by[id]=S.who; }   // first mark-done stamps the shooter; a status bump later keeps it
+}
+const byEmblem=id=>{const c=S.by[id]&&CREW[S.by[id]]; return c?c.emblem:null};
 function jobTimerState(id){const rec=S.timers&&S.timers[id]; if(!rec)return{elapsedMs:0,running:false,label:'00:00:00'}; const elapsedMs=(rec.elapsedMs||0)+(rec.startedAt?Date.now()-rec.startedAt:0); return{elapsedMs,running:!!rec.startedAt,label:formatDuration(elapsedMs)};}
 function jobNoteText(id){return String(S.notes&&S.notes[id]||'').trim();}
 function jobTooltip(id){const note=jobNoteText(id); const t=jobTimerState(id); const bits=[]; if(note)bits.push('Note: '+note); bits.push(t.running?'Timer: '+t.label+' (running)':'Timer: '+t.label); return bits.join(' | ');}
@@ -662,7 +712,7 @@ function stopCards(d,s){
     const lb=r.late?`<span class="badge bad">shuts ${hhmm(j.x)}</span>`:'';
     const wb=r.wait>0.02?`<span class="badge warn">wait ${Math.round(r.wait*60)}m</span>`:'';
     const ab=S.loaded[r.id]?'':'<span class="badge warn">not in app</span>';
-    const db=done(r.id)?`<span class="badge v">${stat(r.id)}</span>`:'';
+    const db=done(r.id)?`<span class="badge v">${stat(r.id)}${byEmblem(r.id)?'<img class="bychip" src="'+byEmblem(r.id)+'" alt="'+escHTML(CREW[S.by[r.id]].short)+'" title="'+escHTML(CREW[S.by[r.id]].short)+'">':''}</span>`:'';
     const rb=r.range<0?'<span class="badge bad">⚡ charge before this</span>':(r.low?'<span class="badge warn">🔋 under 10%</span>':'');
     const cb=r.charged?'<span class="badge v">⚡ charging here</span>':'';
     // the e‑scooter play: while the car drinks, what else is within a couple of miles?
@@ -709,7 +759,7 @@ function wireStops(){
     if(S.chargeAt[id])delete S.chargeAt[id]; else S.chargeAt[id]=1;
     render();dirty(); toast(S.chargeAt[id]?'Charging here — the battery reads full from this stop on':'Not charging here')});
   $$('[data-done]').forEach(b=>b.onclick=()=>{const id=b.dataset.done;
-    if(done(id))delete S.status[id]; else S.status[id]='captured'; render();dirty()});
+    setStatus(id,done(id)?'todo':'captured'); render();dirty()});
   $$('[data-sv]').forEach(b=>b.onclick=()=>svSheet(b.dataset.sv));
   $$('[data-timer]').forEach(b=>b.onclick=()=>{const id=b.dataset.timer; toggleTimer(id); render(); dirty(); toast(jobTimerState(id).running?'Timer started':'Timer stopped');});
   $$('[data-note]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.note));
@@ -806,7 +856,7 @@ function jobSheet(id){
      el.querySelector('#jsDirChg').onclick=()=>window.open(chargerDirUrl(j),'_blank','noopener');
      el.querySelector('#jsTimer').onclick=()=>{toggleTimer(id); closeSheet(); render(); dirty(); toast(jobTimerState(id).running?'Timer started':'Timer stopped');};
      el.querySelector('#jsReset').onclick=()=>{resetTimer(id); closeSheet(); render(); dirty(); toast('Timer reset');};
-     el.querySelector('#jsStat').onchange=e=>{if(e.target.value==='todo')delete S.status[id];else S.status[id]=e.target.value;render();dirty()};
+     el.querySelector('#jsStat').onchange=e=>{setStatus(id,e.target.value);render();dirty()};
      el.querySelector('#jsNote').oninput=e=>{const v=e.target.value.trim(); if(v) S.notes[id]=v; else delete S.notes[id]; dirty()};
     });
 }
@@ -1026,8 +1076,8 @@ function brandOf(j){
 }
 const pinVars=b=>`--b:${b.base};--d:${b.dark};--l:${b.light};--a:${b.acc};--r:${b.base}4d`;
 const badgeHTML=(dn,lf)=>`<div class="nbadge"><span class="dn">✓${dn}</span><span class="lf">${lf}</span></div>`;
-function pinHTML(b,sel,allDone,badge,late,size){
-  const glyph=allDone?'<img class="nmark" src="/assets/ninja-mark.png" alt="done">'
+function pinHTML(b,sel,allDone,badge,late,size,mark){
+  const glyph=allDone?'<img class="nmark" src="'+(mark||'/assets/ninja-mark.png')+'" alt="done">'
              :(b.sym&&SYMBOLS[b.sym])||('<b class="ini">'+escHTML(b.ini)+'</b>');   // brand symbol beats initials
   const inner=sel?`<div class="disc">${glyph}</div>`:'';
   return `<div class="npin${sel?' sel':''}${size||''}${late?' late':''}" style="${pinVars(b)}"><div class="head">${inner}${badge}</div><div class="tail"></div></div>`;
@@ -1085,7 +1135,7 @@ function drawPins(){
     // Selected pins scale with zoom like the dots do: the design's 52px at city zoom, 44 at region, 36 at state
     const SZ=sel?(close?[52,77,'']:mid?[44,65,' sel-m']:[36,53,' sel-s']):[26,43,''];
     const icon=(sel||close)
-      ?L.divIcon({className:'npx',html:pinHTML(b,sel,allDone,badge,isLate,SZ[2]),iconSize:[SZ[0],SZ[1]],iconAnchor:[SZ[0]/2,SZ[1]]})
+      ?L.divIcon({className:'npx',html:pinHTML(b,sel,allDone,badge,isLate,SZ[2],allDone?(todayShots.map(j=>byEmblem(j.id)).find(Boolean)||null):null),iconSize:[SZ[0],SZ[1]],iconAnchor:[SZ[0]/2,SZ[1]]})
       :L.divIcon({className:'npx',html:`<div class="ndot${mid?'':' sm'}" style="${pinVars(b)}">${mid?badge:''}</div>`,
                   iconSize:mid?[22,22]:[12,12],iconAnchor:mid?[11,11]:[6,6]});
     const dim=!sel&&list.every(j=>HOLD(j));
@@ -1351,7 +1401,7 @@ function requestText(){
     L.push('These can come off — I am not getting to them in this window:');
     spare.forEach(i=>L.push('  '+i+'   '+BY[i].n+' — '+BY[i].c+', '+BY[i].s));
     L.push('');}
-  L.push('Thanks,','Tim');
+  L.push('Thanks,',who()?who().short:'Tim');
   return L.join('\n');
 }
 function renderApp(){
@@ -1457,7 +1507,7 @@ function renderBoard(){
   $$('#s-board [data-bf]').forEach(b=>b.onclick=()=>{BF=b.dataset.bf;render()});
   $$('#s-board [data-info]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.info));
   $$('#s-board [data-stt]').forEach(b=>b.onchange=()=>{const i=b.dataset.stt;
-    if(b.value==='todo')delete S.status[i]; else S.status[i]=b.value; render();dirty()});
+    setStatus(i,b.value); render();dirty()});
   $('#csvBtn').onclick=doCsv;
   const cjP=$('#cjPanel'); if(cjP)cjP.ontoggle=()=>{CJ_OPEN=cjP.open};
   const cjAdd=$('#cjAdd'); if(cjAdd)cjAdd.onclick=async()=>{
@@ -1527,6 +1577,8 @@ function mergeState(j){
   S.lastRequest=(j.lastRequest&&j.lastRequest.at)?j.lastRequest:null;   // last "please load" sent to IDS
   S.evRange=(isFinite(j.evRange)&&j.evRange>=50)?+j.evRange:260;   // the Equinox's real-world full charge, miles
   S.chargeAt=(j.chargeAt&&typeof j.chargeAt==='object'&&!Array.isArray(j.chargeAt))?j.chargeAt:{};   // stops where Tim plugs in
+  S.who=(j.who&&CREW[j.who])?j.who:null;                                                              // which Field Ninja is signed in on this device
+  S.by=(j.by&&typeof j.by==='object'&&!Array.isArray(j.by))?j.by:{};                                 // who marked each stop done
   if(!isFinite(S.here.time))S.here.time=8;
   if(S.here.key==='gps'&&!S.here.ll)S.here={key:'home',time:S.here.time};
   S.days.forEach(d=>{if(!isFinite(d.startTime))d.startTime=8;
@@ -1692,13 +1744,15 @@ function boot(){
   if(ti>=0&&ti!==S.active)S.active=ti;
   ready=true;
   render();
+  renderWho(); $('#whoChip').onclick=whoSheet;
+  detectWho();                 // Cloudflare Access tells us who this is; otherwise the chip asks
   chip(loaded?'Loaded your plan':'Ready to plan','ok');
 }
 function csvText(){
-  const rows=[['Day','Date','Stop','Arrive','Depart','Leg mi','Location ID','WO','Site','Location','Address','City','State','Channel','End client','Payout','Opens','Closes','Hours','Status','In app']];
+  const rows=[['Day','Date','Stop','Arrive','Depart','Leg mi','Location ID','WO','Site','Location','Address','City','State','Channel','End client','Payout','Opens','Closes','Hours','Status','By','In app']];
   S.days.forEach((d,di)=>{const s=simulate(d);
     s.rows.forEach((r,i)=>{const j=BY[r.id];
-      rows.push([di+1,d.date,i+1,hhmm(r.arr),hhmm(r.fin),r.leg.toFixed(1),j.id,j.wo||'',j.site||'',j.n,j.a,j.c,j.s,j.ch||'',j.cl,j.p,hhmm(j.o),hhmm(j.x),j.v?'verified':'assumed',stat(j.id),S.loaded[j.id]?'yes':'no'])})});
+      rows.push([di+1,d.date,i+1,hhmm(r.arr),hhmm(r.fin),r.leg.toFixed(1),j.id,j.wo||'',j.site||'',j.n,j.a,j.c,j.s,j.ch||'',j.cl,j.p,hhmm(j.o),hhmm(j.x),j.v?'verified':'assumed',stat(j.id),S.by[j.id]&&CREW[S.by[j.id]]?CREW[S.by[j.id]].short:'',S.loaded[j.id]?'yes':'no'])})});
   return rows.map(r=>r.map(v=>{v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(',')).join('\n');
 }
 function doCsv(){
