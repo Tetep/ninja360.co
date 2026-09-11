@@ -1089,7 +1089,12 @@ function renderPlan(){
     </div>
     <div class="lab" style="margin:8px 0 5px">Days</div><div class="rail">${rail}</div>
     <div class="mapbox" style="margin:8px 0 4px"><div id="lmap" role="region" aria-label="Job map"></div><svg id="map" viewBox="0 0 720 470" role="img" aria-label="Job map (offline)"></svg></div>
-    <div class="hint" style="margin:0 0 10px">Tap a pin for details. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left. ⚡ chips are DC fast chargers only (50kW+) — on the road and near your stops; chips wear the network’s colors (Love’s red, EVgo navy) an orange halo means a truck stop at an interstate exit, and the teal chip with the orange ring and gold ★ is IONNA — your network. Tap one for plugs, power, and directions.</div>
+    <div class="hint" style="margin:0 0 10px">Tap a pin for details. Pins wear the brand's colour until the stop is locked, then they turn green; a stop that owes a go-back turns red. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left. ⚡ chips are DC fast chargers only (50kW+) — on the road and near your stops; chips wear the network’s colors (Love’s red, EVgo navy) an orange halo means a truck stop at an interstate exit, and the teal chip with the orange ring and gold ★ is IONNA — your network. Tap one for plugs, power, and directions.</div>
+    <div class="leg" style="margin:-6px 0 10px">
+      <span><i style="background:#EE0000"></i>still to shoot (brand colour)</span>
+      <span><i style="background:#2C6B4F"></i>locked — banked</span>
+      <span><i style="background:#A2352A"></i>return owed</span>
+      <span><i style="background:var(--line2)"></i>on hold</span></div>
     <div class="leg" id="chgLeg" hidden></div>
     <div class="strip">
       <div class="mcell"><div class="lab">Stops</div><div class="v">${d.ids.length}</div></div>
@@ -1280,6 +1285,10 @@ function brandOf(j){
   const ini=(EXTRA_INI[lc]||(words.length>1?words.map(w=>w[0]).join('').slice(0,3):lc.slice(0,3))).toUpperCase();
   return Object.assign({},j.ch==='Verizon'?BRANDS.verizon:NINJA,{ini});
 }
+// A locked stop keeps its brand initials but goes green; a Return Owed stop goes red.
+// Colours match the app's own semantics: --money for banked, --bad for owed.
+const DONE_COLORS={base:'#2C6B4F',dark:'#16382A',light:'#7FBFA0',acc:'#FFFFFF'};
+const RETURN_COLORS={base:'#A2352A',dark:'#5A1A14',light:'#E09289',acc:'#FFFFFF'};
 const pinVars=b=>`--b:${b.base};--d:${b.dark};--l:${b.light};--a:${b.acc};--r:${b.base}4d`;
 const badgeHTML=(dn,lf)=>`<div class="nbadge"><span class="dn">✓${dn}</span><span class="lf">${lf}</span></div>`;
 function pinHTML(b,sel,allDone,badge,late,size,mark){
@@ -1330,12 +1339,17 @@ function drawPins(){
     const todays=d.ids.map(i=>BY[i]).filter(j=>j&&list.includes(j));
     const sel=todays.length>0, n=list.length;
     const shots=list.filter(j=>!j.wp), todayShots=todays.filter(j=>!j.wp);   // waypoints aren't shots
-    const doneN=shots.filter(j=>done(j.id)).length, leftN=shots.filter(j=>!done(j.id)&&!HOLD(j)).length;
-    const pick=arr=>arr.find(j=>!j.wp&&!done(j.id)&&!HOLD(j))||arr.find(j=>!j.wp)||arr[0];   // a job fronts a shared pin, not the lunch
+    const doneN=shots.filter(j=>LOCKED(j.id)).length, leftN=shots.filter(j=>NEEDSVISIT(j)).length;
+    const pick=arr=>arr.find(j=>!j.wp&&NEEDSVISIT(j))||arr.find(j=>!j.wp)||arr[0];   // a job fronts a shared pin, not the lunch
     const lead=sel?pick(todays):pick(list);
     const mixed=new Set((shots.length?shots:list).map(j=>brandOf(j).base)).size>1;
-    const b=sel?brandOf(lead):(mixed?NINJA:brandOf(lead));
-    const allDone=sel&&todayShots.length>0&&todayShots.every(j=>done(j.id));
+    let b=sel?brandOf(lead):(mixed?NINJA:brandOf(lead));
+    // nothing here still owes a visit -> banked; anything owing a go-back outranks that
+    const anyReturn=shots.some(j=>j.st==='Return Owed');
+    const allBanked=shots.length>0&&leftN===0;
+    if(anyReturn)b=Object.assign({},b,RETURN_COLORS);
+    else if(allBanked)b=Object.assign({},b,DONE_COLORS);
+    const allDone=(sel?todayShots.length>0&&todayShots.every(j=>LOCKED(j.id)):allBanked);
     const isLate=todays.some(j=>late.has(j.id));
     const badge=shots.length>1?badgeHTML(doneN,leftN):'';
     // Selected pins scale with zoom like the dots do: the design's 52px at city zoom, 44 at region, 36 at state
@@ -1346,7 +1360,7 @@ function drawPins(){
                   iconSize:mid?[22,22]:[12,12],iconAnchor:mid?[11,11]:[6,6]});
     const dim=!sel&&list.every(j=>HOLD(j));
     const m=L.marker([lead.lat,lead.lon],{icon,keyboard:false,zIndexOffset:sel?1000:0,opacity:dim?.5:1}).addTo(LLAYER);
-    const names=list.slice(0,4).map(j=>(done(j.id)?'✓ ':'')+escHTML(j.n)).join('<br>')+(n>4?'<br>+'+(n-4)+' more':'');
+    const names=list.slice(0,4).map(j=>(j.st==='Return Owed'?'↩ ':LOCKED(j.id)?'✓ ':'')+escHTML(j.n)).join('<br>')+(n>4?'<br>+'+(n-4)+' more':'');
     m.bindTooltip(names,{direction:'top',offset:[0,sel?-(SZ[1]-7):close?-40:mid?-10:-6]});
     m.on('click',()=>jobSheet(lead.id));
   });
@@ -1505,7 +1519,7 @@ function renderMapSVG(){
     let f='var(--ink3)',o=.5;
     if(HOLD(j)||j.st==='Removed'){f='var(--line2)';o=.5}
     else if(j.st==='Return Owed'){f='var(--bad)';o=.9}
-    else if(BANKED(j)){f='var(--money)';o=.35}
+    else if(LOCKED(j.id)){f='var(--money)';o=.35}
     else if(mine.has(j.id)){f='var(--accent)';o=1}
     else if(a[j.id]!==undefined){f='var(--money)';o=.85}
     g+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r}" fill="${f}" opacity="${o}"><title>${j.n} — ${fmt(j.p)}</title></circle>`});
