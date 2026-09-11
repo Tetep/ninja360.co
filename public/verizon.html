@@ -1602,16 +1602,27 @@ function buildClusters(){
   }
   return out.sort((a,b)=>(b.pay/b.span)-(a.pay/a.span));
 }
-let CLUS=null;
+let CLUS=null, CLUSKEY=null;
+// what the clusters were built from: the exact pool, in order
+const clusKey=()=>unscheduled().map(j=>j.id).join(',');
 function renderClusters(){
+  if(CLUS&&CLUSKEY!==null&&CLUSKEY!==clusKey())CLUS=null;   // a stop was locked, or moved onto a day
   if(!CLUS){
     // building is heavy (thousands of route simulations) — paint a status first so the tap responds
     $('#s-clusters').innerHTML='<div class="card"><div class="lab">Building runs</div>'
       +'<div style="font-size:15px;margin-top:3px">Grouping every unscheduled stop into legal days…</div>'
       +'<div class="hint">A few seconds the first time.</div></div>';
-    setTimeout(()=>{CLUS=buildClusters();if(S.nav==='clusters')renderClusters()},50);
+    setTimeout(()=>{CLUSKEY=clusKey();CLUS=buildClusters();if(S.nav==='clusters')renderClusters()},50);
     return;
   }
+  // drop anything that has since been locked, and re-total from what is actually left
+  CLUS=CLUS.map(c=>{const ids=c.ids.filter(i=>BY[i]&&NEEDSVISIT(BY[i]));
+      if(ids.length===c.ids.length)return c;
+      if(!ids.length)return null;
+      const s=simulate({id:'c',date:'',startKey:'home',startTime:c.startTime,endKey:'home',ids});
+      return {...c,ids,pay:s.pay,miles:s.miles,span:s.span,end:s.end,
+        area:[...new Set(ids.map(i=>BY[i].c))].slice(0,5).join(' · ')};
+    }).filter(Boolean);
   const tot=CLUS.reduce((t,c)=>t+c.pay,0);
   $('#s-clusters').innerHTML=`
     <div class="card"><div class="lab">Everything not yet on a day</div>
@@ -1627,13 +1638,13 @@ function renderClusters(){
         <div id="cl${i}" class="hide" style="margin-top:6px;font-size:12px;color:var(--ink2)">
           ${c.ids.map((id,n)=>(n+1)+'. '+BY[id].n+' — '+BY[id].c+', '+BY[id].s+' · '+fmt(BY[id].p)).join('<br>')}</div></div>
       <div class="pay mono">${fmt(c.pay)}</div></div>`).join('')}`;
-  $('#reclus').onclick=()=>{CLUS=null;render();toast('Rebuilt')};
+  $('#reclus').onclick=()=>{CLUS=null;CLUSKEY=null;render();toast('Rebuilt')};
   $$('#s-clusters [data-mk]').forEach(b=>b.onclick=()=>{
     const c=CLUS[+b.dataset.mk];
     const last=S.days[S.days.length-1];let nd='';
     if(last&&last.date){const x=new Date(last.date+'T12:00:00');x.setDate(x.getDate()+1);nd=x.toISOString().slice(0,10)}
     const d=blankDay(nd); d.startTime=c.startTime; d.ids=c.ids.slice();
-    S.days.push(d); S.active=S.days.length-1; CLUS=null; S.nav='plan';
+    S.days.push(d); setDay(S.days.length-1); CLUS=null; CLUSKEY=null; S.nav='plan';
     render();dirty();toast('Added as a new day — set its date on Plan')});
   $$('#s-clusters [data-see]').forEach(b=>b.onclick=()=>$('#cl'+b.dataset.see).classList.toggle('hide'));
 }
