@@ -451,7 +451,7 @@ const IDS_LOADED=[
    '2026-5006','2026-5167','2026-5178','2026-5221','2026-5264','2026-5350','2026-5393',
    '2026-5401','2026-5436','2026-5444','2026-5479','2026-5511','2026-5640','2026-5740',
    '2026-5866','2026-6911','2026-6997','2026-7575','2026-7681','2026-8443','2026-8804'];
-let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},punch:{},locks:{},showBanked:false,here:{key:'home',time:8},nav:'plan',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{},who:null,by:{},oath:null};
+let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},punch:{},locks:{},showBanked:false,here:{key:'home',time:8},nav:'plan',activeDate:'',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{},who:null,by:{},oath:null};
 const svc=j=>(S.sv&&S.sv[j.id]!==undefined)?S.sv[j.id]:j.sv;
 const stat=id=>S.status[id]||'todo';
 const done=id=>stat(id)!=='todo';
@@ -691,6 +691,9 @@ function assigned(){const m={};S.days.forEach((d,i)=>d.ids.forEach(id=>m[id]=i))
 function unscheduled(){const a=assigned();
   return J.filter(j=>NEEDSVISIT(j)&&a[j.id]===undefined)}
 function day(){return S.days[S.active]}
+const todayISO=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+function setDay(i){S.active=Math.max(0,Math.min(i,S.days.length-1));
+  S.activeDate=(S.days[S.active]&&S.days[S.active].date)||''}
 /* ---------- Google Maps: whole-day route ---------- */
 function gmapsPoint(k){
   if(k&&k.startsWith('job:')){const j=BY[k.slice(4)];return j?(j.a+', '+j.c+', '+j.s):null}
@@ -820,12 +823,23 @@ function renderNow(){
     <div class="mcell"><div class="lab">Value in reach</div><div class="v g">${fmt(open.reduce((t,r)=>t+r.j.p,0))}</div></div>
     <div class="mcell"><div class="lab">Shut by now</div><div class="v ${shut.length?'w':''}">${shut.length}</div></div>
   </div>
+  <div class="card" style="padding:9px 11px">
+    <div class="row" style="align-items:center;gap:9px">
+      <div class="fld" style="flex:1;min-width:170px"><span class="lab" id="lab-runday">Running</span>
+        <select id="runDay" aria-labelledby="lab-runday" style="max-width:none;width:100%">${S.days.map((dd,i)=>{
+          const lbl=dd.date?new Date(dd.date+'T12:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}):'No date';
+          return '<option value="'+i+'"'+(i===S.active?' selected':'')+'>'+lbl+' — '+dd.ids.length+' stop'+(dd.ids.length===1?'':'s')+'</option>'}).join('')}</select></div>
+      ${d.date===todayISO()?'<span class="badge v">today</span>':'<span class="badge warn">not today</span>'}
+    </div>
+  </div>
+  ${d.ids.length?`<h2>Your run &mdash; ${fmt(s.pay)}, finish ${hhmm(s.end)}</h2>
+  <div class="row" style="margin:2px 0 8px"><button class="prim" id="navDayNow">🧭 Navigate this day</button>
+    ${dayNotLoaded(d).length?'<button class="ghost" id="askDayNow" style="color:var(--accent);border-color:var(--accent)">📮 '+dayNotLoaded(d).length+' not in app — ask IDS</button>':'<span class="badge v" style="align-self:center">every stop is in the app</span>'}</div>
+  <div id="nowRoute"></div>`
+  :'<div class="empty">No stops on this day yet — build it in Plan, or add one from below.</div>'}
   <h2>Best next move</h2>
-  <div class="hint">Ranked by points per hour including the drive to get there.</div>
-  <div id="nowList"></div>
-  ${d.ids.length?`<h2>This day so far &mdash; ${fmt(s.pay)}, finish ${hhmm(s.end)}</h2>
-  <div class="row" style="margin:2px 0 8px"><button class="prim" id="navDayNow">🧭 Navigate this day</button></div>
-  <div id="nowRoute"></div>`:''}`;
+  <div class="hint">Extra stops you could still reach from where you are, ranked by points per hour. Adding one puts it on the day above.</div>
+  <div id="nowList"></div>`;
   const hero=document.getElementById('brandVideo');
   const heroWrap=document.getElementById('brandHero');
   if(hero&&heroWrap){
@@ -870,6 +884,8 @@ function renderNow(){
       render();dirty();toast('Measuring from your GPS position')},
       ()=>toast('Could not get a fix — pick a spot from the list'),{timeout:8000,maximumAge:60000});
   };
+  const rd=$('#runDay'); if(rd)rd.onchange=e=>{setDay(+e.target.value);render();dirty()};
+  const ad=$('#askDayNow'); if(ad)ad.onclick=()=>dayAskSheet(d);
   const nd=$('#navDayNow'); if(nd)nd.onclick=()=>openDayRoute(d);
   $('#nowList').innerHTML = open.slice(0,14).map(r=>{const j=r.j; const timer=jobTimerState(j.id), note=jobNoteText(j.id);
     return `<div class="pj">
@@ -1071,7 +1087,7 @@ function jobSheet(id){
     });
 }
 /* ================= PLAN ================= */
-let F={q:'',st:'',cl:'',jst:'',sort:'near'};
+let F={q:'',st:'',cl:'',jst:'',app:'',sort:'near'};
 function renderPlan(){
   const d=day(), s=simulate(d);
   const rate=s.span>0?s.pay/s.span:0;
@@ -1123,6 +1139,7 @@ function renderPlan(){
       <div class="fld"><span class="lab" id="lab-range">Full charge</span><span class="evin"><input type="number" id="fRange" aria-labelledby="lab-range" min="50" max="600" step="10" value="${S.evRange}"><span class="mono">mi, real world</span></span></div>
       <span class="hint" style="flex-basis:100%;margin:0">Leave home full — home charge is cheap. On the road, buy only enough to land home at 10–20%; under 10% anywhere reads low.</span>
       <button class="ghost" id="bAuto">Auto-order</button>
+      ${dayNotLoaded(d).length?'<button class="ghost" id="bAsk" style="color:var(--accent);border-color:var(--accent)">📮 Ask IDS for '+dayNotLoaded(d).length+'</button>':'<span class="badge v" style="align-self:center">all in app</span>'}
       <button class="ghost" id="bNav">🧭 Navigate</button>
       <button class="ghost danger" id="bDel">Delete day</button>
       <button class="ghost" id="bPlace" aria-expanded="${PL_OPEN?'true':'false'}">＋ Place</button>
@@ -1162,11 +1179,11 @@ function renderPlan(){
     <div class="filters" id="filters"></div>
     <div id="pool"></div>
 `;
-  $$('#s-plan .dchip[data-i]').forEach(b=>b.onclick=()=>{S.active=+b.dataset.i;render()});
+  $$('#s-plan .dchip[data-i]').forEach(b=>b.onclick=()=>{setDay(+b.dataset.i);render();dirty()});
   $('#addDay').onclick=()=>{const last=S.days[S.days.length-1];let nd='';
     if(last&&last.date){const x=new Date(last.date+'T12:00:00');x.setDate(x.getDate()+1);nd=x.toISOString().slice(0,10)}
-    S.days.push(blankDay(nd));S.active=S.days.length-1;render();dirty()};
-  $('#fDate').onchange=e=>{d.date=e.target.value;render();dirty()};
+    S.days.push(blankDay(nd));setDay(S.days.length-1);render();dirty()};
+  $('#fDate').onchange=e=>{d.date=e.target.value;S.activeDate=d.date;render();dirty()};
   $('#fStart').onchange=e=>{const v=e.target.value;
     if(v==='gps'){   // start from wherever the phone is right now
       if(!navigator.geolocation){toast('GPS is not available here — pick a place from the list');render();return}
@@ -1182,6 +1199,7 @@ function renderPlan(){
     const p=e.target.value.split(':');d.startTime=(+p[0])+(+p[1])/60;render();dirty()};
   $('#bAuto').onclick=()=>{d.ids=autoOrder(d);render();dirty();
     const s2=simulate(d);toast(s2.bad?(s2.bad+' still shuts too early'):(s2.span.toFixed(1)+' h day, finish '+hhmm(s2.end)))};
+  const ba=$('#bAsk'); if(ba)ba.onclick=()=>dayAskSheet(d);
   $('#bNav').onclick=()=>openDayRoute(d);
   $('#bDel').onclick=()=>{if(S.days.length<2){toast('Keep at least one day');return}
     const snap={idx:S.active,day:JSON.parse(JSON.stringify(d))};
@@ -1217,6 +1235,10 @@ function renderFilters(){
     <select id="fst" aria-label="Filter by state"><option value="">All states</option>${states.map(x=>`<option ${F.st===x?'selected':''}>${x}</option>`).join('')}</select>
     <select id="fcl" aria-label="Filter by client"><option value="">All clients</option>${cls.map(x=>`<option ${F.cl===x?'selected':''}>${x}</option>`).join('')}</select>
     <select id="fjst" aria-label="Filter by job status"><option value="">All statuses</option>${STATUSES.map(x=>`<option ${F.jst===x?'selected':''}>${x}</option>`).join('')}</select>
+    <select id="fapp" aria-label="Filter by whether IDS has loaded it">
+      <option value="">In app or not</option>
+      <option value="in" ${F.app==='in'?'selected':''}>In app — can run now</option>
+      <option value="out" ${F.app==='out'?'selected':''}>Not in app yet</option></select>
     <select id="fsort" aria-label="Sort stops"><option value="near" ${F.sort==='near'?'selected':''}>Nearest to last stop</option>
       <option value="pay" ${F.sort==='pay'?'selected':''}>Highest payout</option>
       <option value="base" ${F.sort==='base'?'selected':''}>Nearest to home</option></select>
@@ -1226,6 +1248,7 @@ function renderFilters(){
   $('#fst').onchange=e=>{F.st=e.target.value;renderPool()};
   $('#fcl').onchange=e=>{F.cl=e.target.value;renderPool()};
   $('#fjst').onchange=e=>{F.jst=e.target.value;renderPool()};
+  $('#fapp').onchange=e=>{F.app=e.target.value;renderPool()};
   $('#fsort').onchange=e=>{F.sort=e.target.value;renderPool()};
 }
 function renderPool(){
@@ -1235,6 +1258,8 @@ function renderPool(){
   let list=J.filter(j=>{if(j.wp)return false;   // waypoints are added from "＋ Stop", not the pool
     if(F.st&&j.s!==F.st)return false;if(F.cl&&j.cl!==F.cl)return false;
     if(F.jst&&j.st!==F.jst)return false;
+    if(F.app==='in'&&!S.loaded[j.id])return false;
+    if(F.app==='out'&&S.loaded[j.id])return false;
     if(q&&!(j.n+' '+j.a+' '+j.c+' '+j.id).toLowerCase().includes(q))return false;return true});
   list.forEach(j=>{j._d=mi(anchor,LL(j));j._b=mi(BASE,LL(j))});
   list.sort((x,y)=>F.sort==='pay'?y.p-x.p||x._d-y._d:F.sort==='base'?x._b-y._b:x._d-y._d);
@@ -1242,7 +1267,7 @@ function renderPool(){
     const on=a[j.id]!==undefined, mine=a[j.id]===S.active;
     const note=jobNoteText(j.id), timer=jobTimerState(j.id);
     return `<div class="pj ${on&&!mine?'used':''}">
-      <button class="pjbtn" data-info="${j.id}" title="${escHTML(jobTooltip(j.id))}"><div class="nm">${j.n}${stBadge(j)}${j.pl&&punchLeft(j.id)?'<span class="badge bad">'+punchLeft(j.id)+' left</span>':''}${done(j.id)?'<span class="badge v">done</span>':''}${S.loaded[j.id]?'':'<span class="badge warn">not in app</span>'}${note?'<span class="badge acc">note</span>':''}</div>
+      <button class="pjbtn" data-info="${j.id}" title="${escHTML(jobTooltip(j.id))}"><div class="nm">${j.n}${stBadge(j)}${j.pl&&punchLeft(j.id)?'<span class="badge bad">'+punchLeft(j.id)+' left</span>':''}${done(j.id)?'<span class="badge v">done</span>':''}${S.loaded[j.id]?'<span class="badge v">in app</span>':'<span class="badge warn">not in app</span>'}${note?'<span class="badge acc">note</span>':''}</div>
         <div class="ad">${j.a}, ${j.c}, ${j.s} <span class="mono">· ${hhmm(j.o)}–${hhmm(j.x)}</span></div>
         <div class="ad mono" style="margin-top:2px"><span class="live-timer ${timer.running?'running':(timer.elapsedMs?'':'idle')}" data-live-timer="${j.id}">${timer.label}${timer.running?' • run':''}</span></div></button>
       <div class="dist mono"><b style="color:var(--money)">${fmt(j.p)}</b><br>${j._d.toFixed(0)} mi${on?'<br>'+(mine?'in this day':'day '+(a[j.id]+1)):''}</div>
@@ -1613,10 +1638,36 @@ function renderClusters(){
   $$('#s-clusters [data-see]').forEach(b=>b.onclick=()=>$('#cl'+b.dataset.see).classList.toggle('hide'));
 }
 /* ================= IDS APP ================= */
-function requestText(){
-  const weekIds=[...new Set(S.days.flatMap(d=>d.ids))].filter(i=>BY[i]&&!BY[i].wp);
+// stops on a day that IDS has not loaded — what stands between a plan and actually running it
+const dayNotLoaded=d=>d.ids.filter(i=>BY[i]&&!BY[i].wp&&!S.loaded[i]&&NEEDSVISIT(BY[i]));
+function dayAskSheet(d){
+  const need=dayNotLoaded(d);
+  if(!need.length){toast('Every stop on this day is already in the app');return}
+  const txt=requestTextFor(d.ids);
+  sheet('Ask IDS to load '+need.length+' stop'+(need.length===1?'':'s'),
+    (d.date?niceDate(d.date):'this day')+' · '+fmt(need.reduce((t,i)=>t+BY[i].p,0))+' waiting on the app',
+    '<pre class="req" id="askTxt">'+escHTML(txt)+'</pre>'+
+    '<div class="row" style="margin-top:9px">'+
+      '<button class="prim" id="askCopy">Copy message</button>'+
+      '<button class="ghost" id="askMail">Email</button>'+
+      '<button class="ghost" id="askSms">Text</button></div>',
+    el=>{
+      el.querySelector('#askCopy').onclick=async()=>{
+        const okc=await copyText(txt); noteRequest(need);
+        toast(okc?'Copied — paste it to Michelle and Betsy':'Select the text and copy it');};
+      el.querySelector('#askMail').onclick=()=>{noteRequest(need);
+        location.href='mailto:?subject='+encodeURIComponent('Ninja-360 — please load '+need.length+' location'+(need.length===1?'':'s'))+'&body='+encodeURIComponent(txt)};
+      el.querySelector('#askSms').onclick=()=>{noteRequest(need);
+        location.href='sms:?&body='+encodeURIComponent(txt)};
+    });
+}
+function requestText(){ return requestTextFor([...new Set(S.days.flatMap(d=>d.ids))]) }
+function requestTextFor(ids){
+  const weekIds=(ids||[]).filter(i=>BY[i]&&!BY[i].wp);
   const need=weekIds.filter(i=>!S.loaded[i]&&NEEDSVISIT(BY[i]));
-  const spare=Object.keys(S.loaded).filter(i=>S.loaded[i]&&BY[i]&&!BY[i].wp&&weekIds.indexOf(i)<0&&!LOCKED(i));
+  // only offer to drop spares when asking about the whole plan, not a single day
+  const whole=weekIds.length===[...new Set(S.days.flatMap(d=>d.ids))].filter(i=>BY[i]&&!BY[i].wp).length;
+  const spare=whole?Object.keys(S.loaded).filter(i=>S.loaded[i]&&BY[i]&&!BY[i].wp&&weekIds.indexOf(i)<0&&!LOCKED(i)):[];
   if(!need.length&&!spare.length)return 'Everything on this plan is already loaded. Nothing to request.';
   const dayOf={}; S.days.forEach((d,i)=>d.ids.forEach(id=>dayOf[id]=d.date||('Day '+(i+1))));
   const grp={}; need.forEach(i=>{const k=dayOf[i];(grp[k]=grp[k]||[]).push(i)});
@@ -1850,6 +1901,8 @@ function refreshLiveTimers(){
 function mergeState(j){
   if(!j||!j.days||!j.days.length)return false;
   S.days=j.days; S.active=Math.min(j.active||0,j.days.length-1);
+  S.activeDate=typeof j.activeDate==='string'?j.activeDate:'';
+  if(S.activeDate){const k=S.days.findIndex(d=>d.date===S.activeDate); if(k>=0)S.active=k}
   S.sv=j.sv||{}; S.loaded=j.loaded||{}; S.status=j.status||{}; S.notes=j.notes||{}; S.timers=j.timers||{};
   S.punch=j.punch||{}; S.locks=j.locks||{}; S.showBanked=!!j.showBanked;
   S.here=j.here||{key:'home',time:8};
@@ -2031,7 +2084,10 @@ function boot(){
   if(loaded)dirty();
   const today=new Date(), iso=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
   const ti=S.days.findIndex(d=>d.date===iso);
-  if(ti>=0&&ti!==S.active)S.active=ti;
+  const cur=S.days[S.active];
+  const stale=!cur||!cur.date||cur.date<iso;   // the day you were on is in the past
+  if(ti>=0&&stale&&ti!==S.active)S.active=ti;
+  S.activeDate=(S.days[S.active]&&S.days[S.active].date)||'';
   ready=true;
   render();
   renderWho(); $('#whoChip').onclick=whoSheet;
