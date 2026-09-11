@@ -18,6 +18,7 @@
   --money:#2C6B4F; --money-soft:#E2F0E8;
   --warn:#8F6410; --warn-soft:#FAEFD8;
   --bad:#A2352A; --bad-soft:#F8E3E0;
+  --ret:#8B2FC9;
   --shadow:0 1px 2px rgba(60,42,28,.07),0 4px 14px rgba(60,42,28,.05);
   --head-bg:#231E1A; --head-ink:#FBF7F3; --head-sub:#B9AC9F; --head-line:#4A4139;
   --scrim:rgba(35,30,26,.45);
@@ -29,6 +30,7 @@
   --money:#6FC49B; --money-soft:#1B3327;
   --warn:#E0AC4C; --warn-soft:#33280F;
   --bad:#EE8377; --bad-soft:#3A1F1B;
+  --ret:#C77DFF;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
   --head-bg:#0E0C0A; --head-ink:#F1EBE4; --head-sub:#95897E; --head-line:#3A332B;
   --scrim:rgba(0,0,0,.55);
@@ -40,6 +42,7 @@
   --money:#6FC49B; --money-soft:#1B3327;
   --warn:#E0AC4C; --warn-soft:#33280F;
   --bad:#EE8377; --bad-soft:#3A1F1B;
+  --ret:#C77DFF;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
   --head-bg:#0E0C0A; --head-ink:#F1EBE4; --head-sub:#95897E; --head-line:#3A332B;
   --scrim:rgba(0,0,0,.55);
@@ -286,6 +289,8 @@ table.pl{width:100%;border-collapse:collapse;font-size:13px}
 table.pl th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink3);
   padding:5px 6px;border-bottom:1px solid var(--line)}
 table.pl td{padding:6px;border-bottom:1px solid var(--line);vertical-align:top}
+.npin.ret .head{box-shadow:0 0 0 3px #8B2FC9,0 0 0 5px rgba(139,47,201,.35)}
+.ndot.ret{box-shadow:0 0 0 2px #8B2FC9,0 0 0 4px rgba(139,47,201,.35)}
 /* scoreboard */
 table.pl [data-lock]{min-height:40px;min-width:62px;font-weight:700;letter-spacing:.3px}
 table.pl [data-lock]:not(.go){border-color:var(--accent);color:var(--accent)}
@@ -1093,7 +1098,7 @@ function renderPlan(){
     <div class="leg" style="margin:-6px 0 10px">
       <span><i style="background:#EE0000"></i>still to shoot (brand colour)</span>
       <span><i style="background:#2C6B4F"></i>locked — banked</span>
-      <span><i style="background:#A2352A"></i>return owed</span>
+      <span><i style="background:#8B2FC9"></i>return owed</span>
       <span><i style="background:var(--line2)"></i>on hold</span></div>
     <div class="leg" id="chgLeg" hidden></div>
     <div class="strip">
@@ -1288,14 +1293,14 @@ function brandOf(j){
 // A locked stop keeps its brand initials but goes green; a Return Owed stop goes red.
 // Colours match the app's own semantics: --money for banked, --bad for owed.
 const DONE_COLORS={base:'#2C6B4F',dark:'#16382A',light:'#7FBFA0',acc:'#FFFFFF'};
-const RETURN_COLORS={base:'#A2352A',dark:'#5A1A14',light:'#E09289',acc:'#FFFFFF'};
+const RETURN_COLORS={base:'#8B2FC9',dark:'#42106B',light:'#D3A9F0',acc:'#FFFFFF'};
 const pinVars=b=>`--b:${b.base};--d:${b.dark};--l:${b.light};--a:${b.acc};--r:${b.base}4d`;
 const badgeHTML=(dn,lf)=>`<div class="nbadge"><span class="dn">✓${dn}</span><span class="lf">${lf}</span></div>`;
-function pinHTML(b,sel,allDone,badge,late,size,mark){
+function pinHTML(b,sel,allDone,badge,late,size,mark,ret){
   const glyph=allDone?'<img class="nmark" src="'+(mark||'/assets/ninja-mark.png')+'" alt="done">'
              :(b.sym&&SYMBOLS[b.sym])||('<b class="ini">'+escHTML(b.ini)+'</b>');   // brand symbol beats initials
   const inner=sel?`<div class="disc">${glyph}</div>`:'';
-  return `<div class="npin${sel?' sel':''}${size||''}${late?' late':''}" style="${pinVars(b)}"><div class="head">${inner}${badge}</div><div class="tail"></div></div>`;
+  return `<div class="npin${sel?' sel':''}${size||''}${late?' late':''}${ret?' ret':''}" style="${pinVars(b)}"><div class="head">${inner}${badge}</div><div class="tail"></div></div>`;
 }
 function renderMap(){
   const lm=$('#lmap'), sv=$('#map'); if(!lm&&!sv)return;
@@ -1355,8 +1360,8 @@ function drawPins(){
     // Selected pins scale with zoom like the dots do: the design's 52px at city zoom, 44 at region, 36 at state
     const SZ=sel?(close?[52,77,'']:mid?[44,65,' sel-m']:[36,53,' sel-s']):[26,43,''];
     const icon=(sel||close)
-      ?L.divIcon({className:'npx',html:pinHTML(b,sel,allDone,badge,isLate,SZ[2],allDone?(todayShots.map(j=>byEmblem(j.id)).find(Boolean)||null):null),iconSize:[SZ[0],SZ[1]],iconAnchor:[SZ[0]/2,SZ[1]]})
-      :L.divIcon({className:'npx',html:`<div class="ndot${mid?'':' sm'}" style="${pinVars(b)}">${mid?badge:''}</div>`,
+      ?L.divIcon({className:'npx',html:pinHTML(b,sel,allDone,badge,isLate,SZ[2],allDone?(todayShots.map(j=>byEmblem(j.id)).find(Boolean)||null):null,anyReturn),iconSize:[SZ[0],SZ[1]],iconAnchor:[SZ[0]/2,SZ[1]]})
+      :L.divIcon({className:'npx',html:`<div class="ndot${mid?'':' sm'}${anyReturn?' ret':''}" style="${pinVars(b)}">${mid?badge:''}</div>`,
                   iconSize:mid?[22,22]:[12,12],iconAnchor:mid?[11,11]:[6,6]});
     const dim=!sel&&list.every(j=>HOLD(j));
     const m=L.marker([lead.lat,lead.lon],{icon,keyboard:false,zIndexOffset:sel?1000:0,opacity:dim?.5:1}).addTo(LLAYER);
@@ -1518,7 +1523,7 @@ function renderMapSVG(){
     const r=j.p>=1000?7.5:j.p>=300?5:3.2;
     let f='var(--ink3)',o=.5;
     if(HOLD(j)||j.st==='Removed'){f='var(--line2)';o=.5}
-    else if(j.st==='Return Owed'){f='var(--bad)';o=.9}
+    else if(j.st==='Return Owed'){f='var(--ret)';o=1}
     else if(LOCKED(j.id)){f='var(--money)';o=.35}
     else if(mine.has(j.id)){f='var(--accent)';o=1}
     else if(a[j.id]!==undefined){f='var(--money)';o=.85}
