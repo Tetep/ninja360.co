@@ -72,7 +72,7 @@ small,.small{font-size:.8rem}
 .btn-ghost:hover{background:var(--gi-paper-lift)}
 .btn-sm{padding:9px 16px;font-size:12px}
 
-/* ---------- hero + Emergency Broadcast card ---------- */
+/* ---------- hero ---------- */
 .hero{padding:64px 0 56px}
 .hero .wrap{text-align:center}
 .hero .lede{max-width:600px;margin:0 auto 28px}
