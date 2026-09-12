@@ -28,16 +28,55 @@ a:hover{color:#a06614}
 .dc-topbar .lbl{font-family:'Special Elite';font-size:11px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase}
 .dc-topbar a.lbl{text-decoration:none}
 .dc-topbar a.lbl:hover{color:#a06614}
+/* Mobile nav -- hidden/unstyled on desktop by default, activated at <=900px */
+#dash-menu-toggle{display:none}
+#dash-mobile-backdrop{display:none}
+#dash-mobile-nav{display:none}
+@media(max-width:900px){
+  .dash-sidebar{display:none !important}
+  .dc-wrap{padding:76px 16px 28px}
+  #dash-menu-toggle{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;position:fixed;top:14px;right:16px;z-index:220;width:46px;height:46px;background:#17140f;border:none;border-radius:8px;cursor:pointer;padding:0}
+  #dash-menu-toggle span{display:block;width:20px;height:2px;background:#efe4cd;border-radius:2px;transition:transform .2s ease,opacity .2s ease}
+  #dash-menu-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  #dash-menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+  #dash-menu-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  #dash-mobile-backdrop{display:block;position:fixed;inset:0;background:rgba(23,20,15,.5);opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:200}
+  #dash-mobile-backdrop.show{opacity:1;pointer-events:auto}
+  #dash-mobile-nav{display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;width:78vw;max-width:300px;background:#efe4cd;border-right:3px double #17140f;z-index:210;transform:translateX(-100%);transition:transform .25s ease;overflow-y:auto}
+  #dash-mobile-nav.open{transform:translateX(0)}
+  .mobile-navbtn{color:#6b5f48}
+  .mobile-navbtn.active{border-left:4px solid #b4231f !important;background:#f6eeda;color:#17140f}
+}
 </style>
 </head>
 <body>
+<button id="dash-menu-toggle" type="button" aria-expanded="false" aria-controls="dash-mobile-nav" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div id="dash-mobile-backdrop"></div>
+  <nav id="dash-mobile-nav" aria-label="Dashboard sections">
+    <div style="padding:20px 20px 14px;border-bottom:1px solid #17140f">
+      <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
+      <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
+      <div style="font-family:'Special Elite';font-weight:600;font-size:7.5px;letter-spacing:.42em;color:#6b5f48;margin-top:5px;text-transform:uppercase">— Podcast —</div>
+    </div>
+    <div class="navbtn mobile-navbtn active" data-tab="command" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.1em;font-size:14px;padding:15px 20px;border-bottom:1px solid #e7dabc;border-left:4px solid transparent;cursor:pointer">Command</div>
+<div class="navbtn mobile-navbtn" data-tab="pipeline" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.1em;font-size:14px;padding:15px 20px;border-bottom:1px solid #e7dabc;border-left:4px solid transparent;cursor:pointer">Pipeline</div>
+<div class="navbtn mobile-navbtn" data-tab="assets" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.1em;font-size:14px;padding:15px 20px;border-bottom:1px solid #e7dabc;border-left:4px solid transparent;cursor:pointer">Assets</div>
+<div class="navbtn mobile-navbtn" data-tab="calendar" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.1em;font-size:14px;padding:15px 20px;border-bottom:1px solid #e7dabc;border-left:4px solid transparent;cursor:pointer">Calendar</div>
+<div class="navbtn mobile-navbtn" data-tab="approvals" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.1em;font-size:14px;padding:15px 20px;border-bottom:1px solid #e7dabc;border-left:4px solid transparent;cursor:pointer">Approvals</div>
+<div class="navbtn mobile-navbtn" data-tab="funnel" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.1em;font-size:14px;padding:15px 20px;border-bottom:1px solid #e7dabc;border-left:4px solid transparent;cursor:pointer">Funnel</div>
+<div class="navbtn mobile-navbtn" data-tab="topics" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.1em;font-size:14px;padding:15px 20px;border-bottom:1px solid #e7dabc;border-left:4px solid transparent;cursor:pointer">Topic Bank</div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.1em;font-size:14px;padding:15px 20px;color:#c9bd9f;border-bottom:1px solid #e7dabc">Sponsors <span style="font-size:10px">· soon</span></div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.1em;font-size:14px;padding:15px 20px;color:#c9bd9f;border-bottom:1px solid #e7dabc">Settings <span style="font-size:10px">· soon</span></div>
+  </nav>
 <div class="dc-wrap">
   <div class="dc-topbar">
     <div class="lbl">GI Dashboard · internal layout reference · not linked from nav</div>
     <a class="lbl" href="../">← Back to site</a>
   </div>
   <div class="screen" id="screen-command" style="display:flex;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
-    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div class="dash-sidebar" style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
     <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
   <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
   <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
@@ -168,7 +207,7 @@ a:hover{color:#a06614}
     </div>
   </div></div>
   <div class="screen" id="screen-pipeline" style="display:none;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
-    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div class="dash-sidebar" style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
     <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
   <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
   <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
@@ -416,7 +455,7 @@ a:hover{color:#a06614}
     </div>
   </div></div>
   <div class="screen" id="screen-detail" style="display:none;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
-    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div class="dash-sidebar" style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
     <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
   <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
   <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
@@ -583,7 +622,7 @@ a:hover{color:#a06614}
     </div>
   </div></div>
   <div class="screen" id="screen-assets" style="display:none;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
-    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div class="dash-sidebar" style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
     <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
   <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
   <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
@@ -746,7 +785,7 @@ a:hover{color:#a06614}
     </div>
   </div></div>
   <div class="screen" id="screen-calendar" style="display:none;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
-    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div class="dash-sidebar" style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
     <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
   <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
   <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
@@ -811,7 +850,7 @@ a:hover{color:#a06614}
     </div>
   </div></div>
   <div class="screen" id="screen-approvals" style="display:none;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
-    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div class="dash-sidebar" style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
     <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
   <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
   <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
@@ -910,7 +949,7 @@ a:hover{color:#a06614}
     </div>
   </div></div>
   <div class="screen" id="screen-funnel" style="display:none;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
-    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div class="dash-sidebar" style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
     <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
   <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
   <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
@@ -1031,7 +1070,7 @@ a:hover{color:#a06614}
     </div>
   </div></div>
   <div class="screen" id="screen-topics" style="display:none;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
-    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div class="dash-sidebar" style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
     <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
   <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
   <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
@@ -1269,12 +1308,36 @@ a:hover{color:#a06614}
   </div>
 </div>
 <script>
+var mobileNav = document.getElementById('dash-mobile-nav');
+var mobileBackdrop = document.getElementById('dash-mobile-backdrop');
+var menuToggle = document.getElementById('dash-menu-toggle');
+
+function closeMobileMenu() {
+  if (mobileNav) mobileNav.classList.remove('open');
+  if (mobileBackdrop) mobileBackdrop.classList.remove('show');
+  if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+}
+
+if (menuToggle && mobileNav) {
+  menuToggle.addEventListener('click', function () {
+    var isOpen = mobileNav.classList.toggle('open');
+    if (mobileBackdrop) mobileBackdrop.classList.toggle('show', isOpen);
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+}
+if (mobileBackdrop) mobileBackdrop.addEventListener('click', closeMobileMenu);
+
 document.querySelectorAll('.navbtn').forEach(function (btn) {
   btn.addEventListener('click', function () {
     var tab = btn.getAttribute('data-tab');
     document.querySelectorAll('.screen').forEach(function (s) { s.style.display = 'none'; });
     var target = document.getElementById('screen-' + tab);
     if (target) target.style.display = 'flex';
+    document.querySelectorAll('.mobile-navbtn').forEach(function (b) {
+      var isMatch = b.getAttribute('data-tab') === tab;
+      b.classList.toggle('active', isMatch);
+    });
+    closeMobileMenu();
     window.scrollTo(0, 0);
   });
 });
