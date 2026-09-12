@@ -5,14 +5,31 @@
 > Supersedes `gi-brand-build-spec.md` §1 (tokens), §2 (typography) and §3 (logo direction);
 > that spec's §4–§10 (components, routes, SEO, funnel) still govern.
 
-## The logo (v2, pending 2-of-3 vote)
+## The logo — DECIDED, Sep 12 2026 (supersedes the section below)
+Tim delivered the official master art: a circle-slash "no mic" mark over bold
+black GENERATIONALLY / red brushstroke Incorrect / "—PODCAST—" / tagline.
+Tim's own framing — **"this [is] v02, I expect a v03"** — so treat it as
+current, not final.
+
+Actual delivered art differs from the placeholder spec below: opaque (cream
+background baked in, not transparent) and native ~16:9 (3840×2160), not
+960×818. `public/gi/site/assets/logo.png` holds it at 1600×900 for the site;
+`favicon.png` is a square icon-only crop of just the circle+mic. Applied
+sitewide — masthead, favicon, the be-on-the-show logo card, OG image — per
+the swap-slot comments this doc originally planned for. The Emergency
+Broadcast HTML/CSS test-pattern card described below is retired; it was
+always a stand-in for master art that hadn't landed yet.
+
+<details><summary>Superseded — the placeholder plan (kept for the record)</summary>
+
 **"Emergency Broadcast" test pattern:** vintage TV test-pattern card on aged newsprint.
 "EMERGENCY BROADCAST" bar up top · GENERATIONALLY in heavy black caps ·
 INCORRECT in red brushstroke across it · "— PODCAST —" beneath. Fallout-poster energy.
-Master art: `logo.png` (960×818, transparent PNG) — lives in the intro-animation asset kit.
-*(Not yet in this repo — the site renders an HTML/CSS recreation with a commented
-swap slot in each page that uses it. Drop `logo.png` into `public/gi/site/assets/`
-and swap per the comments.)*
+Master art was assumed to be `logo.png` (960×818, transparent PNG) from the
+intro-animation kit — the site rendered an HTML/CSS recreation with a
+commented swap slot in each page until real art landed.
+
+</details>
 
 ## The palette (NEW — replaces the old ink/bone/red tokens)
 | Token | Old | **New** |

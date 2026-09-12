@@ -78,25 +78,8 @@ small,.small{font-size:.8rem}
 .hero .lede{max-width:600px;margin:0 auto 28px}
 .hero .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
 
-.ebcard{display:inline-block;background:var(--gi-paper-lift);border:2px solid var(--gi-ink);outline:1px solid var(--gi-ink);outline-offset:3px;padding:0 0 22px;max-width:560px;width:100%;text-align:center}
-.ebcard .ebbar{background:var(--gi-ink);color:var(--gi-paper);font-family:var(--gi-font-type);font-size:13px;letter-spacing:5px;text-transform:uppercase;padding:9px 10px 7px;display:flex;align-items:center;justify-content:center;gap:12px}
-.ebcard .ebbar::before,.ebcard .ebbar::after{content:'';width:9px;height:9px;background:var(--gi-red);border-radius:50%;flex:0 0 auto}
-.ebcard .testbars{display:flex;height:14px;border-bottom:2px solid var(--gi-ink)}
-.ebcard .testbars i{flex:1}
-.ebcard .testbars i:nth-child(1){background:#17140f}.ebcard .testbars i:nth-child(2){background:#4a4335}.ebcard .testbars i:nth-child(3){background:#7d7260}.ebcard .testbars i:nth-child(4){background:#b9ab8b}.ebcard .testbars i:nth-child(5){background:#d8caa9}.ebcard .testbars i:nth-child(6){background:var(--gi-red)}.ebcard .testbars i:nth-child(7){background:#efe4cd}
-.ebcard .ebword{position:relative;padding:26px 22px 4px}
-.ebcard .ebword .gen{font-family:var(--gi-font-display);font-size:clamp(34px,6.2vw,58px);letter-spacing:.03em;color:var(--gi-ink);text-transform:uppercase;line-height:.95;display:block}
-.ebcard .ebword .inc{font-family:var(--gi-font-hand);font-weight:700;font-size:clamp(30px,5.6vw,52px);color:var(--gi-red);display:block;transform:rotate(-4deg);margin-top:-.42em;text-shadow:1px 1px 0 rgba(180,35,31,.25)}
-.ebcard .ebpodcast{font-family:var(--gi-font-type);font-size:12px;letter-spacing:6px;color:var(--gi-ink);text-transform:uppercase;margin-top:14px}
 .tagline{font-family:var(--gi-font-hand);font-size:clamp(17px,2.6vw,21px);color:var(--gi-ink);margin:26px auto 8px;max-width:560px;min-height:2.4em;transition:opacity 400ms ease}
 .tagline.fade{opacity:0}
-
-/* compact card variant (form headers) */
-.ebcard.compact{max-width:420px;padding-bottom:16px}
-.ebcard.compact .ebword{padding-top:18px}
-.ebcard.compact .ebword .gen{font-size:clamp(26px,5vw,38px)}
-.ebcard.compact .ebword .inc{font-size:clamp(24px,4.6vw,34px)}
-.ebcard.compact .ebpodcast{margin-top:10px}
 
 /* ---------- pills / tags ---------- */
 .pill{display:inline-block;font-family:var(--gi-font-type);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid var(--gi-ink);color:var(--gi-ink)}

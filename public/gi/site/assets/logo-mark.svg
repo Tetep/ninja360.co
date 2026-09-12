@@ -1,9 +1,0 @@
-<!-- Emergency Broadcast mini mark (avatar/favicon scale). Master art:
-     logo.png in the intro-animation asset kit. -->
-<svg width="96" height="96" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GI mark">
-  <title>Generationally Incorrect — GI mark</title>
-  <rect x="1" y="1" width="28" height="28" fill="#efe4cd" stroke="#17140f" stroke-width="2"/>
-  <rect x="2" y="2" width="26" height="6" fill="#17140f"/>
-  <rect x="2" y="8" width="4.33" height="5" fill="#17140f"/><rect x="6.33" y="8" width="4.33" height="5" fill="#4a4335"/><rect x="10.66" y="8" width="4.33" height="5" fill="#7d7260"/><rect x="15" y="8" width="4.33" height="5" fill="#b9ab8b"/><rect x="19.33" y="8" width="4.33" height="5" fill="#b4231f"/><rect x="23.66" y="8" width="4.34" height="5" fill="#efe4cd"/>
-  <text x="15" y="25" text-anchor="middle" font-family="Anton,Impact,'Arial Black',sans-serif" font-size="11" letter-spacing="1" fill="#17140f">GI</text>
-</svg>
