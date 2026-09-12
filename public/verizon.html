@@ -252,6 +252,11 @@ svg{width:100%;height:auto;display:block}
 .chg .star{position:absolute;top:-8px;right:-8px;font-size:12px;line-height:1;color:#FFC220;text-shadow:0 1px 2px rgba(0,0,0,.55);font-style:normal}
 .chg.md .star{top:-7px;right:-7px;font-size:10px}
 .leg .ci.fav{box-shadow:0 0 0 1.5px #FFC220}
+/* runs — whole trips, one tap */
+.runs{display:flex;flex-direction:column;gap:6px}
+.runbtn{text-align:left;padding:9px 12px;border:1px solid var(--line2);border-radius:10px;background:var(--surf2);color:var(--ink);font-size:14px}
+.runbtn small{display:block;color:var(--ink2);font-size:12px;margin-top:2px}
+.runbtn.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft,rgba(244,121,32,.25)) inset}
 .leg .ci{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:5px;margin-right:5px;
   background:var(--b);color:var(--a);font:800 7.5px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;border:1px solid var(--ring,#fff);box-shadow:0 1px 2px rgba(0,0,0,.3)}
 .leg .ci.ts{box-shadow:0 0 0 1.5px #FF8D2D}
@@ -632,7 +637,7 @@ function seed(){
   S.status['2026-9334']='captured';   // Target Lincoln — shot, never invoiced
   // What IDS has actually pushed to the field app, verified against Phygii 2026-09-11.
   IDS_LOADED.forEach(i=>S.loaded[i]=1);
-  S.active=0;
+  S.active=0; sortDays();
 }
 /* ---------- core simulator ---------- */
 // Tim's rule: get home with 10–20% left. Under 10% at any stop reads "low"; at the finish,
@@ -703,6 +708,34 @@ function assigned(){const m={};S.days.forEach((d,i)=>d.ids.forEach(id=>m[id]=i))
 function unscheduled(){const a=assigned();
   return J.filter(j=>NEEDSVISIT(j)&&a[j.id]===undefined)}
 function day(){return S.days[S.active]}
+const sortDays=()=>{const cur=day(); S.days.sort((a,b)=>(a.date||'9999')<(b.date||'9999')?-1:(a.date||'9999')>(b.date||'9999')?1:0); S.active=Math.max(0,S.days.indexOf(cur)); S.activeDate=(day()&&day().date)||''};
+/* ---------- runs ----------
+   Whole trips, ready to load as days. Both Wichita versions live here so the
+   choice is one tap, and switching is one tap too. Loading replaces only the
+   days on those dates; everything else on the plan stays. */
+const WICH='job:2026-8835';   // Cellular Sales 129021 — the Wichita overnight anchor
+const RUNS=[
+ {id:'wichita-crew',name:'Wichita · Sep 17–19 · with Cody',sub:'23 stops · 2,500 pts · in the back door (US-169), out the north (I-70)',
+  days:[
+   {date:'2026-09-17',startKey:'home',startTime:6,endKey:WICH,crew:'cody',pace:'split',ids:['2026-8338','2026-5683','2026-5425','2026-6188','2026-7264','2026-8145','2026-7702']},
+   {date:'2026-09-18',startKey:WICH,startTime:8.5,endKey:WICH,crew:'cody',pace:'split',ids:['2026-8835','2026-8197','2026-1610','2026-7953','2026-3142','2026-0840','2026-8172','2026-1225','2026-4299','2026-8317','2026-7954']},
+   {date:'2026-09-19',startKey:WICH,startTime:7.5,endKey:'home',crew:'cody',pace:'split',ids:['2026-5976','2026-1376','2026-7983','2026-8804','2026-4084']}]},
+ {id:'wichita-solo',name:'Wichita · Sep 17–19 · solo',sub:'15 stops · 1,700 pts · down I-35, out I-70',
+  days:[
+   {date:'2026-09-17',startKey:'home',startTime:6.5,endKey:WICH,crew:null,ids:['2026-4522','2026-8888','2026-7106','2026-7954']},
+   {date:'2026-09-18',startKey:WICH,startTime:8.5,endKey:WICH,crew:null,ids:['2026-8835','2026-8197','2026-1610','2026-7953','2026-3142','2026-0840','2026-8172','2026-1225']},
+   {date:'2026-09-19',startKey:WICH,startTime:8,endKey:'home',crew:null,ids:['2026-5976','2026-7983','2026-8804']}]}];
+const runLoaded=r=>r.days.every(rd=>{const d=S.days.find(x=>x.date===rd.date); return d&&d.ids.join()===rd.ids.filter(i=>BY[i]).join()&&(d.crew||null)===(rd.crew||null)});
+function loadRun(r){
+  const clash=r.days.map(rd=>S.days.find(x=>x.date===rd.date)).filter(d=>d&&d.ids.length&&!r.days.some(rd=>rd.date===d.date&&rd.ids.join()===d.ids.join()));
+  if(clash.length&&!confirm('Replace what is already planned on '+clash.map(d=>niceDate(d.date)).join(', ')+'?'))return;
+  S.days=S.days.filter(x=>!r.days.some(rd=>rd.date===x.date));
+  r.days.forEach(rd=>{const d=Object.assign(blankDay(rd.date),{startKey:rd.startKey,startTime:rd.startTime,endKey:rd.endKey,crew:rd.crew||null,pace:rd.pace||'split',ids:rd.ids.filter(i=>BY[i])});
+    if(d.ids.length>2)d.ids=nnTwoOpt(d,d.ids);   // routed order, not list order
+    S.days.push(d)});
+  const first=S.days.find(x=>x.date===r.days[0].date); S.active=S.days.indexOf(first); sortDays();
+  dirty(); render(); toast('Loaded: '+r.name);
+}
 const todayISO=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 function setDay(i){S.active=Math.max(0,Math.min(i,S.days.length-1));
   S.activeDate=(S.days[S.active]&&S.days[S.active].date)||''}
@@ -1124,6 +1157,7 @@ function renderPlan(){
       <div class="bs-tag">We put you on the M.A.P.</div>
       <img src="/assets/crew/crew-tim-banner.png" alt="Tim — Head Ninja">
     </div>
+    <div class="lab" style="margin:8px 0 5px">Runs</div><div class="runs">${RUNS.map(r=>`<button class="runbtn${runLoaded(r)?' on':''}" data-run="${r.id}"><b>${escHTML(r.name)}</b><small>${escHTML(r.sub)}${runLoaded(r)?' · loaded':''}</small></button>`).join('')}</div>
     <div class="lab" style="margin:8px 0 5px">Days</div><div class="rail">${rail}</div>
     <div class="mapbox" style="margin:8px 0 4px"><div id="lmap" role="region" aria-label="Job map"></div><svg id="map" viewBox="0 0 720 470" role="img" aria-label="Job map (offline)"></svg></div>
     <div class="hint" style="margin:0 0 10px">Tap a pin for details. Pins wear the brand's colour until the stop is locked, then they turn green; a stop that owes a go-back turns red. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left. ⚡ chips are DC fast chargers only (50kW+) — on the road and near your stops; chips wear the network’s colors (Love’s red, EVgo navy) an orange halo means a truck stop at an interstate exit, and the teal chip with the orange ring and gold ★ is IONNA — your network. Tap one for plugs, power, and directions.</div>
@@ -1216,6 +1250,7 @@ function renderPlan(){
     const s2=simulate(d);toast(s2.bad?(s2.bad+' still shuts too early'):(s2.span.toFixed(1)+' h day, finish '+hhmm(s2.end)))};
   const ba=$('#bAsk'); if(ba)ba.onclick=()=>dayAskSheet(d);
   $('#bNav').onclick=()=>openDayRoute(d);
+  $$('[data-run]').forEach(b=>b.onclick=()=>{const r=RUNS.find(x=>x.id===b.dataset.run); if(r)loadRun(r)});
   $('#bDel').onclick=()=>{if(S.days.length<2){toast('Keep at least one day');return}
     const snap={idx:S.active,day:JSON.parse(JSON.stringify(d))};
     S.days.splice(S.active,1);S.active=Math.max(0,S.active-1);render();dirty();
