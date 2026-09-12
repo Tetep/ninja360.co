@@ -81,6 +81,9 @@ td:first-child{font-family:var(--type);font-size:.74rem;letter-spacing:.06em;whi
 .prod span{font-family:var(--type);font-size:.7rem;color:var(--muted);letter-spacing:.06em}
 footer{background:var(--deep);color:#a89e8c;padding:34px 0;font-size:.82rem;text-align:center}
 footer .hash{font-family:var(--disp);color:var(--paper);font-size:1.5rem;letter-spacing:.04em;text-transform:uppercase}
+/* corner easter egg (not linked from nav, on purpose) */
+.egg{position:fixed;bottom:10px;right:10px;width:9px;height:9px;border-radius:50%;background:var(--ink);opacity:.15;z-index:999;transition:opacity .2s ease}
+.egg:hover,.egg:focus-visible{opacity:.55}
 </style>
 </head>
 <body>
@@ -185,5 +188,6 @@ footer .hash{font-family:var(--disp);color:var(--paper);font-size:1.5rem;letter-
   })();
 </script>
 <script src="https://links.ninja360.net/js/form_embed.js"></script>
+<a class="egg" href="dashboard/" aria-label="Design reference"></a>
 </body>
 </html>

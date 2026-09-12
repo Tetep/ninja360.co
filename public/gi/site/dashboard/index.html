@@ -1,0 +1,1283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- Unlinked from nav on purpose -- reachable only via the bottom-right
+     corner link on the live pages. Internal production-ops layout
+     reference, built from the real GI Dashboard.dc.html mockup (8 screens
+     + 2 mobile variants). Not wired to live data -- all figures are the
+     source mockup's sample data. -->
+<meta name="robots" content="noindex, nofollow">
+<title>Generationally Incorrect — Dashboard Reference</title>
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Permanent+Marker&family=Special+Elite&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#d9c9a3;font-family:'Helvetica Neue',Arial,system-ui,sans-serif}
+a{color:#1f6b74}
+a:hover{color:#a06614}
+::selection{background:#b4231f;color:#f6eeda}
+@keyframes giPulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes giShim{0%{opacity:.35}50%{opacity:.75}100%{opacity:.35}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms !important}}
+.dc-wrap{padding:28px;max-width:1512px;margin:0 auto;overflow-x:auto}
+.dc-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.dc-topbar .lbl{font-family:'Special Elite';font-size:11px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase}
+.dc-topbar a.lbl{text-decoration:none}
+.dc-topbar a.lbl:hover{color:#a06614}
+</style>
+</head>
+<body>
+<div class="dc-wrap">
+  <div class="dc-topbar">
+    <div class="lbl">GI Dashboard · internal layout reference · not linked from nav</div>
+    <a class="lbl" href="../">← Back to site</a>
+  </div>
+  <div class="screen" id="screen-command" style="display:flex;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
+    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
+  <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
+  <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
+  <div style="font-family:'Special Elite';font-weight:600;font-size:7.5px;letter-spacing:.42em;color:#6b5f48;margin-top:3px;text-transform:uppercase">— Podcast —</div>
+</div>
+    <div style="padding:12px 0;display:flex;flex-direction:column">
+      <div class="navbtn" data-tab="command" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid #b4231f;color:#17140f;background:#f6eeda;cursor:pointer">Command</div>
+<div class="navbtn" data-tab="pipeline" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Pipeline</div>
+<div class="navbtn" data-tab="assets" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Assets</div>
+<div class="navbtn" data-tab="calendar" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Calendar</div>
+<div class="navbtn" data-tab="approvals" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Approvals</div>
+<div class="navbtn" data-tab="funnel" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Funnel</div>
+<div class="navbtn" data-tab="topics" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Topic Bank</div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Sponsors <span style="font-size:9px">· soon</span></div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Settings <span style="font-size:9px">· soon</span></div>
+    </div>
+    <div style="margin-top:auto;padding:14px 16px;border-top:1px solid #17140f;font-family:'Special Elite';font-size:10px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase">Phase 1 · Build the hub</div>
+  </div>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 24px;border-bottom:1px solid #17140f;flex-shrink:0">
+        <div style="font-family:'Special Elite';font-size:12px;letter-spacing:.22em;color:#a06614;text-transform:uppercase">Command</div>
+        <div style="flex:1;max-width:420px;background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:9px 14px;color:#6b5f48;font-size:13px">Search episodes, assets, contacts…</div>
+        <div style="display:flex;margin-left:auto">
+          <div title="Erik" style="width:30px;height:30px;border-radius:50%;border:2px solid #3a3121;overflow:hidden"><img src="../assets/crew-erik.jpg" alt="Erik" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div title="Gabe" style="width:30px;height:30px;border-radius:50%;border:2px solid #3a3121;overflow:hidden;margin-left:-8px"><img src="../assets/crew-gabe.jpg" alt="Gabe" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div title="Tim" style="width:30px;height:30px;border-radius:50%;border:2px solid #a06614;overflow:hidden;margin-left:-8px"><img src="../assets/crew-tim.jpg" alt="Tim" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+        </div>
+        <div style="background:#b4231f;color:#f6eeda;font-family:'Special Elite';font-weight:600;letter-spacing:.12em;font-size:12px;padding:10px 18px;border-radius:8px;text-transform:uppercase">+ New Episode</div>
+      </div>
+      <div style="padding:8px 24px;border-bottom:1px solid #17140f;font-family:'Special Elite';font-weight:600;font-size:11.5px;letter-spacing:.3em;color:#a06614;text-transform:uppercase;background:#f6eeda;flex-shrink:0">68 days to public launch · week of Nov 2–6, 2026</div>
+      <div style="flex:1;padding:18px 24px;display:flex;flex-direction:column;gap:16px;overflow:hidden">
+        <div style="display:flex;gap:14px"><div style="flex:1;background:#f6eeda;border:1px solid #17140f;border-radius:12px;padding:16px 20px">
+      <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.18em;color:#a06614;text-transform:uppercase">Episodes in the can</div>
+      <div style="font-family:Anton;font-size:38px;line-height:1.1;color:#17140f;margin-top:6px">6</div>
+      <div style="font-size:11px;color:#3e7d4e;margin-top:2px">+1 this week</div>
+    </div><div style="flex:1;background:#f6eeda;border:1px solid #17140f;border-radius:12px;padding:16px 20px">
+      <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.18em;color:#a06614;text-transform:uppercase">List size</div>
+      <div style="font-family:Anton;font-size:38px;line-height:1.1;color:#17140f;margin-top:6px">1,284</div>
+      <div style="font-size:11px;color:#3e7d4e;margin-top:2px">+137 this week</div>
+    </div><div style="flex:1;background:#f6eeda;border:1px solid #17140f;border-radius:12px;padding:16px 20px">
+      <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.18em;color:#a06614;text-transform:uppercase">Assets scheduled this week</div>
+      <div style="font-family:Anton;font-size:38px;line-height:1.1;color:#17140f;margin-top:6px">12</div>
+      <div style="font-size:11px;color:#6b5f48;margin-top:2px">of 14 planned</div>
+    </div><div style="flex:1;background:#f6eeda;border:1px solid #17140f;border-radius:12px;padding:16px 20px">
+      <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.18em;color:#a06614;text-transform:uppercase">Votes awaiting you</div>
+      <div style="font-family:Anton;font-size:38px;line-height:1.1;color:#b4231f;margin-top:6px">2</div>
+      <div style="font-size:11px;color:#b4231f;margin-top:2px">oldest closes in 6h</div>
+    </div></div>
+        <div style="background:#f6eeda;border:1px solid #17140f;border-radius:12px;padding:18px 20px">
+          <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:12px">
+            <div style="font-family:Anton;font-size:17px;color:#17140f;text-transform:uppercase;border-left:5px solid #b4231f;padding-left:14px">Needs a decision</div>
+            <div style="font-family:'Special Elite';font-size:10.5px;letter-spacing:.14em;color:#6b5f48;text-transform:uppercase">2-of-3 vote · nothing brand-facing ships without it</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px"><div style="background:#e7dabc;border:1px solid #17140f;border-radius:8px;padding:12px 16px">
+          <div style="display:flex;align-items:center;gap:14px">
+            <span style="font-family:'Special Elite';font-weight:700;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px;background:transparent;color:#1f6b74;border:1px solid #1f6b74"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#1f6b74;margin-right:5px;animation:giPulse 1.6s ease-in-out infinite"></span>Voting open</span>
+            <div style="font-family:'Special Elite';font-weight:600;font-size:14px;color:#17140f;letter-spacing:.02em">Panel format — hybrid (fixed voice + rotating 4th seat)</div>
+            <div style="display:flex;gap:6px;margin-left:auto"><div title="Erik — approved" style="width:26px;height:26px;border-radius:50%;border:2px solid #3e7d4e;overflow:hidden;animation:none"><img src="../assets/crew-erik.jpg" alt="E" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Gabe — pending" style="width:26px;height:26px;border-radius:50%;border:2px solid #6b5f48;overflow:hidden;animation:giPulse 1.6s ease-in-out infinite"><img src="../assets/crew-gabe.jpg" alt="G" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Tim — pending" style="width:26px;height:26px;border-radius:50%;border:2px solid #6b5f48;overflow:hidden;animation:giPulse 1.6s ease-in-out infinite"><img src="../assets/crew-tim.jpg" alt="T" style="width:100%;height:100%;object-fit:cover;display:block"></div></div>
+            <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.12em;color:#6b5f48;text-transform:uppercase;width:170px;text-align:right">41h left</div>
+          </div>
+          <div style="height:4px;border-radius:2px;background:#d8c9a6;margin-top:10px;overflow:hidden"><div style="height:100%;width:43%;background:#a06614"></div></div>
+        </div><div style="background:#e7dabc;border:1px solid #17140f;border-radius:8px;padding:12px 16px">
+          <div style="display:flex;align-items:center;gap:14px">
+            <span style="font-family:'Special Elite';font-weight:700;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px;background:transparent;color:#1f6b74;border:1px solid #1f6b74"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#1f6b74;margin-right:5px;animation:giPulse 1.6s ease-in-out infinite"></span>Voting open</span>
+            <div style="font-family:'Special Elite';font-weight:600;font-size:14px;color:#17140f;letter-spacing:.02em">Cadence — weekly vs bi-weekly</div>
+            <div style="display:flex;gap:6px;margin-left:auto"><div title="Erik — approved" style="width:26px;height:26px;border-radius:50%;border:2px solid #3e7d4e;overflow:hidden;animation:none"><img src="../assets/crew-erik.jpg" alt="E" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Gabe — rejected" style="width:26px;height:26px;border-radius:50%;border:2px solid #b4231f;overflow:hidden;animation:none"><img src="../assets/crew-gabe.jpg" alt="G" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Tim — pending" style="width:26px;height:26px;border-radius:50%;border:2px solid #6b5f48;overflow:hidden;animation:giPulse 1.6s ease-in-out infinite"><img src="../assets/crew-tim.jpg" alt="T" style="width:100%;height:100%;object-fit:cover;display:block"></div></div>
+            <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.12em;color:#b4231f;text-transform:uppercase;width:170px;text-align:right">6h left · nudge sent</div>
+          </div>
+          <div style="height:4px;border-radius:2px;background:#d8c9a6;margin-top:10px;overflow:hidden"><div style="height:100%;width:92%;background:#b4231f"></div></div>
+        </div></div>
+        </div>
+        <div style="display:flex;gap:16px;flex:1;min-height:0">
+          <div style="flex:5;background:#f6eeda;border:1px solid #17140f;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;min-width:0">
+            <div style="font-family:Anton;font-size:15px;color:#17140f;text-transform:uppercase;border-left:5px solid #b4231f;padding-left:14px;margin-bottom:12px">This week's publishing</div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;flex:1"><div style="background:#efe4cd;border:1px solid #17140f;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase">Mon</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:transparent;color:#b4231f;border:1px solid #b4231f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Long-form · YT+Spot</div><div style="font-family:'Special Elite';font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:transparent;color:#6b5f48;border:1px solid #8a7a58;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Email to list</div>
+        </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase">Tue</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:#a06614;color:#f6eeda;border:1px solid #a06614;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Short #1 · hook</div><div style="font-family:'Special Elite';font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:transparent;color:#3a3121;border:1px solid #8a7a58;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Story: new ep</div>
+        </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase">Wed</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:transparent;color:#3a3121;border:1px solid #8a7a58;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Quote card</div><div style="font-family:'Special Elite';font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:#a06614;color:#f6eeda;border:1px solid #a06614;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Short #2</div>
+        </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase">Thu</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:#a06614;color:#f6eeda;border:1px solid #a06614;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Steel-man clip</div><div style="font-family:'Special Elite';font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:transparent;color:#6b5f48;border:1px solid #8a7a58;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Poll: QOTW</div>
+        </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase">Fri</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:#a06614;color:#f6eeda;border:1px solid #a06614;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Short #3</div><div style="font-family:'Special Elite';font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:transparent;color:#1f6b74;border:1px solid #1f6b74;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Audiogram</div>
+        </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase">Sat</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:transparent;color:#3a3121;border:1px solid #8a7a58;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Best comment</div><div style="font-family:'Special Elite';font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:transparent;color:#6b5f48;border:1px solid #8a7a58;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Community repost</div>
+        </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase">Sun</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:transparent;color:#3a3121;border:1px solid #8a7a58;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Teaser: next topic</div><div style="font-family:'Special Elite';font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;background:transparent;color:#6b5f48;border:1px solid #8a7a58;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Vote the seat CTA</div>
+        </div></div>
+          </div>
+          <div style="flex:2;background:#f6eeda;border:1px solid #17140f;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column">
+            <div style="font-family:Anton;font-size:15px;color:#17140f;text-transform:uppercase;border-left:5px solid #b4231f;padding-left:14px;margin-bottom:12px">Pipeline snapshot</div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;flex:1"><div style="background:#efe4cd;border:1px solid #17140f;border-radius:6px;padding:8px 6px;text-align:center">
+      <div style="font-family:Anton;font-size:20px;color:#17140f">2</div>
+      <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase;margin-top:2px">Topic Bank</div>
+    </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:6px;padding:8px 6px;text-align:center">
+      <div style="font-family:Anton;font-size:20px;color:#17140f">1</div>
+      <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase;margin-top:2px">Voted</div>
+    </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:6px;padding:8px 6px;text-align:center">
+      <div style="font-family:Anton;font-size:20px;color:#17140f">1</div>
+      <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase;margin-top:2px">Booked</div>
+    </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:6px;padding:8px 6px;text-align:center">
+      <div style="font-family:Anton;font-size:20px;color:#17140f">1</div>
+      <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase;margin-top:2px">Shot</div>
+    </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:6px;padding:8px 6px;text-align:center">
+      <div style="font-family:Anton;font-size:20px;color:#17140f">1</div>
+      <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase;margin-top:2px">In Edit</div>
+    </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:6px;padding:8px 6px;text-align:center">
+      <div style="font-family:Anton;font-size:20px;color:#17140f">1</div>
+      <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase;margin-top:2px">Assets Cut</div>
+    </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:6px;padding:8px 6px;text-align:center">
+      <div style="font-family:Anton;font-size:20px;color:#17140f">1</div>
+      <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase;margin-top:2px">Scheduled</div>
+    </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:6px;padding:8px 6px;text-align:center">
+      <div style="font-family:Anton;font-size:20px;color:#17140f">2</div>
+      <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase;margin-top:2px">Live</div>
+    </div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+  <div class="screen" id="screen-pipeline" style="display:none;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
+    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
+  <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
+  <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
+  <div style="font-family:'Special Elite';font-weight:600;font-size:7.5px;letter-spacing:.42em;color:#6b5f48;margin-top:3px;text-transform:uppercase">— Podcast —</div>
+</div>
+    <div style="padding:12px 0;display:flex;flex-direction:column">
+      <div class="navbtn" data-tab="command" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Command</div>
+<div class="navbtn" data-tab="pipeline" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid #b4231f;color:#17140f;background:#f6eeda;cursor:pointer">Pipeline</div>
+<div class="navbtn" data-tab="assets" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Assets</div>
+<div class="navbtn" data-tab="calendar" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Calendar</div>
+<div class="navbtn" data-tab="approvals" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Approvals</div>
+<div class="navbtn" data-tab="funnel" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Funnel</div>
+<div class="navbtn" data-tab="topics" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Topic Bank</div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Sponsors <span style="font-size:9px">· soon</span></div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Settings <span style="font-size:9px">· soon</span></div>
+    </div>
+    <div style="margin-top:auto;padding:14px 16px;border-top:1px solid #17140f;font-family:'Special Elite';font-size:10px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase">Phase 1 · Build the hub</div>
+  </div>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid #17140f;flex-shrink:0">
+        <div>
+          <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.18em;color:#a06614;text-transform:uppercase">Production</div>
+          <div style="font-family:Anton;font-size:28px;color:#17140f;text-transform:uppercase">Episode Pipeline</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="font-family:'Special Elite';font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#3a3121;background:#f6eeda;border:1px solid #17140f;border-radius:20px;padding:6px 14px">Pillar ▾</div>
+          <div style="font-family:'Special Elite';font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#3a3121;background:#f6eeda;border:1px solid #17140f;border-radius:20px;padding:6px 14px">Partner ▾</div>
+          <div style="font-family:'Special Elite';font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#3a3121;background:#f6eeda;border:1px solid #17140f;border-radius:20px;padding:6px 14px">Date range ▾</div>
+          <div style="font-family:'Special Elite';font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#b4231f;background:#f6eeda;border:1px solid #b4231f;border-radius:20px;padding:6px 14px">Third Rail: on</div>
+        </div>
+      </div>
+      <div style="flex:1;padding:16px;display:flex;gap:10px;overflow:hidden"><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <div style="border-bottom:2px solid #17140f;padding-bottom:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.12em;color:#17140f;text-transform:uppercase">Topic Bank</div>
+              <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48">2</div>
+            </div>
+            <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:3px;min-height:11px">2-of-3 vote to leave</div>
+          </div>
+          <div style="background:#f6eeda;border:1px solid #d8c9a6;border-radius:8px;padding:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.16em;color:#a06614;text-transform:uppercase">EP 009</div>
+                
+              </div>
+              <div style="font-family:Anton;font-size:13.5px;line-height:1.2;color:#17140f;text-transform:uppercase;margin:6px 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">Are Younger People Ready to Lead Sooner?</div>
+              <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:transparent;color:#a06614;border:1px solid #a06614">Leadership</span>
+              <div style="display:flex;align-items:center;margin-top:8px;min-height:16px"><div style="font-size:9.5px;color:#6b5f48;margin-left:10px">seats open</div></div>
+              
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;border-top:1px solid #17140f;padding-top:7px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase">unscheduled</div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:10px;color:#8a7a58">—</div>
+              </div>
+              <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:5px;overflow:hidden"><div style="height:100%;width:0%;background:#8a7a58"></div></div>
+            </div><div style="background:#f6eeda;border:1px solid #d8c9a6;border-radius:8px;padding:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.16em;color:#a06614;text-transform:uppercase">EP 010</div>
+                <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:#b4231f;color:#f6eeda;border:1px solid #b4231f">Sensitive</span>
+              </div>
+              <div style="font-family:Anton;font-size:13.5px;line-height:1.2;color:#17140f;text-transform:uppercase;margin:6px 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">Who Actually Benefits From the Way Drug Laws Are Written?</div>
+              <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:#b4231f;color:#f6eeda;border:1px solid #b4231f">Third Rail</span>
+              <div style="display:flex;align-items:center;margin-top:8px;min-height:16px"><div style="font-size:9.5px;color:#6b5f48;margin-left:10px">seats open</div></div>
+              
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;border-top:1px solid #17140f;padding-top:7px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase">members-only drop</div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:10px;color:#8a7a58">—</div>
+              </div>
+              <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:5px;overflow:hidden"><div style="height:100%;width:0%;background:#8a7a58"></div></div>
+            </div>
+        </div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <div style="border-bottom:2px solid #17140f;padding-bottom:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.12em;color:#17140f;text-transform:uppercase">Voted / Locked</div>
+              <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48">1</div>
+            </div>
+            <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:3px;min-height:11px"></div>
+          </div>
+          <div style="background:#f6eeda;border:1px solid #d8c9a6;border-radius:8px;padding:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.16em;color:#a06614;text-transform:uppercase">EP 008</div>
+                
+              </div>
+              <div style="font-family:Anton;font-size:13.5px;line-height:1.2;color:#17140f;text-transform:uppercase;margin:6px 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">Is Homeownership Realistic or Just a Status Symbol?</div>
+              <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:transparent;color:#a06614;border:1px solid #a06614">Success &amp; $</span>
+              <div style="display:flex;align-items:center;margin-top:8px;min-height:16px"><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #1f6b74;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #a06614;margin-right:-5px"></div><div style="font-size:9.5px;color:#6b5f48;margin-left:10px">2 of 4 booked</div></div>
+              
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;border-top:1px solid #17140f;padding-top:7px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase">rec Oct 15</div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:10px;color:#8a7a58">0/40</div>
+              </div>
+              <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:5px;overflow:hidden"><div style="height:100%;width:0%;background:#8a7a58"></div></div>
+            </div>
+        </div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <div style="border-bottom:2px solid #17140f;padding-bottom:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.12em;color:#17140f;text-transform:uppercase">Panel Booked</div>
+              <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48">1</div>
+            </div>
+            <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:3px;min-height:11px"></div>
+          </div>
+          <div style="background:#f6eeda;border:1px solid #d8c9a6;border-radius:8px;padding:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.16em;color:#a06614;text-transform:uppercase">EP 007</div>
+                
+              </div>
+              <div style="font-family:Anton;font-size:13.5px;line-height:1.2;color:#17140f;text-transform:uppercase;margin:6px 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">Should AI Be Feared, Embraced, or Regulated?</div>
+              <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:transparent;color:#a06614;border:1px solid #a06614">Tech</span>
+              <div style="display:flex;align-items:center;margin-top:8px;min-height:16px"><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #1f6b74;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #a06614;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #6b5f48;margin-right:-5px"></div><div style="font-size:9.5px;color:#6b5f48;margin-left:10px">3 of 4 booked</div></div>
+              
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;border-top:1px solid #17140f;padding-top:7px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase">rec Oct 8</div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:10px;color:#8a7a58">0/40</div>
+              </div>
+              <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:5px;overflow:hidden"><div style="height:100%;width:0%;background:#8a7a58"></div></div>
+            </div>
+        </div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <div style="border-bottom:2px solid #17140f;padding-bottom:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.12em;color:#17140f;text-transform:uppercase">Shot</div>
+              <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48">1</div>
+            </div>
+            <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:3px;min-height:11px">runtime target 45–70 min</div>
+          </div>
+          <div style="background:#f6eeda;border:1px solid #d8c9a6;border-radius:8px;padding:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.16em;color:#a06614;text-transform:uppercase">EP 006</div>
+                
+              </div>
+              <div style="font-family:Anton;font-size:13.5px;line-height:1.2;color:#17140f;text-transform:uppercase;margin:6px 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">What Do Generations Actually Owe Each Other?</div>
+              <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:transparent;color:#a06614;border:1px solid #a06614">Family</span>
+              <div style="display:flex;align-items:center;margin-top:8px;min-height:16px"><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #1f6b74;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #a06614;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #6b5f48;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #b4231f;margin-right:-5px"></div><div style="font-size:9.5px;color:#6b5f48;margin-left:10px">full panel</div></div>
+              
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;border-top:1px solid #17140f;padding-top:7px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase">rec Aug 21 · 1:02:40</div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:10px;color:#8a7a58">0/40</div>
+              </div>
+              <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:5px;overflow:hidden"><div style="height:100%;width:0%;background:#8a7a58"></div></div>
+            </div>
+        </div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <div style="border-bottom:2px solid #17140f;padding-bottom:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.12em;color:#17140f;text-transform:uppercase">In Edit</div>
+              <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48">1</div>
+            </div>
+            <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:3px;min-height:11px">asset minimum gates exit</div>
+          </div>
+          <div style="background:#f6eeda;border:1px solid #b4231f;border-radius:8px;padding:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.16em;color:#a06614;text-transform:uppercase">EP 005</div>
+                
+              </div>
+              <div style="font-family:Anton;font-size:13.5px;line-height:1.2;color:#17140f;text-transform:uppercase;margin:6px 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">Is Cancel Culture Accountability or Overcorrection?</div>
+              <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:transparent;color:#a06614;border:1px solid #a06614">Culture</span>
+              <div style="display:flex;align-items:center;margin-top:8px;min-height:16px"><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #1f6b74;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #a06614;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #6b5f48;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #b4231f;margin-right:-5px"></div><div style="font-size:9.5px;color:#6b5f48;margin-left:10px">full panel</div></div>
+              <div style="font-family:'Special Elite';font-weight:600;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;background:#b4231f;color:#f6eeda;border-radius:5px;padding:4px 7px;margin-top:8px">Blocked — caption vendor 2 days overdue</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;border-top:1px solid #17140f;padding-top:7px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase">due Oct 20</div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:10px;color:#a06614">6/40</div>
+              </div>
+              <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:5px;overflow:hidden"><div style="height:100%;width:15%;background:#a06614"></div></div>
+            </div>
+        </div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <div style="border-bottom:2px solid #17140f;padding-bottom:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.12em;color:#17140f;text-transform:uppercase">Assets Cut</div>
+              <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48">1</div>
+            </div>
+            <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:3px;min-height:11px"></div>
+          </div>
+          <div style="background:#f6eeda;border:1px solid #d8c9a6;border-radius:8px;padding:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.16em;color:#a06614;text-transform:uppercase">EP 004</div>
+                
+              </div>
+              <div style="font-family:Anton;font-size:13.5px;line-height:1.2;color:#17140f;text-transform:uppercase;margin:6px 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">Should Loyalty to an Employer Still Matter?</div>
+              <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:transparent;color:#a06614;border:1px solid #a06614">Work</span>
+              <div style="display:flex;align-items:center;margin-top:8px;min-height:16px"><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #1f6b74;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #a06614;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #6b5f48;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #b4231f;margin-right:-5px"></div><div style="font-size:9.5px;color:#6b5f48;margin-left:10px">full panel</div></div>
+              
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;border-top:1px solid #17140f;padding-top:7px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase">pub Nov 5</div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:10px;color:#a06614">27/40</div>
+              </div>
+              <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:5px;overflow:hidden"><div style="height:100%;width:68%;background:#a06614"></div></div>
+            </div>
+        </div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <div style="border-bottom:2px solid #17140f;padding-bottom:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.12em;color:#17140f;text-transform:uppercase">Scheduled</div>
+              <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48">1</div>
+            </div>
+            <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:3px;min-height:11px">GHL launch workflow armed</div>
+          </div>
+          <div style="background:#f6eeda;border:1px solid #d8c9a6;border-radius:8px;padding:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.16em;color:#a06614;text-transform:uppercase">EP 003</div>
+                
+              </div>
+              <div style="font-family:Anton;font-size:13.5px;line-height:1.2;color:#17140f;text-transform:uppercase;margin:6px 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">Is the Definition of Success Outdated?</div>
+              <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:transparent;color:#a06614;border:1px solid #a06614">Success &amp; $</span>
+              <div style="display:flex;align-items:center;margin-top:8px;min-height:16px"><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #1f6b74;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #a06614;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #6b5f48;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #b4231f;margin-right:-5px"></div><div style="font-size:9.5px;color:#6b5f48;margin-left:10px">full panel</div></div>
+              
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;border-top:1px solid #17140f;padding-top:7px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase">pub Nov 4</div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:10px;color:#3e7d4e">40/40</div>
+              </div>
+              <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:5px;overflow:hidden"><div style="height:100%;width:100%;background:#3e7d4e"></div></div>
+            </div>
+        </div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <div style="border-bottom:2px solid #17140f;padding-bottom:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.12em;color:#17140f;text-transform:uppercase">Live</div>
+              <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48">2</div>
+            </div>
+            <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:3px;min-height:11px"></div>
+          </div>
+          <div style="background:#f6eeda;border:1px solid #d8c9a6;border-radius:8px;padding:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.16em;color:#a06614;text-transform:uppercase">EP 001</div>
+                
+              </div>
+              <div style="font-family:Anton;font-size:13.5px;line-height:1.2;color:#17140f;text-transform:uppercase;margin:6px 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">Is Work-Life Balance a Myth?</div>
+              <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:transparent;color:#a06614;border:1px solid #a06614">Work</span>
+              <div style="display:flex;align-items:center;margin-top:8px;min-height:16px"><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #1f6b74;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #a06614;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #6b5f48;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #b4231f;margin-right:-5px"></div><div style="font-size:9.5px;color:#6b5f48;margin-left:10px">full panel</div></div>
+              
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;border-top:1px solid #17140f;padding-top:7px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase">pub Nov 2</div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:10px;color:#3e7d4e">40/40</div>
+              </div>
+              <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:5px;overflow:hidden"><div style="height:100%;width:100%;background:#3e7d4e"></div></div>
+            </div><div style="background:#f6eeda;border:1px solid #d8c9a6;border-radius:8px;padding:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.16em;color:#a06614;text-transform:uppercase">EP 002</div>
+                
+              </div>
+              <div style="font-family:Anton;font-size:13.5px;line-height:1.2;color:#17140f;text-transform:uppercase;margin:6px 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">Are We Connected or More Isolated Than Ever?</div>
+              <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:transparent;color:#a06614;border:1px solid #a06614">Tech</span>
+              <div style="display:flex;align-items:center;margin-top:8px;min-height:16px"><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #1f6b74;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #a06614;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #6b5f48;margin-right:-5px"></div><div style="width:16px;height:16px;border-radius:50%;background:#e7dabc;border:2px solid #b4231f;margin-right:-5px"></div><div style="font-size:9.5px;color:#6b5f48;margin-left:10px">full panel</div></div>
+              
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;border-top:1px solid #17140f;padding-top:7px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase">pub Nov 3</div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:10px;color:#a06614">38/40</div>
+              </div>
+              <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:5px;overflow:hidden"><div style="height:100%;width:95%;background:#a06614"></div></div>
+            </div>
+        </div></div>
+    </div>
+  </div></div>
+  <div class="screen" id="screen-detail" style="display:none;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
+    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
+  <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
+  <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
+  <div style="font-family:'Special Elite';font-weight:600;font-size:7.5px;letter-spacing:.42em;color:#6b5f48;margin-top:3px;text-transform:uppercase">— Podcast —</div>
+</div>
+    <div style="padding:12px 0;display:flex;flex-direction:column">
+      <div class="navbtn" data-tab="command" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Command</div>
+<div class="navbtn" data-tab="pipeline" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid #b4231f;color:#17140f;background:#f6eeda;cursor:pointer">Pipeline</div>
+<div class="navbtn" data-tab="assets" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Assets</div>
+<div class="navbtn" data-tab="calendar" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Calendar</div>
+<div class="navbtn" data-tab="approvals" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Approvals</div>
+<div class="navbtn" data-tab="funnel" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Funnel</div>
+<div class="navbtn" data-tab="topics" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Topic Bank</div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Sponsors <span style="font-size:9px">· soon</span></div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Settings <span style="font-size:9px">· soon</span></div>
+    </div>
+    <div style="margin-top:auto;padding:14px 16px;border-top:1px solid #17140f;font-family:'Special Elite';font-size:10px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase">Phase 1 · Build the hub</div>
+  </div>
+    <div style="flex:1;display:flex;min-width:0">
+      <div style="flex:1;min-width:0;padding:20px 24px;display:flex;flex-direction:column;gap:12px;overflow:hidden">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.18em;color:#a06614;text-transform:uppercase">Episode 004 · Assets Cut</div>
+            <span style="font-family:'Special Elite';font-weight:700;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;color:#a06614;border:1px solid #a06614">Work</span>
+            <div style="font-family:'Special Elite';font-size:10px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase;margin-left:auto">Third Rail <span style="display:inline-block;width:26px;height:14px;border-radius:8px;background:#d8c9a6;position:relative;vertical-align:middle;margin-left:4px"><span style="position:absolute;left:2px;top:2px;width:10px;height:10px;border-radius:50%;background:#6b5f48"></span></span> off</div>
+          </div>
+          <div style="font-family:Anton;font-size:34px;line-height:1.05;color:#17140f;text-transform:uppercase;margin-top:6px;border-bottom:1px dashed #8a7a58;padding-bottom:8px">Should Loyalty to an Employer Still Matter?</div>
+        </div>
+        <div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:10px 14px;display:flex;gap:12px;align-items:center">
+          <div style="font-family:'Special Elite';font-size:14px;color:#6b5f48">🔒</div>
+          <div>
+            <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.16em;color:#a06614;text-transform:uppercase">The Opener — locked signature question</div>
+            <div style="font-family:Kalam;font-size:14px;color:#17140f;margin-top:2px">"What's one belief your generation holds strongly that the others misunderstand?"</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:Anton;font-size:14px;color:#17140f;text-transform:uppercase;border-left:5px solid #b4231f;padding-left:14px;margin-bottom:8px">Sub-questions <span style="font-family:'Special Elite';font-size:10px;color:#6b5f48;letter-spacing:.1em">· drag to reorder</span></div>
+          <div style="display:flex;flex-direction:column;gap:5px"><div style="display:flex;align-items:center;gap:12px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:7px 12px">
+      <div style="color:#6b5f48;font-size:11px;letter-spacing:2px">⠿</div>
+      <div style="font-family:Anton;font-size:13px;color:#b4231f;width:22px">01</div>
+      <div style="font-size:13px;color:#17140f;flex:1">Does loyalty mean anything when layoffs are a spreadsheet decision?</div>
+      <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.12em;color:#6b5f48">8 min</div>
+    </div><div style="display:flex;align-items:center;gap:12px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:7px 12px">
+      <div style="color:#6b5f48;font-size:11px;letter-spacing:2px">⠿</div>
+      <div style="font-family:Anton;font-size:13px;color:#b4231f;width:22px">02</div>
+      <div style="font-size:13px;color:#17140f;flex:1">Is job-hopping ambition or instability?</div>
+      <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.12em;color:#6b5f48">6 min</div>
+    </div><div style="display:flex;align-items:center;gap:12px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:7px 12px">
+      <div style="color:#6b5f48;font-size:11px;letter-spacing:2px">⠿</div>
+      <div style="font-family:Anton;font-size:13px;color:#b4231f;width:22px">03</div>
+      <div style="font-size:13px;color:#17140f;flex:1">Did pensions buy loyalty, or did people just have fewer options?</div>
+      <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.12em;color:#6b5f48">6 min</div>
+    </div><div style="display:flex;align-items:center;gap:12px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:7px 12px">
+      <div style="color:#6b5f48;font-size:11px;letter-spacing:2px">⠿</div>
+      <div style="font-family:Anton;font-size:13px;color:#b4231f;width:22px">04</div>
+      <div style="font-size:13px;color:#17140f;flex:1">What does an employer owe you after ten years?</div>
+      <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.12em;color:#6b5f48">7 min</div>
+    </div><div style="display:flex;align-items:center;gap:12px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:7px 12px">
+      <div style="color:#6b5f48;font-size:11px;letter-spacing:2px">⠿</div>
+      <div style="font-family:Anton;font-size:13px;color:#b4231f;width:22px">05</div>
+      <div style="font-size:13px;color:#17140f;flex:1">Would you take less money to stay somewhere you liked?</div>
+      <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.12em;color:#6b5f48">5 min</div>
+    </div></div>
+        </div>
+        <div>
+          <div style="font-family:Anton;font-size:14px;color:#17140f;text-transform:uppercase;border-left:5px solid #b4231f;padding-left:14px;margin-bottom:8px">Steel-man round <span style="font-family:'Special Elite';font-size:10px;color:#6b5f48;letter-spacing:.1em">· argue the other side's best point</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px"><div style="display:flex;align-items:center;gap:10px;background:#f6eeda;border:1px solid #17140f;border-left:3px solid #1f6b74;border-radius:6px;padding:7px 12px">
+      <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.12em;color:#1f6b74;text-transform:uppercase;width:74px;flex-shrink:0">Gen Z</div>
+      <div style="font-size:12px;color:#3a3121">Argue: "Loyalty built everything you’re standing on."</div>
+    </div><div style="display:flex;align-items:center;gap:10px;background:#f6eeda;border:1px solid #17140f;border-left:3px solid #a06614;border-radius:6px;padding:7px 12px">
+      <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.12em;color:#a06614;text-transform:uppercase;width:74px;flex-shrink:0">Millennial</div>
+      <div style="font-size:12px;color:#3a3121">Argue: "Job-hopping is what broke the deal, not the employers."</div>
+    </div><div style="display:flex;align-items:center;gap:10px;background:#f6eeda;border:1px solid #17140f;border-left:3px solid #6b5f48;border-radius:6px;padding:7px 12px">
+      <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.12em;color:#6b5f48;text-transform:uppercase;width:74px;flex-shrink:0">Gen X</div>
+      <div style="font-size:12px;color:#3a3121">Argue: "A company can still earn loyalty — some do."</div>
+    </div><div style="display:flex;align-items:center;gap:10px;background:#f6eeda;border:1px solid #17140f;border-left:3px solid #b4231f;border-radius:6px;padding:7px 12px">
+      <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.12em;color:#b4231f;text-transform:uppercase;width:74px;flex-shrink:0">Boomer</div>
+      <div style="font-size:12px;color:#3a3121">Argue: "No one owes anyone a career anymore — and that’s freedom."</div>
+    </div></div>
+        </div>
+        <div style="background:#f6eeda;border:1px solid #17140f;border-left:3px solid #b4231f;border-radius:8px;padding:10px 14px">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.16em;color:#a06614;text-transform:uppercase">Common Ground closer</div>
+          <div style="font-family:Kalam;font-size:14px;color:#17140f;margin-top:2px">"Where did we actually agree?"</div>
+        </div>
+        <div style="margin-top:auto">
+          <div style="font-family:Anton;font-size:14px;color:#17140f;text-transform:uppercase;border-left:5px solid #b4231f;padding-left:14px;margin-bottom:8px">Run of show · 58 min target</div>
+          <div style="display:flex;height:26px;border-radius:5px;overflow:hidden;border:1px solid #17140f"><div title="Cold open" style="flex:3;background:#b4231f"></div><div title="Opener" style="flex:9;background:#a06614"></div><div title="The Topic" style="flex:55;background:#8a7a58"></div><div title="Steel-man" style="flex:12;background:#1f6b74"></div><div title="Common Ground" style="flex:8;background:#3a3121"></div><div title="Outro / CTA" style="flex:3;background:#cdbc97"></div></div>
+          <div style="display:flex;gap:14px;margin-top:6px;flex-wrap:wrap"><div style="display:flex;align-items:center;gap:5px;font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase"><span style="width:8px;height:8px;border-radius:2px;background:#b4231f;display:inline-block"></span>Cold open · 0:45</div><div style="display:flex;align-items:center;gap:5px;font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase"><span style="width:8px;height:8px;border-radius:2px;background:#a06614;display:inline-block"></span>Opener · 5 min</div><div style="display:flex;align-items:center;gap:5px;font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase"><span style="width:8px;height:8px;border-radius:2px;background:#8a7a58;display:inline-block"></span>The Topic · 32 min</div><div style="display:flex;align-items:center;gap:5px;font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase"><span style="width:8px;height:8px;border-radius:2px;background:#1f6b74;display:inline-block"></span>Steel-man · 7 min</div><div style="display:flex;align-items:center;gap:5px;font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase"><span style="width:8px;height:8px;border-radius:2px;background:#3a3121;display:inline-block"></span>Common Ground · 4 min</div><div style="display:flex;align-items:center;gap:5px;font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase"><span style="width:8px;height:8px;border-radius:2px;background:#cdbc97;display:inline-block"></span>Outro / CTA · 0:30</div></div>
+        </div>
+      </div>
+      <div style="width:330px;flex-shrink:0;border-left:1px solid #d8c9a6;padding:20px;display:flex;flex-direction:column;gap:10px;overflow:hidden">
+        <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.18em;color:#a06614;text-transform:uppercase">The panel</div>
+        <div style="display:flex;align-items:center;gap:12px;background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:9px 12px">
+      <div style="width:38px;height:38px;border-radius:50%;background:#e7dabc;border:2px solid #1f6b74;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:12px;color:#1f6b74;flex-shrink:0">MT</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.14em;color:#1f6b74;text-transform:uppercase">Gen Z · 24</div>
+        <div style="font-size:13px;font-weight:700;color:#17140f">Maya Torres</div>
+        <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.12em;color:#6b5f48;text-transform:uppercase">Home team</div>
+      </div>
+      <div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.1em;color:#1f6b74;text-transform:uppercase;border:1px solid #1f6b74;border-radius:5px;padding:3px 8px">Swap</div>
+    </div><div style="display:flex;align-items:center;gap:12px;background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:9px 12px">
+      <div style="width:38px;height:38px;border-radius:50%;background:#e7dabc;border:2px solid #a06614;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:12px;color:#a06614;flex-shrink:0">DC</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.14em;color:#a06614;text-transform:uppercase">Millennial · 34</div>
+        <div style="font-size:13px;font-weight:700;color:#17140f">Devon Clarke</div>
+        <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.12em;color:#6b5f48;text-transform:uppercase">Home team</div>
+      </div>
+      <div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.1em;color:#1f6b74;text-transform:uppercase;border:1px solid #1f6b74;border-radius:5px;padding:3px 8px">Swap</div>
+    </div><div style="display:flex;align-items:center;gap:12px;background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:9px 12px">
+      <div style="width:38px;height:38px;border-radius:50%;background:#e7dabc;border:2px solid #6b5f48;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:12px;color:#6b5f48;flex-shrink:0">SW</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.14em;color:#6b5f48;text-transform:uppercase">Gen X · 51</div>
+        <div style="font-size:13px;font-weight:700;color:#17140f">Sandra Whitfield</div>
+        <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.12em;color:#6b5f48;text-transform:uppercase">Rotating guest</div>
+      </div>
+      <div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.1em;color:#1f6b74;text-transform:uppercase;border:1px solid #1f6b74;border-radius:5px;padding:3px 8px">Swap</div>
+    </div><div style="display:flex;align-items:center;gap:12px;background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:9px 12px">
+      <div style="width:38px;height:38px;border-radius:50%;background:#e7dabc;border:2px solid #b4231f;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:12px;color:#b4231f;flex-shrink:0">FK</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.14em;color:#b4231f;text-transform:uppercase">Boomer · 67</div>
+        <div style="font-size:13px;font-weight:700;color:#17140f">Frank Kowalski</div>
+        <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.12em;color:#6b5f48;text-transform:uppercase">Home team</div>
+      </div>
+      <div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.1em;color:#1f6b74;text-transform:uppercase;border:1px solid #1f6b74;border-radius:5px;padding:3px 8px">Swap</div>
+    </div>
+        <div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:10px 12px">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.14em;color:#a06614;text-transform:uppercase;margin-bottom:5px">Sponsor read</div>
+          <div style="background:#efe4cd;border:1px solid #17140f;border-radius:6px;padding:8px 10px;font-size:12.5px;color:#17140f;display:flex;justify-content:space-between">House: Ninja 360 <span style="color:#6b5f48">▾</span></div>
+          <div style="font-size:10px;color:#6b5f48;margin-top:5px;font-style:italic">Never let an owner read their own spot.</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1;background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:9px 12px">
+            <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.14em;color:#6b5f48;text-transform:uppercase">Recorded</div>
+            <div style="font-family:'Special Elite';font-weight:600;font-size:13px;color:#17140f;margin-top:2px">AUG 12 · 58:12</div>
+          </div>
+          <div style="flex:1;background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:9px 12px">
+            <div style="font-family:'Special Elite';font-size:8.5px;letter-spacing:.14em;color:#6b5f48;text-transform:uppercase">Publishes</div>
+            <div style="font-family:'Special Elite';font-weight:600;font-size:13px;color:#17140f;margin-top:2px">NOV 5, 2026</div>
+          </div>
+        </div>
+        <div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:12px;display:flex;align-items:center;gap:14px">
+          <div style="width:58px;height:58px;border-radius:50%;background:conic-gradient(#a06614 0 67.5%,#d8c9a6 67.5% 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <div style="width:44px;height:44px;border-radius:50%;background:#f6eeda;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-weight:600;font-size:11px;color:#17140f">27/40</div>
+          </div>
+          <div>
+            <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.14em;color:#a06614;text-transform:uppercase">Asset engine</div>
+            <div style="font-size:11.5px;color:#3a3121;margin-top:2px">13 to cut before Nov 1.<br><span class="navbtn" data-tab="assets" style="font-family:'Special Elite';font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;color:#963719">Open Asset Engine →</span></div>
+          </div>
+        </div>
+        <div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:10px 12px;flex:1;min-height:0">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.14em;color:#a06614;text-transform:uppercase;margin-bottom:6px">Activity</div>
+          <div style="display:flex;flex-direction:column;gap:7px"><div style="display:flex;gap:8px;font-size:11px;line-height:1.4">
+      <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;width:44px;flex-shrink:0;padding-top:1px">AUG 25</div>
+      <div style="color:#3a3121">Tim armed the GHL launch email draft</div>
+    </div><div style="display:flex;gap:8px;font-size:11px;line-height:1.4">
+      <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;width:44px;flex-shrink:0;padding-top:1px">AUG 24</div>
+      <div style="color:#3a3121">Gabe advanced EP 004 → Assets Cut</div>
+    </div><div style="display:flex;gap:8px;font-size:11px;line-height:1.4">
+      <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#6b5f48;width:44px;flex-shrink:0;padding-top:1px">AUG 22</div>
+      <div style="color:#3a3121">Vote closed: sponsor read → House: Ninja 360 (2/3)</div>
+    </div></div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+  <div class="screen" id="screen-assets" style="display:none;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
+    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
+  <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
+  <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
+  <div style="font-family:'Special Elite';font-weight:600;font-size:7.5px;letter-spacing:.42em;color:#6b5f48;margin-top:3px;text-transform:uppercase">— Podcast —</div>
+</div>
+    <div style="padding:12px 0;display:flex;flex-direction:column">
+      <div class="navbtn" data-tab="command" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Command</div>
+<div class="navbtn" data-tab="pipeline" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Pipeline</div>
+<div class="navbtn" data-tab="assets" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid #b4231f;color:#17140f;background:#f6eeda;cursor:pointer">Assets</div>
+<div class="navbtn" data-tab="calendar" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Calendar</div>
+<div class="navbtn" data-tab="approvals" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Approvals</div>
+<div class="navbtn" data-tab="funnel" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Funnel</div>
+<div class="navbtn" data-tab="topics" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Topic Bank</div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Sponsors <span style="font-size:9px">· soon</span></div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Settings <span style="font-size:9px">· soon</span></div>
+    </div>
+    <div style="margin-top:auto;padding:14px 16px;border-top:1px solid #17140f;font-family:'Special Elite';font-size:10px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase">Phase 1 · Build the hub</div>
+  </div>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid #17140f;flex-shrink:0">
+        <div>
+          <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.18em;color:#a06614;text-transform:uppercase">EP 004 · Should Loyalty to an Employer Still Matter?</div>
+          <div style="display:flex;align-items:baseline;gap:14px">
+            <div style="font-family:Anton;font-size:28px;color:#17140f;text-transform:uppercase">Asset Engine</div>
+            <div style="font-family:Anton;font-size:28px;color:#a06614">27 <span style="color:#6b5f48;font-size:20px">/ 40</span></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#17140f;border:1px solid #17140f;border-radius:8px;padding:9px 16px;background:#f6eeda">Request approval</div>
+          <div style="font-family:'Special Elite';font-weight:600;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#17140f;background:#b4231f;border-radius:8px;padding:9px 16px">Send to GHL planner</div>
+        </div>
+      </div>
+      <div style="flex:1;padding:14px 24px;display:flex;flex-direction:column;gap:10px;overflow:hidden"><div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+            <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.16em;color:#17140f;text-transform:uppercase">Long-form</div>
+            <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48">1 / 1</div>
+            <div style="flex:1;max-width:180px;height:4px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:100%;background:#3e7d4e"></div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px"><div style="display:flex;align-items:center;gap:14px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:6px 12px">
+          <div style="width:44px;height:26px;border-radius:4px;background:#e7dabc;border:1px solid #17140f;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:8px;color:#6b5f48;letter-spacing:.08em">16:9</div>
+          <div style="font-size:12.5px;color:#17140f;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">EP 004 — full episode</div>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:64px">58:12</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#3a3121;text-transform:uppercase;width:170px">YT · Spotify · Apple</div>
+          <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:#3e7d4e;color:#f6eeda;border:1px solid #3e7d4e;width:76px;text-align:center">Done</span>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:46px;text-align:right">Nov 5</div>
+        </div></div>
+        </div><div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+            <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.16em;color:#17140f;text-transform:uppercase">Shorts</div>
+            <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48">8 / 15</div>
+            <div style="flex:1;max-width:180px;height:4px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:53%;background:#a06614"></div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px"><div style="display:flex;align-items:center;gap:14px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:6px 12px">
+          <div style="width:44px;height:26px;border-radius:4px;background:#e7dabc;border:1px solid #17140f;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:8px;color:#6b5f48;letter-spacing:.08em">9:16</div>
+          <div style="font-size:12.5px;color:#17140f;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">"Layoffs are a spreadsheet decision"</div>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:64px">14:22</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#3a3121;text-transform:uppercase;width:170px">TikTok · Reels · Shorts</div>
+          <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:#3e7d4e;color:#f6eeda;border:1px solid #3e7d4e;width:76px;text-align:center">Done</span>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:46px;text-align:right">Nov 6</div>
+        </div><div style="display:flex;align-items:center;gap:14px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:6px 12px">
+          <div style="width:44px;height:26px;border-radius:4px;background:#e7dabc;border:1px solid #17140f;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:8px;color:#6b5f48;letter-spacing:.08em">9:16</div>
+          <div style="font-size:12.5px;color:#17140f;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">"Job-hopping: ambition or instability?"</div>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:64px">22:05</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#3a3121;text-transform:uppercase;width:170px">TikTok · Reels · Shorts</div>
+          <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:#a06614;color:#f6eeda;border:1px solid #a06614;width:76px;text-align:center">In progress</span>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:46px;text-align:right">Nov 8</div>
+        </div><div style="display:flex;align-items:center;gap:14px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:6px 12px">
+          <div style="width:44px;height:26px;border-radius:4px;background:#e7dabc;border:1px solid #17140f;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:8px;color:#6b5f48;letter-spacing:.08em">9:16</div>
+          <div style="font-size:12.5px;color:#17140f;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">"What does ten years earn you?"</div>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:64px">31:48</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#3a3121;text-transform:uppercase;width:170px">TikTok · Reels</div>
+          <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:#a06614;color:#f6eeda;border:1px solid #a06614;width:76px;text-align:center">In progress</span>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:46px;text-align:right">Nov 11</div>
+        </div><div style="display:flex;align-items:center;gap:14px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:6px 12px">
+          <div style="width:44px;height:26px;border-radius:4px;background:#e7dabc;border:1px solid #17140f;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:8px;color:#6b5f48;letter-spacing:.08em">9:16</div>
+          <div style="font-size:12.5px;color:#17140f;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">"Would you take less to stay?"</div>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:64px">41:03</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#3a3121;text-transform:uppercase;width:170px">TikTok · Shorts</div>
+          <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:transparent;color:#6b5f48;border:1px solid #8a7a58;width:76px;text-align:center">Not started</span>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:46px;text-align:right">—</div>
+        </div><div style="display:flex;align-items:center;gap:14px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:6px 12px;animation:giShim 1.4s ease-in-out infinite">
+          <div style="width:44px;height:26px;border-radius:4px;background:#d8c9a6"></div>
+          <div style="height:11px;border-radius:5px;background:#d8c9a6;flex:1"></div>
+          <div style="height:11px;width:64px;border-radius:5px;background:#d8c9a6"></div>
+          <div style="height:11px;width:170px;border-radius:5px;background:#d8c9a6"></div>
+          <div style="height:16px;width:76px;border-radius:20px;background:#d8c9a6"></div>
+          <div style="height:11px;width:46px;border-radius:5px;background:#d8c9a6"></div>
+        </div><div style="display:flex;align-items:center;gap:14px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:6px 12px;animation:giShim 1.4s ease-in-out infinite">
+          <div style="width:44px;height:26px;border-radius:4px;background:#d8c9a6"></div>
+          <div style="height:11px;border-radius:5px;background:#d8c9a6;flex:1"></div>
+          <div style="height:11px;width:64px;border-radius:5px;background:#d8c9a6"></div>
+          <div style="height:11px;width:170px;border-radius:5px;background:#d8c9a6"></div>
+          <div style="height:16px;width:76px;border-radius:20px;background:#d8c9a6"></div>
+          <div style="height:11px;width:46px;border-radius:5px;background:#d8c9a6"></div>
+        </div></div>
+        </div><div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+            <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.16em;color:#17140f;text-transform:uppercase">Quote cards</div>
+            <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48">3 / 5</div>
+            <div style="flex:1;max-width:180px;height:4px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:60%;background:#a06614"></div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px"><div style="display:flex;align-items:center;gap:14px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:6px 12px">
+          <div style="width:44px;height:26px;border-radius:4px;background:#e7dabc;border:1px solid #17140f;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:8px;color:#6b5f48;letter-spacing:.08em">1:1</div>
+          <div style="font-size:12.5px;color:#17140f;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">"Loyalty became a one-way toll." — Sandra</div>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:64px">18:40</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#3a3121;text-transform:uppercase;width:170px">IG · FB · X</div>
+          <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:#3e7d4e;color:#f6eeda;border:1px solid #3e7d4e;width:76px;text-align:center">Done</span>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:46px;text-align:right">Nov 7</div>
+        </div><div style="display:flex;align-items:center;gap:14px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:6px 12px">
+          <div style="width:44px;height:26px;border-radius:4px;background:#e7dabc;border:1px solid #17140f;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:8px;color:#6b5f48;letter-spacing:.08em">1:1</div>
+          <div style="font-size:12.5px;color:#17140f;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">"Pensions were the deal. The deal left." — Frank</div>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:64px">26:11</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#3a3121;text-transform:uppercase;width:170px">IG · X</div>
+          <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:#a06614;color:#f6eeda;border:1px solid #a06614;width:76px;text-align:center">In progress</span>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:46px;text-align:right">Nov 9</div>
+        </div></div>
+        </div><div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+            <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.16em;color:#17140f;text-transform:uppercase">Audiogram</div>
+            <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48">0 / 1</div>
+            <div style="flex:1;max-width:180px;height:4px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:0%;background:#8a7a58"></div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px"><div style="display:flex;align-items:center;gap:14px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:6px 12px">
+          <div style="width:44px;height:26px;border-radius:4px;background:#e7dabc;border:1px solid #17140f;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:8px;color:#6b5f48;letter-spacing:.08em">WAVE</div>
+          <div style="font-size:12.5px;color:#17140f;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Common Ground closer — "We all want to matter at work"</div>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:64px">52:30</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#3a3121;text-transform:uppercase;width:170px">IG · FB</div>
+          <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:transparent;color:#6b5f48;border:1px solid #8a7a58;width:76px;text-align:center">Not started</span>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:46px;text-align:right">Nov 10</div>
+        </div></div>
+        </div><div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+            <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.16em;color:#17140f;text-transform:uppercase">Email</div>
+            <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48">1 / 1</div>
+            <div style="flex:1;max-width:180px;height:4px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:100%;background:#3e7d4e"></div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px"><div style="display:flex;align-items:center;gap:14px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:6px 12px">
+          <div style="width:44px;height:26px;border-radius:4px;background:#e7dabc;border:1px solid #17140f;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:8px;color:#6b5f48;letter-spacing:.08em">GHL</div>
+          <div style="font-size:12.5px;color:#17140f;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Episode note + Question of the Week to the list</div>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:64px">—</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#3a3121;text-transform:uppercase;width:170px">GHL email</div>
+          <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:#3e7d4e;color:#f6eeda;border:1px solid #3e7d4e;width:76px;text-align:center">Done</span>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:46px;text-align:right">Nov 5</div>
+        </div></div>
+        </div><div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+            <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.16em;color:#17140f;text-transform:uppercase">SEO page</div>
+            <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48">0 / 1</div>
+            <div style="flex:1;max-width:180px;height:4px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:0%;background:#8a7a58"></div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px"><div style="display:flex;align-items:center;gap:14px;background:#f6eeda;border:1px solid #17140f;border-radius:6px;padding:6px 12px">
+          <div style="width:44px;height:26px;border-radius:4px;background:#e7dabc;border:1px solid #17140f;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:8px;color:#6b5f48;letter-spacing:.08em">.COM</div>
+          <div style="font-size:12.5px;color:#17140f;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Transcript + summary — /episodes/loyalty</div>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:64px">—</div>
+          <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:#3a3121;text-transform:uppercase;width:170px">generationallyincorrect.com</div>
+          <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:transparent;color:#6b5f48;border:1px solid #8a7a58;width:76px;text-align:center">Not started</span>
+          <div style="font-family:'Special Elite';font-size:10px;color:#6b5f48;width:46px;text-align:right">—</div>
+        </div></div>
+        </div></div>
+    </div>
+  </div></div>
+  <div class="screen" id="screen-calendar" style="display:none;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
+    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
+  <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
+  <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
+  <div style="font-family:'Special Elite';font-weight:600;font-size:7.5px;letter-spacing:.42em;color:#6b5f48;margin-top:3px;text-transform:uppercase">— Podcast —</div>
+</div>
+    <div style="padding:12px 0;display:flex;flex-direction:column">
+      <div class="navbtn" data-tab="command" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Command</div>
+<div class="navbtn" data-tab="pipeline" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Pipeline</div>
+<div class="navbtn" data-tab="assets" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Assets</div>
+<div class="navbtn" data-tab="calendar" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid #b4231f;color:#17140f;background:#f6eeda;cursor:pointer">Calendar</div>
+<div class="navbtn" data-tab="approvals" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Approvals</div>
+<div class="navbtn" data-tab="funnel" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Funnel</div>
+<div class="navbtn" data-tab="topics" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Topic Bank</div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Sponsors <span style="font-size:9px">· soon</span></div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Settings <span style="font-size:9px">· soon</span></div>
+    </div>
+    <div style="margin-top:auto;padding:14px 16px;border-top:1px solid #17140f;font-family:'Special Elite';font-size:10px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase">Phase 1 · Build the hub</div>
+  </div>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid #17140f;flex-shrink:0">
+        <div>
+          <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.18em;color:#a06614;text-transform:uppercase">Launch week · Nov 2–8, 2026 · EP 004 cycle</div>
+          <div style="font-family:Anton;font-size:28px;color:#17140f;text-transform:uppercase">Social Calendar</div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:center">
+          <div style="display:flex;gap:10px;font-family:'Special Elite';font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#6b5f48">
+            <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;border:1px solid #b4231f;vertical-align:middle;margin-right:4px"></span>Long-form</span>
+            <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#a06614;vertical-align:middle;margin-right:4px"></span>Short</span>
+            <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;border:1px solid #8a7a58;vertical-align:middle;margin-right:4px"></span>Quote card</span>
+            <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;border:1px solid #1f6b74;vertical-align:middle;margin-right:4px"></span>Audiogram</span>
+            <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;border:1px solid #8a7a58;vertical-align:middle;margin-right:4px"></span>Email / other</span>
+          </div>
+          <div style="font-family:'Special Elite';font-weight:600;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#17140f;background:#b4231f;border-radius:8px;padding:9px 16px">Load standard week</div>
+        </div>
+      </div>
+      <div style="flex:1;padding:18px 24px;overflow:hidden">
+        <div style="display:grid;grid-template-columns:120px repeat(7,1fr)"><div></div><div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.16em;color:#17140f;text-transform:uppercase;padding:0 8px 8px;border-bottom:2px solid #17140f">Mon</div><div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.16em;color:#17140f;text-transform:uppercase;padding:0 8px 8px;border-bottom:2px solid #17140f">Tue</div><div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.16em;color:#17140f;text-transform:uppercase;padding:0 8px 8px;border-bottom:2px solid #17140f">Wed</div><div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.16em;color:#17140f;text-transform:uppercase;padding:0 8px 8px;border-bottom:2px solid #17140f">Thu</div><div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.16em;color:#17140f;text-transform:uppercase;padding:0 8px 8px;border-bottom:2px solid #17140f">Fri</div><div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.16em;color:#17140f;text-transform:uppercase;padding:0 8px 8px;border-bottom:2px solid #17140f">Sat</div><div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.16em;color:#17140f;text-transform:uppercase;padding:0 8px 8px;border-bottom:2px solid #17140f">Sun</div></div>
+        <div style="display:grid;grid-template-columns:120px repeat(7,1fr);border-bottom:1px solid #17140f">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.14em;color:#6b5f48;text-transform:uppercase;padding:10px 8px 10px 0">YouTube</div>
+          <div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:5px 8px;border-radius:5px;background:transparent;color:#b4231f;border:1px solid #b4231f;line-height:1.3">EP 004 long-form</div></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:5px 8px;border-radius:5px;background:#a06614;color:#f6eeda;border:1px solid #a06614;line-height:1.3">Steel-man clip</div></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div>
+        </div><div style="display:grid;grid-template-columns:120px repeat(7,1fr);border-bottom:1px solid #17140f">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.14em;color:#6b5f48;text-transform:uppercase;padding:10px 8px 10px 0">Instagram</div>
+          <div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:5px 8px;border-radius:5px;background:transparent;color:#3a3121;border:1px solid #8a7a58;line-height:1.3">Story: new ep</div></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:5px 8px;border-radius:5px;background:transparent;color:#3a3121;border:1px solid #8a7a58;line-height:1.3">Quote card #1</div></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:5px 8px;border-radius:5px;background:transparent;color:#1f6b74;border:1px solid #1f6b74;line-height:1.3">Common-ground audiogram</div></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:5px 8px;border-radius:5px;background:transparent;color:#3a3121;border:1px solid #8a7a58;line-height:1.3">Best comment / duet</div></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div>
+        </div><div style="display:grid;grid-template-columns:120px repeat(7,1fr);border-bottom:1px solid #17140f">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.14em;color:#6b5f48;text-transform:uppercase;padding:10px 8px 10px 0">TikTok</div>
+          <div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:5px 8px;border-radius:5px;background:#a06614;color:#f6eeda;border:1px solid #a06614;line-height:1.3">Short #1 — hook</div></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:5px 8px;border-radius:5px;background:#a06614;color:#f6eeda;border:1px solid #a06614;line-height:1.3">Short #2</div></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:5px 8px;border-radius:5px;background:#a06614;color:#f6eeda;border:1px solid #a06614;line-height:1.3">Short #3</div></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:5px 8px;border-radius:5px;background:transparent;color:#3a3121;border:1px solid #8a7a58;line-height:1.3">Teaser: next topic</div></div>
+        </div><div style="display:grid;grid-template-columns:120px repeat(7,1fr);border-bottom:1px solid #17140f">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.14em;color:#6b5f48;text-transform:uppercase;padding:10px 8px 10px 0">Facebook</div>
+          <div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:5px 8px;border-radius:5px;background:transparent;color:#6b5f48;border:1px solid #8a7a58;line-height:1.3">Community repost</div></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div>
+        </div><div style="display:grid;grid-template-columns:120px repeat(7,1fr);border-bottom:1px solid #17140f">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.14em;color:#6b5f48;text-transform:uppercase;padding:10px 8px 10px 0">X</div>
+          <div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:5px 8px;border-radius:5px;background:transparent;color:#6b5f48;border:1px solid #8a7a58;line-height:1.3">Poll: QOTW</div></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div>
+        </div><div style="display:grid;grid-template-columns:120px repeat(7,1fr);border-bottom:1px solid #17140f">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.14em;color:#6b5f48;text-transform:uppercase;padding:10px 8px 10px 0">LinkedIn</div>
+          <div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:5px 8px;border-radius:5px;background:transparent;color:#3a3121;border:1px solid #8a7a58;line-height:1.3">Quote card #1</div></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div>
+        </div><div style="display:grid;grid-template-columns:120px repeat(7,1fr);border-bottom:1px solid #17140f">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.14em;color:#6b5f48;text-transform:uppercase;padding:10px 8px 10px 0">Email / SMS</div>
+          <div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:5px 8px;border-radius:5px;background:transparent;color:#6b5f48;border:1px solid #8a7a58;line-height:1.3">Episode note + QOTW</div></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"></div><div style="padding:7px 6px;border-left:1px solid #cdbc97;min-height:66px;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-family:'Special Elite';font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:5px 8px;border-radius:5px;background:transparent;color:#6b5f48;border:1px solid #8a7a58;line-height:1.3">Vote the seat CTA</div></div>
+        </div>
+        <div style="font-size:11px;color:#6b5f48;margin-top:12px;font-style:italic">Standard publishing week, armed in the GHL social planner. Chips are drag-to-reschedule; sample data.</div>
+      </div>
+    </div>
+  </div></div>
+  <div class="screen" id="screen-approvals" style="display:none;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
+    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
+  <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
+  <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
+  <div style="font-family:'Special Elite';font-weight:600;font-size:7.5px;letter-spacing:.42em;color:#6b5f48;margin-top:3px;text-transform:uppercase">— Podcast —</div>
+</div>
+    <div style="padding:12px 0;display:flex;flex-direction:column">
+      <div class="navbtn" data-tab="command" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Command</div>
+<div class="navbtn" data-tab="pipeline" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Pipeline</div>
+<div class="navbtn" data-tab="assets" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Assets</div>
+<div class="navbtn" data-tab="calendar" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Calendar</div>
+<div class="navbtn" data-tab="approvals" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid #b4231f;color:#17140f;background:#f6eeda;cursor:pointer">Approvals</div>
+<div class="navbtn" data-tab="funnel" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Funnel</div>
+<div class="navbtn" data-tab="topics" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Topic Bank</div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Sponsors <span style="font-size:9px">· soon</span></div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Settings <span style="font-size:9px">· soon</span></div>
+    </div>
+    <div style="margin-top:auto;padding:14px 16px;border-top:1px solid #17140f;font-family:'Special Elite';font-size:10px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase">Phase 1 · Build the hub</div>
+  </div>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid #17140f;flex-shrink:0">
+        <div>
+          <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.18em;color:#a06614;text-transform:uppercase">The voting machine · 2-of-3 carries · 72h clock</div>
+          <div style="font-family:Anton;font-size:28px;color:#17140f;text-transform:uppercase">Creative Approvals</div>
+        </div>
+        <div style="font-family:'Special Elite';font-size:10px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase;text-align:right;line-height:1.7">Approve-with-changes counts if minor · silence past deadline = abstain<br>deadline passed → auto-nudge · +24h → escalate to Tim</div>
+      </div>
+      <div style="flex:1;padding:18px 24px;display:flex;gap:16px;overflow:hidden">
+        <div style="flex:5;display:flex;gap:12px;min-width:0"><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.14em;color:#17140f;text-transform:uppercase;border-bottom:2px solid #17140f;padding-bottom:8px">Proposed <span style="color:#6b5f48">· 1</span></div>
+          <div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:12px">
+              <div style="font-family:'Special Elite';font-weight:600;font-size:13px;color:#17140f;line-height:1.35">Equity split &amp; roles</div>
+              <div style="font-size:10.5px;color:#6b5f48;margin-top:4px">Added Aug 24 · needs a recommendation before review</div>
+              <div style="display:flex;gap:5px;margin-top:8px;min-height:22px;align-items:center"></div>
+              <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:6px;overflow:hidden"><div style="height:100%;width:0%;background:transparent"></div></div>
+            </div>
+        </div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.14em;color:#17140f;text-transform:uppercase;border-bottom:2px solid #17140f;padding-bottom:8px">Under Review <span style="color:#6b5f48">· 1</span></div>
+          <div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:12px">
+              <div style="font-family:'Special Elite';font-weight:600;font-size:13px;color:#17140f;line-height:1.35">Clip + quote-card template family</div>
+              <div style="font-size:10.5px;color:#6b5f48;margin-top:4px">Gabe reviewing · review ends Aug 28</div>
+              <div style="display:flex;gap:5px;margin-top:8px;min-height:22px;align-items:center"></div>
+              <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:6px;overflow:hidden"><div style="height:100%;width:0%;background:transparent"></div></div>
+            </div>
+        </div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.14em;color:#17140f;text-transform:uppercase;border-bottom:2px solid #17140f;padding-bottom:8px">Voting Open <span style="color:#6b5f48">· 2</span></div>
+          <div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:12px">
+              <div style="font-family:'Special Elite';font-weight:600;font-size:13px;color:#17140f;line-height:1.35">Panel format — hybrid (fixed voice + rotating 4th seat)</div>
+              <div style="font-size:10.5px;color:#6b5f48;margin-top:4px">72h clock running</div>
+              <div style="display:flex;gap:5px;margin-top:8px;min-height:22px;align-items:center"><div title="Erik — approved" style="width:22px;height:22px;border-radius:50%;border:2px solid #3e7d4e;overflow:hidden;animation:none"><img src="../assets/crew-erik.jpg" alt="E" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Gabe — pending" style="width:22px;height:22px;border-radius:50%;border:2px solid #6b5f48;overflow:hidden;animation:giPulse 1.6s ease-in-out infinite"><img src="../assets/crew-gabe.jpg" alt="G" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Tim — pending" style="width:22px;height:22px;border-radius:50%;border:2px solid #6b5f48;overflow:hidden;animation:giPulse 1.6s ease-in-out infinite"><img src="../assets/crew-tim.jpg" alt="T" style="width:100%;height:100%;object-fit:cover;display:block"></div><div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase;margin-left:auto">41h left</div></div>
+              <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:6px;overflow:hidden"><div style="height:100%;width:43%;background:#a06614"></div></div>
+            </div><div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:12px">
+              <div style="font-family:'Special Elite';font-weight:600;font-size:13px;color:#17140f;line-height:1.35">Cadence — weekly vs bi-weekly</div>
+              <div style="font-size:10.5px;color:#6b5f48;margin-top:4px">72h clock running</div>
+              <div style="display:flex;gap:5px;margin-top:8px;min-height:22px;align-items:center"><div title="Erik — approved" style="width:22px;height:22px;border-radius:50%;border:2px solid #3e7d4e;overflow:hidden;animation:none"><img src="../assets/crew-erik.jpg" alt="E" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Gabe — rejected" style="width:22px;height:22px;border-radius:50%;border:2px solid #b4231f;overflow:hidden;animation:none"><img src="../assets/crew-gabe.jpg" alt="G" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Tim — pending" style="width:22px;height:22px;border-radius:50%;border:2px solid #6b5f48;overflow:hidden;animation:giPulse 1.6s ease-in-out infinite"><img src="../assets/crew-tim.jpg" alt="T" style="width:100%;height:100%;object-fit:cover;display:block"></div><div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.1em;color:#b4231f;text-transform:uppercase;margin-left:auto">6h left · nudge sent</div></div>
+              <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:6px;overflow:hidden"><div style="height:100%;width:92%;background:#b4231f"></div></div>
+            </div>
+        </div></div>
+        <div style="flex:3;display:flex;flex-direction:column;gap:12px;min-width:0">
+          <div style="background:#f6eeda;border:1px solid #b4231f;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.16em;color:#a06614;text-transform:uppercase">Vote open · 2 of 3 needed</div>
+              <div style="width:34px;height:34px;border-radius:50%;background:conic-gradient(#a06614 0 57%,#d8c9a6 57% 100%);display:flex;align-items:center;justify-content:center"><div style="width:24px;height:24px;border-radius:50%;background:#f6eeda;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:8px;color:#17140f">41H</div></div>
+            </div>
+            <div style="font-family:'Special Elite';font-weight:600;font-size:15px;color:#17140f">Panel format — hybrid (fixed voice + rotating 4th seat)</div>
+            <div style="background:#efe4cd;border:1px solid #17140f;border-radius:8px;padding:12px;font-size:12px;line-height:1.55;color:#3a3121">One fixed voice per generation as the home team, plus a rotating 4th seat so new panelists cycle through — continuity without freezing anyone out.</div>
+            <div style="display:flex;align-items:center;gap:6px"><div title="Erik — approved" style="width:26px;height:26px;border-radius:50%;border:2px solid #3e7d4e;overflow:hidden;animation:none"><img src="../assets/crew-erik.jpg" alt="E" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Gabe — pending" style="width:26px;height:26px;border-radius:50%;border:2px solid #6b5f48;overflow:hidden;animation:giPulse 1.6s ease-in-out infinite"><img src="../assets/crew-gabe.jpg" alt="G" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Tim — pending" style="width:26px;height:26px;border-radius:50%;border:2px solid #6b5f48;overflow:hidden;animation:giPulse 1.6s ease-in-out infinite"><img src="../assets/crew-tim.jpg" alt="T" style="width:100%;height:100%;object-fit:cover;display:block"></div><div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase;margin-left:auto">41h left</div></div>
+            <div style="display:flex;gap:8px">
+              <div style="flex:1;font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;text-align:center;background:#3e7d4e;color:#f6eeda;border-radius:6px;padding:10px 4px">Approve</div>
+              <div style="flex:1.3;font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;text-align:center;color:#a06614;border:1px solid #a06614;border-radius:6px;padding:10px 4px">With changes</div>
+              <div style="flex:1;font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;text-align:center;color:#b4231f;border:1px solid #b4231f;border-radius:6px;padding:10px 4px">Reject</div>
+            </div>
+            <div style="background:#efe4cd;border:1px solid #17140f;border-radius:6px;padding:9px 12px;font-size:12px;color:#6b5f48">Add a comment…</div>
+          </div>
+          <div style="background:#f6eeda;border:1px solid #17140f;border-radius:12px;padding:14px 16px;flex:1;min-height:0">
+            <div style="font-family:Anton;font-size:14px;color:#17140f;text-transform:uppercase;border-left:5px solid #b4231f;padding-left:14px;margin-bottom:10px">Decision log</div>
+            <div style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;gap:10px;border-bottom:1px solid #cdbc97;padding-bottom:8px">
+      <div style="width:7px;height:7px;border-radius:50%;background:#3e7d4e;flex-shrink:0"></div>
+      <div style="font-size:12px;color:#17140f;flex:1">Logo — v02 (circle-slash mic mark)</div>
+      <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.1em;color:#3e7d4e;text-transform:uppercase">Approved · Sep 2026</div>
+    </div><div style="display:flex;align-items:center;gap:10px;border-bottom:1px solid #cdbc97;padding-bottom:8px">
+      <div style="width:7px;height:7px;border-radius:50%;background:#3e7d4e;flex-shrink:0"></div>
+      <div style="font-size:12px;color:#17140f;flex:1">Name &amp; tagline lockup</div>
+      <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.1em;color:#3e7d4e;text-transform:uppercase">Approved 3/3 · Aug 12</div>
+    </div><div style="display:flex;align-items:center;gap:10px;border-bottom:1px solid #cdbc97;padding-bottom:8px">
+      <div style="width:7px;height:7px;border-radius:50%;background:#3e7d4e;flex-shrink:0"></div>
+      <div style="font-size:12px;color:#17140f;flex:1">Opener signature question</div>
+      <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.1em;color:#3e7d4e;text-transform:uppercase">Approved 2/3 · Aug 9</div>
+    </div><div style="display:flex;align-items:center;gap:10px;border-bottom:1px solid #cdbc97;padding-bottom:8px">
+      <div style="width:7px;height:7px;border-radius:50%;background:#a06614;flex-shrink:0"></div>
+      <div style="font-size:12px;color:#17140f;flex:1">Intro sting v1</div>
+      <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.1em;color:#a06614;text-transform:uppercase">Revise · Aug 18</div>
+    </div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+  <div class="screen" id="screen-funnel" style="display:none;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
+    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
+  <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
+  <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
+  <div style="font-family:'Special Elite';font-weight:600;font-size:7.5px;letter-spacing:.42em;color:#6b5f48;margin-top:3px;text-transform:uppercase">— Podcast —</div>
+</div>
+    <div style="padding:12px 0;display:flex;flex-direction:column">
+      <div class="navbtn" data-tab="command" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Command</div>
+<div class="navbtn" data-tab="pipeline" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Pipeline</div>
+<div class="navbtn" data-tab="assets" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Assets</div>
+<div class="navbtn" data-tab="calendar" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Calendar</div>
+<div class="navbtn" data-tab="approvals" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Approvals</div>
+<div class="navbtn" data-tab="funnel" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid #b4231f;color:#17140f;background:#f6eeda;cursor:pointer">Funnel</div>
+<div class="navbtn" data-tab="topics" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Topic Bank</div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Sponsors <span style="font-size:9px">· soon</span></div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Settings <span style="font-size:9px">· soon</span></div>
+    </div>
+    <div style="margin-top:auto;padding:14px 16px;border-top:1px solid #17140f;font-family:'Special Elite';font-size:10px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase">Phase 1 · Build the hub</div>
+  </div>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid #17140f;flex-shrink:0">
+        <div>
+          <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.18em;color:#a06614;text-transform:uppercase">The sponsor story · GHL contacts · sample data</div>
+          <div style="font-family:Anton;font-size:28px;color:#17140f;text-transform:uppercase">Funnel &amp; List</div>
+        </div>
+        <div style="font-family:'Special Elite';font-size:10px;letter-spacing:.12em;color:#6b5f48;text-transform:uppercase">Tags: <span style="color:#1f6b74">src-*</span> · <span style="color:#a06614">generation-*</span> · <span style="color:#3a3121">topic-*</span></div>
+      </div>
+      <div style="flex:1;padding:18px 24px;display:grid;grid-template-columns:1fr 1fr 1.1fr;grid-template-rows:auto 1fr;gap:14px;overflow:hidden">
+        <div style="background:#f6eeda;border:1px solid #17140f;border-radius:12px;padding:18px 20px;grid-column:1 / 3;display:flex;align-items:center;gap:28px">
+          <div>
+            <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.18em;color:#a06614;text-transform:uppercase">Total contacts</div>
+            <div style="font-family:Anton;font-size:52px;line-height:1;color:#17140f;margin-top:4px">1,284</div>
+            <div style="font-size:12px;color:#3e7d4e;margin-top:4px">+137 this week</div>
+          </div>
+          <svg viewBox="0 0 300 80" style="flex:1;height:80px">
+            <polyline points="0,72 30,68 60,66 90,60 120,58 150,50 180,46 210,36 240,30 270,18 300,10" fill="none" stroke="#a06614" stroke-width="2.5"></polyline>
+            <polyline points="0,72 30,68 60,66 90,60 120,58 150,50 180,46 210,36 240,30 270,18 300,10 300,80 0,80" fill="rgba(160,102,20,.12)" stroke="none"></polyline>
+          </svg>
+        </div>
+        <div style="background:#f6eeda;border:1px solid #17140f;border-radius:12px;padding:16px 20px;grid-row:1 / 3;display:flex;flex-direction:column">
+          <div style="font-family:Anton;font-size:15px;color:#17140f;text-transform:uppercase;border-left:5px solid #b4231f;padding-left:14px">Question of the Week</div>
+          <div style="font-family:Kalam;font-size:16px;color:#17140f;line-height:1.5;border-left:3px solid #b4231f;padding-left:14px;margin:14px 0 10px">"What's one thing your parents' generation got right that yours refuses to admit?"</div>
+          <div style="font-family:'Special Elite';font-size:10.5px;letter-spacing:.12em;color:#6b5f48;text-transform:uppercase;margin-bottom:10px">213 responses · 6 starred for air</div>
+          <div style="display:flex;flex-direction:column;gap:8px"><div style="background:#e7dabc;border:1px solid #17140f;border-radius:8px;padding:10px 12px">
+      <div style="font-family:Kalam;font-size:13px;color:#17140f;line-height:1.45">"They fixed things instead of replacing them."</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+        <div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.14em;color:#1f6b74;text-transform:uppercase">Gen Z</div>
+        <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.1em;color:#a06614;text-transform:uppercase">★ Read on air</div>
+      </div>
+    </div><div style="background:#e7dabc;border:1px solid #17140f;border-radius:8px;padding:10px 12px">
+      <div style="font-family:Kalam;font-size:13px;color:#17140f;line-height:1.45">"Showing up in person. We text our way out of everything hard."</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+        <div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.14em;color:#a06614;text-transform:uppercase">Millennial</div>
+        <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.1em;color:#a06614;text-transform:uppercase">★ Read on air</div>
+      </div>
+    </div><div style="background:#e7dabc;border:1px solid #17140f;border-radius:8px;padding:10px 12px">
+      <div style="font-family:Kalam;font-size:13px;color:#17140f;line-height:1.45">"Sunday dinner was non-negotiable. It kept families talking."</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+        <div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.14em;color:#6b5f48;text-transform:uppercase">Gen X</div>
+        <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.1em;color:#a06614;text-transform:uppercase">☆ Shortlist</div>
+      </div>
+    </div></div>
+        </div>
+        <div style="background:#f6eeda;border:1px solid #17140f;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column">
+          <div style="font-family:Anton;font-size:15px;color:#17140f;text-transform:uppercase;border-left:5px solid #b4231f;padding-left:14px;margin-bottom:12px">Signups by generation</div>
+          <div style="display:flex;align-items:center;gap:20px;flex:1">
+            <div style="width:130px;height:130px;border-radius:50%;background:conic-gradient(#a06614 0 41%,#1f6b74 41% 70%,#6b5f48 70% 91%,#b4231f 91% 98%,#8a7a58 98% 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <div style="width:84px;height:84px;border-radius:50%;background:#f6eeda;display:flex;flex-direction:column;align-items:center;justify-content:center">
+                <div style="font-family:Anton;font-size:22px;color:#17140f">1,284</div>
+                <div style="font-family:'Special Elite';font-size:8px;letter-spacing:.14em;color:#6b5f48;text-transform:uppercase">opted in</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;flex:1"><div style="display:flex;align-items:center;gap:8px;font-size:12px">
+      <span style="width:10px;height:10px;border-radius:2px;background:#a06614;display:inline-block"></span>
+      <span style="font-family:'Special Elite';font-size:10.5px;letter-spacing:.1em;color:#17140f;text-transform:uppercase;flex:1">Millennial</span>
+      <span style="color:#3a3121">526</span>
+      <span style="font-family:'Special Elite';color:#6b5f48;width:36px;text-align:right">41%</span>
+    </div><div style="display:flex;align-items:center;gap:8px;font-size:12px">
+      <span style="width:10px;height:10px;border-radius:2px;background:#1f6b74;display:inline-block"></span>
+      <span style="font-family:'Special Elite';font-size:10.5px;letter-spacing:.1em;color:#17140f;text-transform:uppercase;flex:1">Gen Z</span>
+      <span style="color:#3a3121">372</span>
+      <span style="font-family:'Special Elite';color:#6b5f48;width:36px;text-align:right">29%</span>
+    </div><div style="display:flex;align-items:center;gap:8px;font-size:12px">
+      <span style="width:10px;height:10px;border-radius:2px;background:#6b5f48;display:inline-block"></span>
+      <span style="font-family:'Special Elite';font-size:10.5px;letter-spacing:.1em;color:#17140f;text-transform:uppercase;flex:1">Gen X</span>
+      <span style="color:#3a3121">270</span>
+      <span style="font-family:'Special Elite';color:#6b5f48;width:36px;text-align:right">21%</span>
+    </div><div style="display:flex;align-items:center;gap:8px;font-size:12px">
+      <span style="width:10px;height:10px;border-radius:2px;background:#b4231f;display:inline-block"></span>
+      <span style="font-family:'Special Elite';font-size:10.5px;letter-spacing:.1em;color:#17140f;text-transform:uppercase;flex:1">Boomer</span>
+      <span style="color:#3a3121">90</span>
+      <span style="font-family:'Special Elite';color:#6b5f48;width:36px;text-align:right">7%</span>
+    </div><div style="display:flex;align-items:center;gap:8px;font-size:12px">
+      <span style="width:10px;height:10px;border-radius:2px;background:#8a7a58;display:inline-block"></span>
+      <span style="font-family:'Special Elite';font-size:10.5px;letter-spacing:.1em;color:#17140f;text-transform:uppercase;flex:1">Other</span>
+      <span style="color:#3a3121">26</span>
+      <span style="font-family:'Special Elite';color:#6b5f48;width:36px;text-align:right">2%</span>
+    </div></div>
+          </div>
+          <div style="font-size:11px;color:#6b5f48;font-style:italic;margin-top:8px">The pitch-deck slide: "your brand in front of 372 opted-in Gen Z."</div>
+        </div>
+        <div style="background:#f6eeda;border:1px solid #17140f;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column">
+          <div style="font-family:Anton;font-size:15px;color:#17140f;text-transform:uppercase;border-left:5px solid #b4231f;padding-left:14px;margin-bottom:12px">Signups by source</div>
+          <div style="display:flex;flex-direction:column;gap:12px;flex:1;justify-content:center"><div>
+      <div style="display:flex;justify-content:space-between;font-family:'Special Elite';font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px"><span style="color:#17140f">src-tiktok</span><span style="color:#6b5f48">48%</span></div>
+      <div style="height:10px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:48%;background:#1f6b74"></div></div>
+    </div><div>
+      <div style="display:flex;justify-content:space-between;font-family:'Special Elite';font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px"><span style="color:#17140f">src-youtube</span><span style="color:#6b5f48">31%</span></div>
+      <div style="height:10px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:31%;background:#1f6b74"></div></div>
+    </div><div>
+      <div style="display:flex;justify-content:space-between;font-family:'Special Elite';font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px"><span style="color:#17140f">src-ig</span><span style="color:#6b5f48">14%</span></div>
+      <div style="height:10px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:14%;background:#1f6b74"></div></div>
+    </div><div>
+      <div style="display:flex;justify-content:space-between;font-family:'Special Elite';font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px"><span style="color:#17140f">src-web</span><span style="color:#6b5f48">7%</span></div>
+      <div style="height:10px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:7%;background:#1f6b74"></div></div>
+    </div></div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+  <div class="screen" id="screen-topics" style="display:none;width:1440px;height:900px;background:#efe4cd;border:3px double #17140f;overflow:hidden"><div style="display:flex;color:#3a3121;height:100%">
+    <div style="width:220px;flex-shrink:0;border-right:1px solid #17140f;display:flex;flex-direction:column">
+    <div style="padding:20px 16px 16px;border-bottom:1px solid #17140f">
+  <div style="font-family:Anton;font-size:15px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</div>
+  <div style="font-family:'Permanent Marker';font-size:16px;color:#b4231f;letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)">Incorrect</div>
+  <div style="font-family:'Special Elite';font-weight:600;font-size:7.5px;letter-spacing:.42em;color:#6b5f48;margin-top:3px;text-transform:uppercase">— Podcast —</div>
+</div>
+    <div style="padding:12px 0;display:flex;flex-direction:column">
+      <div class="navbtn" data-tab="command" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Command</div>
+<div class="navbtn" data-tab="pipeline" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Pipeline</div>
+<div class="navbtn" data-tab="assets" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Assets</div>
+<div class="navbtn" data-tab="calendar" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Calendar</div>
+<div class="navbtn" data-tab="approvals" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Approvals</div>
+<div class="navbtn" data-tab="funnel" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#6b5f48;background:transparent;cursor:pointer">Funnel</div>
+<div class="navbtn" data-tab="topics" style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid #b4231f;color:#17140f;background:#f6eeda;cursor:pointer">Topic Bank</div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Sponsors <span style="font-size:9px">· soon</span></div>
+<div style="font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:#c9bd9f;cursor:default">Settings <span style="font-size:9px">· soon</span></div>
+    </div>
+    <div style="margin-top:auto;padding:14px 16px;border-top:1px solid #17140f;font-family:'Special Elite';font-size:10px;letter-spacing:.18em;color:#6b5f48;text-transform:uppercase">Phase 1 · Build the hub</div>
+  </div>
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid #17140f;flex-shrink:0">
+        <div>
+          <div style="font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.18em;color:#a06614;text-transform:uppercase">Where a season gets planned</div>
+          <div style="font-family:Anton;font-size:28px;color:#17140f;text-transform:uppercase">Topic Bank</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:8px 14px;color:#6b5f48;font-size:12.5px;width:240px">Search questions…</div>
+          <div style="font-family:'Special Elite';font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#3a3121;background:#f6eeda;border:1px solid #17140f;border-radius:20px;padding:6px 14px">Pillar ▾</div>
+          <div style="font-family:'Special Elite';font-weight:600;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#17140f;background:#b4231f;border-radius:8px;padding:9px 16px">+ Add question</div>
+        </div>
+      </div>
+      <div style="flex:1;padding:18px 24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-content:start;overflow:hidden"><div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.16em;color:#a06614;text-transform:uppercase;border-bottom:2px solid #17140f;padding-bottom:6px">The Big Questions</div>
+          <div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:12px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+                <div style="font-family:Anton;font-size:15px;line-height:1.2;color:#17140f;text-transform:uppercase">Will AI Turn Against Us?</div>
+                
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase">Heat 84</div>
+                <div style="flex:1;height:5px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:84%;background:#b4231f"></div></div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.1em;color:#1f6b74;text-transform:uppercase;border:1px solid #1f6b74;border-radius:5px;padding:3px 9px">Schedule</div>
+              </div>
+              
+            </div><div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:12px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+                <div style="font-family:Anton;font-size:15px;line-height:1.2;color:#17140f;text-transform:uppercase">What’s Wrong With Humanity?</div>
+                
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase">Heat 58</div>
+                <div style="flex:1;height:5px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:58%;background:#a06614"></div></div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.1em;color:#1f6b74;text-transform:uppercase;border:1px solid #1f6b74;border-radius:5px;padding:3px 9px">Schedule</div>
+              </div>
+              
+            </div>
+        </div><div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.16em;color:#a06614;text-transform:uppercase;border-bottom:2px solid #17140f;padding-bottom:6px">Culture</div>
+          <div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:12px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+                <div style="font-family:Anton;font-size:15px;line-height:1.2;color:#17140f;text-transform:uppercase">Too Sensitive or Too Dismissive?</div>
+                
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase">Heat 77</div>
+                <div style="flex:1;height:5px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:77%;background:#a06614"></div></div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.1em;color:#1f6b74;text-transform:uppercase;border:1px solid #1f6b74;border-radius:5px;padding:3px 9px">Schedule</div>
+              </div>
+              
+            </div>
+        </div><div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.16em;color:#a06614;text-transform:uppercase;border-bottom:2px solid #17140f;padding-bottom:6px">Work</div>
+          <div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:12px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+                <div style="font-family:Anton;font-size:15px;line-height:1.2;color:#17140f;text-transform:uppercase">Is Hustle Culture Inspiring or Harmful?</div>
+                
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase">Heat 66</div>
+                <div style="flex:1;height:5px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:66%;background:#a06614"></div></div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.1em;color:#1f6b74;text-transform:uppercase;border:1px solid #1f6b74;border-radius:5px;padding:3px 9px">Schedule</div>
+              </div>
+              
+            </div>
+        </div><div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.16em;color:#a06614;text-transform:uppercase;border-bottom:2px solid #17140f;padding-bottom:6px">Leadership</div>
+          <div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:12px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+                <div style="font-family:Anton;font-size:15px;line-height:1.2;color:#17140f;text-transform:uppercase">Are Younger People Ready to Lead Sooner?</div>
+                
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase">Heat 62</div>
+                <div style="flex:1;height:5px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:62%;background:#a06614"></div></div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.1em;color:#1f6b74;text-transform:uppercase;border:1px solid #1f6b74;border-radius:5px;padding:3px 9px">Schedule</div>
+              </div>
+              
+            </div>
+        </div><div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.16em;color:#b4231f;text-transform:uppercase;border-bottom:2px solid #17140f;padding-bottom:6px">Third Rail ⚠</div>
+          <div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:12px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+                <div style="font-family:Anton;font-size:15px;line-height:1.2;color:#17140f;text-transform:uppercase">Who Actually Benefits From the Way Drug Laws Are Written?</div>
+                <span style="font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:#b4231f;color:#f6eeda;border:1px solid #b4231f;flex-shrink:0">Sensitive</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+                <div style="font-family:'Special Elite';font-size:9px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase">Heat 71</div>
+                <div style="flex:1;height:5px;border-radius:2px;background:#d8c9a6;overflow:hidden"><div style="height:100%;width:71%;background:#a06614"></div></div>
+                <div style="font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.1em;color:#1f6b74;text-transform:uppercase;border:1px solid #1f6b74;border-radius:5px;padding:3px 9px">Schedule</div>
+              </div>
+              <div style="font-size:10px;color:#6b5f48;margin-top:7px;font-style:italic">Members / YouTube-first special drop — never main-feed.</div>
+            </div>
+        </div><div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.16em;color:#a06614;text-transform:uppercase;border-bottom:2px solid #17140f;padding-bottom:6px">Family &amp; Community</div>
+          <div style="border:1px dashed #8a7a58;border-radius:8px;padding:18px 14px;text-align:center">
+              <div style="font-family:'Special Elite';font-size:10px;letter-spacing:.14em;color:#6b5f48;text-transform:uppercase">Nothing banked yet</div>
+              <div style="font-size:11.5px;color:#6b5f48;margin-top:5px;font-style:italic">Your first question is waiting to be written.</div>
+            </div>
+        </div></div>
+    </div>
+  </div></div>
+  <div style="margin-top:28px;padding-top:24px;border-top:1px solid #cdbc97">
+    <div style="font-family:'Special Elite';font-size:12px;letter-spacing:.22em;color:#6b5f48;text-transform:uppercase;margin-bottom:12px">Mobile 390 · Command + Approvals</div>
+    <div style="display:flex;gap:56px;overflow-x:auto;padding-bottom:8px">
+      <div style="width:390px;height:844px;background:#efe4cd;border:3px double #17140f;border-radius:28px;display:flex;flex-direction:column;color:#3a3121;overflow:hidden;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:10px;padding:16px 18px 12px;border-bottom:1px solid #17140f">
+      <div style="line-height:1.3"><span style="font-family:Anton;font-size:12px;color:#17140f;letter-spacing:.02em">GENERATIONALLY</span> <span style="font-family:'Permanent Marker';font-size:13px;color:#b4231f">Incorrect</span></div>
+      <div style="display:flex;margin-left:auto">
+        <div title="Erik" style="width:24px;height:24px;border-radius:50%;border:2px solid #3a3121;overflow:hidden"><img src="../assets/crew-erik.jpg" alt="Erik" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+        <div title="Gabe" style="width:24px;height:24px;border-radius:50%;border:2px solid #3a3121;overflow:hidden;margin-left:-7px"><img src="../assets/crew-gabe.jpg" alt="Gabe" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+        <div title="Tim" style="width:24px;height:24px;border-radius:50%;border:2px solid #a06614;overflow:hidden;margin-left:-7px"><img src="../assets/crew-tim.jpg" alt="Tim" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+      </div>
+    </div>
+    <div style="padding:7px 18px;background:#f6eeda;border-bottom:1px solid #17140f;font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.24em;color:#a06614;text-transform:uppercase">68 days to launch · week of Nov 2</div>
+    <div style="flex:1;padding:14px;display:flex;flex-direction:column;gap:12px;overflow:hidden">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="background:#f6eeda;border:1px solid #17140f;border-radius:10px;padding:12px 14px">
+      <div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.14em;color:#a06614;text-transform:uppercase">Episodes in the can</div>
+      <div style="font-family:Anton;font-size:26px;line-height:1.1;color:#17140f;margin-top:4px">6</div>
+      <div style="font-size:9.5px;color:#3e7d4e;margin-top:1px">+1 this week</div>
+    </div><div style="background:#f6eeda;border:1px solid #17140f;border-radius:10px;padding:12px 14px">
+      <div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.14em;color:#a06614;text-transform:uppercase">List size</div>
+      <div style="font-family:Anton;font-size:26px;line-height:1.1;color:#17140f;margin-top:4px">1,284</div>
+      <div style="font-size:9.5px;color:#3e7d4e;margin-top:1px">+137 this week</div>
+    </div><div style="background:#f6eeda;border:1px solid #17140f;border-radius:10px;padding:12px 14px">
+      <div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.14em;color:#a06614;text-transform:uppercase">Assets scheduled this week</div>
+      <div style="font-family:Anton;font-size:26px;line-height:1.1;color:#17140f;margin-top:4px">12</div>
+      <div style="font-size:9.5px;color:#6b5f48;margin-top:1px">of 14 planned</div>
+    </div><div style="background:#f6eeda;border:1px solid #17140f;border-radius:10px;padding:12px 14px">
+      <div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.14em;color:#a06614;text-transform:uppercase">Votes awaiting you</div>
+      <div style="font-family:Anton;font-size:26px;line-height:1.1;color:#b4231f;margin-top:4px">2</div>
+      <div style="font-size:9.5px;color:#b4231f;margin-top:1px">oldest closes in 6h</div>
+    </div></div>
+      <div style="background:#f6eeda;border:1px solid #17140f;border-radius:10px;padding:12px 14px">
+        <div style="font-family:Anton;font-size:13px;color:#17140f;text-transform:uppercase;border-left:4px solid #b4231f;padding-left:10px;margin-bottom:8px">Needs a decision</div>
+        <div style="display:flex;flex-direction:column;gap:7px"><div style="background:#e7dabc;border:1px solid #17140f;border-radius:7px;padding:9px 11px">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:11.5px;color:#17140f;line-height:1.3">Panel format — hybrid (fixed voice + rotating 4th seat)</div>
+          <div style="display:flex;align-items:center;gap:5px;margin-top:6px">
+            <div title="Erik — approved" style="width:19px;height:19px;border-radius:50%;border:2px solid #3e7d4e;overflow:hidden;animation:none"><img src="../assets/crew-erik.jpg" alt="E" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Gabe — pending" style="width:19px;height:19px;border-radius:50%;border:2px solid #6b5f48;overflow:hidden;animation:giPulse 1.6s ease-in-out infinite"><img src="../assets/crew-gabe.jpg" alt="G" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Tim — pending" style="width:19px;height:19px;border-radius:50%;border:2px solid #6b5f48;overflow:hidden;animation:giPulse 1.6s ease-in-out infinite"><img src="../assets/crew-tim.jpg" alt="T" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+            <div style="font-family:'Special Elite';font-weight:600;font-size:8.5px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase;margin-left:auto">41h left</div>
+          </div>
+          <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:7px;overflow:hidden"><div style="height:100%;width:43%;background:#a06614"></div></div>
+        </div><div style="background:#e7dabc;border:1px solid #17140f;border-radius:7px;padding:9px 11px">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:11.5px;color:#17140f;line-height:1.3">Cadence — weekly vs bi-weekly</div>
+          <div style="display:flex;align-items:center;gap:5px;margin-top:6px">
+            <div title="Erik — approved" style="width:19px;height:19px;border-radius:50%;border:2px solid #3e7d4e;overflow:hidden;animation:none"><img src="../assets/crew-erik.jpg" alt="E" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Gabe — rejected" style="width:19px;height:19px;border-radius:50%;border:2px solid #b4231f;overflow:hidden;animation:none"><img src="../assets/crew-gabe.jpg" alt="G" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Tim — pending" style="width:19px;height:19px;border-radius:50%;border:2px solid #6b5f48;overflow:hidden;animation:giPulse 1.6s ease-in-out infinite"><img src="../assets/crew-tim.jpg" alt="T" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+            <div style="font-family:'Special Elite';font-weight:600;font-size:8.5px;letter-spacing:.1em;color:#b4231f;text-transform:uppercase;margin-left:auto">6h left · nudge sent</div>
+          </div>
+          <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:7px;overflow:hidden"><div style="height:100%;width:92%;background:#b4231f"></div></div>
+        </div></div>
+      </div>
+      <div style="background:#f6eeda;border:1px solid #17140f;border-radius:10px;padding:12px 14px">
+        <div style="font-family:Anton;font-size:13px;color:#17140f;text-transform:uppercase;border-left:4px solid #b4231f;padding-left:10px;margin-bottom:8px">Pipeline</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px"><div style="background:#efe4cd;border:1px solid #17140f;border-radius:5px;padding:6px 3px;text-align:center">
+      <div style="font-family:Anton;font-size:15px;color:#17140f">2</div>
+      <div style="font-family:'Special Elite';font-size:6.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:1px">Topic Bank</div>
+    </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:5px;padding:6px 3px;text-align:center">
+      <div style="font-family:Anton;font-size:15px;color:#17140f">1</div>
+      <div style="font-family:'Special Elite';font-size:6.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:1px">Voted</div>
+    </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:5px;padding:6px 3px;text-align:center">
+      <div style="font-family:Anton;font-size:15px;color:#17140f">1</div>
+      <div style="font-family:'Special Elite';font-size:6.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:1px">Booked</div>
+    </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:5px;padding:6px 3px;text-align:center">
+      <div style="font-family:Anton;font-size:15px;color:#17140f">1</div>
+      <div style="font-family:'Special Elite';font-size:6.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:1px">Shot</div>
+    </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:5px;padding:6px 3px;text-align:center">
+      <div style="font-family:Anton;font-size:15px;color:#17140f">1</div>
+      <div style="font-family:'Special Elite';font-size:6.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:1px">In Edit</div>
+    </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:5px;padding:6px 3px;text-align:center">
+      <div style="font-family:Anton;font-size:15px;color:#17140f">1</div>
+      <div style="font-family:'Special Elite';font-size:6.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:1px">Assets Cut</div>
+    </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:5px;padding:6px 3px;text-align:center">
+      <div style="font-family:Anton;font-size:15px;color:#17140f">1</div>
+      <div style="font-family:'Special Elite';font-size:6.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:1px">Scheduled</div>
+    </div><div style="background:#efe4cd;border:1px solid #17140f;border-radius:5px;padding:6px 3px;text-align:center">
+      <div style="font-family:Anton;font-size:15px;color:#17140f">2</div>
+      <div style="font-family:'Special Elite';font-size:6.5px;letter-spacing:.08em;color:#6b5f48;text-transform:uppercase;margin-top:1px">Live</div>
+    </div></div>
+      </div>
+    </div>
+    <div style="padding:8px 0 10px;display:flex;justify-content:center"><div style="width:120px;height:4px;border-radius:2px;background:#d8c9a6"></div></div>
+  </div>
+      <div style="width:390px;height:844px;background:#efe4cd;border:3px double #17140f;border-radius:28px;display:flex;flex-direction:column;color:#3a3121;overflow:hidden;flex-shrink:0">
+    <div style="padding:16px 18px 12px;border-bottom:1px solid #17140f">
+      <div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.18em;color:#a06614;text-transform:uppercase">2-of-3 carries · 72h clock</div>
+      <div style="font-family:Anton;font-size:20px;color:#17140f;text-transform:uppercase">Creative Approvals</div>
+    </div>
+    <div style="flex:1;padding:14px;display:flex;flex-direction:column;gap:12px;overflow:hidden">
+      <div style="background:#f6eeda;border:1px solid #b4231f;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:9px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.14em;color:#a06614;text-transform:uppercase">Vote open · 2 of 3 needed</div>
+          <div style="width:30px;height:30px;border-radius:50%;background:conic-gradient(#a06614 0 43%,#d8c9a6 43% 100%);display:flex;align-items:center;justify-content:center"><div style="width:21px;height:21px;border-radius:50%;background:#f6eeda;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:7px;color:#17140f">41H</div></div>
+        </div>
+        <div style="font-family:'Special Elite';font-weight:600;font-size:14px;color:#17140f">Panel format — hybrid (fixed voice + rotating 4th seat)</div>
+        <div style="background:#efe4cd;border:1px solid #17140f;border-radius:8px;padding:10px 11px;font-size:11.5px;line-height:1.5;color:#3a3121">One fixed voice per generation as the home team, plus a rotating 4th seat so new panelists cycle through — continuity without freezing anyone out.</div>
+        <div style="display:flex;align-items:center;gap:6px"><div title="Erik — approved" style="width:19px;height:19px;border-radius:50%;border:2px solid #3e7d4e;overflow:hidden;animation:none"><img src="../assets/crew-erik.jpg" alt="E" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Gabe — pending" style="width:19px;height:19px;border-radius:50%;border:2px solid #6b5f48;overflow:hidden;animation:giPulse 1.6s ease-in-out infinite"><img src="../assets/crew-gabe.jpg" alt="G" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Tim — pending" style="width:19px;height:19px;border-radius:50%;border:2px solid #6b5f48;overflow:hidden;animation:giPulse 1.6s ease-in-out infinite"><img src="../assets/crew-tim.jpg" alt="T" style="width:100%;height:100%;object-fit:cover;display:block"></div><div style="font-family:'Special Elite';font-weight:600;font-size:8.5px;letter-spacing:.1em;color:#6b5f48;text-transform:uppercase;margin-left:auto">41h left</div></div>
+        <div style="display:flex;gap:6px">
+          <div style="flex:1;font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.06em;text-transform:uppercase;text-align:center;background:#3e7d4e;color:#f6eeda;border-radius:6px;padding:11px 2px">Approve</div>
+          <div style="flex:1.3;font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.06em;text-transform:uppercase;text-align:center;color:#a06614;border:1px solid #a06614;border-radius:6px;padding:11px 2px">With changes</div>
+          <div style="flex:1;font-family:'Special Elite';font-weight:600;font-size:9px;letter-spacing:.06em;text-transform:uppercase;text-align:center;color:#b4231f;border:1px solid #b4231f;border-radius:6px;padding:11px 2px">Reject</div>
+        </div>
+        <div style="background:#efe4cd;border:1px solid #17140f;border-radius:6px;padding:8px 11px;font-size:11px;color:#6b5f48">Add a comment…</div>
+      </div>
+      <div style="font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.14em;color:#17140f;text-transform:uppercase;border-bottom:2px solid #17140f;padding-bottom:6px">Also voting open</div>
+      <div style="background:#f6eeda;border:1px solid #17140f;border-radius:8px;padding:10px 12px">
+          <div style="font-family:'Special Elite';font-weight:600;font-size:12px;color:#17140f;line-height:1.3">Cadence — weekly vs bi-weekly</div>
+          <div style="display:flex;align-items:center;gap:5px;margin-top:6px">
+            <div title="Erik — approved" style="width:19px;height:19px;border-radius:50%;border:2px solid #3e7d4e;overflow:hidden;animation:none"><img src="../assets/crew-erik.jpg" alt="E" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Gabe — rejected" style="width:19px;height:19px;border-radius:50%;border:2px solid #b4231f;overflow:hidden;animation:none"><img src="../assets/crew-gabe.jpg" alt="G" style="width:100%;height:100%;object-fit:cover;display:block"></div><div title="Tim — pending" style="width:19px;height:19px;border-radius:50%;border:2px solid #6b5f48;overflow:hidden;animation:giPulse 1.6s ease-in-out infinite"><img src="../assets/crew-tim.jpg" alt="T" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+            <div style="font-family:'Special Elite';font-weight:600;font-size:8.5px;letter-spacing:.1em;color:#b4231f;text-transform:uppercase;margin-left:auto">6h left · nudge sent</div>
+          </div>
+          <div style="height:3px;border-radius:2px;background:#d8c9a6;margin-top:7px;overflow:hidden"><div style="height:100%;width:92%;background:#b4231f"></div></div>
+        </div>
+    </div>
+    <div style="padding:8px 0 10px;display:flex;justify-content:center"><div style="width:120px;height:4px;border-radius:2px;background:#d8c9a6"></div></div>
+  </div>
+    </div>
+  </div>
+</div>
+<script>
+document.querySelectorAll('.navbtn').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var tab = btn.getAttribute('data-tab');
+    document.querySelectorAll('.screen').forEach(function (s) { s.style.display = 'none'; });
+    var target = document.getElementById('screen-' + tab);
+    if (target) target.style.display = 'flex';
+    window.scrollTo(0, 0);
+  });
+});
+</script>
+</body>
+</html>

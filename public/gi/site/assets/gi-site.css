@@ -192,3 +192,7 @@ footer .small b{color:var(--gi-paper)}
   html{scroll-behavior:auto}
   *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
 }
+
+/* ---------- corner easter egg (not linked from nav, on purpose) ---------- */
+.egg{position:fixed;bottom:10px;right:10px;width:9px;height:9px;border-radius:50%;background:var(--gi-ink);opacity:.15;z-index:999;transition:opacity .2s ease}
+.egg:hover,.egg:focus-visible{opacity:.55}
