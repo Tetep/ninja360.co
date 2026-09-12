@@ -27,6 +27,22 @@ var GI_CONTACT_EMAIL = 'hello@generationallyincorrect.com';
   }
   var sourceData = captureSource();
 
+  /* ---- mobile nav toggle ---- */
+  var menuToggle = document.querySelector('.menu-toggle');
+  var bar = document.querySelector('.masthead .bar');
+  if (menuToggle && bar) {
+    menuToggle.addEventListener('click', function () {
+      var isOpen = bar.classList.toggle('nav-open');
+      menuToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    bar.querySelectorAll('.nav a').forEach(function (a) {
+      a.addEventListener('click', function () {
+        bar.classList.remove('nav-open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
   /* ---- rotating tagline (hero) ---- */
   var taglineEl = document.querySelector('[data-taglines]');
   if (taglineEl) {
