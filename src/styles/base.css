@@ -399,6 +399,18 @@ h3 { font-size: 17px; font-weight: 700; color: var(--charcoal); margin: 18px 0 7
   border-top: 1px solid var(--line);
 }
 
+/* ==== Footer badge (site-wide easter egg) ==== */
+#egg-badge{position:fixed;right:16px;bottom:16px;width:44px;height:44px;
+  border-radius:999px;overflow:hidden;opacity:0.18;cursor:pointer;z-index:50;
+  border:2px solid rgba(24,23,21,0.28);transition:opacity .2s,transform .2s;}
+#egg-badge:hover{opacity:1;transform:scale(1.08);}
+#egg-badge img{width:100%;height:100%;object-fit:cover;}
+#egg-pop{position:fixed;right:16px;bottom:70px;max-width:240px;
+  background:#C6B49C;border:1px solid rgba(24,23,21,0.28);border-radius:10px;
+  padding:14px 16px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-size:0.82rem;
+  color:#181715;z-index:51;display:none;}
+#egg-pop.show{display:block;}
+
 /* ==== Prose helpers for markdown-rendered rooms ==== */
 .prose h3 { margin-top: 22px; }
 .prose ul { margin-left: 1.25rem; }

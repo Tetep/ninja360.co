@@ -1,4 +1,7 @@
 ---
+import { Image } from 'astro:assets';
+import headNinja from '../assets/badge/head-ninja.png';
+
 const year = 2026;
 ---
 
@@ -6,3 +9,22 @@ const year = 2026;
   Put them on the map · Tell the truth beautifully · Always sharpen the blade<br>
   The Ninja-360 Dojo · Tim Petet · Ninja-360 Digital Media LLC · the navigable home for the whole plan · built to live at ninja360.co (private) · © {year} Ninja-360 Digital Media LLC | Kansas City, MO
 </div>
+
+<!-- Site-wide footer easter egg. Deliberately a sibling of .footer, not a
+     child of it -- .footer is force-hidden during the homepage's picker/call
+     phases (see index.astro), and this should stay visible regardless. -->
+<div id="egg-badge" title="???"><Image src={headNinja} alt="" width={44} height={44} /></div>
+<div id="egg-pop"><b>🥷 Built by Head Ninja Tim Petet</b><br>Founder, Ninja 360 Digital Media.</div>
+
+<script>
+  const eggBadge = document.getElementById('egg-badge');
+  const eggPop = document.getElementById('egg-pop');
+  if (eggBadge && eggPop) {
+    eggBadge.addEventListener('click', () => eggPop.classList.toggle('show'));
+    document.addEventListener('click', (e) => {
+      if (!eggBadge.contains(e.target as Node) && !eggPop.contains(e.target as Node)) {
+        eggPop.classList.remove('show');
+      }
+    });
+  }
+</script>
