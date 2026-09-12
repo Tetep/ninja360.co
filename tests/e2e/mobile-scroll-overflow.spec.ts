@@ -33,6 +33,7 @@ const routes = [
   '/legacy/roadmaps/gabe',
   '/legacy/roadmaps/pavan',
   '/gi/site/',
+  '/gi/site/comingsoon/',
   '/gi/site/about/',
   '/gi/site/episodes/',
   '/gi/site/question-of-the-week/',
