@@ -5,7 +5,7 @@ export default defineConfig({
   // production-smoke.spec.ts hits real external hosts and Cloudflare-Pages-only
   // routing (_redirects) that the local `astro preview` server can't serve —
   // it's exclusively for playwright.prod.config.mjs against the live deploy.
-  testMatch: /mobile-scroll-overflow\.spec\.ts/,
+  testMatch: /(mobile-scroll-overflow|gi-dashboard-mobile-nav)\.spec\.ts/,
   timeout: 30_000,
   expect: {
     timeout: 5_000,

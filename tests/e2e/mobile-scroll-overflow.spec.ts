@@ -32,21 +32,33 @@ const routes = [
   '/scrolls/warp-speed',
   '/legacy/roadmaps/gabe',
   '/legacy/roadmaps/pavan',
-  '/gi/site/',
-  '/gi/site/comingsoon/',
-  '/gi/site/about/',
-  '/gi/site/episodes/',
-  '/gi/site/question-of-the-week/',
-  '/gi/site/membership/',
-  '/gi/site/contact/',
-  '/gi/site/be-on-the-show/',
-  '/gi/site/dashboard/',
+  // No trailing slash, matching every other static route above: with
+  // trailingSlash:'never', astro preview's own dev-style routing 404s a
+  // directory-style URL that ends in "/" (it doesn't redirect, it serves its
+  // themed 404 page) even though the same dist/ file resolves fine without
+  // the slash — and in production. Keep it this way or these silently start
+  // asserting against the 404 page instead of the real one again.
+  '/gi/site',
+  '/gi/site/comingsoon',
+  '/gi/site/about',
+  '/gi/site/episodes',
+  '/gi/site/question-of-the-week',
+  '/gi/site/membership',
+  '/gi/site/contact',
+  '/gi/site/be-on-the-show',
+  '/gi/site/dashboard',
 ];
 
 test.describe('mobile scroll and overflow guardrails', () => {
   for (const route of routes) {
     test(route + ' allows scrolling and avoids horizontal overflow', async ({ page }) => {
-      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      const response = await page.goto(route, { waitUntil: 'domcontentloaded' });
+
+      // Guard against silently asserting against a 404 page instead of the
+      // real one — every check below is generic enough to pass against
+      // Astro's own themed error page too, so a routing regression here
+      // would otherwise go undetected.
+      expect(response?.status(), `${route} should resolve, not 404/redirect-fail`).toBeLessThan(400);
 
       if (route === '/') {
         // Upstream home intentionally locks scroll during picker/call phases.
