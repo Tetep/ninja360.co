@@ -75,6 +75,11 @@
     background:var(--ink); border:2px solid var(--rust);
   }
   .video-frame video{ display:block; width:100%; height:auto; }
+  .video-fallback{
+    display:none; align-items:center; justify-content:center; min-height:220px; padding:24px;
+    color:var(--paper); font-family:'Space Mono', monospace; font-weight:700;
+    letter-spacing:.08em; text-transform:uppercase; font-size:13px; text-align:center;
+  }
   .tagline{
     font-size:15px; max-width:520px; text-align:center; line-height:1.6; opacity:0.88;
   }
@@ -161,9 +166,10 @@
   <div class="kicker">A show for nobody who asked, and everybody who needed it</div>
 
   <div class="video-frame">
-    <video width="100%" height="auto" autoplay muted loop playsinline>
+    <video id="hero-video" width="100%" height="auto" autoplay muted loop playsinline>
       <source src="https://d.ninja360.net/GenInc_animation.mp4" type="video/mp4">
     </video>
+    <div id="hero-video-fallback" class="video-fallback">Trailer dropping soon</div>
   </div>
 
   <p class="tagline">Silent Generation through Gen Z at one table, arguing the topics most shows dodge — money, marriage, religion, AI, cancel culture, work ethic. Relaxed, honest, entertaining and respectful.</p>
@@ -238,6 +244,18 @@
   }
   tick();
   setInterval(tick, 1000);
+
+  // Hero video — fall back to a text placeholder instead of a broken/blank
+  // player if the source ever fails to load (wrong host, dead link, etc.).
+  (function () {
+    var v = document.getElementById('hero-video');
+    var fb = document.getElementById('hero-video-fallback');
+    if (!v || !fb) return;
+    v.addEventListener('error', function () {
+      v.style.display = 'none';
+      fb.style.display = 'flex';
+    });
+  })();
 
   // Notify Me
   document.getElementById('notify-form').addEventListener('submit', function(e){
