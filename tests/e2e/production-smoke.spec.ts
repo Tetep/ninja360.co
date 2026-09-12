@@ -30,6 +30,16 @@ const routes = [
   '/scrolls/warp-speed',
   '/legacy/roadmaps/gabe',
   '/legacy/roadmaps/pavan',
+  // The real GI pages — added so the built-in broken-image check actually
+  // exercises the logo (masthead <img class="mark">, the be-on-the-show
+  // logo card) against production, not just the local astro-preview build.
+  '/gi/site/',
+  '/gi/site/about/',
+  '/gi/site/episodes/',
+  '/gi/site/question-of-the-week/',
+  '/gi/site/membership/',
+  '/gi/site/contact/',
+  '/gi/site/be-on-the-show/',
   // Cloudflare Pages _redirects rules — only real once deployed, hence checked
   // here (daily cron against production) rather than in the local build suite.
   '/gi/site/apply',
