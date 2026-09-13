@@ -242,6 +242,10 @@ svg{width:100%;height:auto;display:block}
 .homepin{width:34px;height:34px;border-radius:50%;background:#fff;border:2.5px solid var(--accent);
   box-shadow:0 2px 8px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .homepin img{width:88%;height:88%;object-fit:contain;display:block}
+/* you are here — Google's white car puck, so the one moving thing on the map reads instantly */
+.carpin{width:30px;height:30px;border-radius:50%;background:#fff;color:#2b2e36;display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--accent);box-shadow:0 3px 10px rgba(0,0,0,.5)}
+.carpin svg{width:64%;height:64%;display:block}
 /* real chargers, pulled from Open Charge Map — distinct blue so they never read as a job */
 .chgx{background:none;border:none}
 .chg{width:22px;height:22px;border-radius:7px;background:var(--b);color:var(--a);display:flex;align-items:center;justify-content:center;
@@ -1405,7 +1409,7 @@ const badgeHTML=(dn,lf)=>`<div class="nbadge"><span class="dn">✓${dn}</span><s
 function pinHTML(b,sel,allDone,badge,late,size,mark,ret){
   const glyph=allDone?'<img class="nmark" src="'+(mark||'/assets/ninja-mark.png')+'" alt="done">'
              :(b.sym&&SYMBOLS[b.sym])||('<b class="ini">'+escHTML(b.ini)+'</b>');   // brand symbol beats initials
-  const inner=sel?`<div class="disc">${glyph}</div>`:'';
+  const inner=(sel||allDone)?`<div class="disc">${glyph}</div>`:'';   // a banked stop shows its badge whatever day it was shot
   return `<div class="npin${sel?' sel':''}${size||''}${late?' late':''}${ret?' ret':''}" style="${pinVars(b)}"><div class="head">${inner}${badge}</div><div class="tail"></div></div>`;
 }
 function renderMap(){
@@ -1464,9 +1468,9 @@ function drawPins(){
     const isLate=todays.some(j=>late.has(j.id));
     const badge=shots.length>1?badgeHTML(doneN,leftN):'';
     // Selected pins scale with zoom like the dots do: the design's 52px at city zoom, 44 at region, 36 at state
-    const SZ=sel?(close?[52,77,'']:mid?[44,65,' sel-m']:[36,53,' sel-s']):[26,43,''];
+    const SZ=(sel||(allDone&&close))?(close?[52,77,'']:mid?[44,65,' sel-m']:[36,53,' sel-s']):[26,43,''];
     const icon=(sel||close)
-      ?L.divIcon({className:'npx',html:pinHTML(b,sel,allDone,badge,isLate,SZ[2],allDone?(todayShots.map(j=>byEmblem(j.id)).find(Boolean)||null):null,anyReturn),iconSize:[SZ[0],SZ[1]],iconAnchor:[SZ[0]/2,SZ[1]]})
+      ?L.divIcon({className:'npx',html:pinHTML(b,sel,allDone,badge,isLate,SZ[2],allDone?((sel?todayShots:shots).map(j=>byEmblem(j.id)).find(Boolean)||null):null,anyReturn),iconSize:[SZ[0],SZ[1]],iconAnchor:[SZ[0]/2,SZ[1]]})
       :L.divIcon({className:'npx',html:`<div class="ndot${mid?'':' sm'}${anyReturn?' ret':''}" style="${pinVars(b)}">${mid?badge:''}</div>`,
                   iconSize:mid?[22,22]:[12,12],iconAnchor:mid?[11,11]:[6,6]});
     const dim=!sel&&list.every(j=>HOLD(j));
@@ -1489,11 +1493,17 @@ function drawPins(){
     if(Math.abs(s0[0]-e0[0])+Math.abs(s0[1]-e0[1])>1e-6)mark(e0,'se','E','End: '+placeName(d.endKey)) }
   L.marker(BASE,{icon:L.divIcon({className:'npx',html:'<div class="homepin"><img src="/assets/ninja-mark.png" alt=""></div>',iconSize:[34,34],iconAnchor:[17,17]}),keyboard:false,zIndexOffset:600})
     .bindTooltip('🥷 Home base — '+HOME_ADDR,{direction:'top',offset:[0,-18]}).addTo(LLAYER);   // the Ninja mark, not a house glyph
+  // the car sits wherever "I'm at" says he is — above every pin, because it is him
+  if(S.here&&S.here.key==='gps'&&Array.isArray(S.here.ll))
+    L.marker(S.here.ll,{icon:L.divIcon({className:'npx',html:'<div class="carpin">'+CAR+'</div>',iconSize:[30,30],iconAnchor:[15,15]}),keyboard:false,zIndexOffset:1200})
+      .bindTooltip('You are here',{direction:'top',offset:[0,-16]}).addTo(LLAYER);
 }
 // Real DC fast chargers from Open Charge Map — Level 2 is filtered out, it doesn't help
 // in the field. Two sources, one layer: every stop on today's route (6 mi) plus samples
 // along long legs (8 mi) at any zoom, and the viewport at region/city zoom. Cached per rounded point so re-renders and
 // small pans don't refetch. Fails silently offline — the map just shows no chargers.
+// you are here — a white puck with a car in it, the one marker that is not a place
+const CAR='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>';
 const BOLT='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>';
 // Tim runs interstates and charges at big truck stops. Love's, Pilot / Flying J (GM Energy and
 // EVgo eXtend — the Equinox's own network), Buc-ee's, TA/Petro, and the big c-store chains
