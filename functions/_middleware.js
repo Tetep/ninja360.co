@@ -8,7 +8,7 @@
 
 const TRACKER_HOST = /(^|\.)ninja360\.org$/i;
 const TRACKER_PATH = /^\/(map|runsheet|verizon)?\/?$/i;
-const PASS_THROUGH = /^\/(assets\/|favicon\.svg$)/;
+const PASS_THROUGH = /^\/(assets\/|api\/|favicon\.svg$)/;   // /api/ is the crew sync — never rewrite it to the run sheet
 
 export async function onRequest({ request, next, env }) {
   const url = new URL(request.url);
