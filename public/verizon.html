@@ -468,8 +468,12 @@ const punchList=id=>(BY[id]&&BY[id].pl)||[];
 const punchDone=(id,i)=>!!(S.punch&&S.punch[id]&&S.punch[id][i]);
 const punchLeft=id=>punchList(id).filter((_,i)=>!punchDone(id,i)).length;
 const HOME_ADDR='3205 NE 70th Terrace, Kansas City, MO';   // Tim's home base — every day starts and ends here unless he says otherwise
+const CRANE_ADDR='137 Rocky Mountain Rd, Crane, MO';
 const PLACES={home:{name:'🥷 Home base — Kansas City MO',ll:BASE,addr:HOME_ADDR},liberty:{name:'Liberty MO',ll:[39.2460,-94.4190]},
-  columbia:{name:'Columbia MO — dorm',ll:COL}};
+  columbia:{name:'Columbia MO — dorm',ll:COL},
+  // Tim's friend, where he sleeps Oct 8–15. Seeded on the middle of Crane; the browser
+  // resolves the real driveway on first load and saves it under S.geo['place:crane'].
+  crane:{name:'🛏️ Crane MO — friend\'s place',addr:CRANE_ADDR,ll:[36.9047,-93.5716],geo:0}};
 
 // Verified against the IDS field app (Phygii) with its Verizon filter on, 2026-09-11, from Tim's
 // own screen. 49 Verizon-channel locations matched the board by site number, every one of them.
@@ -797,6 +801,20 @@ const RUNS=[
    {date:'2026-09-17',startKey:'home',startTime:6,endKey:WICH,crew:'cody',pace:'split',ids:['2026-8338','2026-5683','2026-5425','2026-6188','2026-7264','2026-8145','2026-7702']},
    {date:'2026-09-18',startKey:WICH,startTime:8.5,endKey:WICH,crew:'cody',pace:'split',ids:['2026-8835','2026-8197','2026-1610','2026-7953','2026-3142','2026-0840','2026-8172','2026-1225','2026-4299','2026-8317','2026-7954']},
    {date:'2026-09-19',startKey:WICH,startTime:7.5,endKey:'home',crew:'cody',pace:'split',ids:['2026-5976','2026-1376','2026-7983','2026-8804','2026-4084']}]},
+ // The week at Crane. Every leg is measured the way the app measures one — straight line
+ // times the 1.22 road factor — so these hours are the hours, not an optimistic guess.
+ // Nothing shuts on him: every stop lands inside its own opening hours, longest day 11.6 h.
+ // Osage Beach, Saint Robert and Rolla are the three left standing: all on the I-44 / lake
+ // corridor, too far off any of these days to pay for themselves. Catch them another trip.
+ {id:'springfield-oct',name:'Springfield · Oct 8–15 · from Crane',sub:'35 stops · 3,500 pts · 1,543 road miles · down I-49, five days out of your friend’s place, home up US-65',
+  days:[
+   {date:'2026-10-08',startKey:'home',startTime:6.5,endKey:'crane',crew:null,ids:['2026-8299','2026-7142','2026-7338','2026-8119','2026-0726','2026-6322']},
+   {date:'2026-10-09',startKey:'crane',startTime:8,endKey:'crane',crew:null,ids:['2026-4178','2026-8321','2026-4135','2026-7930','2026-4815','2026-1173','2026-7988','2026-8706']},
+   {date:'2026-10-10',startKey:'crane',startTime:8,endKey:'crane',crew:null,ids:['2026-4909','2026-4041','2026-4866','2026-8541']},
+   {date:'2026-10-12',startKey:'crane',startTime:8,endKey:'crane',crew:null,ids:['2026-7301','2026-6488','2026-5511','2026-5761']},
+   {date:'2026-10-13',startKey:'crane',startTime:6.5,endKey:'crane',crew:null,ids:['2026-8615','2026-7036','2026-5941','2026-5726','2026-6230']},
+   {date:'2026-10-14',startKey:'crane',startTime:7.5,endKey:'crane',crew:null,ids:['2026-7439','2026-8406','2026-6398']},
+   {date:'2026-10-15',startKey:'crane',startTime:6,endKey:'home',crew:null,ids:['2026-6607','2026-5167','2026-7587','2026-7375','2026-7761']}]},
  {id:'wichita-solo',name:'Wichita · Sep 17–19 · solo',sub:'15 stops · 1,700 pts · down I-35, out I-70',
   days:[
    {date:'2026-09-17',startKey:'home',startTime:6.5,endKey:WICH,crew:null,ids:['2026-4522','2026-8888','2026-7106','2026-7954']},
@@ -808,7 +826,7 @@ function loadRun(r){
   if(clash.length&&!confirm('Replace what is already planned on '+clash.map(d=>niceDate(d.date)).join(', ')+'?'))return;
   S.days=S.days.filter(x=>!r.days.some(rd=>rd.date===x.date));
   r.days.forEach(rd=>{const d=Object.assign(blankDay(rd.date),{startKey:rd.startKey,startTime:rd.startTime,endKey:rd.endKey,crew:rd.crew||null,pace:rd.pace||'split',ids:rd.ids.filter(i=>BY[i])});
-    if(d.ids.length>2)d.ids=nnTwoOpt(d,d.ids);   // routed order, not list order
+    if(d.ids.length>2)d.ids=autoOrder(d);   // routed against the clock, not distance alone
     S.days.push(d)});
   const first=S.days.find(x=>x.date===r.days[0].date); S.active=S.days.indexOf(first); sortDays();
   r.days.forEach(rd=>{const d=S.days.find(x=>x.date===rd.date); if(d){sinkDone(d); bindRoute(d,true)}});   // every day of a run is bound the moment it lands
@@ -2382,6 +2400,8 @@ function applyCustom(){ (S.custom||[]).forEach(j=>{ if(!BY[j.id]){J.push(j);BY[j
    again. Offline it simply stays approximate and retries next load. */
 function applyGeo(){
   const hb=S.geo&&S.geo.home; if(Array.isArray(hb)&&isFinite(hb[0])){BASE[0]=hb[0];BASE[1]=hb[1]}
+  Object.entries(S.geo||{}).forEach(([k,ll])=>{ if(!k.startsWith('place:'))return;
+    const p=PLACES[k.slice(6)]; if(p&&Array.isArray(ll)&&isFinite(ll[0])){p.ll=[ll[0],ll[1]]; p.geo=1} });
   Object.entries(S.geo||{}).forEach(([id,ll])=>{const j=BY[id];
   if(j&&Array.isArray(ll)&&isFinite(ll[0])&&isFinite(ll[1])){j.lat=ll[0];j.lon=ll[1];j.geo=1;j.hs=String(j.hs||'').replace(/ · coords ≈ city[^·]*/,'')} }); }
 async function fixGeo(){
@@ -2389,6 +2409,13 @@ async function fixGeo(){
   if(!(S.geo&&S.geo.home)){
     const p=HOME_ADDR.split(', '); const ll=await geocode(p[0],p[1],p[2]);
     if(ll){S.geo.home=ll; BASE[0]=ll[0]; BASE[1]=ll[1]; dirty(); render()}
+    await new Promise(r=>setTimeout(r,1100));
+  }
+  // a baked place that shipped with a town-centre guess — put it on its own driveway
+  for(const [k,p] of Object.entries(PLACES)){
+    if(p.geo!==0||!p.addr||(S.geo&&S.geo['place:'+k]))continue;
+    const a=p.addr.split(', '); const ll=await geocode(a[0],a[1],a[2]);
+    if(ll){S.geo['place:'+k]=ll; p.ll=ll; p.geo=1; dirty(); render()}
     await new Promise(r=>setTimeout(r,1100));
   }
   const todo=J.filter(j=>j.geo===0&&!(S.geo&&S.geo[j.id]));
