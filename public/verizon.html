@@ -462,7 +462,7 @@ const IDS_LOADED=[
    '2026-5006','2026-5167','2026-5178','2026-5221','2026-5264','2026-5350','2026-5393',
    '2026-5401','2026-5436','2026-5444','2026-5479','2026-5511','2026-5640','2026-5740',
    '2026-5866','2026-6911','2026-6997','2026-7575','2026-7681','2026-8443','2026-8804'];
-let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},punch:{},locks:{},showBanked:false,here:{key:'home',time:8},nav:'plan',activeDate:'',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{},who:null,by:{},oath:null,mig:{},geo:{}};
+let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},punch:{},locks:{},showBanked:false,here:{key:'home',time:8},nav:'plan',activeDate:'',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{},who:null,by:{},oath:null,mig:{},geo:{},sync:{key:'',v:0,at:0}};
 const svc=j=>(S.sv&&S.sv[j.id]!==undefined)?S.sv[j.id]:j.sv;
 /* ---------- the equation ----------
    A crew mate costs 150 a day; every charge costs 30. Net is what the day is worth.
@@ -1982,6 +1982,93 @@ $('#themeBtn').onclick=()=>{const cur=document.documentElement.getAttribute('dat
 // v2: fresh start on 2026-09-04. Old v1 / legacy plans are intentionally NOT
 // migrated — the seed() below is the plan now.
 const LSKEY='ninja360-runsheet-v2';
+/* ---------- crew sync ----------
+   The plan lived in localStorage, which is per device: plan on the laptop, pick up the
+   phone, and the plan looks gone. This keeps one copy for the crew at /api/state.
+
+   SHARED is the work — the plan, the ledger, the book. Everything else is personal to the
+   device you are holding: who is signed in, which tab you are on, where you are standing.
+
+   Locks never lose: they are append-only facts with a person and a time on them, so a merge
+   unions them. Everything else is last-write-wins, and a write that would clobber somebody
+   else's is refused by the server and merged here first. */
+const SHARED=['days','sv','loaded','status','notes','timers','punch','locks','custom','places','chargeAt','by','geo','evRange','lastRequest','mig'];
+const syncOn=()=>!!(S.sync&&S.sync.key&&S.sync.key.length>=8);
+const takeShared=s=>{const o={}; SHARED.forEach(k=>{if(s[k]!==undefined)o[k]=s[k]}); return o};
+function mergeShared(remote){
+  if(!remote||typeof remote!=='object')return false;
+  const mine=S.locks||{}, theirs=remote.locks||{};
+  SHARED.forEach(k=>{if(remote[k]!==undefined)S[k]=remote[k]});
+  // a lock is a fact — keep every one, and the earliest stamp wins for the same stop
+  const locks=Object.assign({},theirs);
+  Object.entries(mine).forEach(([id,l])=>{const t=locks[id]; if(!t||(l&&l.at&&t.at&&l.at<t.at))locks[id]=l});
+  S.locks=locks;
+  S.days.forEach(d=>{if(!isFinite(d.startTime))d.startTime=8; if(!Array.isArray(d.ids))d.ids=[];
+    if(!('crew' in d)||(d.crew&&!CREW[d.crew]))d.crew=null; if(!PACE[d.pace])d.pace='split'});
+  applyCustom(); applyPlaces(); applyGeo();
+  const i=S.days.findIndex(d=>d.date===S.activeDate);
+  S.active=i>=0?i:Math.min(S.active,Math.max(0,S.days.length-1));
+  return true;
+}
+async function syncPull(quiet){
+  if(!syncOn())return null;
+  try{
+    const r=await fetch('/api/state',{headers:{'x-crew-key':S.sync.key},cache:'no-store'});
+    if(r.status===401){if(!quiet)toast('Crew key refused');return null}
+    if(r.status===503){if(!quiet)toast('Sync is not switched on yet');return null}
+    if(!r.ok)return null;
+    const j=await r.json();
+    if(j.state&&j.v>(S.sync.v||0)){mergeShared(j.state); S.sync.v=j.v; S.sync.at=Date.now(); dirtyLocal(); render(); if(!quiet)toast('Pulled the crew\'s latest')}
+    else if(j.v!==undefined)S.sync.v=Math.max(S.sync.v||0,j.v);
+    return j;
+  }catch(e){return null}
+}
+let PUSH=null, PUSHING=false;
+async function syncPush(){
+  if(!syncOn()||PUSHING)return;
+  PUSHING=true;
+  try{
+    for(let attempt=0;attempt<2;attempt++){
+      const r=await fetch('/api/state',{method:'PUT',headers:{'x-crew-key':S.sync.key,'content-type':'application/json'},
+        body:JSON.stringify({base:S.sync.v||0,by:S.who||'',state:takeShared(S)})});
+      if(r.ok){const j=await r.json(); S.sync.v=j.v; S.sync.at=Date.now(); dirtyLocal(); syncChipShow(); return}
+      if(r.status===409){const j=await r.json(); mergeShared(j.state); S.sync.v=j.v; dirtyLocal(); render(); continue}   // merge, then try once more
+      if(r.status===401){toast('Crew key refused');return}
+      if(r.status===503)return;
+      return;
+    }
+  }catch(e){ /* offline — the local save already happened */ }
+  finally{PUSHING=false; syncChipShow()}
+}
+const queuePush=()=>{if(!syncOn())return; clearTimeout(PUSH); PUSH=setTimeout(syncPush,1200)};
+function syncChipShow(){
+  if(!syncOn())return;
+  const ago=S.sync.at?Math.round((Date.now()-S.sync.at)/60000):null;
+  chip(PUSHING?'Syncing…':('Crew ✓ '+(ago===null?'':ago<1?'now':ago+'m')),'ok');
+}
+function syncSheet(){
+  const on=syncOn();
+  sheet('Sync across devices', on?'This device is on the crew copy. Same key on Cody\'s phone and you share one plan.'
+      :'Right now this device keeps its own copy. Give every device the same crew key and the plan, the ledger and the locks follow you.',
+    '<div class="fld" style="width:100%"><span class="lab">Crew key</span>'
+    +'<input id="syncKey" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="at least 8 characters" value="'+escHTML(S.sync.key||'')+'" style="width:100%"></div>'
+    +'<div class="hint" style="margin-top:6px">ninja360.org is a public address and this sheet carries location ids, addresses and points. The key is what keeps the crew copy private — pick something only you and Cody would know, and use it on every device.</div>'
+    +(on?'<div class="hint" style="margin-top:6px">Last synced: '+(S.sync.at?new Date(S.sync.at).toLocaleString():'not yet')+' · version '+(S.sync.v||0)+'</div>':'')
+    +'<div class="row" style="margin-top:10px"><button class="prim" id="syncSave">Use this key</button>'
+    +(on?'<button class="ghost" id="syncNow">Sync now</button><button class="ghost" id="syncOff" style="color:var(--bad)">Stop syncing</button>':'')+'</div>',
+    el=>{
+      el.querySelector('#syncSave').onclick=async()=>{
+        const k=el.querySelector('#syncKey').value.trim();
+        if(k.length<8){toast('At least 8 characters');return}
+        S.sync.key=k; S.sync.v=0; dirtyLocal(); closeSheet();
+        const j=await syncPull(true);
+        if(j&&j.state)toast('Joined the crew copy'); else {await syncPush(); toast('This device is now the crew copy')}
+        syncChipShow(); render();
+      };
+      const n=el.querySelector('#syncNow'); if(n)n.onclick=async()=>{closeSheet(); await syncPull(); await syncPush(); syncChipShow()};
+      const off=el.querySelector('#syncOff'); if(off)off.onclick=()=>{S.sync={key:'',v:0,at:0}; dirtyLocal(); closeSheet(); chip('Saved '+stampNow(),'ok'); toast('This device keeps its own copy again')};
+    });
+}
 function chip(txt,cls){const e=$('#syncChip');if(!e)return;e.textContent=txt;e.className='tbtn '+(cls||'')}
 function stampNow(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
 const NAVS=['now','plan','clusters','app','board'];
@@ -2020,22 +2107,23 @@ function mergeState(j){
     if(!PACE[d.pace])d.pace='split';
     if(!Array.isArray(d.ids))d.ids=[]});
   // Tue Sep 15 — Cameron with Gabe (TSC 2805, TCC 111911, Chillicothe on the way home). Once.
+  S.sync=(j.sync&&typeof j.sync==='object'&&!Array.isArray(j.sync))?j.sync:{key:'',v:0,at:0};   // crew sync: key is per device, never shared state
   S.geo=(j.geo&&typeof j.geo==='object'&&!Array.isArray(j.geo))?j.geo:{};   // coordinates the browser resolved for rows that shipped city-level
   S.mig=(j.mig&&typeof j.mig==='object'&&!Array.isArray(j.mig))?j.mig:{};   // one-time migrations already applied on this device
   if(!S.mig.cameron0915){ S.mig.cameron0915=1;
     if(!S.days.some(d=>d.date==='2026-09-15'))S.days.push(Object.assign(blankDay('2026-09-15'),{crew:'gabe',pace:'split',startTime:7,ids:['2026-9658','2026-4318','2026-5178'].filter(i=>BY[i])})) }
   return true;
 }
+function dirtyLocal(){
+  try{ localStorage.setItem(LSKEY,JSON.stringify(S)); }catch(e){chip('Save blocked','warn2')}
+}
 function dirty(){
   try{
     localStorage.setItem(LSKEY,JSON.stringify(S));
-    chip('Saved '+stampNow(),'ok');
+    if(syncOn()){queuePush(); syncChipShow()} else chip('Saved '+stampNow(),'ok');
   }catch(e){chip('Save blocked','warn2')}
 }
-$('#syncChip').onclick=()=>{
-  dirty();
-  toast('Saved on this device');
-};
+$('#syncChip').onclick=()=>syncSheet();
 /* ---------- custom jobs: pasted straight from the IDS email ----------
    Line format (tab-separated, as the email arrives):
      Client ⇥ Site ⇥ Address ⇥ City ⇥ ST ⇥ Name
@@ -2215,7 +2303,11 @@ function boot(){
   render();
   renderWho(); $('#whoChip').onclick=whoSheet;
   detectWho().then(ok=>{ if(!ok&&!S.who)whoSheet(); else if(needsOath())oathSheet() });
-  setTimeout(fixGeo,1500);     // after the first paint, quietly place any city-level rows   // like the Dojo: who are you → the Philosophy → I'm in
+  setTimeout(fixGeo,1500);     // after the first paint, quietly place any city-level rows
+  if(syncOn()){syncChipShow(); syncPull(true).then(()=>syncPush());
+    setInterval(()=>{if(document.visibilityState==='visible')syncPull(true)},120000);
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncPull(true)});
+  }   // like the Dojo: who are you → the Philosophy → I'm in
   chip(loaded?'Loaded your plan':'Ready to plan','ok');
 }
 function csvText(){
