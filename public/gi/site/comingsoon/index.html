@@ -89,6 +89,12 @@
     font-size:16px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
   }
   #intro-popup-close:hover{ background:rgba(0,0,0,.75); }
+  #intro-popup-sound{
+    position:absolute; bottom:8px; right:8px; z-index:2; width:34px; height:34px; border-radius:50%;
+    background:rgba(0,0,0,.55); color:var(--paper); border:1px solid rgba(255,255,255,.35);
+    font-size:15px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  #intro-popup-sound:hover{ background:rgba(0,0,0,.75); }
   .tagline{
     font-size:15px; max-width:520px; text-align:center; line-height:1.6; opacity:0.88;
   }
@@ -176,6 +182,7 @@
 <div id="intro-popup" role="dialog" aria-modal="true" aria-label="Show intro">
   <div class="intro-popup-frame">
     <button id="intro-popup-close" type="button" aria-label="Skip intro">✕</button>
+    <button id="intro-popup-sound" type="button" aria-label="Turn on sound" aria-pressed="false">🔇</button>
     <iframe id="gi-intro-player" src="https://www.youtube.com/embed/7ijIxOqyNCs?autoplay=1&mute=1&playsinline=1&controls=0&modestbranding=1&rel=0&enablejsapi=1" title="Generationally Incorrect — Intro" allow="autoplay; encrypted-media" allowfullscreen></iframe>
   </div>
 </div>
@@ -337,6 +344,7 @@
   (function () {
     var popup = document.getElementById('intro-popup');
     var closeBtn = document.getElementById('intro-popup-close');
+    var soundBtn = document.getElementById('intro-popup-sound');
     if (!popup || !closeBtn) return;
 
     function closePopup() {
@@ -355,8 +363,14 @@
     tag.src = 'https://www.youtube.com/iframe_api';
     document.head.appendChild(tag);
 
+    // Starts muted (mute=1 in the embed URL) because autoplay-with-sound is
+    // blocked on most browsers otherwise -- an unmuted autoplay attempt
+    // would just silently fail to play at all, with no controls visible to
+    // recover it. The sound button below unmutes on a real tap/click, which
+    // browsers do allow.
+    var player;
     window.onYouTubeIframeAPIReady = function () {
-      new YT.Player('gi-intro-player', {
+      player = new YT.Player('gi-intro-player', {
         events: {
           onStateChange: function (event) {
             if (event.data === YT.PlayerState.ENDED) closePopup();
@@ -364,6 +378,24 @@
         }
       });
     };
+
+    if (soundBtn) {
+      soundBtn.addEventListener('click', function () {
+        if (!player || typeof player.isMuted !== 'function') return;
+        if (player.isMuted()) {
+          player.unMute();
+          player.setVolume(100);
+          soundBtn.textContent = '🔊';
+          soundBtn.setAttribute('aria-label', 'Mute');
+          soundBtn.setAttribute('aria-pressed', 'true');
+        } else {
+          player.mute();
+          soundBtn.textContent = '🔇';
+          soundBtn.setAttribute('aria-label', 'Turn on sound');
+          soundBtn.setAttribute('aria-pressed', 'false');
+        }
+      });
+    }
   })();
 </script>
 </body>
