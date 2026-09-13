@@ -70,11 +70,25 @@
     border:2px solid var(--ink); box-shadow:4px 4px 0 var(--ink);
     text-transform:uppercase; font-weight:700; text-align:center;
   }
-  .video-frame{
-    width:100%; max-width:640px; border-radius:8px; overflow:hidden;
-    background:var(--ink); border:2px solid var(--rust);
+  /* Intro popup — plays once on load, closes itself when the video ends */
+  #intro-popup{
+    position:fixed; inset:0; z-index:500; background:rgba(21,20,18,.92);
+    display:flex; align-items:center; justify-content:center; padding:20px;
+    opacity:1; visibility:visible;
+    transition:opacity .25s ease, visibility 0s linear 0s;
   }
-  .video-frame iframe{ display:block; width:100%; aspect-ratio:16/9; border:0; }
+  #intro-popup.hide{ opacity:0; visibility:hidden; pointer-events:none; transition:opacity .25s ease, visibility 0s linear .25s; }
+  .intro-popup-frame{
+    position:relative; width:min(92vw,720px); border-radius:8px; overflow:hidden;
+    background:var(--ink); border:2px solid var(--rust); box-shadow:0 16px 44px rgba(0,0,0,.5);
+  }
+  .intro-popup-frame iframe{ display:block; width:100%; aspect-ratio:16/9; border:0; }
+  #intro-popup-close{
+    position:absolute; top:8px; right:8px; z-index:2; width:34px; height:34px; border-radius:50%;
+    background:rgba(0,0,0,.55); color:var(--paper); border:1px solid rgba(255,255,255,.35);
+    font-size:16px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  #intro-popup-close:hover{ background:rgba(0,0,0,.75); }
   .tagline{
     font-size:15px; max-width:520px; text-align:center; line-height:1.6; opacity:0.88;
   }
@@ -147,6 +161,12 @@
 </style>
 </head>
 <body>
+<div id="intro-popup" role="dialog" aria-modal="true" aria-label="Show intro">
+  <div class="intro-popup-frame">
+    <button id="intro-popup-close" type="button" aria-label="Skip intro">✕</button>
+    <iframe id="gi-intro-player" src="https://www.youtube.com/embed/7ijIxOqyNCs?autoplay=1&mute=1&playsinline=1&controls=0&modestbranding=1&rel=0&enablejsapi=1" title="Generationally Incorrect — Intro" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  </div>
+</div>
 <div class="wrap">
 
   <div class="logo-wrap">
@@ -159,10 +179,6 @@
   </div>
 
   <div class="kicker">A show for nobody who asked, and everybody who needed it</div>
-
-  <div class="video-frame">
-    <iframe src="https://www.youtube.com/embed/7ijIxOqyNCs?autoplay=1&mute=1&loop=1&playlist=7ijIxOqyNCs&controls=0&modestbranding=1&rel=0&playsinline=1" title="Generationally Incorrect — Intro" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-  </div>
 
   <p class="tagline">Silent Generation through Gen Z at one table, arguing the topics most shows dodge — money, marriage, religion, AI, cancel culture, work ethic. Relaxed, honest, entertaining and respectful.</p>
 
@@ -269,6 +285,41 @@
     document.addEventListener('click', function (e) {
       if (!e.target.closest('.logo-wrap')) toggle(false);
     });
+  })();
+
+  // Intro popup — plays once on load, closes itself when the video ends
+  // (or the visitor skips it). Uses the YouTube IFrame API to react to the
+  // real end of playback rather than guessing the clip's length.
+  (function () {
+    var popup = document.getElementById('intro-popup');
+    var closeBtn = document.getElementById('intro-popup-close');
+    if (!popup || !closeBtn) return;
+
+    function closePopup() {
+      popup.classList.add('hide');
+    }
+
+    closeBtn.addEventListener('click', closePopup);
+    popup.addEventListener('click', function (e) {
+      if (e.target === popup) closePopup(); // backdrop click
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closePopup();
+    });
+
+    var tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+
+    window.onYouTubeIframeAPIReady = function () {
+      new YT.Player('gi-intro-player', {
+        events: {
+          onStateChange: function (event) {
+            if (event.data === YT.PlayerState.ENDED) closePopup();
+          }
+        }
+      });
+    };
   })();
 </script>
 </body>
