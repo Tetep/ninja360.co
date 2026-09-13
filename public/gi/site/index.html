@@ -98,12 +98,23 @@
     font-size:13px; border-radius:999px; cursor:pointer; box-shadow:4px 4px 0 var(--ink);
     text-decoration:none; display:inline-block;
   }
+  .hosts-label{
+    font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; font-weight:700;
+    opacity:0.6; text-align:center;
+  }
   .hosts{ display:flex; gap:20px; justify-content:center; flex-wrap:wrap; }
   .host{ display:flex; flex-direction:column; align-items:center; gap:8px; }
-  .host img{
-    width:64px; height:64px; border-radius:999px; object-fit:cover;
-    border:2px solid var(--ink); background:var(--card);
+  .host-photo{
+    position:relative; width:64px; height:64px; border-radius:999px; overflow:hidden;
+    border:2px solid var(--ink); background:var(--card); cursor:pointer;
   }
+  .host-photo img{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    transition:opacity .2s ease;
+  }
+  .host-photo .host-face{ opacity:0; }
+  .host-photo:hover .host-logo, .host-photo.flipped .host-logo{ opacity:0; }
+  .host-photo:hover .host-face, .host-photo.flipped .host-face{ opacity:1; }
   .host span{ font-size:11px; font-weight:700; text-align:center; }
   .countdown{
     display:flex; gap:12px; flex-wrap:wrap; justify-content:center;
@@ -197,10 +208,30 @@
 
   <p class="tagline">Gen Z, Millennial, Gen X, and Boomer — one table, one loaded question per episode: money, religion, work, AI, cancel culture, the stuff most shows dodge. No script. Just the argument, until somebody's mind moves.</p>
 
+  <div class="hosts-label">Produced by these three companies — and these three men</div>
+
   <div class="hosts">
-    <div class="host"><img src="assets/erik.jpg" alt="Erik Juergensen"><span>Erik Juergensen</span></div>
-    <div class="host"><img src="assets/gabe.jpg" alt="Gabe Miller"><span>Gabe Miller</span></div>
-    <div class="host"><img src="assets/tim.jpg" alt="Tim Petet"><span>Tim Petet</span></div>
+    <div class="host">
+      <div class="host-photo" tabindex="0">
+        <img class="host-logo" src="assets/erik-logo.png" alt="Lucky 13 Studios">
+        <img class="host-face" src="assets/erik.jpg" alt="Erik Juergensen">
+      </div>
+      <span>Erik Juergensen</span>
+    </div>
+    <div class="host">
+      <div class="host-photo" tabindex="0">
+        <img class="host-logo" src="assets/gabe-logo.png" alt="Lucid Cinematics">
+        <img class="host-face" src="assets/gabe.jpg" alt="Gabe Miller">
+      </div>
+      <span>Gabe Miller</span>
+    </div>
+    <div class="host">
+      <div class="host-photo" tabindex="0">
+        <img class="host-logo" src="assets/tim-logo.jpg" alt="Ninja-360">
+        <img class="host-face" src="assets/tim.jpg" alt="Tim Petet">
+      </div>
+      <span>Tim Petet</span>
+    </div>
   </div>
 
   <a class="cta" href="https://links.ninja360.net/widget/form/p7FC8idY6HwpFud2p8kM" target="_blank" rel="noopener">Be on the Show</a>
@@ -286,6 +317,15 @@
       if (!e.target.closest('.logo-wrap')) toggle(false);
     });
   })();
+
+  // Host photo/logo swap — CSS :hover covers desktop; touch devices get no
+  // real hover, so tapping toggles a class that does the same thing.
+  document.querySelectorAll('.host-photo').forEach(function (el) {
+    el.addEventListener('click', function () { el.classList.toggle('flipped'); });
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.classList.toggle('flipped'); }
+    });
+  });
 
   // Intro popup — plays once on load, closes itself when the video ends
   // (or the visitor skips it). Uses the YouTube IFrame API to react to the
