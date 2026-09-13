@@ -74,7 +74,8 @@ header .sub{font-size:12px;color:var(--head-sub);margin-top:1px}
 .whochip .wn{font-weight:800;font-size:15px;line-height:1}
 .whochip.empty{border-style:dashed;opacity:.85}
 .shbtn.who{display:flex;align-items:center;gap:10px}
-.shbtn.who img{width:36px;height:36px;border-radius:50%;object-fit:cover;background:#111;flex:none}
+.shbtn.who img{width:52px;height:52px;border-radius:50%;object-fit:cover;background:#111;flex:none;border:2px solid var(--line2)}
+.shbtn.who.cur img{border-color:var(--accent)}
 .bychip{width:16px;height:16px;border-radius:50%;object-fit:cover;vertical-align:-3px;margin-left:4px;background:#111}
 #syncChip{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px}
 #syncChip.ok{color:#9CD8B4;border-color:#3E594A}
@@ -263,7 +264,19 @@ svg{width:100%;height:auto;display:block}
 .chg.md .star{top:-7px;right:-7px;font-size:10px}
 .leg .ci.fav{box-shadow:0 0 0 1.5px #FFC220}
 /* runs — whole trips, one tap */
+.zrow{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 2px}
+.zchip{text-align:left;padding:6px 10px;border:1px solid var(--line2);border-radius:10px;background:var(--surf2);
+  color:var(--ink);font-size:13px;font-weight:600;line-height:1.25}
+.zchip small{display:block;font-weight:400;font-size:11px;color:var(--ink3)}
+.zchip.mid{border-style:dashed}
+.zchip.on{border-color:var(--accent);background:var(--accent-soft);border-style:solid}
 .runs{display:flex;flex-direction:column;gap:6px}
+.runbtn.bind b{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+.bindline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 2px;padding:7px 11px;
+  border:1px solid var(--line2);border-radius:10px;background:var(--surf2)}
+.bindline b{font-size:13.5px}
+.tm .bk{color:var(--money);font-weight:700;font-size:11px;letter-spacing:.4px;text-transform:uppercase}
+.bindline button{padding:4px 9px;min-height:28px;font-size:12px}
 .runbtn{text-align:left;padding:9px 12px;border:1px solid var(--line2);border-radius:10px;background:var(--surf2);color:var(--ink);font-size:14px}
 .runbtn small{display:block;color:var(--ink2);font-size:12px;margin-top:2px}
 .runbtn.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft,rgba(244,121,32,.25)) inset}
@@ -336,6 +349,11 @@ table.pl [data-lock]:not(.go){border-color:var(--accent);color:var(--accent)}
 .sheet .grab{width:36px;height:4px;border-radius:2px;background:var(--line2);margin:2px auto 10px}
 .sheet.tall{max-height:88vh;overflow:auto;-webkit-overflow-scrolling:touch}
 /* the Philosophy — three lanes */
+.oath-crest{display:flex;align-items:center;gap:14px;padding:10px 4px 14px;border-bottom:1px solid var(--line)}
+.oath-crest img{width:84px;height:84px;border-radius:50%;object-fit:cover;background:#111;flex:none;
+  border:2px solid var(--accent);box-shadow:0 3px 10px rgba(0,0,0,.3)}
+.oath-crest b{display:block;font-size:17px;line-height:1.2;margin-top:1px}
+.oath-crest .cr{font-size:13px;color:var(--ink2)}
 .oath .ph{position:relative;border-left:3px solid var(--accent);padding:7px 44px 8px 14px;margin:10px 0;background:var(--surf2);border-radius:0 10px 10px 0}
 .oath .phn{position:absolute;right:12px;top:8px;font:800 12px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--accent);letter-spacing:.1em}
 .oath h4{margin:0 0 2px;font-size:16px;line-height:1.15}
@@ -466,7 +484,7 @@ const IDS_LOADED=[
    '2026-5006','2026-5167','2026-5178','2026-5221','2026-5264','2026-5350','2026-5393',
    '2026-5401','2026-5436','2026-5444','2026-5479','2026-5511','2026-5640','2026-5740',
    '2026-5866','2026-6911','2026-6997','2026-7575','2026-7681','2026-8443','2026-8804'];
-let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},punch:{},locks:{},showBanked:false,here:{key:'home',time:8},nav:'plan',activeDate:'',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{},who:null,by:{},oath:null,mig:{},geo:{},sync:{key:'',v:0,at:0}};
+let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},punch:{},locks:{},showBanked:false,here:{key:'home',time:8},nav:'plan',activeDate:'',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{},who:null,by:{},oath:null,mig:{},geo:{},sync:{key:'',v:0,at:0},binds:[]};
 const svc=j=>(S.sv&&S.sv[j.id]!==undefined)?S.sv[j.id]:j.sv;
 /* ---------- the equation ----------
    A crew mate costs 150 a day; every charge costs 30. Net is what the day is worth.
@@ -477,6 +495,11 @@ const paceMult=d=>(d&&d.crew&&CREW[d.crew])?(PACE[d.pace]||PACE.split).m:1;
 const dayCosts=d=>({crew:d&&d.crew&&CREW[d.crew]?COST.crewDay:0, charge:COST.charge*((d&&d.ids)||[]).filter(id=>S.chargeAt&&S.chargeAt[id]).length});
 const stat=id=>S.status[id]||'todo';
 const done=id=>stat(id)!=='todo';
+// Shot = finished in the field on THIS run. Tim's own lock says so outright — mark-done
+// writes one. A bare status with no lock behind it is history carried in from the book,
+// and on a Return Owed job that history is exactly the thing that still owes a go-back,
+// so it stays in the route. An IDS-implied lock is never "shot" either.
+const shot=id=>!!(S.locks&&S.locks[id])||(done(id)&&!(BY[id]&&BY[id].st==='Return Owed'));
 /* ---------- TRUTH: the lock ledger ---------- */
 /* A point is TRUE when the location is LOCKED — Tim was there, it is shot, it counts.
    Two ways a job is locked:
@@ -532,9 +555,16 @@ function beltFor(p){let cur=BELTS[0],next=null;
    (/cdn-cgi/access/get-identity); match by email, then by name. Off Access, or
    for an email not listed yet, a tap on the header chip picks — and sticks. */
 const CREW={
-  tim: {short:'Tim', name:'Tim Petet',      role:'Sensei · Head Ninja',     emblem:'/assets/crew/web/crew-tim-emblem-96.webp',  emails:[]},
-  gabe:{short:'Gabe',name:'Gabriel Miller', role:'Creative · Video Ninja',  emblem:'/assets/crew/web/crew-gabe-emblem-96.webp', emails:[]},
-  cody:{short:'Cody',name:'Cody Petet',     role:'Field Ninja · Photo & Driver', emblem:'/assets/crew/web/crew-cody-emblem-96.webp', emails:[]}};
+  tim: {short:'Tim', name:'Tim Petet',      role:'Sensei · Head Ninja',          emblem:'/assets/crew/web/crew-tim-emblem-96.webp',
+        badge:'/assets/crew/web/crew-tim-emblem-320.webp',  banner:'/assets/crew/crew-tim-banner.png',  emails:[]},
+  gabe:{short:'Gabe',name:'Gabriel Miller', role:'Creative · Video Ninja',       emblem:'/assets/crew/web/crew-gabe-emblem-96.webp',
+        badge:'/assets/crew/web/crew-gabe-emblem-320.webp', banner:'/assets/crew/crew-gabe-banner.png', emails:[]},
+  cody:{short:'Cody',name:'Cody Petet',     role:'Field Ninja · Photo & Driver', emblem:'/assets/crew/web/crew-cody-emblem-96.webp',
+        badge:'/assets/crew/web/crew-cody-emblem-320.webp', banner:'/assets/crew/web/crew-cody-emblem-320.webp', emails:[]}};
+// the badge is the person: 96px on a pin, 320px on the agreement screen, the full
+// banner across the hero. Swap the file by name and every one of them follows.
+const badgeOf =id=>{const c=CREW[id]||CREW.tim; return c.badge||c.emblem};
+const bannerOf=id=>{const c=CREW[id]||CREW.tim; return c.banner||c.badge||c.emblem};
 const who=()=>S.who&&CREW[S.who]?CREW[S.who]:null;
 function matchCrew(email,name){
   const e=String(email||'').toLowerCase(), n=String(name||'').toLowerCase();
@@ -558,7 +588,7 @@ function renderWho(){
 }
 function whoSheet(){
   sheet('Who\'s running today?','Your emblem goes on every stop you mark done.',
-    '<div class="shlist">'+Object.entries(CREW).map(([id,c])=>'<button class="shbtn who'+(id===S.who?' cur':'')+'" data-who="'+id+'"><img src="'+c.emblem+'" alt="">'+escHTML(c.name)+' <small>'+escHTML(c.role)+'</small></button>').join('')+'</div><button class="ghost" id="whoPhil" style="width:100%;margin-top:8px">The Philosophy of the Ninja 360</button>',
+    '<div class="shlist">'+Object.entries(CREW).map(([id,c])=>'<button class="shbtn who'+(id===S.who?' cur':'')+'" data-who="'+id+'"><img src="'+badgeOf(id)+'" alt="">'+escHTML(c.name)+' <small>'+escHTML(c.role)+'</small></button>').join('')+'</div><button class="ghost" id="whoPhil" style="width:100%;margin-top:8px">The Philosophy of the Ninja 360</button>',
     el=>{el.querySelectorAll('[data-who]').forEach(b=>b.onclick=()=>{S.who=b.dataset.who; dirty(); closeSheet(); renderWho(); render(); if(!needsOath())toast(CREW[S.who].short+' is running today'); afterSignIn()});   // the call is the confirmation
         el.querySelector('#whoPhil').onclick=()=>oathSheet()});
 }
@@ -578,7 +608,8 @@ function oathSheet(){
   const c=who(), nm=c?c.short:'Ninja';
   if(needsOath())showGate();   // under the sheet: any way out but "Yes" lands here
   sheet('The Philosophy of the Ninja 360','Every project, every pitch, every crew decision answers to one of these — or it doesn’t get a lane.',
-    '<div class="oath">'+PHIL.map(p=>'<div class="ph"><div class="phn">'+p.n+'</div><h4>'+escHTML(p.t)+'</h4><div class="lead">'+escHTML(p.lead)+'</div><ul>'+p.pts.map(x=>'<li>'+escHTML(x)+'</li>').join('')+'</ul></div>').join('')
+    (c?'<div class="oath-crest"><img src="'+badgeOf(S.who)+'" alt="'+escHTML(c.name)+'"><div><div class="lab">'+(needsOath()?'Signing as':'Signed in as')+'</div><b>'+escHTML(c.name)+'</b><div class="cr">'+escHTML(c.role)+'</div></div></div>':'')
+    +'<div class="oath">'+PHIL.map(p=>'<div class="ph"><div class="phn">'+p.n+'</div><h4>'+escHTML(p.t)+'</h4><div class="lead">'+escHTML(p.lead)+'</div><ul>'+p.pts.map(x=>'<li>'+escHTML(x)+'</li>').join('')+'</ul></div>').join('')
     +'</div><div class="oath-daily"><div class="lab">Basic daily responsibilities</div>'
     +'<div>Be Positive, Be Professional, Be Humble.</div><div>Be Open and Flexible.</div><div class="fs">Finish Strong.</div></div>'
     +(needsOath()?'<div class="oath-ask"><b>Do you accept?</b><div>Will you commit to being “Curious and not Judgemental”?</div></div>'
@@ -603,11 +634,21 @@ function showGate(){
   document.body.appendChild(g); g.querySelector('#gateRead').onclick=()=>oathSheet();
 }
 function hideGate(){const g=$('#gate'); if(g)g.remove()}
-// one place sets status so the attribution always follows it
+// One place sets status, so the attribution, the lock and the Scoreboard always follow it.
+//
+// In the car he does ONE thing: check it off. That has to mean all of it — the stop reads
+// done on every tab including Planning, the pin turns green on the map, and the points
+// land on the Scoreboard. So a status of anything but "todo" locks the job, and checking
+// it back off unlocks it again. An IDS-implied lock is never touched: those are their
+// facts, not ours, and lockJob only ever writes and deletes S.locks[id].
 function setStatus(id,st){
-  if(!st||st==='todo'){delete S.status[id]; delete S.by[id]; return}
+  const j=BY[id];
+  if(!st||st==='todo'){delete S.status[id]; delete S.by[id];
+    if(S.locks&&S.locks[id])lockJob(id,false);   // the point comes back off the board too
+    return}
   const was=done(id); S.status[id]=st;
   if(!was||!S.by[id]){ if(S.who)S.by[id]=S.who; }   // first mark-done stamps the shooter; a status bump later keeps it
+  if(j&&!j.wp&&!(S.locks&&S.locks[id]))lockJob(id,true);
 }
 const byEmblem=id=>{const c=S.by[id]&&CREW[S.by[id]]; return c?c.emblem:null};
 function jobTimerState(id){const rec=S.timers&&S.timers[id]; if(!rec)return{elapsedMs:0,running:false,label:'00:00:00'}; const elapsedMs=(rec.elapsedMs||0)+(rec.startedAt?Date.now()-rec.startedAt:0); return{elapsedMs,running:!!rec.startedAt,label:formatDuration(elapsedMs)};}
@@ -667,7 +708,10 @@ function simulate(d){
   // battery: leave with startCharge% of a real-world full charge; a "charge here" stop refills it
   let range=(S.evRange||260)*((isFinite(d.startCharge)?d.startCharge:100)/100), lowN=0;
   const pm=paceMult(d);   // a crew mate shortens every stop
-  d.ids.forEach(id=>{const j=BY[id]; if(!j)return;
+  // A stop he has already shot costs no drive and no clock — the projection is the run that
+  // is LEFT. It still counts for pay, and it still shows, at the bottom, marked banked.
+  const live=d.ids.filter(id=>BY[id]&&!shot(id)), past=d.ids.filter(id=>BY[id]&&shot(id));
+  live.forEach(id=>{const j=BY[id]; if(!j)return;
     const m=mi(cur,LL(j)), h=drive(m); t+=h; miles+=m; drv+=h;
     range-=m; const low=range<evReserve(); if(low)lowN++;
     const wait=Math.max(0,j.o-t); t+=wait;
@@ -675,10 +719,13 @@ function simulate(d){
     rows.push({id,arr,fin,leg:m,wait,late:fin>j.x,range,low,charged});
     if(charged)range=S.evRange||260;
     svcTot+=svc(j)*pm; t=fin; cur=LL(j)});
-  const tail=d.ids.length?mi(cur,placeLL(d.endKey)):0;
+  const tail=live.length?mi(cur,placeLL(d.endKey)):0;
   drv+=drive(tail); miles+=tail; t+=drive(tail);
   const rangeEnd=range-tail;
-  return {rows,tail,end:t,miles,drv,svc:svcTot,rangeEnd,lowN:lowN+(d.ids.length&&rangeEnd<evReserve()?1:0),
+  past.forEach(id=>rows.push({id,arr:0,fin:0,leg:0,wait:0,late:false,range:rangeEnd,low:false,
+    charged:!!(S.chargeAt&&S.chargeAt[id]),bank:true}));
+  return {rows,tail,end:t,miles,drv,svc:svcTot,rangeEnd,live:live.length,past:past.length,
+    lowN:lowN+(live.length&&rangeEnd<evReserve()?1:0),
     pay:d.ids.reduce((a,id)=>a+(BY[id]?BY[id].p:0),0),
     costs:dayCosts(d), get net(){return this.pay-this.costs.crew-this.costs.charge},
     span:t-d.startTime, bad:rows.filter(r=>r.late).length};
@@ -709,10 +756,30 @@ function polish(d,seq){let cur=seq.slice(),cs=score(d,cur),g=0;
         const sc=score(d,t);if(better(sc,bc)){bc=sc;bs=t}}}
     if(!bs)break;cur=bs;cs=bc}
   return{seq:cur,sc:cs}}
-function autoOrder(d){const ids=[...d.ids];if(ids.length<2)return ids;
+function autoOrder(d){
+  const ids=d.ids.filter(id=>!shot(id)), past=d.ids.filter(id=>shot(id));   // never re-route what is shot
+  if(ids.length<2)return ids.concat(past);
   const seeds=[ids,nnTwoOpt(d,ids),ids.slice().sort((a,b)=>BY[a].o-BY[b].o||BY[a].x-BY[b].x)];
   let win=null;seeds.forEach(sd=>{const r=polish(d,sd);if(!win||better(r.sc,win.sc))win=r});
-  return win.seq}
+  return win.seq.concat(past)}
+/* ---------- check it off and the list gets out of the way ----------
+   Get in the car, mark it done, next stop. The one he just shot drops to the bottom of
+   the day so what is left is always on top in route order, and the day's binding
+   re-stamps at the same moment — the crew copy shows the run as it actually stands. */
+function sinkDone(d){
+  if(!d||!Array.isArray(d.ids))return false;
+  const next=d.ids.filter(id=>!shot(id)).concat(d.ids.filter(id=>shot(id)));
+  if(next.join()===d.ids.join())return false;
+  d.ids=next; return true;
+}
+const sinkAll=()=>S.days.forEach(sinkDone);
+function afterFieldMark(id){
+  const names=[], cur=day();
+  S.days.forEach(d=>{ if(!d.ids.includes(id))return;
+    sinkDone(d); if(!d.ids.length)return;
+    bindRoute(d,true); if(d===cur)names.unshift(bindName(d)); else names.push(bindName(d)) });
+  return names;
+}
 /* ---------- assignment helpers ---------- */
 function assigned(){const m={};S.days.forEach((d,i)=>d.ids.forEach(id=>m[id]=i));return m}
 function unscheduled(){const a=assigned();
@@ -744,7 +811,65 @@ function loadRun(r){
     if(d.ids.length>2)d.ids=nnTwoOpt(d,d.ids);   // routed order, not list order
     S.days.push(d)});
   const first=S.days.find(x=>x.date===r.days[0].date); S.active=S.days.indexOf(first); sortDays();
+  r.days.forEach(rd=>{const d=S.days.find(x=>x.date===rd.date); if(d){sinkDone(d); bindRoute(d,true)}});   // every day of a run is bound the moment it lands
   dirty(); render(); toast('Loaded: '+r.name);
+}
+/* ---------- route bindings ----------
+   One name for every route, the same on every device and in any text message:
+
+       DATE : TIME : WHO        2026-09-17:06:00:W/Cody
+                                2026-09-18:08:30:Solo
+
+   The name is built from the day itself, so it cannot drift from what is planned —
+   change the date, the leave time or the crew mate and the binding is a new one.
+   Bind the same route twice and it overwrites in place. Bindings ride the crew sync,
+   so the latest one is the latest one wherever you pick up a phone. */
+const bindCrew=d=>(d&&d.crew&&CREW[d.crew])?'W/'+CREW[d.crew].short:'Solo';
+const bindName=d=>((d&&d.date)||'no-date')+':'+hhmm(d?d.startTime:8)+':'+bindCrew(d);
+function bindRoute(d,quiet){
+  if(!d||!d.ids.length)return null;
+  const s=simulate(d);
+  const b={id:bindName(d),date:d.date||'',time:hhmm(d.startTime),st:d.startTime,crew:d.crew||null,
+    pace:d.pace||'split',startKey:d.startKey,endKey:d.endKey,startCharge:d.startCharge,
+    ids:d.ids.slice(),stops:d.ids.length,shot:d.ids.filter(id=>shot(id)).length,
+    pay:Math.round(s.pay),net:Math.round(s.net),
+    at:Date.now(),by:S.who||''};
+  if(!Array.isArray(S.binds))S.binds=[];
+  S.binds=S.binds.filter(x=>x.id!==b.id); S.binds.unshift(b);
+  if(S.binds.length>60)S.binds.length=60;
+  if(!quiet)toast('Bound '+b.id);
+  return b;
+}
+const bindList=()=>(Array.isArray(S.binds)?S.binds:[]).slice().sort((a,b)=>(b.at||0)-(a.at||0));
+const latestBind=()=>bindList()[0]||null;
+// "7 stops · 3 shot · 4 left" — what the binding stood at when it last re-stamped
+const bindProg=b=>b.stops+' stop'+(b.stops===1?'':'s')+(b.shot?' · '+b.shot+' shot · '+(b.stops-b.shot)+' left':'');
+const bindAgo=b=>{const m=Math.round((Date.now()-(b.at||0))/60000);
+  return m<1?'just now':m<60?m+'m ago':m<1440?Math.round(m/60)+'h ago':Math.round(m/1440)+'d ago'};
+function pullBind(id){
+  const b=(Array.isArray(S.binds)?S.binds:[]).find(x=>x.id===id); if(!b){toast('That binding is gone');return}
+  let i=S.days.findIndex(d=>d.date===b.date);
+  if(i<0){S.days.push(blankDay(b.date)); i=S.days.length-1}
+  Object.assign(S.days[i],{startKey:b.startKey,startTime:isFinite(b.st)?b.st:8,endKey:b.endKey,
+    crew:(b.crew&&CREW[b.crew])?b.crew:null,pace:PACE[b.pace]?b.pace:'split',
+    startCharge:isFinite(b.startCharge)?b.startCharge:100,ids:b.ids.filter(x=>BY[x])});
+  sortDays(); setDay(S.days.findIndex(d=>d.date===b.date));
+  S.nav='plan'; dirty(); render(); toast('Pulled up '+b.id);
+}
+function bindSheet(){
+  const rows=bindList();
+  sheet('Route bindings','DATE:TIME:WHO — every route named the same way. Tap one to pull it onto its day.',
+    (rows.length?'<div class="runs">'+rows.map((b,k)=>'<button class="runbtn bind'+(k===0?' on':'')+'" data-pull="'+escHTML(b.id)+'"><b>'+(k===0?'★ ':'')+escHTML(b.id)+'</b><small>'+bindProg(b)+' · '+fmt(b.pay)+(b.net!==b.pay?' ('+fmt(b.net)+' net)':'')+' · '+bindAgo(b)+(b.by&&CREW[b.by]?' by '+escHTML(CREW[b.by].short):'')+'</small></button>').join('')+'</div>'
+      :'<div class="empty">Nothing bound yet. Plan a day, then Bind this route.</div>')
+    +'<div class="row" style="margin-top:10px"><button class="ghost" id="bdCopy">Copy the names</button>'
+    +(rows.length?'<button class="ghost danger" id="bdClear">Clear all</button>':'')+'</div>',
+    el=>{el.querySelectorAll('[data-pull]').forEach(b=>b.onclick=()=>{closeSheet(); pullBind(b.dataset.pull)});
+      el.querySelector('#bdCopy').onclick=async()=>{
+        const t=rows.map(b=>b.id+'  —  '+b.stops+' stops, '+fmt(b.pay)).join('\n');
+        toast(await copyText(t)?'Copied '+rows.length+' binding'+(rows.length===1?'':'s'):'Copy blocked')};
+      const cl=el.querySelector('#bdClear');
+      if(cl)cl.onclick=()=>{if(!confirm('Delete all '+rows.length+' bindings? The days stay put.'))return;
+        S.binds=[]; closeSheet(); dirty(); render(); toast('Bindings cleared')}});
 }
 const todayISO=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 function setDay(i){S.active=Math.max(0,Math.min(i,S.days.length-1));
@@ -859,7 +984,7 @@ function renderNow(){
   <div id="brandHero" class="brand-hero">
     <div class="brand-video-frame">
       <video id="brandVideo" autoplay playsinline preload="auto" src="/assets/video/ninja-hero-16x9-V01.mp4" aria-label="Ninja-360 intro video"></video>
-      <img class="brand-logo-overlay" src="/assets/crew/crew-tim-banner.png" alt="Ninja-360 Sensei / Head Ninja logo">
+      <img class="brand-logo-overlay" src="${bannerOf(S.who)}" alt="${escHTML(who()?who().name+' — '+who().role:'Ninja 360')}">
     </div>
   </div>
   <div class="card">
@@ -887,7 +1012,8 @@ function renderNow(){
       ${d.date===todayISO()?'<span class="badge v">today</span>':'<span class="badge warn">not today</span>'}
     </div>
   </div>
-  ${d.ids.length?`<h2>Your run &mdash; ${fmt(s.pay)}${s.net!==s.pay?' ('+fmt(s.net)+' net)':''}, finish ${hhmm(s.end)}${d.crew&&CREW[d.crew]?' · with '+escHTML(CREW[d.crew].short):''}</h2>
+  ${d.ids.length?`<div class="bindline"><span class="lab">Binding</span><b class="mono">${escHTML(bindName(d))}</b><button class="ghost" id="bindCopyNow">Copy</button></div>
+  <h2>Your run &mdash; ${fmt(s.pay)}${s.net!==s.pay?' ('+fmt(s.net)+' net)':''}, finish ${hhmm(s.end)}${d.crew&&CREW[d.crew]?' · with '+escHTML(CREW[d.crew].short):''}</h2>
   <div class="row" style="margin:2px 0 8px"><button class="prim" id="navDayNow">🧭 Navigate this day</button>
     ${dayNotLoaded(d).length?'<button class="ghost" id="askDayNow" style="color:var(--accent);border-color:var(--accent)">📮 '+dayNotLoaded(d).length+' not in app — ask IDS</button>':'<span class="badge v" style="align-self:center">every stop is in the app</span>'}</div>
   <div id="nowRoute"></div>`
@@ -941,7 +1067,8 @@ function renderNow(){
   };
   const rd=$('#runDay'); if(rd)rd.onchange=e=>{setDay(+e.target.value);render();dirty()};
   const ad=$('#askDayNow'); if(ad)ad.onclick=()=>dayAskSheet(d);
-  const nd=$('#navDayNow'); if(nd)nd.onclick=()=>openDayRoute(d);
+  const nd=$('#navDayNow'); if(nd)nd.onclick=()=>{bindRoute(d,true); dirty(); openDayRoute(d)};
+  const bc=$('#bindCopyNow'); if(bc)bc.onclick=async()=>toast(await copyText(bindName(d))?'Copied '+bindName(d):'Copy blocked');
   $('#nowList').innerHTML = open.slice(0,14).map(r=>{const j=r.j; const timer=jobTimerState(j.id), note=jobNoteText(j.id);
     return `<div class="pj">
       <button class="pjbtn" data-info="${j.id}" title="${escHTML(jobTooltip(j.id))}"><div class="nm">${j.n}${S.loaded[j.id]?'':'<span class="badge warn">not in app</span>'}${note?'<span class="badge acc">note</span>':''}</div>
@@ -969,17 +1096,17 @@ function stopCards(d,s){
     const wb=r.wait>0.02?`<span class="badge warn">wait ${Math.round(r.wait*60)}m</span>`:'';
     const ab=S.loaded[r.id]?'':'<span class="badge warn">not in app</span>';
     const db=done(r.id)?`<span class="badge v">${stat(r.id)}${byEmblem(r.id)?'<img class="bychip" src="'+byEmblem(r.id)+'" alt="'+escHTML(CREW[S.by[r.id]].short)+'" title="'+escHTML(CREW[S.by[r.id]].short)+'">':''}</span>`:'';
-    const rb=r.range<0?'<span class="badge bad">⚡ charge before this</span>':(r.low?'<span class="badge warn">🔋 under 10%</span>':'');
+    const rb=r.bank?'':(r.range<0?'<span class="badge bad">⚡ charge before this</span>':(r.low?'<span class="badge warn">🔋 under 10%</span>':''));
     const cb=r.charged?'<span class="badge v">⚡ charging here</span>':'';
     // the e‑scooter play: while the car drinks, what else is within a couple of miles?
     const near=r.charged?J.filter(o=>o!==j&&!o.wp&&!done(o.id)&&!HOLD(o)&&isFinite(o.lat)&&mi(LL(j),LL(o))<=2).length:0;
     const batc=r.range<0?'--bad':r.low?'--warn':'--ink2';
     const timer=jobTimerState(r.id); const note=jobNoteText(r.id);
     return `<div class="stop ${cls}" title="${escHTML(jobTooltip(r.id))}">
-      <div class="tm mono">${hhmm(r.arr)}<span class="to">${hhmm(r.fin)}</span></div>
+      <div class="tm mono">${r.bank?'<span class="bk">shot</span>':hhmm(r.arr)+'<span class="to">'+hhmm(r.fin)+'</span>'}</div>
       <div><div class="nm">${j.n}${lb}${wb}${rb}${cb}${ab}${db}${note?'<span class="badge acc">note</span>':''}</div>
         <div class="ad">${j.a}, ${j.c}, ${j.s}</div>
-        <div class="hrs mono">${wp?'any time':hhmm(j.o)+'–'+hhmm(j.x)} ${hb} · ${r.leg.toFixed(1)} mi · <span style="color:var(${batc})">🔋 ${evPct(r.range)}% · ${Math.round(r.range)} mi</span> ·<button class="tset" data-sv="${r.id}">${Math.round(svc(j)*paceMult(d)*60)} min on site${S.sv[r.id]!==undefined?' ✎':''}</button></div>
+        <div class="hrs mono">${wp?'any time':hhmm(j.o)+'–'+hhmm(j.x)} ${hb} · ${r.bank?'banked':r.leg.toFixed(1)+' mi'} · ${r.bank?'':'<span style="color:var('+batc+')">🔋 '+evPct(r.range)+'% · '+Math.round(r.range)+' mi</span> · '}<button class="tset" data-sv="${r.id}">${Math.round(svc(j)*paceMult(d)*60)} min on site${S.sv[r.id]!==undefined?' ✎':''}</button></div>
         <div class="job-note mono"><span class="live-timer ${timer.running?'running':(timer.elapsedMs?'':'idle')}" data-live-timer="${r.id}">${timer.label}${timer.running?' • run':''}</span>${note?`<span style="display:inline-block;margin-left:6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;">${escHTML(note)}</span>`:''}</div>
         ${r.charged?`<div class="hint" style="margin:4px 0 2px">Charging window ≈ ${Math.round(svc(j)*60)} min on site · ${near} other stop${near===1?'':'s'} within 2 mi — scooter range.</div>`:''}
         <div class="acts">
@@ -1016,13 +1143,17 @@ function wireStops(){
     if(S.chargeAt[id])delete S.chargeAt[id]; else S.chargeAt[id]=1;
     render();dirty(); toast(S.chargeAt[id]?'Charging here — the battery reads full from this stop on':'Not charging here')});
   $$('[data-done]').forEach(b=>b.onclick=()=>{const id=b.dataset.done;
-    setStatus(id,done(id)?'todo':'captured'); render();dirty()});
+    const was=done(id); setStatus(id,was?'todo':'captured');
+    const nm=afterFieldMark(id); render();dirty();
+    toast(was?('Back on the run — '+BY[id].c+' · '+fmt(BY[id].p)+' off the board')
+            :('Done — '+fmt(BY[id].p)+' banked · '+BY[id].c+' to the bottom'+(nm[0]?' · '+nm[0]:'')),
+      {label:'Undo',fn:()=>{setStatus(id,was?'captured':'todo');afterFieldMark(id);render();dirty()}})});
   $$('[data-sv]').forEach(b=>b.onclick=()=>svSheet(b.dataset.sv));
   $$('#stops [data-lockr]').forEach(b=>b.onclick=()=>{
     const id=b.dataset.lockr,on=b.dataset.on==='1';
-    lockJob(id,on);render();dirty();
-    toast(on?('🔒 Locked '+fmt(BY[id].p)+' — '+BY[id].c):'Unlocked',
-      {label:'Undo',fn:()=>{lockJob(id,!on);render();dirty()}});});
+    setStatus(id,on?'captured':'todo');afterFieldMark(id);render();dirty();
+    toast(on?('🔒 Locked '+fmt(BY[id].p)+' — '+BY[id].c+' · on the Scoreboard'):'Unlocked — back on the run',
+      {label:'Undo',fn:()=>{setStatus(id,on?'todo':'captured');afterFieldMark(id);render();dirty()}});});
   $$('[data-timer]').forEach(b=>b.onclick=()=>{const id=b.dataset.timer; toggleTimer(id); render(); dirty(); toast(jobTimerState(id).running?'Timer started':'Timer stopped');});
   $$('[data-note]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.note));
 }
@@ -1129,7 +1260,7 @@ function jobSheet(id){
      el.querySelector('#jsDirChg').onclick=()=>window.open(chargerDirUrl(j),'_blank','noopener');
      el.querySelector('#jsTimer').onclick=()=>{toggleTimer(id); closeSheet(); render(); dirty(); toast(jobTimerState(id).running?'Timer started':'Timer stopped');};
      el.querySelector('#jsReset').onclick=()=>{resetTimer(id); closeSheet(); render(); dirty(); toast('Timer reset');};
-     el.querySelector('#jsStat').onchange=e=>{setStatus(id,e.target.value);render();dirty()};
+     el.querySelector('#jsStat').onchange=e=>{setStatus(id,e.target.value);afterFieldMark(id);render();dirty()};
      el.querySelector('#jsNote').oninput=e=>{const v=e.target.value.trim(); if(v) S.notes[id]=v; else delete S.notes[id]; dirty()};
      el.querySelectorAll('[data-pl]').forEach(cb=>cb.onchange=ev=>{
        const i=+ev.target.dataset.pl;
@@ -1165,8 +1296,16 @@ function renderPlan(){
     <div class="brand-static">
       <div class="bs-word">NINJA<span>360</span></div>
       <div class="bs-tag">We put you on the M.A.P.</div>
-      <img src="/assets/crew/crew-tim-banner.png" alt="Tim — Head Ninja">
+      <img src="${bannerOf(S.who)}" alt="${escHTML(who()?who().name+' — '+who().role:'Ninja 360')}">
     </div>
+    ${(()=>{const lb=latestBind(), me=bindName(d), n=bindList().length;
+      return '<div class="lab" style="margin:8px 0 5px">Route bindings</div>'
+        +(lb?'<div class="runs"><button class="runbtn bind on" data-pull="'+escHTML(lb.id)+'"><b>★ '+escHTML(lb.id)+'</b><small>latest · '+bindProg(lb)+' · '+fmt(lb.pay)+' · '+bindAgo(lb)+(lb.by&&CREW[lb.by]?' by '+escHTML(CREW[lb.by].short):'')+' — tap to pull up</small></button></div>'
+          :'<div class="hint" style="margin:0 0 6px">Nothing bound yet. Bind this route and it gets a name you can say out loud: DATE:TIME:Solo or W/Cody.</div>')
+        +'<div class="row" style="margin:6px 0 0;align-items:center">'
+        +'<button class="ghost" id="bBind">🔗 Bind this route</button>'
+        +(n?'<button class="ghost" id="bBinds">All bindings ('+n+')</button>':'')
+        +'<span class="mono hint" style="margin:0">this day: '+escHTML(me)+'</span></div>'})()}
     <div class="lab" style="margin:8px 0 5px">Runs</div><div class="runs">${RUNS.map(r=>`<button class="runbtn${runLoaded(r)?' on':''}" data-run="${r.id}"><b>${escHTML(r.name)}</b><small>${escHTML(r.sub)}${runLoaded(r)?' · loaded':''}</small></button>`).join('')}</div>
     <div class="lab" style="margin:8px 0 5px">Days</div><div class="rail">${rail}</div>
     <div class="mapbox" style="margin:8px 0 4px"><div id="lmap" role="region" aria-label="Job map"></div><svg id="map" viewBox="0 0 720 470" role="img" aria-label="Job map (offline)"></svg></div>
@@ -1256,11 +1395,14 @@ function renderPlan(){
   $('#fEnd').onchange=e=>{d.endKey=e.target.value;render();dirty()};
   $('#fTime').onchange=e=>{if(!e.target.value)return;
     const p=e.target.value.split(':');d.startTime=(+p[0])+(+p[1])/60;render();dirty()};
-  $('#bAuto').onclick=()=>{d.ids=autoOrder(d);render();dirty();
+  $('#bAuto').onclick=()=>{d.ids=autoOrder(d);bindRoute(d,true);render();dirty();
     const s2=simulate(d);toast(s2.bad?(s2.bad+' still shuts too early'):(s2.span.toFixed(1)+' h day, finish '+hhmm(s2.end)))};
   const ba=$('#bAsk'); if(ba)ba.onclick=()=>dayAskSheet(d);
-  $('#bNav').onclick=()=>openDayRoute(d);
+  $('#bNav').onclick=()=>{bindRoute(d,true); dirty(); openDayRoute(d)};   // if he is driving it, it is bound
   $$('[data-run]').forEach(b=>b.onclick=()=>{const r=RUNS.find(x=>x.id===b.dataset.run); if(r)loadRun(r)});
+  $$('[data-pull]').forEach(b=>b.onclick=()=>pullBind(b.dataset.pull));
+  const bb=$('#bBind'); if(bb)bb.onclick=()=>{if(!d.ids.length){toast('Put some stops on the day first');return} bindRoute(d); dirty(); render()};
+  const bbs=$('#bBinds'); if(bbs)bbs.onclick=bindSheet;
   $('#bDel').onclick=()=>{if(S.days.length<2){toast('Keep at least one day');return}
     const snap={idx:S.active,day:JSON.parse(JSON.stringify(d))};
     S.days.splice(S.active,1);S.active=Math.max(0,S.active-1);render();dirty();
@@ -1664,35 +1806,73 @@ function renderMapSVG(){
   };
 }
 /* ================= CLUSTERS ================= */
-function buildClusters(){
-  let pool=unscheduled().slice();
-  const out=[];
-  while(pool.length&&out.length<26){
-    pool.sort((a,b)=>b.p-a.p||mi(BASE,LL(a))-mi(BASE,LL(b)));
-    const seed=pool[0];
-    const far=mi(BASE,LL(seed))>95;
-    let d={id:'c',date:'',startKey:'home',startTime:far?7:8,endKey:'home',ids:[seed.id]};
-    const rest=pool.filter(j=>j.id!==seed.id).sort((a,b)=>mi(LL(seed),LL(a))-mi(LL(seed),LL(b)));
-    for(let n=0;n<rest.length;n++){
-      const j=rest[n];
-      if(mi(LL(seed),LL(j))>(far?70:38))continue;
-      const cand={...d,ids:d.ids.concat(j.id)};
-      cand.ids=autoOrder(cand);
-      const s=simulate(cand);
-      if(s.bad===0&&s.span<=(far?11.5:10)) d=cand;
-      if(d.ids.length>=10)break;
-    }
-    d.ids=autoOrder(d);
-    const s=simulate(d);
-    out.push({ids:d.ids,startTime:d.startTime,pay:s.pay,miles:s.miles,span:s.span,end:s.end,
-      area:[...new Set(d.ids.map(i=>BY[i].c))].slice(0,5).join(' · '),far:far});
-    const used=new Set(d.ids); pool=pool.filter(j=>!used.has(j.id));
+/* ---------- the zone map ----------
+   Tim's cut. Missouri in five: NW, SW, NE, SE — and a fifth, Central, that sits in the
+   middle and overlaps the other four. Kansas is cut the same way. The centre of each
+   state is the crosshair; a stop inside the central radius belongs to Central and is
+   named with the quadrant it overlaps, so the middle still reads as the middle without
+   any stop being counted twice. Anything outside those two states groups by its state.
+
+   Everything here reads from what is LEFT — unscheduled and still needing a visit — so
+   the moment a stop is checked off or locked, it is out of the pool and the runs rebuild. */
+const ZONES={
+  MO:{name:'Missouri',c:[38.35,-92.44],r:85},
+  KS:{name:'Kansas',  c:[38.50,-98.32],r:90}};
+const QNAME={NW:'NW',NE:'NE',SW:'SW',SE:'SE'};
+const STNAME={NE:'Nebraska',IA:'Iowa',IL:'Illinois',OK:'Oklahoma',AR:'Arkansas',AZ:'Arizona',
+  CO:'Colorado',TX:'Texas',TN:'Tennessee',KY:'Kentucky',IN:'Indiana',IL_:'Illinois'};
+function zoneOf(j){
+  const z=ZONES[j&&j.s];
+  if(!z||!isFinite(j.lat)){const s=(j&&j.s)||'';
+    return{k:s||'ZZ',label:STNAME[s]||s||'Elsewhere',st:s,q:'',mid:false,ord:9}}
+  const q=(j.lat>=z.c[0]?'N':'S')+(j.lon>=z.c[1]?'E':'W');
+  if(mi(z.c,LL(j))<=z.r)return{k:j.s+'-C',label:'Central '+z.name,st:j.s,q,mid:true,ord:4};
+  return{k:j.s+'-'+q,label:QNAME[q]+' '+z.name,st:j.s,q,mid:false,ord:{NW:0,SW:1,NE:2,SE:3}[q]};
+}
+// one legal day out of one zone's pool, seeded on the biggest payout still standing
+function packDay(pool,seedJ){
+  const far=mi(BASE,LL(seedJ))>95;
+  let d={id:'c',date:'',startKey:'home',startTime:far?7:8,endKey:'home',ids:[seedJ.id]};
+  const rest=pool.filter(j=>j.id!==seedJ.id).sort((a,b)=>mi(LL(seedJ),LL(a))-mi(LL(seedJ),LL(b)));
+  for(let n=0;n<rest.length;n++){
+    const j=rest[n];
+    if(mi(LL(seedJ),LL(j))>(far?70:38))continue;
+    const cand={...d,ids:d.ids.concat(j.id)};
+    cand.ids=autoOrder(cand);
+    const s=simulate(cand);
+    if(s.bad===0&&s.span<=(far?11.5:10)) d=cand;
+    if(d.ids.length>=10)break;
   }
-  return out.sort((a,b)=>(b.pay/b.span)-(a.pay/a.span));
+  d.ids=autoOrder(d);
+  return{d,far};
+}
+function buildClusters(){
+  const zones={};
+  unscheduled().forEach(j=>{const z=zoneOf(j); (zones[z.k]=zones[z.k]||{z,jobs:[]}).jobs.push(j)});
+  const out=[];
+  // richest zone first, then the canonical NW · SW · NE · SE · Central order inside a tie
+  Object.values(zones)
+    .sort((a,b)=>b.jobs.reduce((t,j)=>t+j.p,0)-a.jobs.reduce((t,j)=>t+j.p,0)||a.z.ord-b.z.ord)
+    .forEach(({z,jobs})=>{
+    let pool=jobs.slice(), made=0;
+    while(pool.length&&made<12&&out.length<80){
+      pool.sort((a,b)=>b.p-a.p||mi(BASE,LL(a))-mi(BASE,LL(b)));
+      const {d,far}=packDay(pool,pool[0]);
+      const s=simulate(d);
+      out.push({ids:d.ids,startTime:d.startTime,pay:s.pay,miles:s.miles,span:s.span,end:s.end,
+        area:[...new Set(d.ids.map(i=>BY[i].c))].slice(0,5).join(' · '),far,zk:z.k,zlabel:z.label,zord:z.ord,zst:z.st});
+      const used=new Set(d.ids); pool=pool.filter(j=>!used.has(j.id)); made++;
+    }
+  });
+  const rate=c=>c.span>0.05?c.pay/c.span:c.pay*1000;   // a run with no drive on it is the best rate there is
+  return out.sort((a,b)=>rate(b)-rate(a));
 }
 let CLUS=null, CLUSKEY=null;
 // what the clusters were built from: the exact pool, in order
-const clusKey=()=>unscheduled().map(j=>j.id).join(',');
+// what the runs were built from: the exact pool that is left, plus the size of the lock
+// ledger — check a stop off anywhere and the next look at Clusters is a fresh map
+const clusKey=()=>unscheduled().map(j=>j.id).join(',')+'|'+Object.keys(S.locks||{}).length;
+let CLUSZ='';   // zone filter, '' = every zone
 function renderClusters(){
   if(CLUS&&CLUSKEY!==null&&CLUSKEY!==clusKey())CLUS=null;   // a stop was locked, or moved onto a day
   if(!CLUS){
@@ -1712,21 +1892,33 @@ function renderClusters(){
         area:[...new Set(ids.map(i=>BY[i].c))].slice(0,5).join(' · ')};
     }).filter(Boolean);
   const tot=CLUS.reduce((t,c)=>t+c.pay,0);
-  $('#s-clusters').innerHTML=`
-    <div class="card"><div class="lab">Everything not yet on a day</div>
-      <div style="font-size:15px;margin-top:3px">${CLUS.length} buildable runs · <b>${fmt(tot)}</b> · ${CLUS.reduce((t,c)=>t+c.ids.length,0)} stops</div>
-      <div class="hint">Each one is a legal day: every stop inside its own opening hours, home the same night. Ranked by points per hour.</div>
-      <button class="ghost" id="reclus">Rebuild</button></div>
-    ${CLUS.map((c,i)=>`<div class="stop clus" style="grid-template-columns:1fr auto">
-      <div><div class="nm">${c.area}${c.far?'<span class="badge acc">long day</span>':''}</div>
+  // one row per zone, biggest pile of points still standing first
+  const zs={}; CLUS.forEach(c=>{const z=zs[c.zk]=zs[c.zk]||{k:c.zk,label:c.zlabel,ord:c.zord,st:c.zst,pay:0,stops:0,runs:0};
+    z.pay+=c.pay; z.stops+=c.ids.length; z.runs++});
+  const zlist=Object.values(zs).sort((a,b)=>b.pay-a.pay||a.ord-b.ord);
+  if(CLUSZ&&!zs[CLUSZ])CLUSZ='';
+  const show=CLUS.map((c,i)=>({c,i})).filter(x=>!CLUSZ||x.c.zk===CLUSZ);
+  const card=(c,i)=>`<div class="stop clus" style="grid-template-columns:1fr auto">
+      <div><div class="nm">${c.area}<span class="badge">${escHTML(c.zlabel)}</span>${c.far?'<span class="badge acc">long day</span>':''}</div>
         <div class="ad">${c.ids.length} stops · ${Math.round(c.miles)} mi · ${c.span.toFixed(1)} h · leave ${hhmm(c.startTime)}, back ${hhmm(c.end)}</div>
-        <div class="ad mono" style="color:var(--money)"><b>${fmt(c.pay/c.span)} / hour</b> · ${(c.pay/c.miles).toFixed(2)} pts/mile</div>
+        <div class="ad mono" style="color:var(--money)"><b>${c.span>0.05?fmt(c.pay/c.span)+' / hour':'—'}</b> · ${c.miles>0.5?(c.pay/c.miles).toFixed(2)+' pts/mile':'at the door'}</div>
         <div class="acts"><button class="mini go" data-mk="${i}">Make this a day</button>
           <button class="mini" data-see="${i}">List stops</button></div>
         <div id="cl${i}" class="hide" style="margin-top:6px;font-size:12px;color:var(--ink2)">
           ${c.ids.map((id,n)=>(n+1)+'. '+BY[id].n+' — '+BY[id].c+', '+BY[id].s+' · '+fmt(BY[id].p)).join('<br>')}</div></div>
-      <div class="pay mono">${fmt(c.pay)}</div></div>`).join('')}`;
+      <div class="pay mono">${fmt(c.pay)}</div></div>`;
+  $('#s-clusters').innerHTML=`
+    <div class="card"><div class="lab">What is left, zone by zone</div>
+      <div style="font-size:15px;margin-top:3px">${CLUS.length} buildable runs · <b>${fmt(tot)}</b> · ${CLUS.reduce((t,c)=>t+c.ids.length,0)} stops still standing</div>
+      <div class="hint">Five zones to a state — NW, SW, NE, SE, and a Central that sits in the middle and overlaps the other four. Each run below is a legal day inside one zone: every stop within its own opening hours, home the same night. Ranked by points per hour. Check a stop off anywhere and this map rebuilds from what is left.</div>
+      <button class="ghost" id="reclus">Rebuild</button></div>
+    <div class="zrow"><button class="zchip${CLUSZ?'':' on'}" data-z="">All · ${fmt(tot)}</button>${
+      zlist.map(z=>`<button class="zchip${CLUSZ===z.k?' on':''}${z.k.endsWith('-C')?' mid':''}" data-z="${escHTML(z.k)}">${escHTML(z.label)} · ${fmt(z.pay)}<small>${z.stops} stop${z.stops===1?'':'s'} · ${z.runs} run${z.runs===1?'':'s'}</small></button>`).join('')}</div>
+    ${CLUSZ?show.map(x=>card(x.c,x.i)).join('')
+      :zlist.map(z=>`<div class="lab" style="margin:12px 0 5px">${escHTML(z.label)} — ${fmt(z.pay)} in ${z.stops} stop${z.stops===1?'':'s'}</div>`
+        +CLUS.map((c,i)=>({c,i})).filter(x=>x.c.zk===z.k).map(x=>card(x.c,x.i)).join('')).join('')}`;
   $('#reclus').onclick=()=>{CLUS=null;CLUSKEY=null;render();toast('Rebuilt')};
+  $$('#s-clusters [data-z]').forEach(b=>b.onclick=()=>{CLUSZ=b.dataset.z; renderClusters(); window.scrollTo(0,0)});
   $$('#s-clusters [data-mk]').forEach(b=>b.onclick=()=>{
     const c=CLUS[+b.dataset.mk];
     const last=S.days[S.days.length-1];let nd='';
@@ -2002,20 +2194,25 @@ const LSKEY='ninja360-runsheet-v2';
    Locks never lose: they are append-only facts with a person and a time on them, so a merge
    unions them. Everything else is last-write-wins, and a write that would clobber somebody
    else's is refused by the server and merged here first. */
-const SHARED=['days','sv','loaded','status','notes','timers','punch','locks','custom','places','chargeAt','by','geo','evRange','lastRequest','mig'];
+const SHARED=['days','sv','loaded','status','notes','timers','punch','locks','custom','places','chargeAt','by','geo','evRange','lastRequest','mig','binds'];
 const syncOn=()=>!!(S.sync&&S.sync.key&&S.sync.key.length>=8);
 const takeShared=s=>{const o={}; SHARED.forEach(k=>{if(s[k]!==undefined)o[k]=s[k]}); return o};
 function mergeShared(remote){
   if(!remote||typeof remote!=='object')return false;
   const mine=S.locks||{}, theirs=remote.locks||{};
+  const myBinds=Array.isArray(S.binds)?S.binds:[];
   SHARED.forEach(k=>{if(remote[k]!==undefined)S[k]=remote[k]});
+  // a binding is a name for a route, not a claim on it — keep every one, newest stamp wins
+  const bm=new Map((Array.isArray(S.binds)?S.binds:[]).map(b=>[b.id,b]));
+  myBinds.forEach(b=>{const t=bm.get(b.id); if(!t||(b.at||0)>(t.at||0))bm.set(b.id,b)});
+  S.binds=[...bm.values()].sort((a,b)=>(b.at||0)-(a.at||0)).slice(0,60);
   // a lock is a fact — keep every one, and the earliest stamp wins for the same stop
   const locks=Object.assign({},theirs);
   Object.entries(mine).forEach(([id,l])=>{const t=locks[id]; if(!t||(l&&l.at&&t.at&&l.at<t.at))locks[id]=l});
   S.locks=locks;
   S.days.forEach(d=>{if(!isFinite(d.startTime))d.startTime=8; if(!Array.isArray(d.ids))d.ids=[];
     if(!('crew' in d)||(d.crew&&!CREW[d.crew]))d.crew=null; if(!PACE[d.pace])d.pace='split'});
-  applyCustom(); applyPlaces(); applyGeo();
+  applyCustom(); applyPlaces(); applyGeo(); sinkAll();
   const i=S.days.findIndex(d=>d.date===S.activeDate);
   S.active=i>=0?i:Math.min(S.active,Math.max(0,S.days.length-1));
   return true;
@@ -2120,6 +2317,8 @@ function mergeState(j){
   S.sync=(j.sync&&typeof j.sync==='object'&&!Array.isArray(j.sync))?j.sync:{key:'',v:0,at:0};   // crew sync: key is per device, never shared state
   S.geo=(j.geo&&typeof j.geo==='object'&&!Array.isArray(j.geo))?j.geo:{};   // coordinates the browser resolved for rows that shipped city-level
   S.mig=(j.mig&&typeof j.mig==='object'&&!Array.isArray(j.mig))?j.mig:{};   // one-time migrations already applied on this device
+  S.binds=Array.isArray(j.binds)?j.binds.filter(b=>b&&b.id&&Array.isArray(b.ids)):[];   // named route bindings — DATE:TIME:WHO
+  sinkAll();   // shot stops always sit at the bottom — the ↑/↓ indices depend on it
   if(!S.mig.cameron0915){ S.mig.cameron0915=1;
     if(!S.days.some(d=>d.date==='2026-09-15'))S.days.push(Object.assign(blankDay('2026-09-15'),{crew:'gabe',pace:'split',startTime:7,ids:['2026-9658','2026-4318','2026-5178'].filter(i=>BY[i])})) }
   return true;
@@ -2324,7 +2523,7 @@ function csvText(){
   const rows=[['Day','Date','Stop','Arrive','Depart','Leg mi','Location ID','WO','Site','Location','Address','City','State','Channel','End client','Payout','Opens','Closes','Hours','Job status','Onsite date','Invoice','Capture status','By','With','In app']];
   S.days.forEach((d,di)=>{const s=simulate(d);
     s.rows.forEach((r,i)=>{const j=BY[r.id];
-      rows.push([di+1,d.date,i+1,hhmm(r.arr),hhmm(r.fin),r.leg.toFixed(1),j.id,j.wo||'',j.site||'',j.n,j.a,j.c,j.s,j.ch||'',j.cl,j.p,hhmm(j.o),hhmm(j.x),j.v?'verified':'assumed',j.st||'',j.dt||'',j.inv||'',stat(j.id),S.by[j.id]&&CREW[S.by[j.id]]?CREW[S.by[j.id]].short:'',d.crew&&CREW[d.crew]?CREW[d.crew].short:'',S.loaded[j.id]?'yes':'no'])})});
+      rows.push([di+1,d.date,i+1,r.bank?'':hhmm(r.arr),r.bank?'':hhmm(r.fin),r.bank?'':r.leg.toFixed(1),j.id,j.wo||'',j.site||'',j.n,j.a,j.c,j.s,j.ch||'',j.cl,j.p,hhmm(j.o),hhmm(j.x),j.v?'verified':'assumed',j.st||'',j.dt||'',j.inv||'',stat(j.id),S.by[j.id]&&CREW[S.by[j.id]]?CREW[S.by[j.id]].short:'',d.crew&&CREW[d.crew]?CREW[d.crew].short:'',S.loaded[j.id]?'yes':'no'])})});
   return rows.map(r=>r.map(v=>{v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(',')).join('\n');
 }
 function doCsv(){
