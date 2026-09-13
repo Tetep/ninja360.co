@@ -105,7 +105,7 @@
   .hosts{ display:flex; gap:20px; justify-content:center; flex-wrap:wrap; }
   .host{ display:flex; flex-direction:column; align-items:center; gap:8px; }
   .host-photo{
-    position:relative; width:64px; height:64px; border-radius:999px; overflow:hidden;
+    position:relative; width:96px; height:96px; border-radius:999px; overflow:hidden;
     border:2px solid var(--ink); background:var(--card); cursor:pointer;
   }
   .host-photo img{
@@ -116,6 +116,7 @@
   .host-photo:hover .host-logo, .host-photo.flipped .host-logo{ opacity:0; }
   .host-photo:hover .host-face, .host-photo.flipped .host-face{ opacity:1; }
   .host span{ font-size:11px; font-weight:700; text-align:center; }
+  .host .host-company{ font-size:9.5px; font-weight:600; opacity:0.65; text-transform:uppercase; letter-spacing:0.04em; }
   .countdown{
     display:flex; gap:12px; flex-wrap:wrap; justify-content:center;
     background:var(--card); border:2px solid var(--ink); padding:18px 22px;
@@ -217,6 +218,7 @@
         <img class="host-face" src="assets/erik.jpg" alt="Erik Juergensen">
       </div>
       <span>Erik Juergensen</span>
+      <span class="host-company">Lucky 13 Studios</span>
     </div>
     <div class="host">
       <div class="host-photo" tabindex="0">
@@ -224,6 +226,7 @@
         <img class="host-face" src="assets/gabe.jpg" alt="Gabe Miller">
       </div>
       <span>Gabe Miller</span>
+      <span class="host-company">Lucid Cinematics</span>
     </div>
     <div class="host">
       <div class="host-photo" tabindex="0">
@@ -231,6 +234,7 @@
         <img class="host-face" src="assets/tim.jpg" alt="Tim Petet">
       </div>
       <span>Tim Petet</span>
+      <span class="host-company">Ninja-360</span>
     </div>
   </div>
 
