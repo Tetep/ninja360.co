@@ -801,19 +801,24 @@ const RUNS=[
    {date:'2026-09-17',startKey:'home',startTime:6,endKey:WICH,crew:'cody',pace:'split',ids:['2026-8338','2026-5683','2026-5425','2026-6188','2026-7264','2026-8145','2026-7702']},
    {date:'2026-09-18',startKey:WICH,startTime:8.5,endKey:WICH,crew:'cody',pace:'split',ids:['2026-8835','2026-8197','2026-1610','2026-7953','2026-3142','2026-0840','2026-8172','2026-1225','2026-4299','2026-8317','2026-7954']},
    {date:'2026-09-19',startKey:WICH,startTime:7.5,endKey:'home',crew:'cody',pace:'split',ids:['2026-5976','2026-1376','2026-7983','2026-8804','2026-4084']}]},
- // The week at Crane. Every leg is measured the way the app measures one — straight line
- // times the 1.22 road factor — so these hours are the hours, not an optimistic guess.
- // Nothing shuts on him: every stop lands inside its own opening hours, longest day 11.6 h.
- // Osage Beach, Saint Robert and Rolla are the three left standing: all on the I-44 / lake
- // corridor, too far off any of these days to pay for themselves. Catch them another trip.
- {id:'springfield-oct',name:'Springfield · Oct 8–15 · from Crane',sub:'35 stops · 3,500 pts · 1,543 road miles · down I-49, five days out of your friend’s place, home up US-65',
+ // The week at Crane. Saturday the 10th and Sunday the 11th are OFF — Tim's call — so the
+ // week is six days: two travel days and four working out of the friend's place. Losing the
+ // weekend cost exactly one stop: Camdenton. The other four that were on Saturday moved onto
+ // Monday, which now runs the whole southwest ring in one pass.
+ //
+ // Every leg is measured the way the app measures one — straight line times the 1.22 road
+ // factor — so these hours are the hours, not an optimistic guess. Nothing shuts on him:
+ // every stop lands inside its own opening hours, and the longest day is 11.6 h.
+ //
+ // Camdenton, Osage Beach, Saint Robert and Rolla are what is left standing: all on the
+ // I-44 / lake corridor, too far off any of these days to pay for themselves. Another trip.
+ {id:'springfield-oct',name:'Springfield · Oct 8–15 · from Crane',sub:'34 stops · 3,400 pts · 1,410 road miles · weekend off · down I-49, four days out of your friend’s place, home up US-65',
   days:[
    {date:'2026-10-08',startKey:'home',startTime:6.5,endKey:'crane',crew:null,ids:['2026-8299','2026-7142','2026-7338','2026-8119','2026-0726','2026-6322']},
-   {date:'2026-10-09',startKey:'crane',startTime:8,endKey:'crane',crew:null,ids:['2026-4178','2026-8321','2026-4135','2026-7930','2026-4815','2026-1173','2026-7988','2026-8706']},
-   {date:'2026-10-10',startKey:'crane',startTime:8,endKey:'crane',crew:null,ids:['2026-4909','2026-4041','2026-4866','2026-8541']},
-   {date:'2026-10-12',startKey:'crane',startTime:8,endKey:'crane',crew:null,ids:['2026-7301','2026-6488','2026-5511','2026-5761']},
+   {date:'2026-10-09',startKey:'crane',startTime:7,endKey:'crane',crew:null,ids:['2026-4178','2026-8321','2026-4135','2026-7930','2026-4815','2026-1173','2026-7988','2026-8706']},
+   {date:'2026-10-12',startKey:'crane',startTime:7,endKey:'crane',crew:null,ids:['2026-5511','2026-6488','2026-5761','2026-8541','2026-4041','2026-4909']},
    {date:'2026-10-13',startKey:'crane',startTime:6.5,endKey:'crane',crew:null,ids:['2026-8615','2026-7036','2026-5941','2026-5726','2026-6230']},
-   {date:'2026-10-14',startKey:'crane',startTime:7.5,endKey:'crane',crew:null,ids:['2026-7439','2026-8406','2026-6398']},
+   {date:'2026-10-14',startKey:'crane',startTime:7,endKey:'crane',crew:null,ids:['2026-8406','2026-7439','2026-7301','2026-4866']},
    {date:'2026-10-15',startKey:'crane',startTime:6,endKey:'home',crew:null,ids:['2026-6607','2026-5167','2026-7587','2026-7375','2026-7761']}]},
  {id:'wichita-solo',name:'Wichita · Sep 17–19 · solo',sub:'15 stops · 1,700 pts · down I-35, out I-70',
   days:[

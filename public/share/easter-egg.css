@@ -1,11 +1,83 @@
-/* Shared site-wide footer easter egg badge — included by static public pages. */
-#egg-badge{position:fixed;right:16px;bottom:16px;width:44px;height:44px;
-  border-radius:999px;overflow:hidden;opacity:0.18;cursor:pointer;z-index:50;
-  border:2px solid rgba(24,23,21,0.28);transition:opacity .2s,transform .2s;}
-#egg-badge:hover{opacity:1;transform:scale(1.08);}
-#egg-badge img{width:100%;height:100%;object-fit:cover;}
-#egg-pop{position:fixed;right:16px;bottom:70px;max-width:240px;
-  background:#C6B49C;border:1px solid rgba(24,23,21,0.28);border-radius:10px;
-  padding:14px 16px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-size:0.82rem;
-  color:#181715;z-index:51;display:none;}
-#egg-pop.show{display:block;}
+/* Shared site-wide footer easter egg badge — included by static public pages.
+   The badge art ships with a transparent background, so there is no square to hide:
+   the mark's own ring is the shape, and the glow can bloom past it. */
+
+/* --egg-lift clears a page's own fixed bottom bar; the script sets it, pages may override.
+   z-index sits above a bottom nav (1100) but under a gate (1160) or a sheet (1170+), so the
+   badge never floats over a modal. */
+#egg-badge{
+  position:fixed; right:14px; bottom:calc(14px + var(--egg-lift, 0px)); width:34px; height:34px;
+  padding:0; border:0; background:none; border-radius:999px;
+  cursor:pointer; z-index:1150; opacity:.32;
+  transition:opacity .25s ease, transform .25s cubic-bezier(.34,1.56,.64,1), filter .25s ease;
+  filter:grayscale(.45) drop-shadow(0 2px 4px rgba(0,0,0,.35));
+  animation:egg-breathe 5.5s ease-in-out infinite;
+}
+#egg-badge img{width:100%; height:100%; object-fit:contain; display:block; pointer-events:none}
+
+/* the halo — a soft orange bloom that only wakes up on hover */
+#egg-badge::before{
+  content:''; position:absolute; inset:-45%; border-radius:999px; z-index:-1;
+  background:radial-gradient(circle, rgba(244,121,32,.55) 0%, rgba(244,121,32,.18) 45%, transparent 70%);
+  opacity:0; transform:scale(.6);
+  transition:opacity .3s ease, transform .35s cubic-bezier(.34,1.56,.64,1);
+}
+/* a thin ring that sweeps out when you touch it */
+#egg-badge::after{
+  content:''; position:absolute; inset:0; border-radius:999px; pointer-events:none;
+  border:1.5px solid rgba(244,121,32,.85); opacity:0;
+}
+
+#egg-badge:hover, #egg-badge:focus-visible{
+  opacity:1; transform:scale(1.22) rotate(-4deg);
+  filter:grayscale(0) drop-shadow(0 0 7px rgba(244,121,32,.75)) drop-shadow(0 4px 10px rgba(0,0,0,.45));
+  animation:none;
+}
+#egg-badge:hover::before, #egg-badge:focus-visible::before{opacity:1; transform:scale(1)}
+#egg-badge:hover::after, #egg-badge:focus-visible::after{animation:egg-ping 1.4s ease-out infinite}
+#egg-badge:active{transform:scale(1.06) rotate(0deg); transition-duration:.08s}
+#egg-badge:focus-visible{outline:none}
+
+/* while the card is open the badge stays lit */
+#egg-badge.on{opacity:1; filter:grayscale(0) drop-shadow(0 0 9px rgba(244,121,32,.85)); animation:none}
+#egg-badge.on::before{opacity:1; transform:scale(1)}
+
+@keyframes egg-breathe{
+  0%,100%{opacity:.32; filter:grayscale(.45) drop-shadow(0 2px 4px rgba(0,0,0,.35))}
+  50%    {opacity:.52; filter:grayscale(.2)  drop-shadow(0 0 5px rgba(244,121,32,.4))}
+}
+@keyframes egg-ping{
+  0%  {opacity:.9; transform:scale(1)}
+  70% {opacity:0;  transform:scale(1.75)}
+  100%{opacity:0;  transform:scale(1.75)}
+}
+
+/* ---- the card ---- */
+#egg-pop{
+  position:fixed; right:14px; bottom:calc(58px + var(--egg-lift, 0px)); max-width:250px;
+  padding:13px 15px; border-radius:12px; z-index:1151;
+  background:linear-gradient(160deg,#231d17 0%,#17130f 100%);
+  border:1px solid rgba(244,121,32,.42);
+  box-shadow:0 10px 30px rgba(0,0,0,.45), 0 0 22px rgba(244,121,32,.16), inset 0 1px 0 rgba(255,255,255,.06);
+  color:#F0E7DC; font-size:.82rem; line-height:1.45;
+  display:none; transform-origin:bottom right;
+}
+#egg-pop b{color:#FABB7C; font-weight:700; display:block; margin-bottom:3px}
+#egg-pop br{display:none}   /* the <b> is already a block; the markup's <br> would double the gap */
+#egg-pop.show{display:block; animation:egg-rise .32s cubic-bezier(.34,1.4,.64,1) both}
+/* a hairline of brand orange down the leading edge */
+#egg-pop::before{
+  content:''; position:absolute; left:0; top:11px; bottom:11px; width:2px; border-radius:2px;
+  background:linear-gradient(180deg,#F47920,#FABB7C);
+}
+@keyframes egg-rise{
+  from{opacity:0; transform:translateY(8px) scale(.92)}
+  to  {opacity:1; transform:translateY(0)   scale(1)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  #egg-badge, #egg-badge:hover, #egg-badge:focus-visible{animation:none; transform:none}
+  #egg-badge:hover::after{animation:none}
+  #egg-pop.show{animation:none}
+  #egg-badge{transition:opacity .2s ease, filter .2s ease}
+}
