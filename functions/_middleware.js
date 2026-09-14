@@ -8,7 +8,10 @@
 
 const TRACKER_HOST = /(^|\.)ninja360\.org$/i;
 const TRACKER_PATH = /^\/(map|runsheet|verizon)?\/?$/i;
-const PASS_THROUGH = /^\/(assets\/|api\/|favicon\.svg$)/;   // /api/ is the crew sync — never rewrite it to the run sheet
+// What the run sheet loads for itself. /api/ is the crew sync and /share/ is the footer
+// badge's stylesheet and script — redirect either of those to the page and the run sheet
+// renders with a raw 256px image and no styles at all.
+const PASS_THROUGH = /^\/(assets\/|share\/|api\/|favicon\.svg$)/;
 
 export async function onRequest({ request, next, env }) {
   const url = new URL(request.url);
