@@ -329,12 +329,26 @@ table.pl [data-lock]:not(.go){border-color:var(--accent);color:var(--accent)}
 .bar2{height:9px;background:var(--surf3);border-radius:5px;overflow:hidden}
 .bar2 span{display:block;height:100%;background:var(--accent);border-radius:5px;transition:width .35s ease}
 .sb-belt{margin-top:9px;font-size:12.5px;color:var(--ink2);letter-spacing:.2px}
-.gbcard{border-left:3px solid var(--ret);background:linear-gradient(180deg,rgba(139,47,201,.06),transparent 60%)}
-.gbcard .lab{color:var(--ret)}
-.gbrow{padding:8px 0;border-top:1px solid var(--line)}
+/* the bar: one line, always closed until he asks */
+.gbbar{display:flex;align-items:center;gap:8px;width:100%;margin:9px 0 0;padding:7px 11px;
+  border:1px solid var(--ret);border-radius:10px;background:rgba(139,47,201,.07);
+  color:var(--ink);font-size:13.5px;text-align:left;min-height:38px}
+.gbbar b{font-weight:700}
+.gbbar.on{border-bottom-left-radius:0;border-bottom-right-radius:0;margin-bottom:0}
+.gbmeta{color:var(--ink2);font-size:12px;flex:1}
+.gbchev{color:var(--ret);font-size:11px;flex:none}
+.gbdot{width:7px;height:7px;border-radius:50%;background:var(--ret);flex:none;
+  box-shadow:0 0 0 3px rgba(139,47,201,.22)}
+.gbcard{border:1px solid var(--ret);border-top:0;border-radius:0 0 10px 10px;margin-top:0;
+  background:linear-gradient(180deg,rgba(139,47,201,.05),transparent 60%)}
+.gbrow{border-top:1px solid var(--line)}
 .gbrow:first-of-type{border-top:0}
-.gbhead{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;font-size:14px}
-.gblist{margin:5px 0 4px;padding-left:18px;font-size:12.5px;color:var(--ink2)}
+.gbtog{display:flex;align-items:center;gap:8px;width:100%;padding:7px 2px;background:none;
+  border:0;color:var(--ink);font-size:13.5px;text-align:left;min-height:36px}
+.gbn{flex:1;font-weight:600}
+.gbmi{color:var(--ink3);font-size:11.5px}
+.gbbody{padding:0 2px 8px}
+.gblist{margin:5px 0 6px;padding-left:18px;font-size:12.5px;color:var(--ink2)}
 .gblist li{margin:2px 0}
 .gblist li.got{text-decoration:line-through;opacity:.5}
 .bestwk{border-left:3px solid var(--money)}
@@ -1038,18 +1052,30 @@ function renderNow(){
   const s=simulate(d);
   $('#s-now').innerHTML=`
   ${(()=>{const gb=goBacks(); if(!gb.length)return '';
-    return '<div class="card gbcard"><div class="lab">Go-backs owed — clear these first</div>'
-      +'<div class="hint" style="margin:3px 0 8px">Somebody already stood at these. The capture came back short and the named shots below are owed — short trips, and nothing on them pays until the list is clear.</div>'
-      +gb.map(j=>{const left=punchLeft(j.id), d0=Math.round(mi(placeLL(S.here.key),LL(j)));
-        return '<div class="gbrow"><div class="gbhead"><b>'+escHTML(j.n)+'</b>'
-          +'<span class="badge bad">'+left+' shot'+(left===1?'':'s')+' owed</span>'
-          +(j.st==='Return Owed'?'<span class="badge v">billed</span>':'<span class="badge warn">not billed yet</span>')+'</div>'
-          +'<div class="ad">'+escHTML(j.a)+', '+escHTML(j.c)+', '+escHTML(j.s)+' · '+d0+' mi from here</div>'
-          +'<ul class="gblist">'+gbItems(j.id).map(x=>'<li class="'+(x.done?'got':'')+'">'+escHTML(x.t)+'</li>').join('')+'</ul>'
-          +'<div class="acts"><button class="mini go" data-gbnav="'+j.id+'">directions</button>'
-          +'<button class="mini" data-gbadd="'+j.id+'">add to this day</button>'
-          +'<button class="mini" data-info="'+j.id+'">tick the list</button></div></div>'}).join('')
-      +'</div>'})()}
+    const shots=gb.reduce((t,j)=>t+punchLeft(j.id),0);
+    const near=Math.round(Math.min(...gb.map(j=>mi(placeLL(S.here.key),LL(j)))));
+    return '<button class="gbbar'+(GB_OPEN?' on':'')+'" id="gbBar" aria-expanded="'+(GB_OPEN?'true':'false')+'">'
+      +'<span class="gbdot"></span>'
+      +'<b>'+gb.length+' go-back'+(gb.length===1?'':'s')+'</b>'
+      +'<span class="gbmeta">'+shots+' shot'+(shots===1?'':'s')+' owed · nearest '+near+' mi</span>'
+      +'<span class="gbchev">'+(GB_OPEN?'▾':'▸')+'</span></button>'
+      +(!GB_OPEN?'':'<div class="card gbcard">'
+        +'<div class="hint" style="margin:0 0 6px">Already shot, came back short. Nothing on them pays until the named list is clear.</div>'
+        +gb.map(j=>{const left=punchLeft(j.id), d0=Math.round(mi(placeLL(S.here.key),LL(j))), op=GB_ROW===j.id;
+          return '<div class="gbrow'+(op?' open':'')+'">'
+            +'<button class="gbtog" data-gbrow="'+j.id+'" aria-expanded="'+(op?'true':'false')+'">'
+              +'<span class="gbn">'+escHTML(j.c)+', '+escHTML(j.s)+'</span>'
+              +'<span class="badge bad">'+left+'</span>'
+              +'<span class="gbmi mono">'+d0+' mi</span>'
+              +'<span class="gbchev">'+(op?'▾':'▸')+'</span></button>'
+            +(!op?'':'<div class="gbbody"><div class="ad">'+escHTML(j.n)+' · '+escHTML(j.a)
+              +(j.st==='Return Owed'?' <span class="badge v">billed</span>':' <span class="badge warn">not billed yet</span>')+'</div>'
+              +'<ul class="gblist">'+gbItems(j.id).map(x=>'<li class="'+(x.done?'got':'')+'">'+escHTML(x.t)+'</li>').join('')+'</ul>'
+              +'<div class="acts"><button class="mini go" data-gbnav="'+j.id+'">directions</button>'
+              +'<button class="mini" data-gbadd="'+j.id+'">add to this day</button>'
+              +'<button class="mini" data-info="'+j.id+'">tick the list</button></div></div>')
+            +'</div>'}).join('')
+        +'</div>')})()}
   <div id="brandHero" class="brand-hero">
     <div class="brand-video-frame">
       <video id="brandVideo" autoplay playsinline preload="auto" src="/assets/video/ninja-hero-16x9-V01.mp4" aria-label="Ninja-360 intro video"></video>
@@ -1136,6 +1162,8 @@ function renderNow(){
   };
   const rd=$('#runDay'); if(rd)rd.onchange=e=>{setDay(+e.target.value);render();dirty()};
   const ad=$('#askDayNow'); if(ad)ad.onclick=()=>dayAskSheet(d);
+  const gbb=$('#gbBar'); if(gbb)gbb.onclick=()=>{GB_OPEN=!GB_OPEN; render()};
+  $$('[data-gbrow]').forEach(b=>b.onclick=()=>{GB_ROW=(GB_ROW===b.dataset.gbrow)?'':b.dataset.gbrow; render()});
   $$('[data-gbnav]').forEach(b=>b.onclick=()=>{const j=BY[b.dataset.gbnav];
     window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(j.a+', '+j.c+', '+j.s),'_blank','noopener')});
   $$('[data-gbadd]').forEach(b=>b.onclick=()=>{const id=b.dataset.gbadd;
@@ -2662,6 +2690,7 @@ async function addWaypoint(name,a,c,s,mins,latlon){
   dirty(); render(); return {id};
 }
 let CJ_OPEN=false, PL_OPEN=false, ST_OPEN=false;
+let GB_OPEN=false, GB_ROW='';   // the go-back accordion: the bar, and which row is showing its list
 function boot(){
   let local=null;
   try{
