@@ -287,7 +287,7 @@ svg{width:100%;height:auto;display:block}
 .leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11px;color:var(--ink2);margin-top:6px;align-items:center}
 .leg i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:-1px}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--surf);border-top:1px solid var(--line);
-  display:grid;grid-template-columns:repeat(5,1fr);z-index:1100;padding-bottom:env(safe-area-inset-bottom)}
+  display:grid;grid-template-columns:repeat(6,1fr);z-index:1100;padding-bottom:env(safe-area-inset-bottom)}
 nav button{padding:8px 2px 9px;font-size:10.5px;font-weight:600;color:var(--ink3);
   display:flex;flex-direction:column;align-items:center;gap:2px}
 nav button.on{color:var(--accent)}
@@ -353,6 +353,19 @@ table.pl [data-lock]:not(.go){border-color:var(--accent);color:var(--accent)}
 .gbchev{color:var(--ret);font-size:11px;flex:none}
 .gbdot{width:7px;height:7px;border-radius:50%;background:var(--ret);flex:none;
   box-shadow:0 0 0 3px rgba(139,47,201,.22)}
+.hrow{border:1px solid var(--line2);border-radius:10px;margin-bottom:7px;overflow:hidden;background:var(--surf)}
+.htog{display:flex;align-items:center;gap:8px;width:100%;padding:10px 12px;background:none;border:0;
+  color:var(--ink);text-align:left;min-height:44px}
+.hleft{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.hleft b{font-size:14px}
+.hsub{font-size:11.5px;color:var(--ink3)}
+.hpts{color:var(--money);font-size:14px}
+.hbody{padding:0 12px 10px;border-top:1px solid var(--line)}
+.hroute{font-size:11.5px;color:var(--ink2);padding:8px 0 2px}
+.hstop{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;padding:5px 0;border-top:1px solid var(--line)}
+.hstop:first-of-type{border-top:0}
+.hstop .pjbtn{flex:1;min-width:140px;text-align:left;padding:0;background:none;border:0}
+.hmeta{font-size:11px;color:var(--ink3)}
 .unbilled{border-left:3px solid var(--warn)}
 .unbilled .lab{color:var(--warn)}
 .ubrow{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;padding:5px 0;border-top:1px solid var(--line)}
@@ -467,6 +480,7 @@ table.pl [data-lock]:not(.go){border-color:var(--accent);color:var(--accent)}
   <section id="s-clusters" class="hide"></section>
   <section id="s-app" class="hide"></section>
   <section id="s-board" class="hide"></section>
+  <section id="s-history" class="hide"></section>
 </div>
 
 <nav id="nav">
@@ -475,6 +489,7 @@ table.pl [data-lock]:not(.go){border-color:var(--accent);color:var(--accent)}
   <button data-s="clusters"><span class="ic">🗺️</span>Clusters</button>
   <button data-s="app"><span class="ic">📮</span>IDS app</button>
   <button data-s="board"><span class="ic">🥋</span>Score</button>
+  <button data-s="history"><span class="ic">📜</span>History</button>
 </nav>
 
 <!-- Leaflet: a real basemap (roads, state lines, city names) when online. If this
@@ -2162,6 +2177,41 @@ function requestTextFor(ids){
   L.push('Thanks,',who()?who().short:'Tim');
   return L.join('\n');
 }
+let HIST_ROW='';
+function renderHistory(){
+  const days=historyDays();
+  const withDate=days.filter(d=>d.d), tot=withDate.reduce((t,d)=>t+d.pts,0);
+  const allCities=new Set(); withDate.forEach(d=>d.cities.forEach(c=>allCities.add(c)));
+  const first=withDate.length?withDate[withDate.length-1].d:'', last=withDate.length?withDate[0].d:'';
+  const row=(d)=>{
+    const open=HIST_ROW===d.k;
+    const dt=d.d?new Date(d.d+'T12:00:00'):null;
+    const dlab=dt?dt.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'}):'Date not recorded';
+    const towns=[...d.cities].slice(0,3).join(', ')+(d.cities.size>3?' +'+(d.cities.size-3):'');
+    const mates=[...d.mates].map(m=>CREW[m].short);
+    return '<div class="hrow'+(open?' open':'')+'">'
+      +'<button class="htog" data-hrow="'+escHTML(d.k)+'" aria-expanded="'+(open?'true':'false')+'">'
+        +'<div class="hleft"><b>'+escHTML(dlab)+'</b><span class="hsub">'+d.n+' stop'+(d.n===1?'':'s')+(towns?' &middot; '+escHTML(towns):'')+(mates.length?' &middot; with '+escHTML(mates.join(' & ')):'')+'</span></div>'
+        +'<b class="mono hpts">'+fmt(d.pts)+'</b><span class="gbchev">'+(open?'▾':'▸')+'</span>'
+      +'</button>'
+      +(!open?'':'<div class="hbody">'
+        +(d.route?'<div class="hroute mono">'+hhmm(d.route.start)+'–'+hhmm(d.route.end)+' &middot; '+Math.round(d.route.miles)+' mi &middot; '+d.route.span.toFixed(1)+' h on the road</div>':'')
+        +d.rows.slice().sort((a,b)=>a.j.c<b.j.c?-1:1).map(l=>
+          '<div class="hstop"><button class="pjbtn" data-info="'+l.id+'"><b>'+escHTML(l.j.n)+'</b></button>'
+          +'<span class="hmeta">'+(l.ids?'<span class="badge a">IDS</span>':'')+(l.by&&CREW[l.by]?' '+escHTML(CREW[l.by].short):'')+'</span>'
+          +'<b class="mono">'+fmt(l.pts)+'</b></div>').join('')
+      +'</div>')
+    +'</div>';
+  };
+  $('#s-history').innerHTML=
+    '<div class="card"><div class="lab">Every day something was banked</div>'
+      +'<div style="font-size:15px;margin-top:3px">'+withDate.length+' run day'+(withDate.length===1?'':'s')+' &middot; <b>'+fmt(tot)+'</b> &middot; '+allCities.size+' towns</div>'
+      +(first?'<div class="hint" style="margin-top:2px">'+niceDate(first)+' → '+niceDate(last)+'</div>':'')
+      +'<div class="hint" style="margin-top:6px">Mileage for a tax log lives in QuickBooks -- this is what got shot, where, and with who.</div></div>'
+    +(days.length?days.map(row).join(''):'<div class="empty">Nothing banked yet.</div>');
+  $$('#s-history [data-hrow]').forEach(b=>b.onclick=()=>{HIST_ROW=(HIST_ROW===b.dataset.hrow)?'':b.dataset.hrow; renderHistory()});
+  $$('#s-history [data-info]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.info));
+}
 function renderApp(){
   const weekIds=[...new Set(S.days.flatMap(d=>d.ids))].filter(i=>BY[i]&&!BY[i].wp);
   const need=weekIds.filter(i=>!S.loaded[i]&&NEEDSVISIT(BY[i]));
@@ -2210,6 +2260,34 @@ function renderApp(){
 setInterval(()=>{if(ready)refreshLiveTimers();},1000);
 /* ================= SCOREBOARD ================= */
 let BF='week';
+
+/* ---------- run history ----------
+   One row per calendar day that has anything locked on it -- the ground truth of what was
+   actually shot, from the same lock ledger the Score page reads, so this can never say
+   something different than "banked all-time" does. A day the app planned (S.days) lends
+   its route -- miles, hours, start and end -- when the dates line up; a day nobody planned
+   in the app (pre-book work, a walk-in) still shows up, just without a route underneath it.
+   Mileage for a tax log lives in QuickBooks; this is what was shot, where, and for whom. */
+function historyDays(){
+  const m={};
+  allLocks().forEach(l=>{
+    const k=l.d||'—';   // an em dash groups anything IDS banked with no onsite date on record
+    const b=(m[k]=m[k]||{k,d:l.d||'',pts:0,n:0,cities:new Set(),states:new Set(),mates:new Set(),rows:[]});
+    b.pts+=l.pts; b.n++; b.rows.push(l);
+    if(l.j&&!l.j.wp){b.cities.add(l.j.c+', '+l.j.s); b.states.add(l.j.s)}
+    if(l.with&&CREW[l.with])b.mates.add(l.with);
+  });
+  const days=Object.values(m).sort((a,b)=>{
+    if(!a.d&&!b.d)return 0; if(!a.d)return 1; if(!b.d)return -1;   // no-date bucket sinks to the bottom
+    return b.d.localeCompare(a.d);
+  });
+  days.forEach(d=>{
+    d.plan=d.d?S.days.find(x=>x.date===d.d):null;
+    if(d.plan){const s=simulate(d.plan); d.route={miles:s.miles,span:s.span,end:s.end,start:d.plan.startTime,
+      startKey:d.plan.startKey,endKey:d.plan.endKey}}
+  });
+  return days;
+}
 function weekBuckets(){
   const m={};
   allLocks().forEach(l=>{if(!l.d)return;
@@ -2401,6 +2479,7 @@ function render(){
   else if(S.nav==='clusters')renderClusters();
   else if(S.nav==='app')renderApp();
   else if(S.nav==='board')renderBoard();
+  else if(S.nav==='history')renderHistory();
   refreshLiveTimers();
 }
 $$('#nav button').forEach(b=>b.onclick=()=>{S.nav=b.dataset.s;render();window.scrollTo(0,0);dirty()});
@@ -2577,7 +2656,7 @@ function syncSheet(){
 }
 function chip(txt,cls){const e=$('#syncChip');if(!e)return;e.textContent=txt;e.className='tbtn '+(cls||'')}
 function stampNow(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
-const NAVS=['now','plan','clusters','app','board'];
+const NAVS=['now','plan','clusters','app','board','history'];
 function refreshLiveTimers(){
    $$('.live-timer').forEach(el=>{const id=el.dataset.liveTimer; const st=jobTimerState(id); el.textContent=st.label+(st.running?' • run':''); el.classList.toggle('running',st.running); el.title=jobTooltip(id);});
 }
