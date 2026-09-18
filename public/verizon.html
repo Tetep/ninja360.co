@@ -330,6 +330,20 @@ table.pl [data-lock]:not(.go){border-color:var(--accent);color:var(--accent)}
 .bar2 span{display:block;height:100%;background:var(--accent);border-radius:5px;transition:width .35s ease}
 .sb-belt{margin-top:9px;font-size:12.5px;color:var(--ink2);letter-spacing:.2px}
 /* the bar: one line, always closed until he asks */
+.livebtn{display:block;width:100%;margin:9px 0 0;padding:15px 16px;border:0;border-radius:13px;
+  background:linear-gradient(135deg,#F47920,#D8600F);color:#fff;font-size:19px;font-weight:800;
+  letter-spacing:.4px;text-align:center;box-shadow:0 4px 14px rgba(244,121,32,.35);min-height:64px}
+.livebtn small{display:block;font-weight:400;font-size:12px;letter-spacing:0;opacity:.92;margin-top:3px}
+.livebtn:active{transform:scale(.985)}
+.livestrip{display:flex;align-items:center;gap:8px;width:100%;margin:9px 0 0;padding:7px 11px;
+  border:1px solid var(--money);border-radius:10px;background:rgba(44,107,79,.08);
+  color:var(--ink);font-size:13.5px;text-align:left;min-height:38px}
+.livestrip b{color:var(--money);letter-spacing:.6px}
+.livestrip .gbchev{color:var(--money)}
+.livemeta{flex:1;color:var(--ink2);font-size:12px}
+.livedot{width:8px;height:8px;border-radius:50%;background:var(--money);flex:none;
+  box-shadow:0 0 0 3px rgba(44,107,79,.22);animation:livepulse 2.4s ease-in-out infinite}
+@keyframes livepulse{0%,100%{opacity:1}50%{opacity:.45}}
 .gbbar{display:flex;align-items:center;gap:8px;width:100%;margin:9px 0 0;padding:7px 11px;
   border:1px solid var(--ret);border-radius:10px;background:rgba(139,47,201,.07);
   color:var(--ink);font-size:13.5px;text-align:left;min-height:38px}
@@ -1078,6 +1092,11 @@ function renderNow(){
         .map(j=>`<option value="job:${j.id}" ${S.here.key==='job:'+j.id?'selected':''}>${j.c}, ${j.s} — ${j.n}</option>`).join('');
   const s=simulate(d);
   $('#s-now').innerHTML=`
+  ${syncOn()
+    ? '<button class="livestrip" id="liveBar"><span class="livedot"></span><b>LIVE</b>'
+      +'<span class="livemeta">every device on this plan · synced '+liveAgo()+'</span>'
+      +'<span class="gbchev">▸</span></button>'
+    : '<button class="livebtn" id="liveBar">⚡ GO LIVE<small>one tap — this plan follows you onto every phone</small></button>'}
   ${(()=>{const gb=goBacks(); if(!gb.length)return '';
     const shots=gb.reduce((t,j)=>t+punchLeft(j.id),0);
     const near=Math.round(Math.min(...gb.map(j=>mi(placeLL(S.here.key),LL(j)))));
@@ -1189,6 +1208,7 @@ function renderNow(){
   };
   const rd=$('#runDay'); if(rd)rd.onchange=e=>{setDay(+e.target.value);render();dirty()};
   const ad=$('#askDayNow'); if(ad)ad.onclick=()=>dayAskSheet(d);
+  const lb=$('#liveBar'); if(lb)lb.onclick=()=>{ if(syncOn())syncSheet(); else goLive() };
   const gbb=$('#gbBar'); if(gbb)gbb.onclick=()=>{GB_OPEN=!GB_OPEN; render()};
   $$('[data-gbrow]').forEach(b=>b.onclick=()=>{GB_ROW=(GB_ROW===b.dataset.gbrow)?'':b.dataset.gbrow; render()});
   $$('[data-gbnav]').forEach(b=>b.onclick=()=>{const j=BY[b.dataset.gbnav];
@@ -2468,32 +2488,91 @@ async function syncPush(){
   finally{PUSHING=false; syncChipShow()}
 }
 const queuePush=()=>{if(!syncOn())return; clearTimeout(PUSH); PUSH=setTimeout(syncPush,1200)};
+let SYNCTIMERS=false;
+function armSync(){
+  if(SYNCTIMERS)return; SYNCTIMERS=true;
+  setInterval(()=>{if(document.visibilityState==='visible'&&syncOn())syncPull(true)},120000);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&syncOn())syncPull(true)});
+}
 function syncChipShow(){
   if(!syncOn())return;
   const ago=S.sync.at?Math.round((Date.now()-S.sync.at)/60000):null;
   chip(PUSHING?'Syncing…':('Crew ✓ '+(ago===null?'':ago<1?'now':ago+'m')),'ok');
 }
+const LIVEWORDS=['ninja','copper','river','cedar','ranger','drone','amber','summit','falcon','harbor',
+  'rocket','timber','onyx','crimson','anchor','lantern','maple','quartz','saber','vector'];
+function mintKey(){
+  const pick=()=>LIVEWORDS[Math.floor(Math.random()*LIVEWORDS.length)];
+  const a=pick(); let b=pick(); while(b===a)b=pick(); let c=pick(); while(c===a||c===b)c=pick();
+  return a+'-'+b+'-'+c+'-'+(10+Math.floor(Math.random()*90));
+}
+const liveLink=()=>location.origin+location.pathname+'#crew='+encodeURIComponent(S.sync.key||'');
+const liveAgo=()=>{ if(!S.sync.at)return 'not yet';
+  const m=Math.round((Date.now()-S.sync.at)/60000);
+  return m<1?'just now':m<60?m+'m ago':Math.round(m/60)+'h ago'; };
+// one tap: reuse whatever this device already holds, otherwise mint one and go
+async function goLive(){
+  if(!S.sync.key)S.sync.key=mintKey();
+  S.sync.v=0; dirtyLocal();
+  const j=await syncPull(true);
+  if(j&&j.state)toast('Live — pulled the crew\'s latest');
+  else if(j){await syncPush(); toast('Live — this device is the crew copy now')}
+  else {toast('Could not reach the crew copy — saved here, it will catch up'); }
+  syncChipShow(); render();
+}
+function stopLive(){ S.sync={key:'',v:0,at:0}; dirtyLocal(); render(); toast('Off the crew copy — this device keeps its own') }
+// a device that opens the share link adopts the key and gets out of the address bar
+async function adoptLinkKey(){
+  const m=/[#&]crew=([^&]+)/.exec(location.hash||''); if(!m)return false;
+  let k=''; try{k=decodeURIComponent(m[1])}catch(e){k=m[1]}
+  k=k.trim(); if(k.length<8)return false;
+  try{history.replaceState(null,'',location.pathname+location.search)}catch(e){location.hash=''}
+  S.sync.key=k; S.sync.v=0; dirtyLocal();
+  const j=await syncPull(true);
+  toast(j&&j.state?'This device is live — pulled the crew\'s plan':'This device is live');
+  if(j&&!j.state)await syncPush();
+  syncChipShow(); render();
+  return true;
+}
 function syncSheet(){
   const on=syncOn();
-  sheet('Sync across devices', on?'This device is on the crew copy. Same key on Cody\'s phone and you share one plan.'
-      :'Right now this device keeps its own copy. Give every device the same crew key and the plan, the ledger and the locks follow you.',
-    '<div class="fld" style="width:100%"><span class="lab">Crew key</span>'
-    +'<input id="syncKey" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="at least 8 characters" value="'+escHTML(S.sync.key||'')+'" style="width:100%"></div>'
-    +'<div class="hint" style="margin-top:6px">ninja360.org is a public address and this sheet carries location ids, addresses and points. The key is what keeps the crew copy private — pick something only you and Cody would know, and use it on every device.</div>'
-    +(on?'<div class="hint" style="margin-top:6px">Last synced: '+(S.sync.at?new Date(S.sync.at).toLocaleString():'not yet')+' · version '+(S.sync.v||0)+'</div>':'')
-    +'<div class="row" style="margin-top:10px"><button class="prim" id="syncSave">Use this key</button>'
-    +(on?'<button class="ghost" id="syncNow">Sync now</button><button class="ghost" id="syncOff" style="color:var(--bad)">Stop syncing</button>':'')+'</div>',
+  sheet(on?'This device is live':'Go live',
+    on?'Every device that opens the link below is on this same plan. Nothing to remember.'
+      :'One tap and this plan follows you onto every phone you pick up.',
+    (on
+      ? '<div class="lab">Add a device</div>'
+        +'<div class="hint" style="margin:3px 0 7px">Send this link to the phone you want on the plan and open it there. That is the whole job — no key to type. The key rides in the part of the address after the #, which browsers never send to any server.</div>'
+        +'<pre class="req" id="liveLink">'+escHTML(liveLink())+'</pre>'
+        +'<div class="row" style="margin:8px 0 0">'
+          +'<button class="prim" id="liveCopy">Copy the link</button>'
+          +'<button class="ghost" id="liveSms">Text it</button>'
+          +'<button class="ghost" id="liveNow">Sync now</button></div>'
+        +'<div class="lab" style="margin:14px 0 3px">Or read it out</div>'
+        +'<div class="hint" style="margin:0 0 5px">Same thing, said aloud. Whoever types it on the other phone lands on this plan.</div>'
+        +'<pre class="req" id="liveKey">'+escHTML(S.sync.key)+'</pre>'
+        +'<div class="hint" style="margin-top:8px">Last synced '+escHTML(liveAgo())+' · version '+(S.sync.v||0)+'</div>'
+        +'<div class="row" style="margin-top:10px"><button class="ghost danger" id="liveOff">Take this device off</button></div>'
+      : '<button class="prim" id="liveGo" style="width:100%;min-height:52px;font-size:17px;font-weight:800">⚡ GO LIVE</button>'
+        +'<div class="hint" style="margin-top:8px">This makes a phrase for you and puts this device on it. To put another phone on the same plan you send it a link — you never type the phrase anywhere.</div>'
+        +'<div class="lab" style="margin:14px 0 3px">Already have a phrase?</div>'
+        +'<div class="row" style="align-items:flex-end">'
+          +'<div class="fld" style="flex:1;min-width:170px"><input id="syncKey" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="ninja-copper-river-42" style="width:100%"></div>'
+          +'<button class="ghost" id="syncSave">Use it</button></div>'
+        +'<div class="hint" style="margin-top:6px">ninja360.org is a public address and this sheet carries location ids, addresses and points. The phrase is what keeps the plan private — treat the link like the plan itself.</div>'),
     el=>{
-      el.querySelector('#syncSave').onclick=async()=>{
+      const go=el.querySelector('#liveGo'); if(go)go.onclick=async()=>{closeSheet(); await goLive()};
+      const sv=el.querySelector('#syncSave'); if(sv)sv.onclick=async()=>{
         const k=el.querySelector('#syncKey').value.trim();
-        if(k.length<8){toast('At least 8 characters');return}
-        S.sync.key=k; S.sync.v=0; dirtyLocal(); closeSheet();
-        const j=await syncPull(true);
-        if(j&&j.state)toast('Joined the crew copy'); else {await syncPush(); toast('This device is now the crew copy')}
-        syncChipShow(); render();
-      };
-      const n=el.querySelector('#syncNow'); if(n)n.onclick=async()=>{closeSheet(); await syncPull(); await syncPush(); syncChipShow()};
-      const off=el.querySelector('#syncOff'); if(off)off.onclick=()=>{S.sync={key:'',v:0,at:0}; dirtyLocal(); closeSheet(); chip('Saved '+stampNow(),'ok'); toast('This device keeps its own copy again')};
+        if(k.length<8){toast('That is too short to be one of ours');return}
+        S.sync.key=k; closeSheet(); await goLive(); };
+      const cp=el.querySelector('#liveCopy'); if(cp)cp.onclick=async()=>
+        toast(await copyText(liveLink(),el.querySelector('#liveLink'))?'Link copied — open it on the other phone':'Select the link and copy it');
+      const sm=el.querySelector('#liveSms'); if(sm)sm.onclick=()=>{
+        location.href='sms:?&body='+encodeURIComponent('Open this on your phone to get on the Ninja-360 run sheet: '+liveLink())};
+      const nw=el.querySelector('#liveNow'); if(nw)nw.onclick=async()=>{closeSheet(); await syncPull(); await syncPush(); syncChipShow(); toast('Synced')};
+      const off=el.querySelector('#liveOff'); if(off)off.onclick=()=>{
+        if(!confirm('Take this device off the crew plan? Its own copy stays, and the link still works to put it back.'))return;
+        closeSheet(); stopLive()};
     });
 }
 function chip(txt,cls){const e=$('#syncChip');if(!e)return;e.textContent=txt;e.className='tbtn '+(cls||'')}
@@ -2751,9 +2830,9 @@ function boot(){
   renderWho(); $('#whoChip').onclick=whoSheet;
   detectWho().then(ok=>{ if(!ok&&!S.who)whoSheet(); else if(needsOath())oathSheet() });
   setTimeout(fixGeo,1500);     // after the first paint, quietly place any city-level rows
+  adoptLinkKey().then(ok=>{ if(ok&&!SYNCTIMERS)armSync() });
   if(syncOn()){syncChipShow(); syncPull(true).then(()=>syncPush());
-    setInterval(()=>{if(document.visibilityState==='visible')syncPull(true)},120000);
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncPull(true)});
+    armSync();
   }   // like the Dojo: who are you → the Philosophy → I'm in
   chip(loaded?'Loaded your plan':'Ready to plan','ok');
 }
