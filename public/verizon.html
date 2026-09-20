@@ -617,12 +617,20 @@ const LOCKED=id=>!!lockOf(id);
 const NEEDSVISIT=j=>!j.wp&&j.st!=='Removed'&&!HOLD(j)&&(j.st==='Return Owed'||!LOCKED(j.id));
 /* points not yet earned (Return Owed is already earned, so it is NOT unearned) */
 const UNEARNED=j=>!j.wp&&j.st!=='Removed'&&!HOLD(j)&&!LOCKED(j.id);
+// The date on a lock is the day the work counts against -- History and the Score page's
+// day-by-day breakdown both key off it. That is NOT the moment he happens to tap the
+// button: on the last day of a multi-day trip he catches up marking Friday's and
+// Saturday's stops done while driving home Sunday, and every one of them would land on
+// Sunday if this used the clock. It uses the day the stop is actually parked on instead --
+// the route he ran that day is the ground truth of when he shot it -- and falls back to
+// today's real date only for a stop that is not on any planned day at all.
 function lockJob(id,on){
   const j=BY[id]; if(!j)return;
   S.locks=S.locks||{};
   if(on){const n=new Date();
     const dd=S.days.find(x=>x.ids&&x.ids.includes(id));
-    S.locks[id]={d:ymd(n),pts:j.p,by:S.who||'',with:(dd&&dd.crew)||'',at:n.getTime()};}
+    const d=(dd&&dd.date)||ymd(n);
+    S.locks[id]={d,pts:j.p,by:S.who||'',with:(dd&&dd.crew)||'',at:n.getTime()};}
   else delete S.locks[id];
 }
 const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -762,22 +770,26 @@ function placeLL(k){if(k==='gps'&&S.here.ll)return S.here.ll;
 function placeName(k){if(k==='gps')return 'Current location (GPS)';
   if(k&&k.startsWith('job:')){const j=BY[k.slice(4)];return j?(j.wp?j.n:j.c+', '+j.s):'?'}   // a waypoint is named, a job is placed
   return (PLACES[k]||PLACES.home).name}
+// GHOST_DAYS: a guessed itinerary from very early in the project, before the real Sep 10
+// (Manhattan/Salina) and Sep 18-20 (Wichita) trips had actual dates or a real book behind
+// them. It never got cleaned out of the default plan, and by the time the real Wichita run
+// was booked it happened to reuse the same location ids on completely different, already-
+// past dates -- 18 of the 19 real Wichita stops were ALSO sitting on one of these four fake
+// days. A stop that lives on two days at once gets its "when was this shot" answer from
+// whichever day sortDays() puts first, which is always the older, fake one -- so marking a
+// real Wichita stop done this weekend could silently log it against Sep 8-11. Matched by
+// exact date + id set, so this can only ever remove these specific four, never a real day.
+const GHOST_DAYS=[
+ ['2026-09-08',['2026-0000','2026-1896','2026-6911','2026-8804','2026-8093','2026-0938']],
+ ['2026-09-09',['2026-7983','2026-1376','2026-5976','2026-8317','2026-8197','2026-1225','2026-8172']],
+ ['2026-09-10',['2026-3142','2026-0840','2026-4299','2026-7953','2026-8835','2026-1610','2026-7702']],
+ ['2026-09-11',['2026-7954','2026-7106','2026-8888','2026-1339','2026-4049']]];
+const isGhostDay=d=>GHOST_DAYS.some(([gd,gids])=>d.date===gd&&d.ids.length===gids.length&&gids.every(i=>d.ids.includes(i)));
 function seed(){
-  // The Kansas swing, Sep 8–11: Manhattan Target first, Gap 1211 Wichita on
-  // day 3, Verizon stops packed around both, home via Emporia + Topeka.
-  // Overnights anchor on the last stop of the prior day (startKey 'job:…').
   S.sv={}; S.evRange=260; S.chargeAt={}; S.nav='plan';
   S.days=[
-   Object.assign(blankDay('2026-09-08'),{startKey:'home',startTime:5.5,endKey:'job:2026-0938',
-     ids:['2026-0000','2026-1896','2026-6911','2026-8804','2026-8093','2026-0938']}),
-   Object.assign(blankDay('2026-09-09'),{startKey:'job:2026-0938',startTime:8.5,endKey:'job:2026-8172',
-     ids:['2026-7983','2026-1376','2026-5976','2026-8317','2026-8197','2026-1225','2026-8172']}),
-   Object.assign(blankDay('2026-09-10'),{startKey:'job:2026-8172',startTime:9,endKey:'job:2026-7702',
-     ids:['2026-3142','2026-0840','2026-4299','2026-7953','2026-8835','2026-1610','2026-7702']}),
    Object.assign(blankDay('2026-09-15'),{startKey:'home',startTime:7,endKey:'home',crew:'gabe',pace:'split',
-     ids:['2026-9658','2026-4318','2026-5178']}),   // Tue: Cameron with Gabe — TSC 2805 (1,300), TCC, Chillicothe on the way home
-   Object.assign(blankDay('2026-09-11'),{startKey:'job:2026-7702',startTime:8,endKey:'home',
-     ids:['2026-7954','2026-7106','2026-8888','2026-1339','2026-4049']})];
+     ids:['2026-9658','2026-4318','2026-5178']})];   // Tue: Cameron with Gabe — TSC 2805 (1,300), TCC, Chillicothe on the way home
   // Billed, per IDS Open Invoices V07 (2026-09-04).
   ['2026-3136','2026-3842','2026-9221','2026-9433','2026-3933','2026-5401','2026-7575',
    '2026-6931','2026-6997','2026-1388','2026-1668','2026-4493','2026-8443','2026-4275',
@@ -2706,6 +2718,8 @@ function mergeState(j){
 function migrate(){
   if(!S.mig.cameron0915){ S.mig.cameron0915=1;
     if(!S.days.some(d=>d.date==='2026-09-15'))S.days.push(Object.assign(blankDay('2026-09-15'),{crew:'gabe',pace:'split',startTime:7,ids:['2026-9658','2026-4318','2026-5178'].filter(i=>BY[i])})) }
+  const before=S.days.length; S.days=S.days.filter(d=>!isGhostDay(d));
+  if(S.days.length!==before&&!S.days.length)S.days.push(blankDay(''));
   sinkAll();   // shot stops always sit at the bottom — the ↑/↓ indices depend on it
 }
 function dirtyLocal(){
