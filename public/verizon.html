@@ -287,7 +287,7 @@ svg{width:100%;height:auto;display:block}
 .leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11px;color:var(--ink2);margin-top:6px;align-items:center}
 .leg i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:-1px}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--surf);border-top:1px solid var(--line);
-  display:grid;grid-template-columns:repeat(6,1fr);z-index:1100;padding-bottom:env(safe-area-inset-bottom)}
+  display:grid;grid-template-columns:repeat(7,1fr);z-index:1100;padding-bottom:env(safe-area-inset-bottom)}
 nav button{padding:8px 2px 9px;font-size:10.5px;font-weight:600;color:var(--ink3);
   display:flex;flex-direction:column;align-items:center;gap:2px}
 nav button.on{color:var(--accent)}
@@ -373,6 +373,10 @@ table.pl [data-lock]:not(.go){border-color:var(--accent);color:var(--accent)}
 .ubrow .pjbtn{flex:1;min-width:150px;text-align:left;padding:0;background:none;border:0}
 .ubmeta{font-size:11.5px;color:var(--ink3)}
 .ubp{color:var(--warn);font-size:13px}
+.runhead{border-left:3px solid var(--accent)}
+.rh-name{font-size:17px;font-weight:800;letter-spacing:-.2px;margin-top:2px}
+.rh-sub{font-size:12.5px;color:var(--ink2);margin-top:3px}
+.runrow.done .nm{opacity:.75}
 .gbcard{border:1px solid var(--ret);border-top:0;border-radius:0 0 10px 10px;margin-top:0;
   background:linear-gradient(180deg,rgba(139,47,201,.05),transparent 60%)}
 .gbrow{border-top:1px solid var(--line)}
@@ -476,6 +480,7 @@ table.pl [data-lock]:not(.go){border-color:var(--accent);color:var(--accent)}
 
 <div class="wrap">
   <section id="s-now"></section>
+  <section id="s-run" class="hide"></section>
   <section id="s-plan" class="hide"></section>
   <section id="s-clusters" class="hide"></section>
   <section id="s-app" class="hide"></section>
@@ -485,6 +490,7 @@ table.pl [data-lock]:not(.go){border-color:var(--accent);color:var(--accent)}
 
 <nav id="nav">
   <button data-s="now" class="on"><span class="ic">📍</span>Now</button>
+  <button data-s="run"><span class="ic">🧭</span>Run</button>
   <button data-s="plan"><span class="ic">🗓️</span>Plan</button>
   <button data-s="clusters"><span class="ic">🗺️</span>Clusters</button>
   <button data-s="app"><span class="ic">📮</span>IDS app</button>
@@ -580,7 +586,7 @@ const IDS_LOADED=[
    '2026-5006','2026-5167','2026-5178','2026-5221','2026-5264','2026-5350','2026-5393',
    '2026-5401','2026-5436','2026-5444','2026-5479','2026-5511','2026-5640','2026-5740',
    '2026-5866','2026-6911','2026-6997','2026-7575','2026-7681','2026-8443','2026-8804'];
-let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},punch:{},locks:{},showBanked:false,here:{key:'home',time:8},nav:'plan',activeDate:'',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{},who:null,by:{},oath:null,mig:{},geo:{},sync:{key:'',v:0,at:0},binds:[]};
+let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},punch:{},locks:{},showBanked:false,here:{key:'home',time:8},nav:'plan',activeDate:'',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{},who:null,by:{},oath:null,mig:{},geo:{},sync:{key:'',v:0,at:0},binds:[],checkin:{}};
 const svc=j=>(S.sv&&S.sv[j.id]!==undefined)?S.sv[j.id]:j.sv;
 /* ---------- the equation ----------
    A crew mate costs 150 a day; every charge costs 30. Net is what the day is worth.
@@ -1109,6 +1115,73 @@ function reachable(){
       const arr=Math.max(t0+dt,j.o), fin=arr+svc(j);
       return {j,m,dt,arr,fin,ok:fin<=j.x,rate:j.p/(dt+svc(j)),inday:d.ids.includes(j.id)}})
     .sort((x,y)=>(y.ok-x.ok)||(GOBACK(y.j.id)-GOBACK(x.j.id))||y.rate-x.rate);   // a go-back outranks a fresh stop
+}
+/* ---------- the Run tab ----------
+   One clean screen: whatever route is bound right now, the same on every device because
+   bindings ride the crew sync. No day-editing, no runs list, no map -- just the checklist
+   he needs standing in a parking lot: check in, see how far the next stop is, get
+   directions, mark it done. */
+let RUN_HERE=null;   // {lat,lon} from the phone's own GPS, refreshed on tap
+function checkIn(id){
+  S.checkin=S.checkin||{};
+  S.checkin[id]={at:Date.now(),by:S.who||''};
+  dirty(); render();
+  toast('Checked in — '+(BY[id]?BY[id].c:''));
+}
+function runLocate(silent){
+  if(!navigator.geolocation){ if(!silent)toast('GPS is not available here'); return }
+  navigator.geolocation.getCurrentPosition(pos=>{
+    RUN_HERE=[pos.coords.latitude,pos.coords.longitude];
+    render();
+    if(!silent)toast('Location updated');
+  },()=>{ if(!silent)toast('Could not get your location') },{enableHighAccuracy:true,timeout:8000,maximumAge:60000});
+}
+function renderRun(){
+  const b=latestBind();
+  if(!b){
+    $('#s-run').innerHTML='<div class="card"><div class="lab">Nothing bound yet</div>'
+      +'<div class="hint" style="margin-top:5px">Build a day on Plan, then tap Bind this route. It shows up here — the same run, on every device signed into this plan.</div></div>';
+    return;
+  }
+  const liveDay=S.days.find(d=>d.date===b.date);
+  const ids=(liveDay?liveDay.ids:b.ids).filter(i=>BY[i]);
+  const doneN=ids.filter(shot).length;
+  const s=liveDay?simulate(liveDay):null;
+  const pay=s?s.pay:b.pay;
+  const pct=ids.length?Math.round(doneN/ids.length*100):0;
+  $('#s-run').innerHTML=
+    '<div class="card runhead"><div class="lab">The bound run</div>'
+    +'<div class="rh-name mono">'+escHTML(b.id)+'</div>'
+    +'<div class="rh-sub">'+doneN+' of '+ids.length+' done · '+fmt(pay)+(s&&s.net!==s.pay?' ('+fmt(s.net)+' net)':'')+' · bound '+escHTML(bindAgo(b))+(b.by&&CREW[b.by]?' by '+escHTML(CREW[b.by].short):'')+'</div>'
+    +'<div class="bar2" style="margin-top:8px"><span style="width:'+pct+'%"></span></div>'
+    +'<div class="row" style="margin-top:9px">'
+      +'<button class="ghost" id="runLoc">📡 '+(RUN_HERE?'Update my location':'Where am I')+'</button>'
+      +(liveDay&&ids.length?'<button class="ghost" id="runNavAll">🧭 Navigate the whole day</button>':'')
+    +'</div></div>'
+    +(ids.length?ids.map(id=>{
+      const j=BY[id], done_=shot(id), ci=S.checkin&&S.checkin[id];
+      const dist=RUN_HERE?mi(RUN_HERE,LL(j)):null;
+      const ciH=ci?(new Date(ci.at).getHours()+new Date(ci.at).getMinutes()/60):null;
+      return '<div class="stop runrow'+(done_?' done':'')+'">'
+        +'<div class="tm mono">'+(done_?'✓':(ciH!==null?hhmm(ciH):'•'))+'</div>'
+        +'<div><div class="nm">'+escHTML(j.n)+(done_?'<span class="badge v">shot</span>':'')+'</div>'
+          +'<div class="ad">'+escHTML(j.a)+', '+escHTML(j.c)+', '+escHTML(j.s)+'</div>'
+          +'<div class="hrs mono">'+(j.wp?'any time':hhmm(j.o)+'–'+hhmm(j.x))+(dist!==null?' · '+dist.toFixed(1)+' mi from you':'')+(ci?' · checked in '+hhmm(ciH):'')+'</div>'
+          +'<div class="acts">'
+            +(!ci&&!done_?'<button class="mini" data-checkin="'+id+'">📍 Check in</button>':'')
+            +'<button class="mini go" data-runnav="'+id+'">🧭 Navigate</button>'
+            +'<button class="mini'+(done_?' go':'')+'" data-rundone="'+id+'">'+(done_?'undo':'✓ mark done')+'</button>'
+          +'</div></div>'
+        +'<div class="pay mono">'+fmt(j.p)+'</div></div>';
+    }).join(''):'<div class="empty">Every stop on this run is done.</div>');
+  $('#runLoc').onclick=()=>runLocate(false);
+  const rna=$('#runNavAll'); if(rna)rna.onclick=()=>openDayRoute(liveDay);
+  $$('#s-run [data-checkin]').forEach(btn=>btn.onclick=()=>checkIn(btn.dataset.checkin));
+  $$('#s-run [data-runnav]').forEach(btn=>btn.onclick=()=>{const j=BY[btn.dataset.runnav];
+    window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(j.a+', '+j.c+', '+j.s)+'&travelmode=driving','_blank','noopener')});
+  $$('#s-run [data-rundone]').forEach(btn=>btn.onclick=()=>{const id=btn.dataset.rundone, was=shot(id);
+    setStatus(id,was?'todo':'captured'); afterFieldMark(id); render(); dirty();
+    toast(was?'Back on the run — '+BY[id].c:'Done — '+fmt(BY[id].p)+' banked')});
 }
 function renderNow(){
   const d=day(), list=reachable();
@@ -2487,6 +2560,7 @@ function render(){
     b.classList.toggle('on',on);
     if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   if(S.nav==='now')renderNow();
+  else if(S.nav==='run')renderRun();
   else if(S.nav==='plan')renderPlan();
   else if(S.nav==='clusters')renderClusters();
   else if(S.nav==='app')renderApp();
@@ -2525,7 +2599,7 @@ const LSKEY='ninja360-runsheet-v2';
    Locks never lose: they are append-only facts with a person and a time on them, so a merge
    unions them. Everything else is last-write-wins, and a write that would clobber somebody
    else's is refused by the server and merged here first. */
-const SHARED=['days','sv','loaded','status','notes','timers','punch','locks','custom','places','chargeAt','by','geo','evRange','lastRequest','mig','binds'];
+const SHARED=['days','sv','loaded','status','notes','timers','punch','locks','custom','places','chargeAt','by','geo','evRange','lastRequest','mig','binds','checkin'];
 const syncOn=()=>!!(S.sync&&S.sync.key&&S.sync.key.length>=8);
 const takeShared=s=>{const o={}; SHARED.forEach(k=>{if(s[k]!==undefined)o[k]=s[k]}); return o};
 function mergeShared(remote){
@@ -2668,7 +2742,7 @@ function syncSheet(){
 }
 function chip(txt,cls){const e=$('#syncChip');if(!e)return;e.textContent=txt;e.className='tbtn '+(cls||'')}
 function stampNow(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
-const NAVS=['now','plan','clusters','app','board','history'];
+const NAVS=['now','run','plan','clusters','app','board','history'];
 function refreshLiveTimers(){
    $$('.live-timer').forEach(el=>{const id=el.dataset.liveTimer; const st=jobTimerState(id); el.textContent=st.label+(st.running?' • run':''); el.classList.toggle('running',st.running); el.title=jobTooltip(id);});
 }
@@ -2708,6 +2782,7 @@ function mergeState(j){
   S.geo=(j.geo&&typeof j.geo==='object'&&!Array.isArray(j.geo))?j.geo:{};   // coordinates the browser resolved for rows that shipped city-level
   S.mig=(j.mig&&typeof j.mig==='object'&&!Array.isArray(j.mig))?j.mig:{};   // one-time migrations already applied on this device
   S.binds=Array.isArray(j.binds)?j.binds.filter(b=>b&&b.id&&Array.isArray(b.ids)):[];   // named route bindings — DATE:TIME:WHO
+  S.checkin=(j.checkin&&typeof j.checkin==='object'&&!Array.isArray(j.checkin))?j.checkin:{};   // arrival stamps for the Run tab — separate from a lock, which means shot
   return true;
 }
 /* ---------- one-time migrations ----------
