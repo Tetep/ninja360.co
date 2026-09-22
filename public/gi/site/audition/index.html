@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Redirecting… — Generationally Incorrect</title>
+<meta http-equiv="refresh" content="0; url=../be-on-the-show/">
+<script>
+  /* /gi/site/audition -> /gi/site/be-on-the-show/, query string preserved
+     (?src=... tracking for the six QR codes). JS handles the real redirect
+     so the ?src= survives; the meta refresh above is a no-JS fallback that
+     lands on the page without it. */
+  location.replace('../be-on-the-show/' + window.location.search);
+</script>
+</head>
+<body>
+<p>Redirecting to <a href="../be-on-the-show/">Be on the Show</a>…</p>
+</body>
+</html>
