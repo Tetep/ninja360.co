@@ -27,19 +27,30 @@ var GI_CONTACT_EMAIL = 'hello@generationallyincorrect.com';
   }
   var sourceData = captureSource();
 
-  /* ---- mobile nav toggle ---- */
-  var menuToggle = document.querySelector('.menu-toggle');
-  var bar = document.querySelector('.masthead .bar');
-  if (menuToggle && bar) {
-    menuToggle.addEventListener('click', function () {
-      var isOpen = bar.classList.toggle('nav-open');
-      menuToggle.setAttribute('aria-expanded', String(isOpen));
+  /* ---- Menu (v2 masthead: a single button expands a rust bar of links,
+     present identically on every /gi/site/ page) ---- */
+  var menuBtn = document.querySelector('.menu-btn');
+  var menuBar = document.querySelector('.menu-bar');
+  if (menuBtn && menuBar) {
+    var closeMenu = function () {
+      menuBar.hidden = true;
+      menuBtn.setAttribute('aria-expanded', 'false');
+    };
+    var openMenu = function () {
+      menuBar.hidden = false;
+      menuBtn.setAttribute('aria-expanded', 'true');
+    };
+    menuBtn.addEventListener('click', function () {
+      if (menuBar.hidden) openMenu(); else closeMenu();
     });
-    bar.querySelectorAll('.nav a').forEach(function (a) {
-      a.addEventListener('click', function () {
-        bar.classList.remove('nav-open');
-        menuToggle.setAttribute('aria-expanded', 'false');
-      });
+    menuBar.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', closeMenu);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !menuBar.hidden) { closeMenu(); menuBtn.focus(); }
+    });
+    document.addEventListener('click', function (e) {
+      if (!menuBar.hidden && !menuBtn.contains(e.target) && !menuBar.contains(e.target)) closeMenu();
     });
   }
 

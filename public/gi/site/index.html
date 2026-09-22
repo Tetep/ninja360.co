@@ -1,80 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Generationally Incorrect — Coming Dec 1</title>
-<meta name="description" content="Four generations. One table. Every generation has something to say. Generationally Incorrect launches December 1.">
-
-<meta property="og:title" content="Generationally Incorrect">
-<meta property="og:description" content="Every generation has something to say. Launching December 1.">
-<meta property="og:image" content="https://dojo.ninja360.co/gi/site/assets/og-image.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generationally Incorrect — Four Generations, One Table</title>
+<meta name="description" content="A lively, thoughtful podcast that brings together voices from different age groups to explore how culture, work, family, technology, and everyday life are understood across generations.">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Generationally Incorrect">
+<meta property="og:title" content="Generationally Incorrect">
+<meta property="og:description" content="Four generations. One table. Plenty to disagree about.">
+<meta property="og:image" content="https://dojo.ninja360.co/gi/site/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="assets/favicon.png">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+<link rel="stylesheet" href="assets/gi-site.css">
 <style>
-  :root{
-    --paper:#F3E4D3;
-    --card:#C6B49C;
-    --ink:#151412;
-    --rust:#C41E1D;
-  }
-  * { box-sizing: border-box; }
-  html,body{ margin:0; padding:0; background:var(--paper); }
-  body{
-    min-height:100vh;
-    font-family:'Space Mono', monospace;
-    color:var(--ink);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:48px 20px;
-    position:relative;
-    overflow-x:hidden;
-  }
-  body::before{
-    content:"";
-    position:fixed; inset:0;
-    background-image:radial-gradient(circle at 1px 1px, rgba(21,20,18,0.06) 1px, transparent 1px);
-    background-size:10px 10px;
-    mix-blend-mode:overlay;
-    pointer-events:none;
-  }
-  .wrap{
-    position:relative; z-index:2;
-    width:100%; max-width:760px;
-    display:flex; flex-direction:column; align-items:center; gap:26px;
-  }
-  /* Hero logo card. The V3b art carries a baked cream ground (#FFF5EC), so the
-     panel is set to exactly that colour — the art's edge disappears into the
-     card instead of showing as a lighter rectangle against the page's #F3E4D3
-     paper. To let the logo float with no card instead, point src at
-     logo-v3b-transparent.png and drop the background/border/shadow here. */
-  .logo-wrap{
-    position:relative; display:inline-flex; margin:8px 0 0; padding:16px 20px;
-    background:#FFF5EC; border:2px solid var(--ink); box-shadow:6px 6px 0 var(--ink);
-  }
-  .logo{ max-width:min(420px, 82vw); height:auto; display:block; }
-  .trailer-btn{
-    padding:11px 22px; border:2px solid var(--ink); background:var(--card); color:var(--ink);
-    font-family:'Space Mono', monospace; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
-    font-size:12px; border-radius:999px; cursor:pointer; box-shadow:3px 3px 0 var(--ink);
-  }
-  .trailer-btn:hover{ background:var(--paper); }
-  .kicker{
-    font-size:12px; letter-spacing:0.2em; color:var(--paper);
-    background:var(--rust); padding:8px 18px;
-    border:2px solid var(--ink); box-shadow:4px 4px 0 var(--ink);
-    text-transform:uppercase; font-weight:700; text-align:center;
-  }
-  /* Intro popup — plays once on load, closes itself when the video ends */
+  /* Home-only: the intro popup (item 5, done in #83 — kept as-is, only
+     relocated into the v2 page shell and re-pointed at the shared tokens
+     now that this page loads gi-site.css instead of its own local vars). */
   #intro-popup{
-    position:fixed; inset:0; z-index:500; background:rgba(21,20,18,.92);
+    position:fixed; inset:0; z-index:500; background:rgba(24,23,21,.92);
     display:flex; align-items:center; justify-content:center; padding:20px;
     opacity:1; visibility:visible;
     transition:opacity .25s ease, visibility 0s linear 0s;
@@ -82,117 +30,33 @@
   #intro-popup.hide{ opacity:0; visibility:hidden; pointer-events:none; transition:opacity .25s ease, visibility 0s linear .25s; }
   .intro-popup-frame{
     position:relative; width:min(92vw,720px); border-radius:8px; overflow:hidden;
-    background:var(--ink); border:2px solid var(--rust); box-shadow:0 16px 44px rgba(0,0,0,.5);
+    background:var(--gi-ink); border:2px solid var(--gi-red); box-shadow:0 16px 44px rgba(0,0,0,.5);
   }
   .intro-popup-frame iframe{ display:block; width:100%; aspect-ratio:16/9; border:0; }
   #intro-popup-close{
     position:absolute; top:8px; right:8px; z-index:2; width:34px; height:34px; border-radius:50%;
-    background:rgba(0,0,0,.55); color:var(--paper); border:1px solid rgba(255,255,255,.35);
+    background:rgba(0,0,0,.55); color:var(--gi-panel); border:1px solid rgba(255,255,255,.35);
     font-size:16px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
   }
   #intro-popup-close:hover{ background:rgba(0,0,0,.75); }
-  /* Action bar under the video. The sound button is deliberately large and
-     labelled: the clip autoplays muted (browsers block autoplay with sound),
-     so the visitor needs an obvious way to turn it on. */
   .intro-popup-actions{
     display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center;
-    padding:12px; background:var(--ink); border-top:2px solid var(--rust);
+    padding:12px; background:var(--gi-ink); border-top:2px solid var(--gi-red);
   }
   #intro-popup-sound{
     padding:12px 22px; min-height:44px; border-radius:999px; cursor:pointer;
-    background:var(--rust); color:var(--paper); border:2px solid var(--paper);
-    font-family:'Space Mono', monospace; font-weight:700; letter-spacing:.08em;
-    text-transform:uppercase; font-size:13px;
+    background:var(--gi-red); color:var(--gi-panel); border:2px solid var(--gi-panel);
+    font-family:var(--gi-font-display); font-weight:400; letter-spacing:.08em;
+    text-transform:uppercase; font-size:14px;
   }
   #intro-popup-sound:hover{ filter:brightness(1.12); }
   #intro-popup-skip{
     padding:12px 20px; min-height:44px; border-radius:999px; cursor:pointer;
-    background:transparent; color:var(--paper); border:2px solid rgba(255,255,255,.5);
-    font-family:'Space Mono', monospace; font-weight:700; letter-spacing:.08em;
-    text-transform:uppercase; font-size:12px;
+    background:transparent; color:var(--gi-panel); border:2px solid rgba(255,255,255,.5);
+    font-family:var(--gi-font-display); font-weight:400; letter-spacing:.08em;
+    text-transform:uppercase; font-size:13px;
   }
-  #intro-popup-skip:hover{ border-color:var(--paper); }
-  .tagline{
-    font-size:15px; max-width:520px; text-align:center; line-height:1.6; opacity:0.88;
-  }
-  .cta{
-    padding:14px 26px; border:2px solid var(--ink); background:var(--rust); color:var(--paper);
-    font-family:'Space Mono', monospace; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
-    font-size:13px; border-radius:999px; cursor:pointer; box-shadow:4px 4px 0 var(--ink);
-    text-decoration:none; display:inline-block;
-  }
-  .hosts-label{
-    font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; font-weight:700;
-    opacity:0.6; text-align:center;
-  }
-  .hosts{ display:flex; gap:20px; justify-content:center; flex-wrap:wrap; }
-  .host{ display:flex; flex-direction:column; align-items:center; gap:8px; }
-  .host-photo{
-    position:relative; width:96px; height:96px; border-radius:999px; overflow:hidden;
-    border:2px solid var(--ink); background:var(--card); cursor:pointer;
-  }
-  .host-photo img{
-    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
-    transition:opacity .2s ease;
-  }
-  .host-photo .host-face{ opacity:0; }
-  .host-photo:hover .host-logo, .host-photo.flipped .host-logo{ opacity:0; }
-  .host-photo:hover .host-face, .host-photo.flipped .host-face{ opacity:1; }
-  .host span{ font-size:11px; font-weight:700; text-align:center; }
-  .host .host-company{ font-size:9.5px; font-weight:600; opacity:0.65; text-transform:uppercase; letter-spacing:0.04em; }
-  .countdown{
-    display:flex; gap:12px; flex-wrap:wrap; justify-content:center;
-    background:var(--card); border:2px solid var(--ink); padding:18px 22px;
-    box-shadow:6px 6px 0 var(--ink);
-  }
-  .unit{ display:flex; flex-direction:column; align-items:center; gap:6px; }
-  .unit .tile{
-    position:relative; width:64px; height:76px; background:var(--ink);
-    border-radius:6px; overflow:hidden; box-shadow:inset 0 0 0 1px var(--ink);
-    display:flex; align-items:center; justify-content:center;
-  }
-  .unit .tile span{
-    font-family:'Anton', sans-serif; font-size:36px; color:var(--paper);
-    text-shadow:0 0 12px rgba(196,30,29,0.4);
-  }
-  .unit .tile::after{
-    content:""; position:absolute; left:0; right:0; top:50%; height:2px;
-    background:var(--rust); transform:translateY(-1px);
-  }
-  .unit label{ font-size:11px; letter-spacing:0.15em; text-transform:uppercase; font-weight:700; }
-  form.notify{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; width:100%; max-width:440px; }
-  form.notify input[type=email]{
-    flex:1; min-width:200px; padding:14px 16px; border:2px solid var(--ink);
-    background:var(--card); color:var(--ink); font-family:'Space Mono', monospace;
-    font-size:14px; border-radius:999px; outline:none;
-  }
-  form.notify button{
-    padding:14px 26px; border:2px solid var(--ink); background:var(--rust); color:var(--paper);
-    font-family:'Space Mono', monospace; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
-    font-size:13px; border-radius:999px; cursor:pointer; box-shadow:4px 4px 0 var(--ink);
-  }
-  .thanks{ color:var(--rust); font-weight:700; letter-spacing:0.08em; text-transform:uppercase; font-size:14px; text-align:center; }
-  .socials{ display:flex; gap:10px; }
-  .socials a{
-    width:38px; height:38px; display:flex; align-items:center; justify-content:center;
-    font-size:16px; border:2px solid var(--ink); color:var(--paper); background:var(--rust);
-    text-decoration:none; border-radius:4px;
-  }
-  .foot{ font-size:11px; opacity:0.5; letter-spacing:0.1em; text-transform:uppercase; text-align:center; }
-  #ghl-notify-frame{ display:none; }
-  /* easter egg — small, glowing, not linked from nav */
-  .egg-link{ display:block; margin-top:4px; }
-  .egg{
-    display:block; width:56px; height:56px; border-radius:50%; object-fit:cover;
-    filter:drop-shadow(0 0 6px rgba(255,140,0,.85)) drop-shadow(0 0 14px rgba(255,140,0,.5));
-    animation:eggGlow 2.4s ease-in-out infinite;
-    transition:transform .2s ease;
-  }
-  .egg:hover, .egg:focus-visible{ transform:scale(1.08); }
-  @keyframes eggGlow{
-    0%,100%{ filter:drop-shadow(0 0 6px rgba(255,140,0,.85)) drop-shadow(0 0 14px rgba(255,140,0,.5)); }
-    50%{ filter:drop-shadow(0 0 10px rgba(255,140,0,1)) drop-shadow(0 0 22px rgba(255,140,0,.75)); }
-  }
+  #intro-popup-skip:hover{ border-color:var(--gi-panel); }
 </style>
 </head>
 <body>
@@ -206,142 +70,111 @@
     </div>
   </div>
 </div>
-<div class="wrap">
 
-  <div class="countdown" id="countdown">
-    <div class="unit"><div class="tile"><span id="cd-days">00</span></div><label>Days</label></div>
-    <div class="unit"><div class="tile"><span id="cd-hours">00</span></div><label>Hrs</label></div>
-    <div class="unit"><div class="tile"><span id="cd-mins">00</span></div><label>Min</label></div>
-    <div class="unit"><div class="tile"><span id="cd-secs">00</span></div><label>Sec</label></div>
+<header class="masthead">
+  <div class="bar">
+    <a class="brand" href="/gi/site/">
+      <img class="mark" src="assets/logo-v3b-transparent.png" alt="Generationally Incorrect" width="75" height="57">
+    </a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="gi-menu">
+      <span class="menu-icon"><span></span><span></span><span></span></span>
+      <span class="menu-label">Menu</span>
+    </button>
   </div>
-
-  <div id="notify-block">
-    <form class="notify" id="notify-form">
-      <input type="email" id="notify-email" required placeholder="your@email.com" autocomplete="email">
-      <button type="submit">Notify Me</button>
-    </form>
-  </div>
-  <div class="thanks" id="notify-thanks" style="display:none;">You're on the list. Behave until then.</div>
-
-  <div class="logo-wrap">
-    <img class="logo" src="assets/logo-v3b-cream.png" alt="Generationally Incorrect — Every generation has something to say.">
-  </div>
-
-  <button class="trailer-btn" id="trailer-btn" type="button">▶ Watch the trailer</button>
-
-  <div class="kicker">A show for nobody who asked, but everyone needs it</div>
-
-  <p class="tagline">Gen Z, Millennial, Gen X, and Boomer — one table, one loaded question per episode: money, religion, work, AI, cancel culture, the stuff most shows dodge. No script. Just the argument, until somebody's mind moves.</p>
-
-  <div class="hosts-label">Produced by these three companies — and these three men</div>
-
-  <div class="hosts">
-    <div class="host">
-      <div class="host-photo" tabindex="0">
-        <img class="host-logo" src="assets/erik-logo.png" alt="Lucky 13 Studios">
-        <img class="host-face" src="assets/erik.jpg" alt="Erik Juergensen">
-      </div>
-      <span>Erik Juergensen</span>
-      <span class="host-company">Lucky 13 Studios</span>
+  <nav class="menu-bar" id="gi-menu" aria-label="Main" hidden>
+    <div class="menu-inner">
+      <a href="/gi/site/">Home</a>
+      <a href="/gi/site/#listen">Listen</a>
+      <a href="/gi/site/be-on-the-show/">Be on the Show</a>
+      <a href="mailto:hello@generationallyincorrect.com">Contact</a>
     </div>
-    <div class="host">
-      <div class="host-photo" tabindex="0">
-        <img class="host-logo" src="assets/gabe-logo.png" alt="Lucid Cinematics">
-        <img class="host-face" src="assets/gabe.jpg" alt="Gabe Miller">
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div class="accent-line">Every generation has something to say.</div>
+      <h1>Four generations. One table. Plenty to disagree about.</h1>
+      <p>Generationally Incorrect is a lively, thoughtful podcast that brings together voices from different age groups to explore how culture, work, family, technology, and everyday life are understood across generations. Each podcast episode centers on a specific topic, and if you have a story, experience, perspective or opinion that could spark meaningful conversation, we’d love to hear from you. Click Be on the Show to select the topics you’d be comfortable talking about and join us as a guest to help challenge assumptions with curiosity, humor, and respect.</p>
+      <div class="cta-row">
+        <a class="btn btn-red" href="/gi/site/be-on-the-show/">Be on the Show</a>
+        <a class="btn btn-ghost" href="#listen">Listen</a>
+        <button class="btn btn-ghost" id="trailer-btn" type="button">▶ Watch the trailer</button>
       </div>
-      <span>Gabe Miller</span>
-      <span class="host-company">Lucid Cinematics</span>
     </div>
-    <div class="host">
-      <div class="host-photo" tabindex="0">
-        <img class="host-logo" src="assets/tim-logo.jpg" alt="Ninja-360">
-        <img class="host-face" src="assets/tim.jpg" alt="Tim Petet">
+    <div class="hero-art">
+      <div class="logo-panel">
+        <img src="assets/logo-v3b-cream.png" alt="Generationally Incorrect — Every generation has something to say.">
+        <!-- Hero imagery slot: Tim to supply a photo/still for this panel.
+             <img src="assets/hero-photo.jpg" alt="" style="border:2px solid var(--gi-ink)"> -->
       </div>
-      <span>Tim Petet</span>
-      <span class="host-company">Ninja-360</span>
     </div>
   </div>
+</section>
 
-  <a class="cta" href="https://links.ninja360.net/widget/form/p7FC8idY6HwpFud2p8kM" target="_blank" rel="noopener">Be on the Show</a>
-
-  <div class="socials">
-    <a href="https://instagram.com/generationallyincorrect" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-    <a href="https://facebook.com/generationallyincorrect" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-    <a href="https://tiktok.com/@generationallyincorrect" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-    <a href="https://youtube.com/@GenerationallyIncorrect" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+<section class="know-band alt">
+  <div class="wrap center">
+    <h2>Know someone who should be on?</h2>
+    <p>If you know someone else who would be great on the podcast, please send them this page…perhaps that coworker who treats every breakroom conversation like a congressional hearing, an uncle who believes voicemail is still the backbone of civilization, a niece who can explain seventeen TikTok trends before breakfast, or anyone who wants to prove their age group is only mildly responsible for the chaos.</p>
   </div>
+</section>
 
-  <div class="foot">© 2026 Generationally Incorrect — every generation gets roasted equally</div>
+<section id="listen">
+  <div class="wrap">
+    <div class="kicker">Listen &amp; Watch</div>
+    <h2>Catch an episode</h2>
+    <div class="listen-grid">
+      <a class="listen-tile" href="https://youtube.com/@GenerationallyIncorrect" target="_blank" rel="noopener">
+        <span class="ic"><i class="fab fa-youtube" aria-hidden="true"></i></span>
+        <span class="lbl">YouTube</span>
+      </a>
+      <div class="listen-tile is-soon">
+        <span class="ic"><i class="fab fa-spotify" aria-hidden="true"></i></span>
+        <span class="lbl">Spotify</span>
+        <span class="soon">Coming soon</span>
+      </div>
+      <div class="listen-tile is-soon">
+        <span class="ic"><i class="fab fa-apple" aria-hidden="true"></i></span>
+        <span class="lbl">Apple Podcasts</span>
+        <span class="soon">Coming soon</span>
+      </div>
+      <div class="listen-tile">
+        <span class="lbl">Social</span>
+        <span class="socials-inline">
+          <a href="https://instagram.com/generationallyincorrect" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+          <a href="https://facebook.com/generationallyincorrect" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook" aria-hidden="true"></i></a>
+          <a href="https://tiktok.com/@generationallyincorrect" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok" aria-hidden="true"></i></a>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <a class="egg-link" href="dashboard/" aria-label="Design reference"><img class="egg" src="assets/head-ninja-tim.png" alt=""></a>
-</div>
+<section class="cta-band">
+  <div class="wrap">
+    <h2>Think you can hold your own?</h2>
+    <p>Pick the topics you'll argue about and grab a seat at the table.</p>
+    <a class="btn btn-red" href="/gi/site/be-on-the-show/">Be on the Show</a>
+  </div>
+</section>
 
-<!--
-  NOTIFY-ME SUBMISSION — WIRING NEEDED
+<footer class="footer-v2">
+  <div class="wrap">
+    <div class="copy">© 2026 Generationally Incorrect</div>
+    <div class="tag">Every generation gets roasted equally.</div>
+  </div>
+</footer>
 
-  GI_NOTIFY_FORM_ID below is a placeholder. Before this goes live:
-  1. In the GI GoHighLevel sub-account (location whkhRNZwHhdpUToE7SpN), build a
-     one-field form ("GI Notify Me V01") that captures just email, and tags the
-     contact something like "gi status: general interest" — NOT any of the
-     contestant tags, so Erik's casting Smart Lists don't get cluttered with
-     people who only want a launch notification.
-  2. Drop that form's ID into GI_NOTIFY_FORM_ID below.
-  3. Test one real submission and confirm the contact lands in GHL with the
-     right tag, not in GI Contestants V01.
+<a class="egg" href="dashboard/" aria-label="Design reference"></a>
 
-  Until that's done, this form still shows the "you're on the list" message
-  (so the page doesn't look broken) but the email is only logged to the
-  browser console, not saved anywhere. Check the console for a warning.
--->
-<iframe id="ghl-notify-frame" name="ghl-notify-frame"></iframe>
+<script src="assets/gi-site.js"></script>
 <script>
-  const GI_NOTIFY_FORM_ID = ''; // <-- set this once the GHL form exists
-
-  // Countdown — Dec 1, 2026, 6:00 AM Central (matches the publish decision)
-  const LAUNCH = new Date('2026-12-01T06:00:00-06:00').getTime();
-  function tick(){
-    const now = Date.now();
-    const diff = Math.max(0, LAUNCH - now);
-    const sec = Math.floor(diff / 1000);
-    const pad = n => String(n).padStart(2, '0');
-    document.getElementById('cd-days').textContent  = pad(Math.floor(sec / 86400));
-    document.getElementById('cd-hours').textContent = pad(Math.floor((sec % 86400) / 3600));
-    document.getElementById('cd-mins').textContent  = pad(Math.floor((sec % 3600) / 60));
-    document.getElementById('cd-secs').textContent  = pad(sec % 60);
-  }
-  tick();
-  setInterval(tick, 1000);
-
-  // Notify Me
-  document.getElementById('notify-form').addEventListener('submit', function(e){
-    e.preventDefault();
-    const email = document.getElementById('notify-email').value;
-
-    if (GI_NOTIFY_FORM_ID) {
-      const frame = document.getElementById('ghl-notify-frame');
-      frame.src = 'https://links.ninja360.net/widget/form/' + GI_NOTIFY_FORM_ID + '?email=' + encodeURIComponent(email);
-    } else {
-      console.warn('GI_NOTIFY_FORM_ID is not set — email captured nowhere but the console:', email);
-    }
-
-    document.getElementById('notify-block').style.display = 'none';
-    document.getElementById('notify-thanks').style.display = 'block';
-  });
-
-  // V03 logo candidate — tap/click the logo to preview, doesn't touch the live mark
-  // Host photo/logo swap — CSS :hover covers desktop; touch devices get no
-  // real hover, so tapping toggles a class that does the same thing.
-  document.querySelectorAll('.host-photo').forEach(function (el) {
-    el.addEventListener('click', function () { el.classList.toggle('flipped'); });
-    el.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.classList.toggle('flipped'); }
-    });
-  });
-
   // Intro popup — shows once per visit, and can be reopened any time from the
   // hero's "Watch the trailer" button. Closes on the X, on "Skip to the site",
   // on Esc, on a click outside the video, and when the clip ends (via the
-  // YouTube IFrame API, so it reacts to the real end of playback).
+  // YouTube IFrame API, so it reacts to the real end of playback). Unchanged
+  // behavior from #83 — only relocated into the v2 page shell.
   (function () {
     var popup = document.getElementById('intro-popup');
     var closeBtn = document.getElementById('intro-popup-close');
@@ -356,8 +189,6 @@
     var seen = false;
     try { seen = sessionStorage.getItem(SEEN_KEY) === '1'; } catch (_) {}
 
-    // Already watched this visit: hide it and strip autoplay, so the clip
-    // isn't quietly playing behind the page.
     if (seen) {
       popup.classList.add('hide');
       if (frame) frame.src = frame.src.replace('autoplay=1', 'autoplay=0');
@@ -381,7 +212,7 @@
     if (skipBtn) skipBtn.addEventListener('click', closePopup);
     if (trailerBtn) trailerBtn.addEventListener('click', openPopup);
     popup.addEventListener('click', function (e) {
-      if (e.target === popup) closePopup(); // backdrop click
+      if (e.target === popup) closePopup();
     });
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && !popup.classList.contains('hide')) closePopup();
@@ -391,11 +222,6 @@
     tag.src = 'https://www.youtube.com/iframe_api';
     document.head.appendChild(tag);
 
-    // Starts muted (mute=1 in the embed URL) because autoplay-with-sound is
-    // blocked on most browsers otherwise -- an unmuted autoplay attempt
-    // would just silently fail to play at all, with no controls visible to
-    // recover it. The sound button below unmutes on a real tap/click, which
-    // browsers do allow.
     window.onYouTubeIframeAPIReady = function () {
       player = new YT.Player('gi-intro-player', {
         events: {
