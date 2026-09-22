@@ -50,20 +50,22 @@
     width:100%; max-width:760px;
     display:flex; flex-direction:column; align-items:center; gap:26px;
   }
-  .logo-wrap{ position:relative; display:inline-flex; margin:8px 0 0; }
-  .logo{ max-width:min(420px, 82vw); height:auto; display:block; cursor:pointer; transition:transform .15s ease; }
-  .logo:hover{ transform:scale(1.015); }
-  .v03-pop{
-    position:absolute; top:100%; left:50%; transform:translate(-50%,10px);
-    width:min(340px,86vw); background:var(--paper); border:2px solid var(--ink);
-    border-radius:10px; padding:14px; box-shadow:6px 6px 0 var(--ink);
-    opacity:0; visibility:hidden; pointer-events:none; z-index:30; text-align:center;
-    transition:opacity .18s ease, transform .18s ease;
+  /* Hero logo card. The V3b art carries a baked cream ground (#FFF5EC), so the
+     panel is set to exactly that colour — the art's edge disappears into the
+     card instead of showing as a lighter rectangle against the page's #F3E4D3
+     paper. To let the logo float with no card instead, point src at
+     logo-v3b-transparent.png and drop the background/border/shadow here. */
+  .logo-wrap{
+    position:relative; display:inline-flex; margin:8px 0 0; padding:16px 20px;
+    background:#FFF5EC; border:2px solid var(--ink); box-shadow:6px 6px 0 var(--ink);
   }
-  .v03-pop.open{ opacity:1; visibility:visible; transform:translate(-50%,16px); pointer-events:auto; }
-  .v03-pop img{ width:100%; border-radius:6px; display:block; margin:8px 0 6px; }
-  .v03-pop .v03-tag{ font-size:10px; letter-spacing:.14em; text-transform:uppercase; font-weight:700; color:var(--rust); }
-  .v03-pop .v03-note{ font-size:10.5px; line-height:1.5; opacity:.75; }
+  .logo{ max-width:min(420px, 82vw); height:auto; display:block; }
+  .trailer-btn{
+    padding:11px 22px; border:2px solid var(--ink); background:var(--card); color:var(--ink);
+    font-family:'Space Mono', monospace; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+    font-size:12px; border-radius:999px; cursor:pointer; box-shadow:3px 3px 0 var(--ink);
+  }
+  .trailer-btn:hover{ background:var(--paper); }
   .kicker{
     font-size:12px; letter-spacing:0.2em; color:var(--paper);
     background:var(--rust); padding:8px 18px;
@@ -89,12 +91,27 @@
     font-size:16px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
   }
   #intro-popup-close:hover{ background:rgba(0,0,0,.75); }
-  #intro-popup-sound{
-    position:absolute; bottom:8px; right:8px; z-index:2; width:34px; height:34px; border-radius:50%;
-    background:rgba(0,0,0,.55); color:var(--paper); border:1px solid rgba(255,255,255,.35);
-    font-size:15px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  /* Action bar under the video. The sound button is deliberately large and
+     labelled: the clip autoplays muted (browsers block autoplay with sound),
+     so the visitor needs an obvious way to turn it on. */
+  .intro-popup-actions{
+    display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center;
+    padding:12px; background:var(--ink); border-top:2px solid var(--rust);
   }
-  #intro-popup-sound:hover{ background:rgba(0,0,0,.75); }
+  #intro-popup-sound{
+    padding:12px 22px; min-height:44px; border-radius:999px; cursor:pointer;
+    background:var(--rust); color:var(--paper); border:2px solid var(--paper);
+    font-family:'Space Mono', monospace; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; font-size:13px;
+  }
+  #intro-popup-sound:hover{ filter:brightness(1.12); }
+  #intro-popup-skip{
+    padding:12px 20px; min-height:44px; border-radius:999px; cursor:pointer;
+    background:transparent; color:var(--paper); border:2px solid rgba(255,255,255,.5);
+    font-family:'Space Mono', monospace; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; font-size:12px;
+  }
+  #intro-popup-skip:hover{ border-color:var(--paper); }
   .tagline{
     font-size:15px; max-width:520px; text-align:center; line-height:1.6; opacity:0.88;
   }
@@ -181,9 +198,12 @@
 <body>
 <div id="intro-popup" role="dialog" aria-modal="true" aria-label="Show intro">
   <div class="intro-popup-frame">
-    <button id="intro-popup-close" type="button" aria-label="Skip intro">✕</button>
-    <button id="intro-popup-sound" type="button" aria-label="Turn on sound" aria-pressed="false">🔇</button>
+    <button id="intro-popup-close" type="button" aria-label="Close intro">✕</button>
     <iframe id="gi-intro-player" src="https://www.youtube.com/embed/7ijIxOqyNCs?autoplay=1&mute=1&playsinline=1&controls=0&modestbranding=1&rel=0&enablejsapi=1" title="Generationally Incorrect — Intro" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <div class="intro-popup-actions">
+      <button id="intro-popup-sound" type="button" aria-pressed="false">🔊 Tap for sound</button>
+      <button id="intro-popup-skip" type="button">Skip to the site →</button>
+    </div>
   </div>
 </div>
 <div class="wrap">
@@ -204,13 +224,10 @@
   <div class="thanks" id="notify-thanks" style="display:none;">You're on the list. Behave until then.</div>
 
   <div class="logo-wrap">
-    <img class="logo" id="logo-img" src="assets/gi-logo.png" alt="Generationally Incorrect — Every generation has something to say." role="button" tabindex="0" aria-expanded="false" aria-describedby="v03-pop">
-    <div class="v03-pop" id="v03-pop" role="tooltip">
-      <div class="v03-tag">Possible V03 — not decided</div>
-      <img src="assets/logo-v03-candidate.png" alt="Candidate V03 concept — a distinct microphone icon per generation">
-      <div class="v03-note">One mic style per generation, "no mic" landing on Millennials. Exploring — the logo above stays live either way.</div>
-    </div>
+    <img class="logo" src="assets/logo-v3b-cream.png" alt="Generationally Incorrect — Every generation has something to say.">
   </div>
+
+  <button class="trailer-btn" id="trailer-btn" type="button">▶ Watch the trailer</button>
 
   <div class="kicker">A show for nobody who asked, but everyone needs it</div>
 
@@ -312,23 +329,6 @@
   });
 
   // V03 logo candidate — tap/click the logo to preview, doesn't touch the live mark
-  (function () {
-    var logoImg = document.getElementById('logo-img');
-    var pop = document.getElementById('v03-pop');
-    function toggle(open) {
-      var next = open != null ? open : !pop.classList.contains('open');
-      pop.classList.toggle('open', next);
-      logoImg.setAttribute('aria-expanded', String(next));
-    }
-    logoImg.addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
-    logoImg.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
-    });
-    document.addEventListener('click', function (e) {
-      if (!e.target.closest('.logo-wrap')) toggle(false);
-    });
-  })();
-
   // Host photo/logo swap — CSS :hover covers desktop; touch devices get no
   // real hover, so tapping toggles a class that does the same thing.
   document.querySelectorAll('.host-photo').forEach(function (el) {
@@ -338,25 +338,53 @@
     });
   });
 
-  // Intro popup — plays once on load, closes itself when the video ends
-  // (or the visitor skips it). Uses the YouTube IFrame API to react to the
-  // real end of playback rather than guessing the clip's length.
+  // Intro popup — shows once per visit, and can be reopened any time from the
+  // hero's "Watch the trailer" button. Closes on the X, on "Skip to the site",
+  // on Esc, on a click outside the video, and when the clip ends (via the
+  // YouTube IFrame API, so it reacts to the real end of playback).
   (function () {
     var popup = document.getElementById('intro-popup');
     var closeBtn = document.getElementById('intro-popup-close');
+    var skipBtn = document.getElementById('intro-popup-skip');
     var soundBtn = document.getElementById('intro-popup-sound');
-    if (!popup || !closeBtn) return;
+    var trailerBtn = document.getElementById('trailer-btn');
+    var frame = document.getElementById('gi-intro-player');
+    if (!popup) return;
 
-    function closePopup() {
+    var SEEN_KEY = 'gi-intro-seen';
+    var player;
+    var seen = false;
+    try { seen = sessionStorage.getItem(SEEN_KEY) === '1'; } catch (_) {}
+
+    // Already watched this visit: hide it and strip autoplay, so the clip
+    // isn't quietly playing behind the page.
+    if (seen) {
       popup.classList.add('hide');
+      if (frame) frame.src = frame.src.replace('autoplay=1', 'autoplay=0');
     }
 
-    closeBtn.addEventListener('click', closePopup);
+    function openPopup() {
+      popup.classList.remove('hide');
+      if (player && typeof player.playVideo === 'function') {
+        try { player.seekTo(0); player.playVideo(); } catch (_) {}
+      }
+    }
+    function closePopup() {
+      popup.classList.add('hide');
+      try { sessionStorage.setItem(SEEN_KEY, '1'); } catch (_) {}
+      if (player && typeof player.pauseVideo === 'function') {
+        try { player.pauseVideo(); } catch (_) {}
+      }
+    }
+
+    if (closeBtn) closeBtn.addEventListener('click', closePopup);
+    if (skipBtn) skipBtn.addEventListener('click', closePopup);
+    if (trailerBtn) trailerBtn.addEventListener('click', openPopup);
     popup.addEventListener('click', function (e) {
       if (e.target === popup) closePopup(); // backdrop click
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closePopup();
+      if (e.key === 'Escape' && !popup.classList.contains('hide')) closePopup();
     });
 
     var tag = document.createElement('script');
@@ -368,7 +396,6 @@
     // would just silently fail to play at all, with no controls visible to
     // recover it. The sound button below unmutes on a real tap/click, which
     // browsers do allow.
-    var player;
     window.onYouTubeIframeAPIReady = function () {
       player = new YT.Player('gi-intro-player', {
         events: {
@@ -385,13 +412,11 @@
         if (player.isMuted()) {
           player.unMute();
           player.setVolume(100);
-          soundBtn.textContent = '🔊';
-          soundBtn.setAttribute('aria-label', 'Mute');
+          soundBtn.textContent = '🔇 Mute';
           soundBtn.setAttribute('aria-pressed', 'true');
         } else {
           player.mute();
-          soundBtn.textContent = '🔇';
-          soundBtn.setAttribute('aria-label', 'Turn on sound');
+          soundBtn.textContent = '🔊 Tap for sound';
           soundBtn.setAttribute('aria-pressed', 'false');
         }
       });
