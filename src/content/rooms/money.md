@@ -12,9 +12,9 @@ cta: "**Nearest cash:** confirm the 7/9 IDS field day and invoice. That's your b
 ref: "Full detail: the Money Strategy workbook (two-ledger V2)."
 ---
 
-### Truth beautifully told — including the ledger
+### Their story told well — including the ledger
 
-"Tell the truth beautifully" isn't just a camera philosophy. It's how this operation handles money. No fuzzy math between friends, no handshake economics, no pretending revenue exists before the check clears.
+"Tell their story, well" isn't just a camera philosophy. It's how this operation handles money. No fuzzy math between friends, no handshake economics, no pretending revenue exists before the check clears.
 
 ### Two ledgers, zero confusion
 

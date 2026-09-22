@@ -39,4 +39,4 @@ Not logos. Not listings. **People.** Behind every storefront is an owner who bet
 
 ### The triad
 
-Put them on the map. Tell the truth beautifully. Always sharpen the blade. This room owns the first line — the Forge owns the second, the Floor owns the third.
+Put them on the map. Tell their story, well. Always sharpen the blade. This room owns the first line — the Forge owns the second, the Floor owns the third.
