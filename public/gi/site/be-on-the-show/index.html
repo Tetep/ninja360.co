@@ -112,17 +112,10 @@
 
 <section>
   <div class="wrap center">
-    <!-- Logo card above the form — brand doc "Where it goes" №2.
-         Official master art: V3b (Tim, Sep 2026). The panel is #FFF5EC to match
-         the art's baked cream ground, so the image's edge is invisible against
-         it. The promo video plays as a pop-up on load instead of living here
-         (Tim, 9/22/26) — see #promo-popup above. -->
-    <div class="hero-art" style="margin-bottom:8px">
-      <div class="logo-panel" style="max-width:420px">
-        <img src="../assets/logo-v3b-cream.png" alt="Generationally Incorrect — Podcast">
-      </div>
-    </div>
-    <div class="signup-panel" style="margin-top:22px;max-width:600px">
+    <!-- No static logo card here (Tim, 9/22/26) — the promo pop-up already
+         carries the branding on load, so a second logo above the form was
+         redundant once it closes. See #promo-popup above. -->
+    <div class="signup-panel" style="margin-top:0;max-width:600px">
       <!-- min-height is a fallback only — form_embed.js below auto-resizes the
            iframe to the form's real content height so the page scrolls as one
            piece instead of scrolling inside a clipped box (Tim, 9/22/26). -->
