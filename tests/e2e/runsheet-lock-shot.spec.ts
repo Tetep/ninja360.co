@@ -276,4 +276,30 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(r.b).toBe(false);
     expect(r.c).toEqual({ lockGone: true, planLocked: true });
   });
+
+  test('Score: the Verizon running total adds up, and moves when a stop is shot', async ({ page }) => {
+    const y = yesterday();
+    await open(page, state({ days: [day({ date: y, ids: [OSAGE] })], activeDate: y, nav: 'board' }), '#s-board');
+    await noSidewaysScroll(page, 'Score tab');
+    await expect(page.locator('#vzTotal')).toBeVisible();
+    const read = async () => ({
+      done: +(await page.locator('#vzDone').innerText()),
+      all: +(await page.locator('#vzAll').innerText()),
+      left: +(await page.locator('#vzLeft').innerText()),
+      hold: (await page.locator('#vzHold').count()) ? +(await page.locator('#vzHold').innerText()) : 0,
+    });
+    const before = await read();
+    // every Verizon-channel stop on the board, counted from the app's own data
+    const total = await page.evaluate(() => (window as any).eval("J.filter(j=>!j.wp&&j.ch==='Verizon'&&j.st!=='Removed').length"));
+    expect(before.all).toBe(total);
+    expect(before.all).toBeGreaterThan(100);
+    expect(before.done + before.left + before.hold).toBe(before.all);   // the three always add up
+    // shooting one Verizon stop moves exactly one from left to done
+    await page.evaluate(id => { const w = window as any; w.markShot(id, true); w.render(); }, OSAGE);
+    const after = await read();
+    expect(after.all).toBe(before.all);
+    expect(after.done).toBe(before.done + 1);
+    expect(after.left).toBe(before.left - 1);
+    await expect(page.locator('#vzTotal .bar2')).toHaveAttribute('aria-label', new RegExp(after.done + ' of ' + after.all));
+  });
 });

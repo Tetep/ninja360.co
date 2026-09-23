@@ -2714,6 +2714,7 @@ function renderBoard(){
   const dayOf={}; S.days.forEach((d,i)=>d.ids.forEach(id=>dayOf[id]=d.date||('Day '+(i+1))));
 
   $('#s-board').innerHTML=`
+    ${verizonTotal()}
     <div class="sb-hero card">
       <div class="lab">This week &middot; ${ws.toLocaleDateString(undefined,{month:'short',day:'numeric'})}&ndash;${we.toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div>
       <div class="sb-big mono">${fmt(earnedWeek)}</div>
@@ -3336,6 +3337,26 @@ function doCsv(){
     document.body.appendChild(link);link.click();link.remove();
     URL.revokeObjectURL(url);toast('CSV downloaded');
   }catch(e){toast('Could not download the CSV')}
+}
+/* ---------- the Verizon running total: how many there are, how many are done, how many are left ----------
+   The whole Verizon channel in one glance, at the top of Score. Done = shot by us or banked by IDS
+   (one definition, the same as everywhere else); on hold is counted apart; left is everything still
+   to shoot. The three always add up to the total — a held stop that is also banked counts once. */
+function verizonTotal(){
+  const vz=J.filter(j=>!j.wp&&j.ch==='Verizon'&&j.st!=='Removed');
+  const total=vz.length, done=vz.filter(j=>LOCKED(j.id)).length,
+        hold=vz.filter(j=>HOLD(j)&&!LOCKED(j.id)).length, left=vz.filter(UNEARNED).length;
+  const owed=vz.filter(j=>GOBACK(j.id)||(j.st==='Return Owed'&&!shot(j.id))).length;
+  const leftPts=vz.filter(UNEARNED).reduce((t,j)=>t+j.p,0);
+  const pct=total?Math.round(done/total*100):0, w=n=>total?(n/total*100).toFixed(2):0;
+  return `<div class="sb-hero card" id="vzTotal">
+      <div class="lab">Verizons &middot; running total</div>
+      <div class="sb-big mono"><span id="vzDone">${done}</span><span style="font-size:.4em;font-weight:600;color:var(--ink2)"> of <span id="vzAll">${total}</span> done</span></div>
+      <div class="sb-sub"><b id="vzLeft">${left}</b> left to do &middot; ${pct}% shot</div>
+      <div class="bar2" style="display:flex" role="img" aria-label="${done} of ${total} Verizon stores done, ${left} left, ${hold} on hold">
+        <span style="width:${w(done)}%;background:var(--money)"></span><span style="width:${w(hold)}%;background:var(--line2)"></span></div>
+      <div class="hint" style="margin:8px 0 0">${hold?'<span id="vzHold">'+hold+'</span> on hold &middot; ':''}${owed?owed+' go-back'+(owed===1?'':'s')+' owed &middot; ':''}${fmt(leftPts)} left on the board</div>
+    </div>`;
 }
 boot();
 
