@@ -9,16 +9,25 @@ import { test, expect, Page } from '@playwright/test';
 
 const LSKEY = 'ninja360-runsheet-v2';
 const ROUTE = '/verizon.html';
-const OSAGE = '2026-4522';   // Russell Cellular 126883 — Osage City, KS (Open, not loaded in IDS Capture)
-const EMPORIA = '2026-8888'; // Cellular Sales 121991 — Emporia, KS (Open, not loaded)
+const OSAGE = '2026-4522';    // Russell Cellular 126883 — Osage City, KS (Open, not loaded in IDS Capture)
+const EMPORIA = '2026-8888';  // Cellular Sales 121991 — Emporia, KS (Open, not loaded)
+const SALINA = '2026-8093';   // Victra 109861 — Salina, KS (Return Owed, three-item punch list)
 
 const iso = (d: Date) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 const mdy = (s: string) => s.slice(5, 7) + '/' + s.slice(8, 10) + '/' + s.slice(0, 4);
-const tomorrow = () => { const d = new Date(); d.setDate(d.getDate() + 1); return iso(d); };
+const shift = (n: number) => { const d = new Date(); d.setDate(d.getDate() + n); return iso(d); };
+const today = () => shift(0);
+const tomorrow = () => shift(1);
+const yesterday = () => shift(-1);
+
+const day = (over: Record<string, unknown> = {}) => ({
+  id: 'dtest', date: tomorrow(), startKey: 'home', startTime: 8, endKey: 'home', ids: [OSAGE, EMPORIA],
+  startCharge: 100, crew: null, pace: 'split', ...over,
+});
 
 function state(extra: Record<string, unknown> = {}) {
   return {
-    days: [{ id: 'dtest', date: tomorrow(), startKey: 'home', startTime: 8, endKey: 'home', ids: [OSAGE, EMPORIA], startCharge: 100, crew: null, pace: 'split' }],
+    days: [day()],
     active: 0, activeDate: tomorrow(),
     sv: {}, loaded: {}, status: {}, notes: {}, timers: {}, punch: {}, locks: {}, showBanked: false,
     here: { key: 'home', time: 8 }, nav: 'plan', custom: [], places: {}, lastRequest: null, evRange: 260, chargeAt: {},
@@ -30,18 +39,28 @@ function state(extra: Record<string, unknown> = {}) {
   };
 }
 
-async function open(page: Page, seed: Record<string, unknown>) {
+// the number under a strip label ("Miles", "Finish", …) — the label is the first line of the cell
+const cell = async (page: Page, scope: string, label: string) => {
+  const cells = await page.locator(scope + ' .mcell').allInnerTexts();
+  const hit = cells.find(t => t.split('\n')[0].trim().toLowerCase() === label.toLowerCase());
+  expect(hit, 'a "' + label + '" cell in ' + scope).toBeTruthy();
+  return hit!.split('\n').slice(1).join(' ').trim();
+};
+
+async function open(page: Page, seed: Record<string, unknown>, tab = '#s-plan') {
+  // the app geocodes rows, loads tiles and chargers, and fetches fonts on start: none of it is under test,
+  // and any of it can re-render the page mid-click
+  await page.route(/nominatim\.openstreetmap\.org|tile\.openstreetmap\.org|api\.openchargemap\.io|fonts\.(googleapis|gstatic)\.com/, r => r.abort());
   // seed once: a reload must find what the app saved, not the seed again
   await page.addInitScript(([k, v]) => { if (!localStorage.getItem(k)) localStorage.setItem(k, JSON.stringify(v)); }, [LSKEY, seed] as const);
   const res = await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
   expect(res?.status(), 'the run sheet should resolve').toBeLessThan(400);
-  await expect(page.locator('#s-plan')).toBeVisible();
+  await expect(page.locator(tab)).toBeVisible();
 }
 
-const milesOnPlan = async (page: Page) => {
-  const t = await page.locator('#s-plan .mcell', { hasText: 'Miles' }).first().innerText();
-  return parseInt(t.replace(/[^0-9]/g, ''), 10);
-};
+const saved = (page: Page) => page.evaluate(k => JSON.parse(localStorage.getItem(k) || '{}'), LSKEY);
+
+const milesOnPlan = async (page: Page) => parseInt((await cell(page, '#s-plan', 'Miles')).split(' ')[0].replace(/[^0-9]/g, ''), 10);
 // "Banked · N shot" counts every shot stop in the book, IDS-banked ones included — so assert deltas
 const shotCount = async (page: Page) => {
   const t = await page.locator('#counters').innerText();
@@ -62,7 +81,8 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
 
     // two live stops (the "Arrive home" tail is a .stop card too), real miles, nothing planned or shot yet
     await expect(page.locator('#stops [data-shot]')).toHaveCount(2);
-    expect(await milesOnPlan(page)).toBeGreaterThan(0);
+    const milesBefore = await milesOnPlan(page);
+    expect(milesBefore).toBeGreaterThan(0);
     await expect(page.locator('#stops .badge.pl')).toHaveCount(0);
     await expect(page.locator('#lockbar')).toHaveCount(0);
     const shotBefore = await shotCount(page);
@@ -74,58 +94,186 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await expect(page.locator('#fDate')).toBeDisabled();
     await expect(page.locator('#bDel')).toHaveCount(0);
     await expect(page.locator('#stops [data-rm]')).toHaveCount(0);
-    expect(await milesOnPlan(page)).toBeGreaterThan(0);
+    expect(await milesOnPlan(page)).toBe(milesBefore);
+    expect(await cell(page, '#s-plan', 'Finish')).not.toBe('08:00');   // the leave time — a route with no live stops would finish where it started
     await expect(page.locator('#stops .stop.done')).toHaveCount(0);
     expect(await shotCount(page)).toBe(shotBefore);
 
     // SHOT on a stop parked on tomorrow: the app asks, and dates it today when told yes
-    page.once('dialog', d => { expect(d.message()).toContain('planned for'); d.accept(); });
+    let asked = '';
+    page.once('dialog', d => { asked = d.message(); d.accept(); });
     await page.locator('#stops [data-shot]').first().click();
+    await expect.poll(() => asked).toContain('is planned for');
+    expect(asked).toContain('Russell 126883');   // it names the store, not just the city
     await expect(page.locator('#stops .stop.done')).toHaveCount(1);
     await expect(page.locator('#stops .badge.pl')).toHaveCount(1);
     expect(await shotCount(page)).toBe(shotBefore + 1);
-    const saved = await page.evaluate(k => JSON.parse(localStorage.getItem(k) || '{}'), LSKEY);
-    expect(Object.keys(saved.locks)).toHaveLength(1);
-    expect(saved.locks[OSAGE].d).toBe(iso(new Date()));
-    expect(saved.days[0].locked).toBeTruthy();
+    let s = await saved(page);
+    expect(Object.keys(s.locks)).toHaveLength(1);
+    expect(s.locks[OSAGE].d).toBe(today());
+    expect(s.days[0].locked).toBeTruthy();
 
     // the IDS tab now has one onsite date to report, and it is in the update text
     await page.locator('#nav button[data-s="app"]').click();
     await expect(page.locator('#s-app')).toBeVisible();
     await noSidewaysScroll(page, 'IDS tab');
-    await expect(page.locator('#s-app .idsrow', { hasText: OSAGE })).toContainText(mdy(iso(new Date())));
-    await expect(page.locator('#idsMsg')).toContainText(OSAGE);
-    await expect(page.locator('#idsMsg')).toContainText('onsite ' + mdy(iso(new Date())));
-    await expect(page.locator('#idsMsg')).toContainText('PLEASE ADD TO THE APP');
+    await expect(page.locator('#s-app .idsrow', { hasText: OSAGE })).toContainText(mdy(today()));
+    const lines = (await page.locator('#idsMsg').innerText()).split('\n');
+    expect(lines.find(l => l.includes(OSAGE) && l.includes('onsite'))).toContain('onsite ' + mdy(today()));
+    expect(lines.find(l => l.includes(OSAGE) && !l.includes('onsite'))).toContain('✓ shot');            // the shot stop is marked, not asked for
+    expect(lines.find(l => l.includes(EMPORIA))).toContain('PLEASE ADD TO THE APP');                   // the unshot one still is
 
-    // undo puts it back on the run
+    // undo puts back exactly what was there — no confirm, no re-dating
     await page.locator('#nav button[data-s="plan"]').click();
     await page.locator('#stops [data-shot]', { hasText: 'undo' }).click();
     await expect(page.locator('#stops .stop.done')).toHaveCount(0);
     expect(await shotCount(page)).toBe(shotBefore);
+    await page.locator('.toast button').click();   // Undo the undo: back to shot, dated today — not the planned day
+    await expect(page.locator('#stops .stop.done')).toHaveCount(1);
+    s = await saved(page);
+    expect(s.locks[OSAGE].d).toBe(today());
+    await page.locator('#stops [data-shot]', { hasText: 'undo' }).click();   // and off again for the rest
 
-    // the lock survives a reload
+    // the lock survives a reload; the unlock is kept as a fact
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(page.locator('#lockbar')).toContainText('PLAN LOCKED');
     await page.locator('#bUnlock').click();
     await expect(page.locator('#lockbar')).toHaveCount(0);
     await expect(page.locator('#bLock')).toBeVisible();
+    s = await saved(page);
+    expect(s.days[0].locked).toBeNull();
+    expect(s.days[0].unlocked.by).toBe('tim');
+    expect(s.days[0].unlocked.at).toBeGreaterThan(0);
   });
 
-  test('a stop locked before its day becomes a locked plan, not a shot', async ({ page }) => {
+  test('cancelling the future-date question banks nothing', async ({ page }) => {
+    await open(page, state());
+    await page.locator('#bLock').click();
+    const shotBefore = await shotCount(page);
+    page.once('dialog', d => d.dismiss());
+    await page.locator('#stops [data-shot]').first().click();
+    await expect(page.locator('#stops .stop.done')).toHaveCount(0);
+    expect(await shotCount(page)).toBe(shotBefore);
+    await expect(page.locator('.toast')).not.toContainText('SHOT —');
+    expect(Object.keys((await saved(page)).locks)).toHaveLength(0);
+  });
+
+  test('a stop locked before its day becomes a locked plan, not a shot — and stays converted', async ({ page }) => {
+    const AT = Date.now() - 60_000;
     // what the old LOCK button did to tomorrow's plan: a lock stamped today for tomorrow's date
     await open(page, state({
-      locks: { [OSAGE]: { d: tomorrow(), pts: 100, by: 'tim', with: '', at: Date.now() } },
+      locks: { [OSAGE]: { d: tomorrow(), pts: 100, by: 'tim', with: '', at: AT } },
       status: { [OSAGE]: 'captured' }, by: { [OSAGE]: 'tim' },
       mig: { cameron0915: 1 },
     }));
+    await expect(page.locator('.toast')).toContainText('now PLANNED');   // first thing after load — the toast is short-lived
     await expect(page.locator('#lockbar')).toContainText('PLAN LOCKED');
     await expect(page.locator('#stops .stop.done')).toHaveCount(0);
     await expect(page.locator('#stops .badge.pl')).toHaveCount(2);
     await expect(page.locator('#stops [data-shot]', { hasText: 'undo' })).toHaveCount(0);
-    await expect(page.locator('.toast')).toContainText('now PLANNED');
-    const saved = await page.evaluate(k => JSON.parse(localStorage.getItem(k) || '{}'), LSKEY);
-    expect(saved.locks[OSAGE]).toBeUndefined();
-    expect(saved.mig.planlock0923).toBe(1);
+    const s = await saved(page);
+    expect(s.locks[OSAGE]).toBeUndefined();
+    expect(s.status[OSAGE]).toBeUndefined();
+    expect(s.by[OSAGE]).toBeUndefined();
+    expect(s.days[0].locked).toMatchObject({ at: AT, by: 'tim' });   // the plan lock carries the old lock's stamp
+    expect(s.mig.planlock0923).toBe(1);
+  });
+
+  test('a real shot from yesterday stays a shot', async ({ page }) => {
+    const AT = new Date(yesterday() + 'T15:00:00').getTime();
+    await open(page, state({
+      days: [day({ date: yesterday(), ids: [OSAGE] })], activeDate: yesterday(),
+      locks: { [OSAGE]: { d: yesterday(), pts: 100, by: 'tim', with: '', at: AT } },
+      status: { [OSAGE]: 'captured' }, by: { [OSAGE]: 'tim' },
+    }));
+    await expect(page.locator('#stops .stop.done')).toHaveCount(1);
+    await expect(page.locator('#lockbar')).toHaveCount(0);
+    expect((await saved(page)).locks[OSAGE].d).toBe(yesterday());
+  });
+
+  test('a locked plan cannot be edited through the back doors', async ({ page }) => {
+    const B = shift(2);
+    await open(page, state({
+      days: [day({ id: 'dA', date: tomorrow(), ids: [OSAGE] }), day({ id: 'dB', date: B, ids: [EMPORIA], locked: { at: 1, by: 'tim' } })],
+    }));
+    await page.locator('#stops [data-mv]').first().click();        // move Osage City onto the locked day
+    await page.locator('.sheet [data-day="1"]').click();
+    await expect(page.locator('.toast')).toContainText('locked');
+    const s = await saved(page);
+    expect(s.days.find((d: any) => d.date === B).ids).toEqual([EMPORIA]);
+    expect(s.days.find((d: any) => d.date === tomorrow()).ids).toEqual([OSAGE]);
+  });
+
+  test('a go-back is shot only when its list is clear, and the revisit is dated', async ({ page }) => {
+    await open(page, state({ days: [day({ date: today(), ids: [SALINA] })], activeDate: today() }));
+    // list open: no SHOT button, a go-back list button instead
+    await expect(page.locator('#stops [data-shot]')).toHaveCount(0);
+    await expect(page.locator('#stops [data-note="' + SALINA + '"]').filter({ hasText: '3 left' })).toBeVisible();
+    await page.locator('#stops [data-note="' + SALINA + '"]').filter({ hasText: '3 left' }).click();
+    await expect(page.locator('.sheet #jsShot')).toHaveCount(0);
+    for (let i = 0; i < 3; i++) await page.locator('.sheet [data-pl]').nth(i).check();
+    // the last box re-opens the sheet so MARK SHOT is there
+    await expect(page.locator('.sheet #jsShot')).toBeVisible();
+    await page.locator('.sheet #jsShot').click();
+    const s = await saved(page);
+    expect(s.locks[SALINA].d).toBe(today());
+    // IDS keeps the first visit as the sheet's Onsite Date: 9/10, not the revisit
+    await page.locator('#nav button[data-s="app"]').click();
+    const msg = await page.locator('#idsMsg').innerText();
+    expect(msg).not.toContain(SALINA + '  Victra 109861 - Salina, KS  — onsite ' + mdy(today()));
+  });
+
+  test('IDS tab: dates to report shrink when sent, come back on undo, and survive a merge', async ({ page }) => {
+    const y = yesterday(), AT = new Date(y + 'T15:00:00').getTime();
+    await open(page, state({
+      days: [day({ date: y, ids: [OSAGE] })], activeDate: y,
+      locks: { [OSAGE]: { d: y, pts: 100, by: 'tim', with: '', at: AT } },
+      status: { [OSAGE]: 'captured' }, by: { [OSAGE]: 'tim' },
+      nav: 'app',
+    }), '#s-app');
+    await noSidewaysScroll(page, 'IDS tab');
+    const row = page.locator('#s-app .idsrow', { hasText: OSAGE });
+    await expect(row).toContainText(mdy(y));
+    // the first-run seed: everything already on the sheet is "sent"; the 19 it is missing are not
+    let s = await saved(page);
+    expect(s.report.seeded).toBeTruthy();
+    expect(s.report.sent['2026-0000']).toMatchObject({ d: '2026-09-10', seed: 1 });
+    expect(s.report.sent['2026-5178']).toBeUndefined();
+    expect(s.report.sent['2026-7106']).toBeUndefined();
+
+    await page.locator('#datesSent').click();
+    await expect(row).toHaveCount(0);
+    s = await saved(page);
+    expect(s.report.sent[OSAGE]).toMatchObject({ d: y });
+
+    await page.locator('.toast button').click();   // Undo
+    await expect(row).toContainText(mdy(y));
+    s = await saved(page);
+    expect(s.report.sent[OSAGE].d).toBe('');       // a tombstone, not a deletion — a crew merge cannot resurrect the old entry
+  });
+
+  test('crew merge: a lock is kept, the later unlock wins, a stale build\'s future lock is converted', async ({ page }) => {
+    await open(page, state());
+    const r = await page.evaluate(([tm, osage]) => {
+      const clone = () => JSON.parse(JSON.stringify((window as any).eval('S.days[0]')));
+      const G: any = window;
+      const out: any = {};
+      // a) this device locked at t=200; the crew copy has an older unlock at t=100 → the lock stays
+      G.eval('S.days[0].locked={at:200,by:"tim"}; S.days[0].unlocked=null');
+      G.mergeShared({ days: [Object.assign(clone(), { id: 'x', locked: null, unlocked: { at: 100, by: 'gabe' } })] });
+      out.a = !!G.eval('S.days[0].locked');
+      // b) this device locked at t=100; the crew copy unlocked at t=300 → the unlock wins
+      G.eval('S.days[0].locked={at:100,by:"tim"}; S.days[0].unlocked=null');
+      G.mergeShared({ days: [Object.assign(clone(), { id: 'x', locked: null, unlocked: { at: 300, by: 'gabe' } })] });
+      out.b = !!G.eval('S.days[0].locked');
+      // c) a phone on the old build hands back a lock dated tomorrow, stamped today → converted again
+      G.eval('S.days[0].locked=null; S.days[0].unlocked=null');
+      G.mergeShared({ days: [clone()], locks: { [osage]: { d: tm, pts: 100, by: 'gabe', with: '', at: Date.now() } } });
+      out.c = { lockGone: !G.eval('S.locks["' + osage + '"]'), planLocked: !!G.eval('S.days[0].locked') };
+      return out;
+    }, [tomorrow(), OSAGE] as const);
+    expect(r.a).toBe(true);
+    expect(r.b).toBe(false);
+    expect(r.c).toEqual({ lockGone: true, planLocked: true });
   });
 });
