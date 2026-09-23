@@ -15,6 +15,7 @@
   --bg:#F4F1ED; --surf:#FFFFFF; --surf2:#FAF7F4; --surf3:#EFE9E3;
   --ink:#231E1A; --ink2:#6B6058; --ink3:#746A61; --line:#E3DAD1; --line2:#D2C6BA;
   --accent:#B54903; --accent-ink:#FFFFFF; --accent-soft:#FCEADA;
+  --vz:#CD040B; --vz-soft:#F9DCDC;   /* Verizon red — the scoreboard's one loud colour */
   --money:#2C6B4F; --money-soft:#E2F0E8;
   --warn:#8F6410; --warn-soft:#FAEFD8;
   --bad:#A2352A; --bad-soft:#F8E3E0;
@@ -27,6 +28,7 @@
   --bg:#151310; --surf:#1E1B17; --surf2:#232019; --surf3:#2C2820;
   --ink:#F1EBE4; --ink2:#A99C90; --ink3:#9A8F83; --line:#332D25; --line2:#443C32;
   --accent:#F4801F; --accent-ink:#1A1409; --accent-soft:#3A2410;
+  --vz:#F0141B; --vz-soft:#3B1517;
   --money:#6FC49B; --money-soft:#1B3327;
   --warn:#E0AC4C; --warn-soft:#33280F;
   --bad:#EE8377; --bad-soft:#3A1F1B;
@@ -39,6 +41,7 @@
   --bg:#151310; --surf:#1E1B17; --surf2:#232019; --surf3:#2C2820;
   --ink:#F1EBE4; --ink2:#A99C90; --ink3:#9A8F83; --line:#332D25; --line2:#443C32;
   --accent:#F4801F; --accent-ink:#1A1409; --accent-soft:#3A2410;
+  --vz:#F0141B; --vz-soft:#3B1517;
   --money:#6FC49B; --money-soft:#1B3327;
   --warn:#E0AC4C; --warn-soft:#33280F;
   --bad:#EE8377; --bad-soft:#3A1F1B;
@@ -346,6 +349,17 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
 .bar2{height:9px;background:var(--surf3);border-radius:5px;overflow:hidden}
 .bar2 span{display:block;height:100%;background:var(--accent);border-radius:5px;transition:width .35s ease}
 .sb-belt{margin-top:9px;font-size:12.5px;color:var(--ink2);letter-spacing:.2px}
+/* the Verizon scoreboard: a pie on the left, three big numbers on the right, one legend line under */
+.vz{border-top:3px solid var(--vz)}
+.vz .lab{color:var(--vz)}
+.vzrow{display:flex;align-items:center;justify-content:center;gap:16px;margin:8px 0 2px}
+.vzpie{width:124px;height:124px;flex:0 0 auto;filter:drop-shadow(0 1px 1px rgba(0,0,0,.08))}
+.vzsb{display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:1px;align-items:baseline;text-align:left}
+.vzsb b{font-size:30px;font-weight:700;letter-spacing:-1px;line-height:1.05;color:var(--ink)}
+.vzsb b.red{font-size:48px;color:var(--vz);letter-spacing:-2px}
+.vzsb span{font-size:11px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink2)}
+.vzleg{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:12.5px;color:var(--ink2)}
+.vzleg i{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:5px;border:1px solid var(--line2)}
 /* the bar: one line, always closed until he asks */
 .livebtn{display:block;width:100%;margin:9px 0 0;padding:15px 16px;border:0;border-radius:13px;
   background:linear-gradient(135deg,#F47920,#D8600F);color:#fff;font-size:19px;font-weight:800;
@@ -3395,14 +3409,27 @@ function verizonTotal(){
         hold=vz.filter(j=>HOLD(j)&&!LOCKED(j.id)).length, left=vz.filter(UNEARNED).length;
   const owed=vz.filter(j=>GOBACK(j.id)||(j.st==='Return Owed'&&!shot(j.id))).length;
   const leftPts=vz.filter(UNEARNED).reduce((t,j)=>t+j.p,0);
-  const pct=total?Math.round(done/total*100):0, w=n=>total?(n/total*100).toFixed(2):0;
-  return `<div class="sb-hero card" id="vzTotal">
-      <div class="lab">Verizons &middot; running total</div>
-      <div class="sb-big mono"><span id="vzDone">${done}</span><span style="font-size:.4em;font-weight:600;color:var(--ink2)"> of <span id="vzAll">${total}</span> done</span></div>
-      <div class="sb-sub"><b id="vzLeft">${left}</b> left to do &middot; ${pct}% shot</div>
-      <div class="bar2" style="display:flex" role="img" aria-label="${done} of ${total} Verizon stores done, ${left} left, ${hold} on hold">
-        <span style="width:${w(done)}%;background:var(--money)"></span><span style="width:${w(hold)}%;background:var(--line2)"></span></div>
-      <div class="hint" style="margin:8px 0 0">${hold?'<span id="vzHold">'+hold+'</span> on hold &middot; ':''}${owed?owed+' go-back'+(owed===1?'':'s')+' owed &middot; ':''}${fmt(leftPts)} left on the board</div>
+  const pct=total?Math.round(done/total*100):0;
+  // the pie: shot in Verizon red from 12 o'clock, then on-hold, then what is left — one slice each
+  const C=62, R=58;
+  const slice=(f0,f1,fill)=>{ const f=f1-f0; if(f<=0)return '';
+    if(f>=.9999)return `<circle cx="${C}" cy="${C}" r="${R}" fill="${fill}"/>`;
+    const a0=2*Math.PI*f0-Math.PI/2, a1=2*Math.PI*f1-Math.PI/2;
+    const p=a=>(C+R*Math.cos(a)).toFixed(2)+' '+(C+R*Math.sin(a)).toFixed(2);
+    return `<path d="M${C} ${C} L${p(a0)} A${R} ${R} 0 ${f>.5?1:0} 1 ${p(a1)} Z" fill="${fill}" stroke="var(--surf)" stroke-width="2" stroke-linejoin="round"/>`};
+  const fd=total?done/total:0, fh=total?hold/total:0;
+  const pie=`<svg class="vzpie" viewBox="0 0 124 124" role="img" aria-label="${done} of ${total} Verizon stores done, ${left} left, ${hold} on hold">
+      <circle cx="${C}" cy="${C}" r="${R}" fill="var(--surf3)"/>${slice(0,fd,'var(--vz)')}${slice(fd,fd+fh,'var(--line2)')}</svg>`;
+  return `<div class="sb-hero card vz" id="vzTotal">
+      <div class="lab">Verizon &middot; scoreboard</div>
+      <div class="vzrow">${pie}
+        <div class="vzsb mono">
+          <b class="red" id="vzDone">${done}</b><span>shot</span>
+          <b id="vzLeft">${left}</b><span>left</span>
+          <b id="vzAll">${total}</b><span>total</span>
+        </div></div>
+      <div class="vzleg"><span><i style="background:var(--vz);border-color:var(--vz)"></i>${pct}% shot</span>${hold?'<span><i style="background:var(--line2)"></i><span id="vzHold">'+hold+'</span> on hold</span>':''}<span><i style="background:var(--surf3)"></i>${fmt(leftPts)} to go</span></div>
+      ${owed?'<div class="hint" style="margin:6px 0 0">'+owed+' go-back'+(owed===1?'':'s')+' owed</div>':''}
     </div>`;
 }
 boot();

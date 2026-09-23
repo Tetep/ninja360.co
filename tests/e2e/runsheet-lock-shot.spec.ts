@@ -386,6 +386,9 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(after.all).toBe(before.all);
     expect(after.done).toBe(before.done + 1);
     expect(after.left).toBe(before.left - 1);
-    await expect(page.locator('#vzTotal .bar2')).toHaveAttribute('aria-label', new RegExp(after.done + ' of ' + after.all));
+    await expect(page.locator('#vzTotal .vzpie')).toHaveAttribute('aria-label', new RegExp(after.done + ' of ' + after.all));
+    // the pie has a red "shot" slice, and it is the same size share as the numbers say
+    const paths = page.locator('#vzTotal .vzpie path, #vzTotal .vzpie circle[fill="var(--vz)"]');
+    expect(await paths.count()).toBeGreaterThan(0);
   });
 });
