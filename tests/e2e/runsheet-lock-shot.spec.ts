@@ -189,6 +189,36 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await expect(page.locator('#stops .stop.done')).toHaveCount(1);
     await expect(page.locator('#lockbar')).toHaveCount(0);
     expect((await saved(page)).locks[OSAGE].d).toBe(yesterday());
+    // History costs the day as it was driven, not the (empty) run still ahead
+    await page.locator('#nav button[data-s="history"]').click();
+    await page.locator('#s-history [data-hrow]').first().click();   // newest day first — yesterday; rows open on tap
+    const route = page.locator('#s-history .hroute').first();
+    await expect(route).toBeVisible();
+    expect(parseInt((/(\d+) mi/.exec(await route.innerText()) || ['', '0'])[1], 10)).toBeGreaterThan(0);
+  });
+
+  test('↑/↓ move the stop on the row, and Undo of a SHOT puts the stop back where it was', async ({ page }) => {
+    const t = today(), AT = new Date(t + 'T09:00:00').getTime();
+    await open(page, state({
+      days: [day({ date: t, ids: [OSAGE, EMPORIA, SALINA] })], activeDate: t,
+      locks: { [OSAGE]: { d: t, pts: 100, by: 'tim', with: '', at: AT, sd: t } },
+      status: { [OSAGE]: 'captured' }, by: { [OSAGE]: 'tim' },
+    }));
+    // a shot stop that is NOT at the bottom of the list (a stop added after it, a list cleared…)
+    await page.evaluate(ids => { const w = window as any; w.eval('S.days[0].ids=' + JSON.stringify(ids)); w.render(); }, [OSAGE, EMPORIA, SALINA]);
+    await page.locator('#stops [data-dn="' + EMPORIA + '"]').click();
+    expect((await saved(page)).days[0].ids).toEqual([SALINA, EMPORIA, OSAGE]);
+    await page.locator('#stops [data-up="' + EMPORIA + '"]').click();
+    expect((await saved(page)).days[0].ids).toEqual([EMPORIA, SALINA, OSAGE]);
+    // the shot row cannot be moved up into the live ones, and the last live row cannot be moved under it
+    await expect(page.locator('#stops [data-up="' + OSAGE + '"]')).toBeDisabled();
+    await expect(page.locator('#stops [data-dn="' + SALINA + '"]')).toBeDisabled();
+    // SHOT sinks Emporia under the live stops; Undo brings it back to the top, not to "after Salina"
+    await page.locator('#stops [data-shot="' + EMPORIA + '"]').click();
+    expect((await saved(page)).days[0].ids).toEqual([SALINA, EMPORIA, OSAGE]);
+    await page.locator('.toast button').click();
+    expect((await saved(page)).days[0].ids).toEqual([EMPORIA, SALINA, OSAGE]);
+    expect((await saved(page)).locks[EMPORIA]).toBeUndefined();
   });
 
   test('a locked plan cannot be edited through the back doors', async ({ page }) => {
@@ -206,9 +236,16 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
 
   test('a go-back is shot only when its list is clear, and the revisit is dated', async ({ page }) => {
     await open(page, state({ days: [day({ date: today(), ids: [SALINA] })], activeDate: today() }));
-    // list open: no SHOT button, a go-back list button instead
+    // list open: no SHOT button, a go-back list button instead — and no way round it from the Score table or the status dropdown
     await expect(page.locator('#stops [data-shot]')).toHaveCount(0);
     await expect(page.locator('#stops [data-note="' + SALINA + '"]').filter({ hasText: '3 left' })).toBeVisible();
+    await page.locator('#nav button[data-s="board"]').click();
+    await page.locator('#s-board [data-bf="returns"]').click();
+    await expect(page.locator('#s-board [data-shot="' + SALINA + '"]')).toHaveCount(0);
+    await expect(page.locator('#s-board [data-note="' + SALINA + '"]')).toBeVisible();
+    expect(await page.evaluate(id => (window as any).markShot(id, true), SALINA)).toBe(false);
+    expect((await saved(page)).locks[SALINA]).toBeUndefined();
+    await page.locator('#nav button[data-s="plan"]').click();
     await page.locator('#stops [data-note="' + SALINA + '"]').filter({ hasText: '3 left' }).click();
     await expect(page.locator('.sheet #jsShot')).toHaveCount(0);
     for (let i = 0; i < 3; i++) await page.locator('.sheet [data-pl]').nth(i).check();
@@ -234,12 +271,16 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await noSidewaysScroll(page, 'IDS tab');
     const row = page.locator('#s-app .idsrow', { hasText: OSAGE });
     await expect(row).toContainText(mdy(y));
-    // the first-run seed: everything already on the sheet is "sent"; the 19 it is missing are not
+    // the first-run seed: everything already on the sheet is "sent" — date AND invoice, stamped before
+    // any real send — and the 19 it is missing are not, so the list opens at 19 + Osage City
     let s = await saved(page);
     expect(s.report.seeded).toBeTruthy();
-    expect(s.report.sent['2026-0000']).toMatchObject({ d: '2026-09-10', seed: 1 });
+    expect(s.report.sent['2026-0000']).toMatchObject({ d: '2026-09-10', seed: 1, at: 0 });
+    expect(typeof s.report.sent['2026-0000'].inv).toBe('string');
     expect(s.report.sent['2026-5178']).toBeUndefined();
     expect(s.report.sent['2026-7106']).toBeUndefined();
+    expect(await page.evaluate(() => (window as any).datesToReport().length)).toBe(20);
+    await expect(page.locator('#s-app .badge', { hasText: 'invoice # new' })).toHaveCount(0);
 
     await page.locator('#datesSent').click();
     await expect(row).toHaveCount(0);
@@ -250,11 +291,19 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await expect(row).toContainText(mdy(y));
     s = await saved(page);
     expect(s.report.sent[OSAGE].d).toBe('');       // a tombstone, not a deletion — a crew merge cannot resurrect the old entry
+
+    // a reload keeps the seed flag, so the seed does not run again and the tombstone stands
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#s-app')).toBeVisible();
+    s = await saved(page);
+    expect(s.report.seeded).toBe('0923');
+    expect(s.report.sent[OSAGE].d).toBe('');
+    expect(await page.evaluate(() => (window as any).datesToReport().length)).toBe(20);
   });
 
   test('crew merge: a lock is kept, the later unlock wins, a stale build\'s future lock is converted', async ({ page }) => {
     await open(page, state());
-    const r = await page.evaluate(([tm, osage]) => {
+    const r = await page.evaluate(([tm, osage, td]) => {
       const clone = () => JSON.parse(JSON.stringify((window as any).eval('S.days[0]')));
       const G: any = window;
       const out: any = {};
@@ -270,11 +319,48 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
       G.eval('S.days[0].locked=null; S.days[0].unlocked=null');
       G.mergeShared({ days: [clone()], locks: { [osage]: { d: tm, pts: 100, by: 'gabe', with: '', at: Date.now() } } });
       out.c = { lockGone: !G.eval('S.locks["' + osage + '"]'), planLocked: !!G.eval('S.days[0].locked') };
+      // d) this device shot it for real today (t=500); the crew copy still carries the old build's future
+      //    lock, stamped EARLIER (t=400) — the real shot wins, and nothing gets converted away
+      G.eval('S.days[0].locked=null; S.days[0].unlocked=null; S.locks={"' + osage + '":{d:"' + td + '",pts:100,by:"tim",with:"",at:500,sd:"' + td + '"}}; S.status["' + osage + '"]="captured"');
+      G.mergeShared({ days: [clone()], locks: { [osage]: { d: tm, pts: 100, by: 'gabe', with: '', at: 400 } } });
+      const isShot = () => G.eval('shot("' + osage + '")');
+      out.d = { d: G.eval('S.locks["' + osage + '"]&&S.locks["' + osage + '"].d'), shot: isShot() };
+      // e) the other phone un-shot it AFTER this one shot it → the un-shot wins, points come off the board
+      G.mergeShared({ days: [clone()], locks: { [osage]: { d: td, pts: 100, by: 'tim', with: '', at: 500, sd: td } }, status: { [osage]: 'captured' }, unshot: { [osage]: { at: 600, by: 'gabe' } } });
+      out.e = { lockGone: !G.eval('S.locks["' + osage + '"]'), shot: isShot(), status: G.eval('S.status["' + osage + '"]') };
+      // f) …and a re-shot stamped after the tombstone beats it
+      G.eval('S.locks["' + osage + '"]={d:"' + td + '",pts:100,by:"tim",with:"",at:700,sd:"' + td + '"}');
+      G.mergeShared({ days: [clone()], locks: {}, status: {}, unshot: { [osage]: { at: 600, by: 'gabe' } } });
+      out.f = isShot();
       return out;
-    }, [tomorrow(), OSAGE] as const);
+    }, [tomorrow(), OSAGE, today()] as const);
     expect(r.a).toBe(true);
     expect(r.b).toBe(false);
     expect(r.c).toEqual({ lockGone: true, planLocked: true });
+    expect(r.d).toEqual({ d: today(), shot: true });
+    expect(r.e).toEqual({ lockGone: true, shot: false, status: undefined });
+    expect(r.f).toBe(true);
+  });
+
+  test('un-shot on one phone survives a pull on the other', async ({ page }) => {
+    const t = today(), AT = new Date(t + 'T09:00:00').getTime();
+    await open(page, state({
+      days: [day({ date: t, ids: [OSAGE] })], activeDate: t,
+      locks: { [OSAGE]: { d: t, pts: 100, by: 'tim', with: '', at: AT, sd: t } },
+      status: { [OSAGE]: 'captured' }, by: { [OSAGE]: 'tim' },
+    }));
+    // this phone un-shoots: a tombstone is written, and it rides the crew sync
+    await page.locator('#stops [data-shot="' + OSAGE + '"]').click();
+    const s = await saved(page);
+    expect(s.locks[OSAGE]).toBeUndefined();
+    expect(s.unshot[OSAGE].at).toBeGreaterThan(AT);
+    // the crew copy still holds the lock (pushed before the un-shot) → the pull does NOT bring it back
+    const back = await page.evaluate(([id, at, d]) => {
+      const G: any = window;
+      G.mergeShared({ locks: { [id]: { d, pts: 100, by: 'tim', with: '', at, sd: d } }, status: { [id]: 'captured' }, by: { [id]: 'tim' }, unshot: {} });
+      return { lock: !!G.eval('S.locks["' + id + '"]'), shot: G.eval('shot("' + id + '")') };
+    }, [OSAGE, AT, t] as const);
+    expect(back).toEqual({ lock: false, shot: false });
   });
 
   test('Score: the Verizon running total adds up, and moves when a stop is shot', async ({ page }) => {
