@@ -15,7 +15,7 @@
   --bg:#F4F1ED; --surf:#FFFFFF; --surf2:#FAF7F4; --surf3:#EFE9E3;
   --ink:#231E1A; --ink2:#6B6058; --ink3:#746A61; --line:#E3DAD1; --line2:#D2C6BA;
   --accent:#B54903; --accent-ink:#FFFFFF; --accent-soft:#FCEADA;
-  --vz:#CD040B; --vz-soft:#F9DCDC;   /* Verizon red — the scoreboard's one loud colour */
+  --vz:#CD040B; --vz-soft:#F9DCDC; --vz-fog:#B5AEA7;   /* Verizon red — the scoreboard's one loud colour; fog hides the ninja until a stop is shot */
   --money:#2C6B4F; --money-soft:#E2F0E8;
   --warn:#8F6410; --warn-soft:#FAEFD8;
   --bad:#A2352A; --bad-soft:#F8E3E0;
@@ -28,7 +28,7 @@
   --bg:#151310; --surf:#1E1B17; --surf2:#232019; --surf3:#2C2820;
   --ink:#F1EBE4; --ink2:#A99C90; --ink3:#9A8F83; --line:#332D25; --line2:#443C32;
   --accent:#F4801F; --accent-ink:#1A1409; --accent-soft:#3A2410;
-  --vz:#F0141B; --vz-soft:#3B1517;
+  --vz:#F0141B; --vz-soft:#3B1517; --vz-fog:#4A443D;
   --money:#6FC49B; --money-soft:#1B3327;
   --warn:#E0AC4C; --warn-soft:#33280F;
   --bad:#EE8377; --bad-soft:#3A1F1B;
@@ -41,7 +41,7 @@
   --bg:#151310; --surf:#1E1B17; --surf2:#232019; --surf3:#2C2820;
   --ink:#F1EBE4; --ink2:#A99C90; --ink3:#9A8F83; --line:#332D25; --line2:#443C32;
   --accent:#F4801F; --accent-ink:#1A1409; --accent-soft:#3A2410;
-  --vz:#F0141B; --vz-soft:#3B1517;
+  --vz:#F0141B; --vz-soft:#3B1517; --vz-fog:#4A443D;
   --money:#6FC49B; --money-soft:#1B3327;
   --warn:#E0AC4C; --warn-soft:#33280F;
   --bad:#EE8377; --bad-soft:#3A1F1B;
@@ -3410,16 +3410,24 @@ function verizonTotal(){
   const owed=vz.filter(j=>GOBACK(j.id)||(j.st==='Return Owed'&&!shot(j.id))).length;
   const leftPts=vz.filter(UNEARNED).reduce((t,j)=>t+j.p,0);
   const pct=total?Math.round(done/total*100):0;
-  // the pie: shot in Verizon red from 12 o'clock, then on-hold, then what is left — one slice each
+  // The pie is the ninja. Every stop shot uncovers a slice of him, clockwise from twelve; what is
+  // still to do sits under a grey fog with the count on it in red, and on-hold is a darker band.
   const C=62, R=58;
-  const slice=(f0,f1,fill)=>{ const f=f1-f0; if(f<=0)return '';
-    if(f>=.9999)return `<circle cx="${C}" cy="${C}" r="${R}" fill="${fill}"/>`;
+  const at=(a,k)=>(C+R*k*Math.cos(a)).toFixed(2)+' '+(C+R*k*Math.sin(a)).toFixed(2);
+  const slice=(f0,f1,attrs)=>{ const f=f1-f0; if(f<=0)return '';
+    if(f>=.9999)return `<circle cx="${C}" cy="${C}" r="${R}" ${attrs}/>`;
     const a0=2*Math.PI*f0-Math.PI/2, a1=2*Math.PI*f1-Math.PI/2;
-    const p=a=>(C+R*Math.cos(a)).toFixed(2)+' '+(C+R*Math.sin(a)).toFixed(2);
-    return `<path d="M${C} ${C} L${p(a0)} A${R} ${R} 0 ${f>.5?1:0} 1 ${p(a1)} Z" fill="${fill}" stroke="var(--surf)" stroke-width="2" stroke-linejoin="round"/>`};
-  const fd=total?done/total:0, fh=total?hold/total:0;
+    return `<path d="M${C} ${C} L${at(a0,1)} A${R} ${R} 0 ${f>.5?1:0} 1 ${at(a1,1)} Z" ${attrs} stroke="var(--surf)" stroke-width="1.5" stroke-linejoin="round"/>`};
+  const fd=total?done/total:0, fh=total?hold/total:0, fl=Math.max(0,1-fd-fh);
+  // the red count sits in the middle of the fogged slice — only while there is room for it
+  const am=2*Math.PI*(fd+fh+fl/2)-Math.PI/2, [lx,ly]=at(am,.52).split(' ');
+  const label=fl>=.2?`<text x="${lx}" y="${ly}" text-anchor="middle" fill="var(--vz)" font-family="IBM Plex Mono,ui-monospace,SFMono-Regular,Menlo,monospace" font-weight="700"><tspan font-size="21" dy="4">${left}</tspan><tspan x="${lx}" dy="11" font-size="7.5" letter-spacing="1.2">LEFT</tspan></text>`:'';
   const pie=`<svg class="vzpie" viewBox="0 0 124 124" role="img" aria-label="${done} of ${total} Verizon stores done, ${left} left, ${hold} on hold">
-      <circle cx="${C}" cy="${C}" r="${R}" fill="var(--surf3)"/>${slice(0,fd,'var(--vz)')}${slice(fd,fd+fh,'var(--line2)')}</svg>`;
+      <defs><clipPath id="vzclip"><circle cx="${C}" cy="${C}" r="${R}"/></clipPath></defs>
+      <circle cx="${C}" cy="${C}" r="${R}" fill="var(--surf)"/>
+      <image href="/assets/verizon-ninja.png" x="${C-R}" y="${C-R}" width="${2*R}" height="${2*R}" clip-path="url(#vzclip)" preserveAspectRatio="xMidYMid slice"/>
+      ${slice(fd,fd+fh,'fill="var(--ink2)" fill-opacity=".72" data-cover="hold"')}${slice(fd+fh,1,'fill="var(--vz-fog)" fill-opacity=".82" data-cover="left"')}
+      <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="var(--line2)" stroke-width="1"/>${label}</svg>`;
   return `<div class="sb-hero card vz" id="vzTotal">
       <div class="lab">Verizon &middot; scoreboard</div>
       <div class="vzrow">${pie}

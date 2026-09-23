@@ -387,8 +387,9 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(after.done).toBe(before.done + 1);
     expect(after.left).toBe(before.left - 1);
     await expect(page.locator('#vzTotal .vzpie')).toHaveAttribute('aria-label', new RegExp(after.done + ' of ' + after.all));
-    // the pie has a red "shot" slice, and it is the same size share as the numbers say
-    const paths = page.locator('#vzTotal .vzpie path, #vzTotal .vzpie circle[fill="var(--vz)"]');
-    expect(await paths.count()).toBeGreaterThan(0);
+    // the pie is the ninja under a fog: the "left" cover is there while stops remain, with the red count on it
+    await expect(page.locator('#vzTotal .vzpie image')).toHaveCount(1);
+    await expect(page.locator('#vzTotal .vzpie [data-cover="left"]')).toHaveCount(1);
+    await expect(page.locator('#vzTotal .vzpie text')).toContainText(String(after.left));
   });
 });
