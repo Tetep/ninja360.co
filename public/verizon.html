@@ -353,13 +353,16 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
 .vz{border-top:3px solid var(--vz)}
 .vz .lab{color:var(--vz)}
 .vzrow{display:flex;align-items:center;justify-content:center;gap:16px;margin:8px 0 2px}
-.vzpie{width:124px;height:124px;flex:0 0 auto;filter:drop-shadow(0 1px 1px rgba(0,0,0,.08))}
+.vzpie{width:144px;height:144px;flex:0 0 auto;filter:drop-shadow(0 1px 2px rgba(0,0,0,.12))}
 .vzsb{display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:1px;align-items:baseline;text-align:left}
 .vzsb b{font-size:30px;font-weight:700;letter-spacing:-1px;line-height:1.05;color:var(--ink)}
 .vzsb b.red{font-size:48px;color:var(--vz);letter-spacing:-2px}
 .vzsb span{font-size:11px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink2)}
-.vzleg{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:12.5px;color:var(--ink2)}
-.vzleg i{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:5px;border:1px solid var(--line2)}
+.vzleg{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 16px;margin-top:10px;font-size:15px;color:var(--ink2)}
+.vzleg b{color:var(--ink);font-weight:700}
+.vzleg i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:6px;border:1px solid var(--line2)}
+.vzowed{margin-top:6px;font-size:15px;color:var(--ink2)}
+.vzowed b{color:var(--vz);font-weight:700}
 /* the bar: one line, always closed until he asks */
 .livebtn{display:block;width:100%;margin:9px 0 0;padding:15px 16px;border:0;border-radius:13px;
   background:linear-gradient(135deg,#F47920,#D8600F);color:#fff;font-size:19px;font-weight:800;
@@ -3412,22 +3415,27 @@ function verizonTotal(){
   const pct=total?Math.round(done/total*100):0;
   // The pie is the ninja. Every stop shot uncovers a slice of him, clockwise from twelve; what is
   // still to do sits under a grey fog with the count on it in red, and on-hold is a darker band.
-  const C=62, R=58;
-  const at=(a,k)=>(C+R*k*Math.cos(a)).toFixed(2)+' '+(C+R*k*Math.sin(a)).toFixed(2);
+  const C=70, R=62, TAU=2*Math.PI;
+  const xy=(f,k)=>[C+R*k*Math.cos(TAU*f-Math.PI/2), C+R*k*Math.sin(TAU*f-Math.PI/2)].map(v=>v.toFixed(2));
   const slice=(f0,f1,attrs)=>{ const f=f1-f0; if(f<=0)return '';
     if(f>=.9999)return `<circle cx="${C}" cy="${C}" r="${R}" ${attrs}/>`;
-    const a0=2*Math.PI*f0-Math.PI/2, a1=2*Math.PI*f1-Math.PI/2;
-    return `<path d="M${C} ${C} L${at(a0,1)} A${R} ${R} 0 ${f>.5?1:0} 1 ${at(a1,1)} Z" ${attrs} stroke="var(--surf)" stroke-width="1.5" stroke-linejoin="round"/>`};
+    return `<path d="M${C} ${C} L${xy(f0,1).join(' ')} A${R} ${R} 0 ${f>.5?1:0} 1 ${xy(f1,1).join(' ')} Z" ${attrs}/>`};
+  // a crisp white spoke on every slice boundary, and a red rim along the shot share's outer edge
+  const spoke=f=>{const [x,y]=xy(f,1); return `<line x1="${C}" y1="${C}" x2="${x}" y2="${y}" stroke="var(--surf)" stroke-width="3.5" stroke-linecap="round"/>`};
+  const rim=f=>f<=0?'':f>=.9999?`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="var(--vz)" stroke-width="7"/>`
+    :`<path d="M${xy(0,1).join(' ')} A${R} ${R} 0 ${f>.5?1:0} 1 ${xy(f,1).join(' ')}" fill="none" stroke="var(--vz)" stroke-width="7" stroke-linecap="butt"/>`;
   const fd=total?done/total:0, fh=total?hold/total:0, fl=Math.max(0,1-fd-fh);
-  // the red count sits in the middle of the fogged slice — only while there is room for it
-  const am=2*Math.PI*(fd+fh+fl/2)-Math.PI/2, [lx,ly]=at(am,.52).split(' ');
-  const label=fl>=.2?`<text x="${lx}" y="${ly}" text-anchor="middle" fill="var(--vz)" font-family="IBM Plex Mono,ui-monospace,SFMono-Regular,Menlo,monospace" font-weight="700"><tspan font-size="21" dy="4">${left}</tspan><tspan x="${lx}" dy="11" font-size="7.5" letter-spacing="1.2">LEFT</tspan></text>`:'';
-  const pie=`<svg class="vzpie" viewBox="0 0 124 124" role="img" aria-label="${done} of ${total} Verizon stores done, ${left} left, ${hold} on hold">
+  // the count of what is left sits on a solid pill in the middle of the fogged slice — while there is room for it
+  const [lx,ly]=xy(fd+fh+fl/2,.5).map(Number), PW=58, PH=38;
+  const label=fl>=.25?`<rect x="${(lx-PW/2).toFixed(1)}" y="${(ly-PH/2).toFixed(1)}" width="${PW}" height="${PH}" rx="10" fill="var(--surf)" fill-opacity=".97" stroke="var(--vz)" stroke-width="1.5"/>
+      <text x="${lx.toFixed(1)}" y="${(ly+3).toFixed(1)}" text-anchor="middle" fill="var(--vz)" font-family="IBM Plex Mono,ui-monospace,SFMono-Regular,Menlo,monospace" font-weight="800"><tspan font-size="23">${left}</tspan><tspan x="${lx.toFixed(1)}" dy="11" font-size="8" letter-spacing="1.6">LEFT</tspan></text>`:'';
+  const pie=`<svg class="vzpie" viewBox="0 0 140 140" role="img" aria-label="${done} of ${total} Verizon stores done, ${left} left, ${hold} on hold">
       <defs><clipPath id="vzclip"><circle cx="${C}" cy="${C}" r="${R}"/></clipPath></defs>
       <circle cx="${C}" cy="${C}" r="${R}" fill="var(--surf)"/>
       <image href="/assets/verizon-ninja.png" x="${C-R}" y="${C-R}" width="${2*R}" height="${2*R}" clip-path="url(#vzclip)" preserveAspectRatio="xMidYMid slice"/>
-      ${slice(fd,fd+fh,'fill="var(--ink2)" fill-opacity=".72" data-cover="hold"')}${slice(fd+fh,1,'fill="var(--vz-fog)" fill-opacity=".82" data-cover="left"')}
-      <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="var(--line2)" stroke-width="1"/>${label}</svg>`;
+      ${slice(fd,fd+fh,'fill="var(--ink2)" fill-opacity=".86" data-cover="hold"')}${slice(fd+fh,1,'fill="var(--vz-fog)" fill-opacity=".9" data-cover="left"')}
+      ${fd>0&&fd<.9999?spoke(0)+spoke(fd):''}${fh>0&&fd+fh<.9999?spoke(fd+fh):''}
+      <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="var(--ink)" stroke-opacity=".28" stroke-width="2"/>${rim(fd)}${label}</svg>`;
   return `<div class="sb-hero card vz" id="vzTotal">
       <div class="lab">Verizon &middot; scoreboard</div>
       <div class="vzrow">${pie}
@@ -3436,8 +3444,8 @@ function verizonTotal(){
           <b id="vzLeft">${left}</b><span>left</span>
           <b id="vzAll">${total}</b><span>total</span>
         </div></div>
-      <div class="vzleg"><span><i style="background:var(--vz);border-color:var(--vz)"></i>${pct}% shot</span>${hold?'<span><i style="background:var(--line2)"></i><span id="vzHold">'+hold+'</span> on hold</span>':''}<span><i style="background:var(--surf3)"></i>${fmt(leftPts)} to go</span></div>
-      ${owed?'<div class="hint" style="margin:6px 0 0">'+owed+' go-back'+(owed===1?'':'s')+' owed</div>':''}
+      <div class="vzleg"><span><i style="background:var(--vz);border-color:var(--vz)"></i><b>${pct}%</b> shot</span>${hold?'<span><i style="background:var(--ink2)"></i><b id="vzHold">'+hold+'</b> on hold</span>':''}<span><i style="background:var(--vz-fog)"></i><b>${fmt(leftPts)}</b> to go</span></div>
+      ${owed?'<div class="vzowed"><b>'+owed+'</b> go-back'+(owed===1?'':'s')+' owed</div>':''}
     </div>`;
 }
 boot();
