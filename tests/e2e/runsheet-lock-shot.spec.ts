@@ -403,4 +403,51 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await expect(page.locator('#vzTotal .vzpie [data-cover="left"]')).toHaveCount(1);
     await expect(page.locator('#vzTotal .vzpie text')).toContainText(String(after.left));
   });
+
+  test('Today: the day in drive order with SHOT; GO LIVE writes the journal and marks sent only on a yes', async ({ page }) => {
+    const t = today(), AT = Date.now() - 3600_000;
+    const posted: any[] = [];
+    // the crew copy and the journal, stubbed: an empty crew copy, and a journal that says yes
+    await page.route('**/api/state', r => r.request().method() === 'GET'
+      ? r.fulfill({ contentType: 'application/json', body: JSON.stringify({ v: 0, updatedAt: 0, state: null }) })
+      : r.fulfill({ contentType: 'application/json', body: JSON.stringify({ v: 1, updatedAt: Date.now() }) }));
+    await page.route('**/api/journal', r => { posted.push(JSON.parse(r.request().postData() || '{}'));
+      r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, n: posted.length, at: Date.now() }) }); });
+    await open(page, state({
+      days: [day({ date: t, ids: [OSAGE, EMPORIA], locked: { at: 1, by: 'tim' } })], activeDate: t,
+      locks: { [OSAGE]: { d: t, pts: 100, by: 'tim', with: '', at: AT, sd: t } }, status: { [OSAGE]: 'captured' }, by: { [OSAGE]: 'tim' },
+      sync: { key: 'test-crew-key-0925', v: 0, at: 0 },
+      nav: 'now',                                            // an old build's tab lands on Today
+    }), '#s-today');
+    await noSidewaysScroll(page, 'Today tab');
+    await expect(page.locator('#nav button[data-s="run"]')).toHaveCount(0);
+    await expect(page.locator('#s-today .runrow')).toHaveCount(2);
+    await expect(page.locator('#s-today .runrow.done')).toHaveCount(1);
+    await expect(page.locator('#s-today .runrow').first()).toContainText('Emporia');   // the live stop leads, the shot one sinks
+    await expect(page.locator('#s-today [data-shot="' + EMPORIA + '"]')).toBeVisible();
+    await expect(page.locator('#crewChip')).toContainText('Crew ✓');
+    // GO LIVE: Osage City shot, Emporia carried — the journal gets the day, the email is confirmed, the date is marked sent
+    await page.locator('#tGoLive').click();
+    await expect(page.locator('.sheet #glGo')).toBeVisible();
+    await expect(page.locator('.sheet input[name="gl-' + EMPORIA + '"][value="carry"]')).toBeChecked();
+    page.once('dialog', d => d.accept());
+    await page.locator('.sheet #glGo').click();
+    await expect(page.locator('#s-today .golivecard')).toContainText('email ✓ sent');
+    expect(posted).toHaveLength(1);
+    expect(posted[0]).toMatchObject({ date: t, carried: [EMPORIA], skipped: [] });
+    expect(posted[0].shot.map((x: any) => x.id)).toEqual([OSAGE]);
+    let s = await saved(page);
+    expect(s.nav).toBe('today');
+    expect(s.published[t]).toMatchObject({ shot: [OSAGE], carried: [EMPORIA], email: 'sent', n: 1 });
+    expect(s.report.sent[OSAGE]).toMatchObject({ d: t });
+    // the server refuses → nothing re-published, the first receipt stands, nothing else marked sent
+    await page.unroute('**/api/journal');
+    await page.route('**/api/journal', r => r.fulfill({ status: 503, contentType: 'application/json', body: '{"error":"no-store"}' }));
+    await page.locator('#tGoLive').click();
+    await page.locator('.sheet input[name="gl-' + EMPORIA + '"][value="skip"]').check();
+    await page.locator('.sheet #glGo').click();
+    await expect(page.locator('.sheet #glStatus')).toContainText('nothing published');
+    s = await saved(page);
+    expect(s.published[t].skipped).toEqual([]);
+  });
 });

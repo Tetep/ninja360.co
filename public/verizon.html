@@ -411,6 +411,10 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
 .rh-name{font-size:17px;font-weight:800;letter-spacing:-.2px;margin-top:2px}
 .rh-sub{font-size:12.5px;color:var(--ink2);margin-top:3px}
 .runrow.done .nm{opacity:.75}
+.tchip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;min-height:28px;border:1px solid var(--line2);border-radius:999px;font-size:12px;color:var(--ink2);background:var(--surf2)}
+.tchip.on{color:var(--money);border-color:var(--money)}
+.golivecard{border-left:3px solid var(--accent);margin-top:10px}
+.golive{min-height:58px;font-size:18px}
 .gbcard{border:1px solid var(--ret);border-top:0;border-radius:0 0 10px 10px;margin-top:0;
   background:linear-gradient(180deg,rgba(139,47,201,.05),transparent 60%)}
 .gbrow{border-top:1px solid var(--line)}
@@ -513,8 +517,7 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
 <div id="bankbar"></div>
 
 <div class="wrap">
-  <section id="s-now"></section>
-  <section id="s-run" class="hide"></section>
+  <section id="s-today"></section>
   <section id="s-plan" class="hide"></section>
   <section id="s-clusters" class="hide"></section>
   <section id="s-app" class="hide"></section>
@@ -523,8 +526,7 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
 </div>
 
 <nav id="nav">
-  <button data-s="now" class="on"><span class="ic">📍</span>Now</button>
-  <button data-s="run"><span class="ic">🧭</span>Run</button>
+  <button data-s="today" class="on"><span class="ic">📍</span>Today</button>
   <button data-s="plan"><span class="ic">🗓️</span>Plan</button>
   <button data-s="clusters"><span class="ic">🗺️</span>Clusters</button>
   <button data-s="app"><span class="ic">📮</span>IDS</button>
@@ -620,7 +622,7 @@ const IDS_LOADED=[
    '2026-5006','2026-5167','2026-5178','2026-5221','2026-5264','2026-5350','2026-5393',
    '2026-5401','2026-5436','2026-5444','2026-5479','2026-5511','2026-5640','2026-5740',
    '2026-5866','2026-6911','2026-6997','2026-7575','2026-7681','2026-8443','2026-8804'];
-let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},punch:{},locks:{},showBanked:false,here:{key:'home',time:8},nav:'plan',activeDate:'',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{},who:null,by:{},oath:null,mig:{},geo:{},sync:{key:'',v:0,at:0},binds:[],checkin:{},report:{to:'',cc:'',sent:{}},unshot:{}};
+let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},punch:{},locks:{},showBanked:false,here:{key:'home',time:8},nav:'plan',activeDate:'',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{},who:null,by:{},oath:null,mig:{},geo:{},sync:{key:'',v:0,at:0},binds:[],checkin:{},report:{to:'',cc:'',sent:{}},unshot:{},published:{}};
 const svc=j=>(S.sv&&S.sv[j.id]!==undefined)?S.sv[j.id]:j.sv;
 /* ---------- the equation ----------
    A crew mate costs 150 a day; every charge costs 30. Net is what the day is worth.
@@ -1283,178 +1285,54 @@ function runLocate(silent){
     if(!silent)toast('Location updated');
   },()=>{ if(!silent)toast('Could not get your location') },{enableHighAccuracy:true,timeout:8000,maximumAge:60000});
 }
-function renderRun(){
-  const b=latestBind();
-  if(!b){
-    $('#s-run').innerHTML='<div class="card"><div class="lab">Nothing bound yet</div>'
-      +'<div class="hint" style="margin-top:5px">Build a day on Plan, then tap Bind this route. It shows up here — the same run, on every device signed into this plan.</div></div>';
-    return;
-  }
-  const liveDay=S.days.find(d=>d.date===b.date);
-  const ids=(liveDay?liveDay.ids:b.ids).filter(i=>BY[i]);
-  const doneN=ids.filter(shot).length;
-  const s=liveDay?simulate(liveDay):null;
-  const pay=s?s.pay:b.pay;
-  const pct=ids.length?Math.round(doneN/ids.length*100):0;
-  $('#s-run').innerHTML=
-    '<div class="card runhead"><div class="lab">The bound run</div>'
-    +'<div class="rh-name mono">'+escHTML(b.id)+'</div>'
-    +'<div class="rh-sub">'+doneN+' of '+ids.length+' shot · '+fmt(pay)+(s&&s.net!==s.pay?' ('+fmt(s.net)+' net)':'')+' · bound '+escHTML(bindAgo(b))+(b.by&&CREW[b.by]?' by '+escHTML(CREW[b.by].short):'')+'</div>'
-    +'<div class="bar2" style="margin-top:8px"><span style="width:'+pct+'%"></span></div>'
-    +'<div class="row" style="margin-top:9px">'
-      +'<button class="ghost" id="runLoc">📡 '+(RUN_HERE?'Update my location':'Where am I')+'</button>'
-      +(liveDay&&ids.length?'<button class="ghost" id="runNavAll">🧭 Navigate the whole day</button>':'')
-    +'</div></div>'
-    +(ids.length?ids.map(id=>{
-      const j=BY[id], done_=shot(id), ci=S.checkin&&S.checkin[id];
-      const dist=RUN_HERE?mi(RUN_HERE,LL(j)):null;
-      const ciH=ci?(new Date(ci.at).getHours()+new Date(ci.at).getMinutes()/60):null;
-      return '<div class="stop runrow'+(done_?' done':'')+'">'
-        +'<div class="tm mono">'+(done_?'✓':(ciH!==null?hhmm(ciH):'•'))+'</div>'
-        +'<div><div class="nm">'+escHTML(j.n)+(done_?'<span class="badge v">shot</span>':(liveDay&&liveDay.locked&&!j.wp?'<span class="badge pl">planned</span>':''))+(PAID(j)?'<span class="badge pd">paid</span>':'')+'</div>'
-          +'<div class="ad">'+escHTML(j.a)+', '+escHTML(j.c)+', '+escHTML(j.s)+'</div>'
-          +'<div class="hrs mono">'+(j.wp?'any time':hhmm(j.o)+'–'+hhmm(j.x))+(dist!==null?' · '+dist.toFixed(1)+' mi from you':'')+(ci?' · checked in '+hhmm(ciH):'')+'</div>'
-          +'<div class="acts">'
-            +(!ci&&!done_?'<button class="mini" data-checkin="'+id+'">📍 Check in</button>':'')
-            +'<button class="mini go" data-runnav="'+id+'">🧭 Navigate</button>'
-            +shotButton(id)
-          +'</div></div>'
-        +'<div class="pay mono">'+fmt(j.p)+'</div></div>';
-    }).join(''):'<div class="empty">Every stop on this run is shot.</div>');
-  $('#runLoc').onclick=()=>runLocate(false);
-  const rna=$('#runNavAll'); if(rna)rna.onclick=()=>openDayRoute(liveDay);
-  $$('#s-run [data-checkin]').forEach(btn=>btn.onclick=()=>checkIn(btn.dataset.checkin));
-  $$('#s-run [data-runnav]').forEach(btn=>btn.onclick=()=>{const j=BY[btn.dataset.runnav];
-    window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(j.a+', '+j.c+', '+j.s)+'&travelmode=driving','_blank','noopener')});
-  wireShot('#s-run');
-  $$('#s-run [data-note]').forEach(btn=>btn.onclick=()=>jobSheet(btn.dataset.note));   // a go-back's list lives in the job sheet
+/* ---------- the Today tab ----------
+   One screen for the day you are driving: the plan in drive order, a SHOT button on every stop,
+   check-in and directions, the go-backs bar — and at the bottom GO LIVE, which publishes the day.
+   Re-routing from where you stand lives behind one button; crew sync behind the chip. */
+let TODAY_PICK='';   // a day chosen by hand on Today this session (its id) — otherwise Today picks
+// the day Today shows: the one picked by hand; else the one dated today; else the active day if it
+// is still ahead; else the next one up; else whatever is active
+function todayDay(){
+  const t=todayISO(), cur=day();
+  const pick=TODAY_PICK&&S.days.find(d=>d&&d.id===TODAY_PICK); if(pick)return pick;
+  const hit=S.days.find(d=>d&&d.date===t); if(hit)return hit;
+  if(cur&&cur.date&&cur.date>t)return cur;
+  return S.days.filter(d=>d&&d.date&&d.date>t).sort((a,b)=>a.date.localeCompare(b.date))[0]||cur;
 }
-function renderNow(){
-  const d=day(), list=reachable();
-  const open=list.filter(r=>r.ok), shut=list.filter(r=>!r.ok);
-  const opts=(S.here.key==='gps'?'<option value="gps" selected>Current location (GPS)</option>':'')
-    + Object.entries(PLACES).map(([k,v])=>`<option value="${k}" ${S.here.key===k?'selected':''}>${v.name}</option>`).join('')
-    + J.filter(j=>!HOLD(j)).slice().sort((a,b)=>a.c<b.c?-1:1)
-        .map(j=>`<option value="job:${j.id}" ${S.here.key==='job:'+j.id?'selected':''}>${j.c}, ${j.s} — ${j.n}</option>`).join('');
-  const s=simulate(d);
-  $('#s-now').innerHTML=`
-  ${syncOn()
-    ? '<button class="livestrip" id="liveBar"><span class="livedot"></span><b>LIVE</b>'
-      +'<span class="livemeta">every device on this plan · synced '+liveAgo()+'</span>'
-      +'<span class="gbchev">▸</span></button>'
-    : '<button class="livebtn" id="liveBar">⚡ GO LIVE<small>one tap — this plan follows you onto every phone</small></button>'}
-  ${(()=>{const gb=goBacks(); if(!gb.length)return '';
-    const shots=gb.reduce((t,j)=>t+punchLeft(j.id),0);
-    const near=Math.round(Math.min(...gb.map(j=>mi(placeLL(S.here.key),LL(j)))));
-    return '<button class="gbbar'+(GB_OPEN?' on':'')+'" id="gbBar" aria-expanded="'+(GB_OPEN?'true':'false')+'">'
-      +'<span class="gbdot"></span>'
-      +'<b>'+gb.length+' go-back'+(gb.length===1?'':'s')+'</b>'
-      +'<span class="gbmeta">'+shots+' shot'+(shots===1?'':'s')+' owed · nearest '+near+' mi</span>'
-      +'<span class="gbchev">'+(GB_OPEN?'▾':'▸')+'</span></button>'
-      +(!GB_OPEN?'':'<div class="card gbcard">'
-        +'<div class="hint" style="margin:0 0 6px">Started, not finished — a capture that came back short, or a build that needs another day. Nothing on them pays until the named list is clear.</div>'
-        +gb.map(j=>{const left=punchLeft(j.id), d0=Math.round(mi(placeLL(S.here.key),LL(j))), op=GB_ROW===j.id;
-          return '<div class="gbrow'+(op?' open':'')+'">'
-            +'<button class="gbtog" data-gbrow="'+j.id+'" aria-expanded="'+(op?'true':'false')+'">'
-              +'<span class="gbn">'+escHTML(j.c)+', '+escHTML(j.s)+'</span>'
-              +'<span class="badge bad">'+left+'</span>'
-              +'<span class="gbmi mono">'+d0+' mi</span>'
-              +'<span class="gbchev">'+(op?'▾':'▸')+'</span></button>'
-            +(!op?'':'<div class="gbbody"><div class="ad">'+escHTML(j.n)+' · '+escHTML(j.a)
-              +(j.st==='Return Owed'?' <span class="badge v">billed</span>':' <span class="badge warn">not billed yet</span>')+'</div>'
-              +'<ul class="gblist">'+gbItems(j.id).map(x=>'<li class="'+(x.done?'got':'')+'">'+escHTML(x.t)+'</li>').join('')+'</ul>'
-              +'<div class="acts"><button class="mini go" data-gbnav="'+j.id+'">directions</button>'
-              +'<button class="mini" data-gbadd="'+j.id+'">add to this day</button>'
-              +'<button class="mini" data-info="'+j.id+'">tick the list</button></div></div>')
-            +'</div>'}).join('')
-        +'</div>')})()}
-  <div id="brandHero" class="brand-hero">
-    <div class="brand-video-frame">
-      <video id="brandVideo" autoplay playsinline preload="auto" src="/assets/video/ninja-hero-16x9-V01.mp4" aria-label="Ninja-360 intro video"></video>
-      <img class="brand-logo-overlay" src="${bannerOf(S.who)}" alt="${escHTML(who()?who().name+' — '+who().role:'Ninja 360')}">
-    </div>
-  </div>
-  <div class="card">
-    <div class="lab" style="margin-bottom:6px">Where am I right now</div>
-    <div class="row">
-      <div class="fld" style="flex:1;min-width:190px"><span class="lab" id="lab-here">I'm at</span>
-        <select id="hereSel" aria-labelledby="lab-here" style="max-width:none;width:100%">${opts}</select></div>
-      <div class="fld"><span class="lab" id="lab-heret">Time now</span><input type="time" id="hereT" aria-labelledby="lab-heret" value="${hhmm(S.here.time)}"></div>
-      <button class="ghost" id="nowBtn">Use clock</button>
-      <button class="ghost" id="gpsBtn">📡 Locate me</button>
-    </div>
-    <div class="hint">Everything below is measured from there, at that time, against each store's own closing time.</div>
-  </div>
-  <div class="strip">
-    <div class="mcell"><div class="lab">Can still reach</div><div class="v g">${open.length}</div></div>
-    <div class="mcell"><div class="lab">Value in reach</div><div class="v g">${fmt(open.reduce((t,r)=>t+r.j.p,0))}</div></div>
-    <div class="mcell"><div class="lab">Shut by now</div><div class="v ${shut.length?'w':''}">${shut.length}</div></div>
-  </div>
-  <div class="card" style="padding:9px 11px">
-    <div class="row" style="align-items:center;gap:9px">
-      <div class="fld" style="flex:1;min-width:170px"><span class="lab" id="lab-runday">Running</span>
-        <select id="runDay" aria-labelledby="lab-runday" style="max-width:none;width:100%">${S.days.map((dd,i)=>{
-          const lbl=dd.date?new Date(dd.date+'T12:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}):'No date';
-          return '<option value="'+i+'"'+(i===S.active?' selected':'')+'>'+lbl+' — '+dd.ids.length+' stop'+(dd.ids.length===1?'':'s')+'</option>'}).join('')}</select></div>
-      ${d.date===todayISO()?'<span class="badge v">today</span>':'<span class="badge warn">not today</span>'}
-    </div>
-  </div>
-  ${d.ids.length?`<div class="bindline"><span class="lab">Binding</span><b class="mono">${escHTML(bindName(d))}</b><button class="ghost" id="bindCopyNow">Copy</button></div>
-  <h2>Your run &mdash; ${fmt(s.pay)}${s.net!==s.pay?' ('+fmt(s.net)+' net)':''}, finish ${hhmm(s.end)}${d.crew&&CREW[d.crew]?' · with '+escHTML(CREW[d.crew].short):''}</h2>
-  <div class="row" style="margin:2px 0 8px"><button class="prim" id="navDayNow">🧭 Navigate this day</button>
-    ${dayNotLoaded(d).length?'<button class="ghost" id="askDayNow" style="color:var(--accent);border-color:var(--accent)">📮 '+dayNotLoaded(d).length+' not in app — ask IDS</button>':'<span class="badge v" style="align-self:center">every stop is in the app</span>'}</div>
-  <div id="nowRoute"></div>`
-  :'<div class="empty">No stops on this day yet — build it in Plan, or add one from below.</div>'}
-  <h2>Best next move</h2>
-  <div class="hint">Extra stops you could still reach from where you are, ranked by points per hour. Adding one puts it on the day above.</div>
-  <div id="nowList"></div>`;
-  const hero=document.getElementById('brandVideo');
-  const heroWrap=document.getElementById('brandHero');
-  if(hero&&heroWrap){
-    const seen=sessionStorage.getItem('ninja360-hero-played')==='1' || window.__ninjaHeroShown===true;
-    if(seen){heroWrap.classList.add('is-done');}
-    else{
-      window.__ninjaHeroShown=true;
-      const finish=()=>{
-        sessionStorage.setItem('ninja360-hero-played','1');
-        heroWrap.classList.add('is-done');
-        setTimeout(()=>{heroWrap.style.display='none';},700);
-      };
-      const unlockHeroAudio=()=>{
-        if(hero.muted){hero.muted=false; hero.play().catch(()=>{});} 
-        document.removeEventListener('pointerdown',unlockHeroAudio,true);
-        document.removeEventListener('touchstart',unlockHeroAudio,true);
-      };
-      hero.addEventListener('ended',finish,{once:true});
-      // If the clip can't load (no signal), collapse the hero instead of parking a
-      // black 16:9 box at the top of Now on every render.
-      hero.addEventListener('error',finish,{once:true});
-      if(hero.error)finish();
-      hero.muted=false;
-      hero.play().catch(()=>{
-        hero.muted=true;
-        document.addEventListener('pointerdown',unlockHeroAudio,{once:true,capture:true});
-        document.addEventListener('touchstart',unlockHeroAudio,{once:true,capture:true});
-        hero.play().catch(()=>{});
-      });
-    }
-  }
-  $('#hereSel').onchange=e=>{S.here.key=e.target.value;delete S.here.ll;render();dirty()};
-  $('#hereT').onchange=e=>{if(!e.target.value)return;
-    const p=e.target.value.split(':');S.here.time=(+p[0])+(+p[1])/60;render();dirty()};
-  $('#nowBtn').onclick=()=>{const n=new Date();S.here.time=n.getHours()+n.getMinutes()/60;render();dirty()};
-  $('#gpsBtn').onclick=()=>{
-    if(!navigator.geolocation){toast('GPS is not available here — pick a spot from the list');return}
-    toast('Getting your location…');
-    navigator.geolocation.getCurrentPosition(pos=>{
-      S.here={key:'gps',ll:[pos.coords.latitude,pos.coords.longitude],time:S.here.time};
-      const n=new Date();S.here.time=n.getHours()+n.getMinutes()/60;
-      render();dirty();toast('Measuring from your GPS position')},
-      ()=>toast('Could not get a fix — pick a spot from the list'),{timeout:8000,maximumAge:60000});
-  };
-  const rd=$('#runDay'); if(rd)rd.onchange=e=>{setDay(+e.target.value);render();dirty()};
-  const ad=$('#askDayNow'); if(ad)ad.onclick=()=>dayAskSheet(d);
-  const lb=$('#liveBar'); if(lb)lb.onclick=()=>{ if(syncOn())syncSheet(); else goLive() };
+const publishedOf=date=>(date&&S.published&&S.published[date])||null;
+const niceTime=at=>new Date(at).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+const pubLine=p=>niceTime(p.at)+(p.by&&CREW[p.by]?' by '+CREW[p.by].short:'')+' · '+p.shot.length+' shot'
+  +(p.carried.length?' · '+p.carried.length+' carried':'')+(p.skipped.length?' · '+p.skipped.length+' skipped':'')
+  +' · journal ✓ · email '+(p.email==='sent'?'✓ sent':p.email==='pending'?'…':'✗ not sent');
+/* the go-backs bar: every stop that owes a named list, nearest first, with its list one tap down */
+function gbBarHTML(){
+  const gb=goBacks(); if(!gb.length)return '';
+  const shots=gb.reduce((t,j)=>t+punchLeft(j.id),0);
+  const near=Math.round(Math.min(...gb.map(j=>mi(placeLL(S.here.key),LL(j)))));
+  return '<button class="gbbar'+(GB_OPEN?' on':'')+'" id="gbBar" aria-expanded="'+(GB_OPEN?'true':'false')+'">'
+    +'<span class="gbdot"></span>'
+    +'<b>'+gb.length+' go-back'+(gb.length===1?'':'s')+'</b>'
+    +'<span class="gbmeta">'+shots+' shot'+(shots===1?'':'s')+' owed · nearest '+near+' mi</span>'
+    +'<span class="gbchev">'+(GB_OPEN?'▾':'▸')+'</span></button>'
+    +(!GB_OPEN?'':'<div class="card gbcard">'
+      +'<div class="hint" style="margin:0 0 6px">Started, not finished — a capture that came back short, or a build that needs another day. Nothing on them pays until the named list is clear.</div>'
+      +gb.map(j=>{const left=punchLeft(j.id), d0=Math.round(mi(placeLL(S.here.key),LL(j))), op=GB_ROW===j.id;
+        return '<div class="gbrow'+(op?' open':'')+'">'
+          +'<button class="gbtog" data-gbrow="'+j.id+'" aria-expanded="'+(op?'true':'false')+'">'
+            +'<span class="gbn">'+escHTML(j.c)+', '+escHTML(j.s)+'</span>'
+            +'<span class="badge bad">'+left+'</span>'
+            +'<span class="gbmi mono">'+d0+' mi</span>'
+            +'<span class="gbchev">'+(op?'▾':'▸')+'</span></button>'
+          +(!op?'':'<div class="gbbody"><div class="ad">'+escHTML(j.n)+' · '+escHTML(j.a)
+            +(j.st==='Return Owed'?' <span class="badge v">billed</span>':' <span class="badge warn">not billed yet</span>')+'</div>'
+            +'<ul class="gblist">'+gbItems(j.id).map(x=>'<li class="'+(x.done?'got':'')+'">'+escHTML(x.t)+'</li>').join('')+'</ul>'
+            +'<div class="acts"><button class="mini go" data-gbnav="'+j.id+'">directions</button>'
+            +'<button class="mini" data-gbadd="'+j.id+'">add to this day</button>'
+            +'<button class="mini" data-info="'+j.id+'">tick the list</button></div></div>')
+          +'</div>'}).join('')
+      +'</div>');
+}
+function wireGbBar(d){
   const gbb=$('#gbBar'); if(gbb)gbb.onclick=()=>{GB_OPEN=!GB_OPEN; render()};
   $$('[data-gbrow]').forEach(b=>b.onclick=()=>{GB_ROW=(GB_ROW===b.dataset.gbrow)?'':b.dataset.gbrow; render()});
   $$('[data-gbnav]').forEach(b=>b.onclick=()=>{const j=BY[b.dataset.gbnav];
@@ -1464,24 +1342,180 @@ function renderNow(){
     if(d.ids.includes(id)){toast('Already on this day');return}
     d.ids.push(id); d.ids=autoOrder(d); bindRoute(d,true); render(); dirty();
     toast('Added '+BY[id].c+' — '+punchLeft(id)+' shot'+(punchLeft(id)===1?'':'s')+' owed')});
-  const nd=$('#navDayNow'); if(nd)nd.onclick=()=>{bindRoute(d,true); dirty(); openDayRoute(d)};
-  const bc=$('#bindCopyNow'); if(bc)bc.onclick=async()=>toast(await copyText(bindName(d))?'Copied '+bindName(d):'Copy blocked');
-  $('#nowList').innerHTML = open.slice(0,14).map(r=>{const j=r.j; const timer=jobTimerState(j.id), note=jobNoteText(j.id);
-    return `<div class="pj">
-      <button class="pjbtn" data-info="${j.id}" title="${escHTML(jobTooltip(j.id))}"><div class="nm">${j.n}${S.loaded[j.id]?'':'<span class="badge warn">not in app</span>'}${note?'<span class="badge acc">note</span>':''}</div>
-        <div class="ad">${j.a}, ${j.c}, ${j.s}</div>
-        <div class="ad mono">arrive ${hhmm(r.arr)} · out ${hhmm(r.fin)} · shuts ${hhmm(j.x)}</div>
-        <div class="ad mono"><span class="live-timer ${timer.running?'running':(timer.elapsedMs?'':'idle')}" data-live-timer="${j.id}">${timer.label}${timer.running?' • run':''}</span></div></button>
-      <div class="dist mono"><b style="color:var(--money)">${fmt(j.p)}</b><br>${r.m.toFixed(0)} mi<br>${fmt(r.rate)}/h</div>
-      <button class="addb ${r.inday?'got':''}" data-take="${j.id}" aria-label="${r.inday?'Already on this day':'Add to this day'}">${r.inday?'✓':'+'}</button></div>`}).join('')
-    || '<div class="empty">Nothing is still open from here. Try an earlier time or a different starting point.</div>';
-  $$('#nowList [data-take]').forEach(b=>b.onclick=()=>{const id=b.dataset.take;
-    if(dayLocked(day())){lockedToast();return}
-    if(!day().ids.includes(id)){day().ids.push(id);toast('Added to this day')}
-    render();dirty()});
-  $$('#nowList [data-info]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.info));
-  if(d.ids.length)$('#nowRoute').innerHTML=stopCards(d,simulate(d));
-  wireStops();
+  $$('.gbcard [data-info]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.info));
+}
+function renderToday(){
+  const d=todayDay(), di=S.days.indexOf(d); if(di>=0)S.active=di;   // the day on screen is the day every shared helper reads
+  const ids=d.ids.filter(i=>BY[i]), live=ids.filter(i=>!shot(i)), doneN=ids.length-live.length;
+  const s=simulate(d), pct=ids.length?Math.round(doneN/ids.length*100):0;
+  const t=todayISO(), when=!d.date?'No date':d.date===t?'Today':d.date>t?'Next up':'Last plan';
+  const pub=publishedOf(d.date);
+  const crewChip=syncOn()?'<button class="tchip on" id="crewChip"><span class="livedot"></span>Crew ✓ '+escHTML(liveAgo())+'</button>'
+                         :'<button class="tchip" id="crewChip">Crew sync off</button>';
+  $('#s-today').innerHTML=
+    `<div class="card runhead">
+      <div class="row" style="justify-content:space-between;align-items:center;gap:8px;margin:0">
+        <div class="lab">${when}${dayLocked(d)?' · 🔒 locked':' · not locked'}</div>${crewChip}</div>
+      <div class="rh-name">${d.date?niceDate(d.date):'No date'}${d.crew&&CREW[d.crew]?' · with '+escHTML(CREW[d.crew].short):''}</div>
+      <div class="rh-sub">${doneN} of ${ids.length} shot · ${fmt(s.pay)}${s.net!==s.pay?' ('+fmt(s.net)+' net)':''} · leave ${hhmm(d.startTime)}${live.length?' · finish '+hhmm(s.end)+' · '+Math.round(s.miles)+' mi left':''}</div>
+      <div class="bar2" style="margin-top:8px"><span style="width:${pct}%"></span></div>
+      <div class="row" style="margin-top:9px">
+        ${S.days.length>1?'<select id="todayDay" aria-label="Which day" style="max-width:160px">'+S.days.map((dd,i)=>'<option value="'+i+'"'+(dd===d?' selected':'')+'>'+(dd.date?niceDate(dd.date):'No date')+' — '+dd.ids.length+'</option>').join('')+'</select>':''}
+        ${live.length?'<button class="ghost" id="tNav">🧭 Navigate the day</button>':''}
+        <button class="ghost" id="tLoc">📡 ${RUN_HERE?'Update my location':'Where am I'}</button>
+        <button class="ghost" id="tReroute">🔀 Re-route</button>
+        ${dayNotLoaded(d).length?'<button class="ghost" id="tAsk" style="color:var(--accent);border-color:var(--accent)">📮 '+dayNotLoaded(d).length+' not in app</button>':''}
+      </div></div>`
+    +(ids.length?s.rows.map(r=>{const id=r.id, j=BY[id], done_=shot(id), ci=S.checkin&&S.checkin[id];
+        const dist=RUN_HERE?mi(RUN_HERE,LL(j)):null, ciH=ci?(new Date(ci.at).getHours()+new Date(ci.at).getMinutes()/60):null;
+        return '<div class="stop runrow'+(done_?' done':'')+'">'
+          +'<div class="tm mono">'+(done_?'✓':(ciH!==null?hhmm(ciH):hhmm(r.arr)))+'</div>'
+          +'<div><div class="nm">'+escHTML(j.n)+(done_?'<span class="badge v">shot</span>':(dayLocked(d)&&!j.wp?'<span class="badge pl">planned</span>':''))+(PAID(j)?'<span class="badge pd">paid</span>':'')+(S.loaded[id]||j.wp?'':'<span class="badge warn">not in app</span>')+(r.late?'<span class="badge bad">shuts '+hhmm(j.x)+'</span>':'')+'</div>'
+            +'<div class="ad">'+escHTML(j.a)+', '+escHTML(j.c)+', '+escHTML(j.s)+'</div>'
+            +'<div class="hrs mono">'+(j.wp?'any time':hhmm(j.o)+'–'+hhmm(j.x))+(dist!==null?' · '+dist.toFixed(1)+' mi from you':(done_?'':' · '+r.leg.toFixed(0)+' mi leg'))+(ci?' · checked in '+hhmm(ciH):'')+'</div>'
+            +'<div class="acts">'
+              +(!ci&&!done_?'<button class="mini" data-checkin="'+id+'">📍 Check in</button>':'')
+              +'<button class="mini go" data-runnav="'+id+'">🧭 Navigate</button>'
+              +'<button class="mini" data-note="'+id+'">note</button>'
+              +shotButton(id)
+            +'</div></div>'
+          +'<div class="pay mono">'+fmt(j.p)+'</div></div>'}).join('')
+      :'<div class="empty">No stops on this day yet — build it on Plan, or tap Re-route to pull one in from where you are.</div>')
+    +gbBarHTML()
+    +(ids.length?`<div class="card golivecard">
+        ${pub?'<div class="lab">Published</div><div class="rh-sub">'+escHTML(pubLine(pub))+'</div>':'<div class="lab">End of day</div><div class="hint" style="margin:3px 0 0">Confirm what was shot, write the day to the crew journal, send IDS the update. Nothing is marked sent until it is.</div>'}
+        <button class="livebtn golive" id="tGoLive">⚡ GO LIVE${pub?' AGAIN':''}<small>${pub?'re-publish this day':'publish this day — journal + IDS'}</small></button></div>`:'');
+  const td=$('#todayDay'); if(td)td.onchange=e=>{const dd=S.days[+e.target.value]; TODAY_PICK=dd?dd.id:''; setDay(+e.target.value); render(); dirty()};
+  const nv=$('#tNav'); if(nv)nv.onclick=()=>{bindRoute(d,true); dirty(); openDayRoute(d)};
+  $('#tLoc').onclick=()=>runLocate(false);
+  $('#tReroute').onclick=()=>rerouteSheet(d);
+  const ak=$('#tAsk'); if(ak)ak.onclick=()=>dayAskSheet(d);
+  $('#crewChip').onclick=()=>syncSheet();
+  $$('#s-today [data-checkin]').forEach(b=>b.onclick=()=>checkIn(b.dataset.checkin));
+  $$('#s-today [data-runnav]').forEach(b=>b.onclick=()=>{const j=BY[b.dataset.runnav];
+    window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(j.a+', '+j.c+', '+j.s)+'&travelmode=driving','_blank','noopener')});
+  $$('#s-today .runrow [data-note]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.note));
+  wireShot('#s-today');
+  wireGbBar(d);
+  const gl=$('#tGoLive'); if(gl)gl.onclick=()=>goLiveSheet(d);
+}
+/* Re-route: where you are, what time it is, and every stop still reachable from there ranked by
+   points per hour. Adding one puts it on the day on screen — unless that plan is locked. */
+function rerouteSheet(d){
+  const list=reachable(), open=list.filter(r=>r.ok), shut=list.filter(r=>!r.ok);
+  const opts=(S.here.key==='gps'?'<option value="gps" selected>Current location (GPS)</option>':'')
+    + Object.entries(PLACES).map(([k,v])=>`<option value="${k}" ${S.here.key===k?'selected':''}>${v.name}</option>`).join('')
+    + J.filter(j=>!HOLD(j)).slice().sort((a,b)=>a.c<b.c?-1:1)
+        .map(j=>`<option value="job:${j.id}" ${S.here.key==='job:'+j.id?'selected':''}>${j.c}, ${j.s} — ${j.n}</option>`).join('');
+  sheet('Re-route from here','Everything below is measured from where you are, at that time, against each store\'s own closing time.',
+    `<div class="row">
+      <div class="fld" style="flex:1;min-width:190px"><span class="lab" id="lab-here">I'm at</span>
+        <select id="hereSel" aria-labelledby="lab-here" style="max-width:none;width:100%">${opts}</select></div>
+      <div class="fld"><span class="lab" id="lab-heret">Time now</span><input type="time" id="hereT" aria-labelledby="lab-heret" value="${hhmm(S.here.time)}"></div>
+      <button class="ghost" id="nowBtn">Use clock</button>
+      <button class="ghost" id="gpsBtn">📡 Locate me</button>
+    </div>
+    <div class="strip" style="margin-top:8px">
+      <div class="mcell"><div class="lab">Can still reach</div><div class="v g">${open.length}</div></div>
+      <div class="mcell"><div class="lab">Value in reach</div><div class="v g">${fmt(open.reduce((t,r)=>t+r.j.p,0))}</div></div>
+      <div class="mcell"><div class="lab">Shut by now</div><div class="v ${shut.length?'w':''}">${shut.length}</div></div>
+    </div>
+    <div class="lab" style="margin:10px 0 4px">Best next move</div>
+    <div id="nowList">${open.slice(0,14).map(r=>{const j=r.j;
+      return `<div class="pj">
+        <button class="pjbtn" data-info="${j.id}"><div class="nm">${escHTML(j.n)}${S.loaded[j.id]?'':'<span class="badge warn">not in app</span>'}</div>
+          <div class="ad">${escHTML(j.a)}, ${escHTML(j.c)}, ${escHTML(j.s)}</div>
+          <div class="ad mono">arrive ${hhmm(r.arr)} · out ${hhmm(r.fin)} · shuts ${hhmm(j.x)}</div></button>
+        <div class="dist mono"><b style="color:var(--money)">${fmt(j.p)}</b><br>${r.m.toFixed(0)} mi<br>${fmt(r.rate)}/h</div>
+        <button class="addb ${r.inday?'got':''}" data-take="${j.id}" aria-label="${r.inday?'Already on this day':'Add to this day'}">${r.inday?'✓':'+'}</button></div>`}).join('')
+      || '<div class="empty">Nothing is still open from here. Try an earlier time or a different starting point.</div>'}</div>`,
+    el=>{
+      const again=()=>{dirty(); render(); rerouteSheet(d)};
+      el.querySelector('#hereSel').onchange=e=>{S.here.key=e.target.value; delete S.here.ll; again()};
+      el.querySelector('#hereT').onchange=e=>{if(!e.target.value)return; const p=e.target.value.split(':'); S.here.time=(+p[0])+(+p[1])/60; again()};
+      el.querySelector('#nowBtn').onclick=()=>{const n=new Date(); S.here.time=n.getHours()+n.getMinutes()/60; again()};
+      el.querySelector('#gpsBtn').onclick=()=>{
+        if(!navigator.geolocation){toast('GPS is not available here — pick a spot from the list');return}
+        toast('Getting your location…');
+        navigator.geolocation.getCurrentPosition(pos=>{
+          S.here={key:'gps',ll:[pos.coords.latitude,pos.coords.longitude],time:S.here.time};
+          const n=new Date(); S.here.time=n.getHours()+n.getMinutes()/60; again(); toast('Measuring from your GPS position')},
+          ()=>toast('Could not get a fix — pick a spot from the list'),{timeout:8000,maximumAge:60000})};
+      el.querySelectorAll('[data-take]').forEach(b=>b.onclick=()=>{const id=b.dataset.take;
+        if(dayLocked(d)){lockedToast();return}
+        if(!d.ids.includes(id)){d.ids.push(id); toast('Added to this day')}
+        again()});
+      el.querySelectorAll('[data-info]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.info));
+    });
+}
+/* ---------- GO LIVE: publish the day ----------
+   The day as it was actually driven becomes a record: which stops were shot (from the ledger),
+   which are carried to another day, which are skipped. The record goes to the crew journal on the
+   server, then IDS gets the update. Every step reports back, and a step that fails leaves the day
+   unpublished — nothing is marked sent on a belief. */
+function goLiveSheet(d){
+  const ids=d.ids.filter(i=>BY[i]&&!BY[i].wp), shotIds=ids.filter(shot), rest=ids.filter(i=>!shot(i));
+  const prev=publishedOf(d.date), skip=new Set((prev&&prev.skipped)||[]);
+  const when=l=>l&&l.at?hhmm(new Date(l.at).getHours()+new Date(l.at).getMinutes()/60):'IDS';
+  sheet('GO LIVE — '+(d.date?niceDate(d.date):'this day'),
+    shotIds.length+' shot · '+rest.length+' not shot · '+fmt(shotIds.reduce((t,i)=>t+BY[i].p,0))+' banked',
+    '<div class="lab">Shot</div>'
+    +(shotIds.length?shotIds.map(i=>'<div class="idsrow"><span class="idsid">'+i+'</span><span class="idsn">'+escHTML(BY[i].n)+'</span><span class="idsd">✓ '+when(S.locks[i])+'</span></div>').join('')
+      :'<div class="empty">Nothing shot on this day.</div>')
+    +(rest.length?'<div class="lab" style="margin-top:10px">Not shot — carry it, or skip it</div>'
+      +rest.map(i=>'<div class="idsrow"><span class="idsid">'+i+'</span><span class="idsn">'+escHTML(BY[i].n)+'</span><span class="idsd">'
+        +'<label><input type="radio" name="gl-'+i+'" value="carry" '+(skip.has(i)?'':'checked')+'> carry</label> '
+        +'<label><input type="radio" name="gl-'+i+'" value="skip" '+(skip.has(i)?'checked':'')+'> skip</label></span></div>').join(''):'')
+    +'<div class="hint" style="margin-top:10px">'+(syncOn()?'Writes the day to the crew journal, then opens the IDS email.':'Crew sync is off — GO LIVE turns it on so the journal has somewhere to go, then opens the IDS email.')+'</div>'
+    +'<div id="glStatus" class="hint mono" style="margin-top:6px;min-height:1em"></div>'
+    +'<div class="row" style="margin-top:10px"><button class="prim" id="glGo">Publish</button><button class="ghost" id="glCancel">Not yet</button></div>',
+    el=>{ el.querySelector('#glCancel').onclick=closeSheet;
+      el.querySelector('#glGo').onclick=async()=>{
+        const skipped=rest.filter(i=>{const r=el.querySelector('input[name="gl-'+i+'"]:checked'); return r&&r.value==='skip'});
+        const carried=rest.filter(i=>!skipped.includes(i));
+        const st=el.querySelector('#glStatus'), btn=el.querySelector('#glGo'); btn.disabled=true;
+        const say=t=>{st.textContent=t};
+        try{ await publishDay(d,{shot:shotIds,carried,skipped},say); closeSheet(); render(); dirty(); }
+        catch(e){ say('✗ '+((e&&e.message)||'failed')+' — nothing published, nothing marked sent'); btn.disabled=false; btn.textContent='Retry'; }
+      }});
+}
+async function publishDay(d,parts,say){
+  say=say||(()=>{});
+  if(!syncOn()){ say('Turning crew sync on…'); await crewOn(true); if(!syncOn())throw new Error('crew sync would not start') }
+  const rec={date:d.date||'',name:bindName(d),by:S.who||'',at:Date.now(),
+    shot:parts.shot.map(i=>({id:i,at:(S.locks[i]&&S.locks[i].at)||0,d:(S.locks[i]&&S.locks[i].d)||d.date||''})),
+    carried:parts.carried.slice(),skipped:parts.skipped.slice(),
+    pts:parts.shot.reduce((t,i)=>t+BY[i].p,0),
+    miles:Math.round(simulate(Object.assign({},d,{ids:parts.shot.concat(parts.carried),allLive:true})).miles)};
+  say('Writing the crew journal…');
+  const r=await fetch('/api/journal',{method:'POST',headers:{'content-type':'application/json','x-crew-key':S.sync.key},body:JSON.stringify(rec)});
+  if(!r.ok){let why='HTTP '+r.status; try{const j=await r.json(); why=j.error||why}catch(e){} throw new Error('journal refused ('+why+')')}
+  const j=await r.json();
+  S.published=(S.published&&typeof S.published==='object')?S.published:{};
+  S.published[d.date]={at:rec.at,by:rec.by,shot:parts.shot.slice(),carried:rec.carried,skipped:rec.skipped,n:j.n||0,email:'pending'};
+  dirty();
+  say('Journal ✓ entry '+(j.n||'?')+' — opening the IDS email…');
+  // the email hand-off: the draft opens in the mail app, and it is marked sent only when Tim says it went
+  const msg=idsUpdateText(), dates=datesToReport();
+  await openIdsMail(msg);
+  await new Promise(res=>setTimeout(res,900));
+  const ok=confirm('Did the IDS email go out?\n\nOK = yes, mark '+dates.length+' date'+(dates.length===1?'':'s')+' sent.\nCancel = not yet — the draft stays, nothing is marked.');
+  S.published[d.date].email=ok?'sent':'not sent';
+  if(ok&&dates.length)markDatesSent(dates);
+  dirty();
+  toast(ok?'⚡ Live — '+parts.shot.length+' shot on the journal, IDS told':'Journal written — IDS email not confirmed, nothing marked sent');
+}
+/* The IDS email hand-off, shared by the IDS tab and GO LIVE: a mailto draft to the saved addresses.
+   Mail apps drop a long body, so past 1,800 chars the text goes on the clipboard and the draft
+   opens empty. Returns 'opened' or 'copied'. */
+async function openIdsMail(msg,preEl){
+  const addrs=v=>(String(v||'').match(/[^\s<>,;"']+@[^\s<>,;"']+/g)||[]).map(encodeURIComponent).join(',');
+  const subj='Ninja-360 — Daily IDS Update — '+niceDate(todayISO()), body=encodeURIComponent(msg);
+  const q=(idsCc()?'cc='+addrs(idsCc())+'&':'')+'subject='+encodeURIComponent(subj);
+  if(body.length>1800){ const ok=await copyText(msg,preEl);
+    location.href='mailto:'+addrs(idsTo())+'?'+q;
+    toast(ok?'Update copied — paste it into the email':'Text selected — copy it, then paste into the email'); return 'copied' }
+  location.href='mailto:'+addrs(idsTo())+'?'+q+'&body='+body; return 'opened';
 }
 /* ================= shared stop cards ================= */
 /* The SHOT button, the same wherever a stop is listed. A go-back offers its list instead —
@@ -1719,12 +1753,11 @@ function renderPlan(){
       <img src="${bannerOf(S.who)}" alt="${escHTML(who()?who().name+' — '+who().role:'Ninja 360')}">
     </div>
     ${(()=>{const lb=latestBind(), me=bindName(d), n=bindList().length;
-      return '<div class="lab" style="margin:8px 0 5px">Route bindings</div>'
-        +(lb?'<div class="runs"><button class="runbtn bind on" data-pull="'+escHTML(lb.id)+'"><b>★ '+escHTML(lb.id)+'</b><small>latest · '+bindProg(lb)+' · '+fmt(lb.pay)+' · '+bindAgo(lb)+(lb.by&&CREW[lb.by]?' by '+escHTML(CREW[lb.by].short):'')+' — tap to pull up</small></button></div>'
-          :'<div class="hint" style="margin:0 0 6px">Nothing bound yet. Bind this route and it gets a name you can say out loud: DATE:TIME:Solo or W/Cody.</div>')
+      return '<div class="lab" style="margin:8px 0 5px">Route names</div>'
+        +(lb?'<div class="runs"><button class="runbtn bind on" data-pull="'+escHTML(lb.id)+'"><b>★ '+escHTML(lb.id)+'</b><small>latest · '+bindProg(lb)+' · '+fmt(lb.pay)+' · '+bindAgo(lb)+'</small></button></div>'
+          :'<div class="hint" style="margin:0 0 6px">Lock a plan and it gets a name you can say out loud: DATE:TIME:Solo or W/Cody.</div>')
         +'<div class="row" style="margin:6px 0 0;align-items:center">'
-        +'<button class="ghost" id="bBind">🔗 Bind this route</button>'
-        +(n?'<button class="ghost" id="bBinds">All bindings ('+n+')</button>':'')
+        +(n?'<button class="ghost" id="bBinds">All names ('+n+')</button>':'')
         +'<span class="mono hint" style="margin:0">this day: '+escHTML(me)+'</span></div>'})()}
     <div class="lab" style="margin:8px 0 5px">Runs</div><div class="runs">${RUNS.map(r=>`<button class="runbtn${runLoaded(r)?' on':''}" data-run="${r.id}"><b>${escHTML(r.name)}</b><small>${escHTML(r.sub)}${runLoaded(r)?' · loaded':''}</small></button>`).join('')}</div>
     <div class="lab" style="margin:8px 0 5px">Days</div><div class="rail">${rail}</div>
@@ -1827,7 +1860,6 @@ function renderPlan(){
   $('#bNav').onclick=()=>{bindRoute(d,true); dirty(); openDayRoute(d)};   // if he is driving it, it is bound
   $$('[data-run]').forEach(b=>b.onclick=()=>{const r=RUNS.find(x=>x.id===b.dataset.run); if(r)loadRun(r)});
   $$('[data-pull]').forEach(b=>b.onclick=()=>pullBind(b.dataset.pull));
-  const bb=$('#bBind'); if(bb)bb.onclick=()=>{if(!d.ids.length){toast('Put some stops on the day first');return} bindRoute(d); dirty(); render()};
   const bbs=$('#bBinds'); if(bbs)bbs.onclick=bindSheet;
   const bD=$('#bDel'); if(bD)bD.onclick=()=>{if(S.days.length<2){toast('Keep at least one day');return}
     const snap={idx:S.active,day:JSON.parse(JSON.stringify(d))};
@@ -2629,18 +2661,9 @@ function renderApp(){
   const sendMarked=rows=>{ const prev=rows.map(l=>[l.id,idsSent()[l.id]]); markDatesSent(rows); render();
     toast(rows.length+' date'+n1(rows.length)+' marked sent',{label:'Undo',fn:()=>{restoreSent(prev);render()}}) };
   const sentAsk=(lead)=>{ if(dates.length)toast(lead+' — '+dates.length+' date'+n1(dates.length)+' in it',{label:'Mark sent',fn:()=>sendMarked(dates.slice())}); else toast(lead) };
-  // just the addresses — "Michelle <m@…>", commas, semicolons or spaces between them all read the same
-  const addrs=v=>(String(v||'').match(/[^\s<>,;"']+@[^\s<>,;"']+/g)||[]).map(encodeURIComponent).join(',');
   $('#idsCopy').onclick=async()=>{ saveTo(); if(await copyText(msg,$('#idsMsg'))){noteRequest(named); sentAsk('Update copied')} else toast('Text selected — tap Copy') };
   $('#idsMail').onclick=async()=>{ saveTo(); noteRequest(named);
-    const subj='Ninja-360 — Daily IDS Update — '+niceDate(todayISO()), body=encodeURIComponent(msg);
-    const q=(idsCc()?'cc='+addrs(idsCc())+'&':'')+'subject='+encodeURIComponent(subj);
-    // mail apps drop or truncate a long body — past that, the text goes on the clipboard and the draft opens empty
-    if(body.length>1800){ const ok=await copyText(msg,$('#idsMsg'));
-      location.href='mailto:'+addrs(idsTo())+'?'+q;
-      toast(ok?'Update copied — paste it into the email':'Text selected — copy it, then paste into the email'); return }
-    location.href='mailto:'+addrs(idsTo())+'?'+q+'&body='+body;
-    setTimeout(()=>sentAsk('Email opened'),900) };
+    if(await openIdsMail(msg,$('#idsMsg'))==='opened')setTimeout(()=>sentAsk('Email opened'),900) };
   const sh=$('#idsShare'); if(sh)sh.onclick=async()=>{ saveTo();
     try{ await navigator.share({title:'Ninja-360 — Daily IDS Update',text:msg}); noteRequest(named); sentAsk('Sent') }
     catch(e){ if(e&&e.name==='AbortError')return;
@@ -2868,8 +2891,7 @@ function render(){
   $$('#nav button').forEach(b=>{const on=b.dataset.s===S.nav;
     b.classList.toggle('on',on);
     if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
-  if(S.nav==='now')renderNow();
-  else if(S.nav==='run')renderRun();
+  if(S.nav==='today')renderToday();
   else if(S.nav==='plan')renderPlan();
   else if(S.nav==='clusters')renderClusters();
   else if(S.nav==='app')renderApp();
@@ -2908,14 +2930,14 @@ const LSKEY='ninja360-runsheet-v2';
    Locks are facts with a person and a time on them, so a merge unions them; an un-shot is a fact
    too (S.unshot), and on each stop the later of the two wins. Everything else is last-write-wins,
    and a write that would clobber somebody else's is refused by the server and merged here first. */
-const SHARED=['days','sv','loaded','status','notes','timers','punch','locks','custom','places','chargeAt','by','geo','evRange','lastRequest','mig','binds','checkin','report','unshot'];
+const SHARED=['days','sv','loaded','status','notes','timers','punch','locks','custom','places','chargeAt','by','geo','evRange','lastRequest','mig','binds','checkin','report','unshot','published'];
 const syncOn=()=>!!(S.sync&&S.sync.key&&S.sync.key.length>=8);
 const takeShared=s=>{const o={}; SHARED.forEach(k=>{if(s[k]!==undefined)o[k]=s[k]}); return o};
 function mergeShared(remote){
   if(!remote||typeof remote!=='object')return false;
   const mine=S.locks||{}, theirs=remote.locks||{};
   const myBinds=Array.isArray(S.binds)?S.binds:[];
-  const mySent=(S.report&&S.report.sent)||{}, myUn=S.unshot||{};
+  const mySent=(S.report&&S.report.sent)||{}, myUn=S.unshot||{}, myPub=S.published||{};
   const myPlans=new Map((Array.isArray(S.days)?S.days:[]).filter(d=>d&&d.date&&(d.locked||d.unlocked)).map(d=>[d.date,{locked:d.locked||null,unlocked:d.unlocked||null}]));
   SHARED.forEach(k=>{if(remote[k]!==undefined)S[k]=remote[k]});
   // a plan lock, and an unlock, are facts with a time on them: the crew copy's days win, but on
@@ -2940,6 +2962,9 @@ function mergeShared(remote){
   S.unshot=(S.unshot&&typeof S.unshot==='object'&&!Array.isArray(S.unshot))?S.unshot:{};
   Object.entries(myUn).forEach(([id,u])=>{const t=S.unshot[id]; if(u&&(!t||(u.at||0)>(t.at||0)))S.unshot[id]=u});
   Object.keys(locks).forEach(id=>{const u=S.unshot[id]; if(u&&(u.at||0)>((locks[id]&&locks[id].at)||0)){delete locks[id]; delete S.status[id]; delete S.by[id]}});
+  // a GO LIVE receipt is a fact with a time on it — the later publish of a day wins, whichever device did it
+  S.published=(S.published&&typeof S.published==='object'&&!Array.isArray(S.published))?S.published:{};
+  Object.entries(myPub).forEach(([dt,p])=>{const t=S.published[dt]; if(p&&(!t||(p.at||0)>(t.at||0)))S.published[dt]=p});
   S.locks=locks;
   convertFutureLocks();   // a phone still on the old build may hand back locks dated ahead of their day
   S.days.forEach(d=>{if(!isFinite(d.startTime))d.startTime=8; if(!Array.isArray(d.ids))d.ids=[];
@@ -3005,13 +3030,13 @@ const liveAgo=()=>{ if(!S.sync.at)return 'not yet';
   const m=Math.round((Date.now()-S.sync.at)/60000);
   return m<1?'just now':m<60?m+'m ago':Math.round(m/60)+'h ago'; };
 // one tap: reuse whatever this device already holds, otherwise mint one and go
-async function goLive(){
+async function crewOn(quiet){
   if(!S.sync.key)S.sync.key=mintKey();
   S.sync.v=0; dirtyLocal();
-  const j=await syncPull(true);
-  if(j&&j.state)toast('Live — pulled the crew\'s latest');
-  else if(j){await syncPush(); toast('Live — this device is the crew copy now')}
-  else {toast('Could not reach the crew copy — saved here, it will catch up'); }
+  const j=await syncPull(true), say=t=>{if(!quiet)toast(t)};
+  if(j&&j.state)say('Crew sync on — pulled the crew\'s latest');
+  else if(j){await syncPush(); say('Crew sync on — this device is the crew copy now')}
+  else say('Could not reach the crew copy — saved here, it will catch up');
   syncChipShow(); render();
 }
 function stopLive(){ S.sync={key:'',v:0,at:0}; dirtyLocal(); render(); toast('Off the crew copy — this device keeps its own') }
@@ -3023,16 +3048,16 @@ async function adoptLinkKey(){
   try{history.replaceState(null,'',location.pathname+location.search)}catch(e){location.hash=''}
   S.sync.key=k; S.sync.v=0; dirtyLocal();
   const j=await syncPull(true);
-  toast(j&&j.state?'This device is live — pulled the crew\'s plan':'This device is live');
+  toast(j&&j.state?'On the crew plan — pulled the crew\'s latest':'On the crew plan');
   if(j&&!j.state)await syncPush();
   syncChipShow(); render();
   return true;
 }
 function syncSheet(){
   const on=syncOn();
-  sheet(on?'This device is live':'Go live',
+  sheet(on?'Crew sync — on':'Crew sync',
     on?'Every device that opens the link below is on this same plan. Nothing to remember.'
-      :'One tap and this plan follows you onto every phone you pick up.',
+      :'One tap and this plan follows you onto every phone you pick up — and GO LIVE has a journal to write to.',
     (on
       ? '<div class="lab">Add a device</div>'
         +'<div class="hint" style="margin:3px 0 7px">Send this link to the phone you want on the plan and open it there. That is the whole job — no key to type. The key rides in the part of the address after the #, which browsers never send to any server.</div>'
@@ -3046,7 +3071,7 @@ function syncSheet(){
         +'<pre class="req" id="liveKey">'+escHTML(S.sync.key)+'</pre>'
         +'<div class="hint" style="margin-top:8px">Last synced '+escHTML(liveAgo())+' · version '+(S.sync.v||0)+'</div>'
         +'<div class="row" style="margin-top:10px"><button class="ghost danger" id="liveOff">Take this device off</button></div>'
-      : '<button class="prim" id="liveGo" style="width:100%;min-height:52px;font-size:17px;font-weight:800">⚡ GO LIVE</button>'
+      : '<button class="prim" id="liveGo" style="width:100%;min-height:52px;font-size:17px;font-weight:800">👥 Turn on crew sync</button>'
         +'<div class="hint" style="margin-top:8px">This makes a phrase for you and puts this device on it. To put another phone on the same plan you send it a link — you never type the phrase anywhere.</div>'
         +'<div class="lab" style="margin:14px 0 3px">Already have a phrase?</div>'
         +'<div class="row" style="align-items:flex-end">'
@@ -3054,11 +3079,11 @@ function syncSheet(){
           +'<button class="ghost" id="syncSave">Use it</button></div>'
         +'<div class="hint" style="margin-top:6px">ninja360.org is a public address and this sheet carries location ids, addresses and points. The phrase is what keeps the plan private — treat the link like the plan itself.</div>'),
     el=>{
-      const go=el.querySelector('#liveGo'); if(go)go.onclick=async()=>{closeSheet(); await goLive()};
+      const go=el.querySelector('#liveGo'); if(go)go.onclick=async()=>{closeSheet(); await crewOn()};
       const sv=el.querySelector('#syncSave'); if(sv)sv.onclick=async()=>{
         const k=el.querySelector('#syncKey').value.trim();
         if(k.length<8){toast('That is too short to be one of ours');return}
-        S.sync.key=k; closeSheet(); await goLive(); };
+        S.sync.key=k; closeSheet(); await crewOn(); };
       const cp=el.querySelector('#liveCopy'); if(cp)cp.onclick=async()=>
         toast(await copyText(liveLink(),el.querySelector('#liveLink'))?'Link copied — open it on the other phone':'Select the link and copy it');
       const sm=el.querySelector('#liveSms'); if(sm)sm.onclick=()=>{
@@ -3071,7 +3096,7 @@ function syncSheet(){
 }
 function chip(txt,cls){const e=$('#syncChip');if(!e)return;e.textContent=txt;e.className='tbtn '+(cls||'')}
 function stampNow(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
-const NAVS=['now','run','plan','clusters','app','board','history'];
+const NAVS=['today','plan','clusters','app','board','history'];
 function refreshLiveTimers(){
    $$('.live-timer').forEach(el=>{const id=el.dataset.liveTimer; const st=jobTimerState(id); el.textContent=st.label+(st.running?' • run':''); el.classList.toggle('running',st.running); el.title=jobTooltip(id);});
 }
@@ -3083,7 +3108,7 @@ function mergeState(j){
   S.sv=j.sv||{}; S.loaded=j.loaded||{}; S.status=j.status||{}; S.notes=j.notes||{}; S.timers=j.timers||{};
   S.punch=j.punch||{}; S.locks=j.locks||{}; S.showBanked=!!j.showBanked;
   S.here=j.here||{key:'home',time:8};
-  S.nav=NAVS.includes(j.nav)?j.nav:'plan';
+  S.nav=(j.nav==='now'||j.nav==='run')?'today':(NAVS.includes(j.nav)?j.nav:'plan');   // Now and Run became Today
   S.custom=Array.isArray(j.custom)?j.custom:[];   // jobs pasted from email — not in the baked DATA
   S.places=(j.places&&typeof j.places==='object'&&!Array.isArray(j.places))?j.places:{};   // where Tim stays / starts
   S.lastRequest=(j.lastRequest&&j.lastRequest.at)?j.lastRequest:null;   // last "please load" sent to IDS
@@ -3113,6 +3138,7 @@ function mergeState(j){
     ?{to:String(j.report.to||''),cc:String(j.report.cc||''),sent:(j.report.sent&&typeof j.report.sent==='object'&&!Array.isArray(j.report.sent))?j.report.sent:{},seeded:String(j.report.seeded||'')}
     :{to:'',cc:'',sent:{}};   // who the IDS update goes to, which onsite dates they have already been told, and whether the first-run seed has been laid
   S.unshot=(j.unshot&&typeof j.unshot==='object'&&!Array.isArray(j.unshot))?j.unshot:{};   // un-shot tombstones — {at,by} per stop
+  S.published=(j.published&&typeof j.published==='object'&&!Array.isArray(j.published))?j.published:{};   // GO LIVE receipts, per day
   // Tue Sep 15 — Cameron with Gabe (TSC 2805, TCC 111911, Chillicothe on the way home). Once.
   S.sync=(j.sync&&typeof j.sync==='object'&&!Array.isArray(j.sync))?j.sync:{key:'',v:0,at:0};   // crew sync: key is per device, never shared state
   S.geo=(j.geo&&typeof j.geo==='object'&&!Array.isArray(j.geo))?j.geo:{};   // coordinates the browser resolved for rows that shipped city-level
