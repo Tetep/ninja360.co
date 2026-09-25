@@ -19,6 +19,8 @@ const shift = (n: number) => { const d = new Date(); d.setDate(d.getDate() + n);
 const today = () => shift(0);
 const tomorrow = () => shift(1);
 const yesterday = () => shift(-1);
+// "Thursday 9/24" — the way the IDS email names a day
+const dayLabel = (s: string) => { const d = new Date(s + 'T12:00:00'); return d.toLocaleDateString('en-US', { weekday: 'long' }) + ' ' + (d.getMonth() + 1) + '/' + d.getDate(); };
 
 const day = (over: Record<string, unknown> = {}) => ({
   id: 'dtest', date: tomorrow(), startKey: 'home', startTime: 8, endKey: 'home', ids: [OSAGE, EMPORIA],
@@ -113,15 +115,18 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(s.locks[OSAGE].d).toBe(today());
     expect(s.days[0].locked).toBeTruthy();
 
-    // the IDS tab now has one onsite date to report, and it is in the update text
+    // the IDS tab now has one onsite date to report, and the email says so — under the day it was shot
     await page.locator('#nav button[data-s="app"]').click();
     await expect(page.locator('#s-app')).toBeVisible();
     await noSidewaysScroll(page, 'IDS tab');
     await expect(page.locator('#s-app .idsrow', { hasText: OSAGE })).toContainText(mdy(today()));
-    const lines = (await page.locator('#idsMsg').innerText()).split('\n');
-    expect(lines.find(l => l.includes(OSAGE) && l.includes('onsite'))).toContain('onsite ' + mdy(today()));
-    expect(lines.find(l => l.includes(OSAGE) && !l.includes('onsite'))).toContain('✓ shot');            // the shot stop is marked, not asked for
-    expect(lines.find(l => l.includes(EMPORIA))).toContain('PLEASE ADD TO THE APP');                   // the unshot one still is
+    const msg = await page.locator('#idsMsg').innerText(), lines = msg.split('\n');
+    expect(msg).toContain('COMPLETED — ' + dayLabel(today()).toUpperCase());
+    expect(lines.find(l => l.includes('(Loc ' + OSAGE + ')'))).toBeTruthy();       // the shot stop is reported…
+    expect(lines.find(l => l.startsWith(OSAGE))).toBeUndefined();                  // …not asked for
+    expect(msg).toContain('PLEASE LOAD IN IDS CAPTURE');
+    expect(lines.find(l => l.startsWith(EMPORIA))).toContain('Emporia');           // the unshot one is asked for, under its day
+    expect(msg).toContain('Tim Petet');
 
     // undo puts back exactly what was there — no confirm, no re-dating
     await page.locator('#nav button[data-s="plan"]').click();
@@ -198,7 +203,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
   });
 
   test('↑/↓ move the stop on the row, and Undo of a SHOT puts the stop back where it was', async ({ page }) => {
-    const t = today(), AT = new Date(t + 'T09:00:00').getTime();
+    const t = today(), AT = Date.now() - 60_000;
     await open(page, state({
       days: [day({ date: t, ids: [OSAGE, EMPORIA, SALINA] })], activeDate: t,
       locks: { [OSAGE]: { d: t, pts: 100, by: 'tim', with: '', at: AT, sd: t } },
@@ -254,10 +259,11 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await page.locator('.sheet #jsShot').click();
     const s = await saved(page);
     expect(s.locks[SALINA].d).toBe(today());
-    // IDS keeps the first visit as the sheet's Onsite Date: 9/10, not the revisit
+    // IDS keeps the first visit as the sheet's Onsite Date: 9/10, not the revisit — so nothing "completed" today
     await page.locator('#nav button[data-s="app"]').click();
     const msg = await page.locator('#idsMsg').innerText();
-    expect(msg).not.toContain(SALINA + '  Victra 109861 - Salina, KS  — onsite ' + mdy(today()));
+    expect(msg).not.toContain('COMPLETED —');
+    expect(msg).not.toContain(SALINA);       // and the list is cleared, so Salina is no longer under GO-BACKS either
   });
 
   test('IDS tab: dates to report shrink when sent, come back on undo, and survive a merge', async ({ page }) => {
@@ -274,13 +280,18 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     // the first-run seed: everything already on the sheet is "sent" — date AND invoice, stamped before
     // any real send — and the 19 it is missing are not, so the list opens at 19 + Osage City
     let s = await saved(page);
-    expect(s.report.seeded).toBeTruthy();
+    expect(s.report.seeded).toBe('0924');
     expect(s.report.sent['2026-0000']).toMatchObject({ d: '2026-09-10', seed: 1, at: 0 });
     expect(typeof s.report.sent['2026-0000'].inv).toBe('string');
-    expect(s.report.sent['2026-5178']).toBeUndefined();
+    expect(s.report.sent['2026-5178']).toMatchObject({ d: '2026-09-16', seed: 1 });   // Chillicothe: on the sheet since the 9/23 cleanup
+    expect(s.report.sent['2026-1388']).toMatchObject({ d: '2026-08-21', seed: 1 });   // seeded with the sheet's wrong date, so it lists as a fix
+    expect(s.report.sent['2026-3142']).toBeUndefined();                               // Gap 1211 is on neither tab
     expect(s.report.sent['2026-7106']).toBeUndefined();
-    expect(await page.evaluate(() => (window as any).datesToReport().length)).toBe(20);
+    // Osage City + Gap 1211 (new to the sheet) + the four dates QuickBooks says the sheet has wrong
+    expect(await page.evaluate(() => (window as any).datesToReport().length)).toBe(6);
     await expect(page.locator('#s-app .badge', { hasText: 'invoice # new' })).toHaveCount(0);
+    await expect(page.locator('#s-app .badge', { hasText: 'sheet has 08/21' })).toHaveCount(2);
+    await expect(page.locator('#s-app .idsrow', { hasText: '2026-3142' }).locator('.badge', { hasText: 'new' })).toHaveCount(1);
 
     await page.locator('#datesSent').click();
     await expect(row).toHaveCount(0);
@@ -296,9 +307,9 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(page.locator('#s-app')).toBeVisible();
     s = await saved(page);
-    expect(s.report.seeded).toBe('0923');
+    expect(s.report.seeded).toBe('0924');
     expect(s.report.sent[OSAGE].d).toBe('');
-    expect(await page.evaluate(() => (window as any).datesToReport().length)).toBe(20);
+    expect(await page.evaluate(() => (window as any).datesToReport().length)).toBe(6);
   });
 
   test('crew merge: a lock is kept, the later unlock wins, a stale build\'s future lock is converted', async ({ page }) => {
@@ -343,7 +354,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
   });
 
   test('un-shot on one phone survives a pull on the other', async ({ page }) => {
-    const t = today(), AT = new Date(t + 'T09:00:00').getTime();
+    const t = today(), AT = Date.now() - 60_000;   // stamped a minute ago — "09:00 today" is in the future on an early CI run
     await open(page, state({
       days: [day({ date: t, ids: [OSAGE] })], activeDate: t,
       locks: { [OSAGE]: { d: t, pts: 100, by: 'tim', with: '', at: AT, sd: t } },
