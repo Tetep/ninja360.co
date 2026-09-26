@@ -3077,7 +3077,7 @@ function renderBoard(){
       // a run that slept out is named for the town it slept in (Lincoln, Wichita); a day trip for its farthest stop
       const home=r.days.length>1&&endJob?endJob.c:(far?BY[far].c:(endJob?endJob.c:'Run'));
       r.name=home+(towns.length>1?' +'+(towns.length-1):'')});
-    return out.reverse()})();
+    return out.reverse().filter(r=>r.n>=4||r.miles>=150)})();   // the runs worth looking back at: four stops or more, or a long haul
   const pick=runs.find(r=>r.key===RUNPICK);
   const dayRows=list=>list.map((d,i)=>`<div><i style="background:${DRIVE_COL[i%DRIVE_COL.length]}"></i>
         <span><b>${fmtD(d.date)}</b><small>${d.ids.length} stop${d.ids.length===1?'':'s'} &middot; ${h1(d.hrs)} h &middot; ${d.logged?'logged':'est.'}</small></span><b class="mono">${mi0(d.miles)} mi</b></div>`).join('');
@@ -3095,7 +3095,7 @@ function renderBoard(){
         <span><b>${fmtD(d.date)}</b><small>${d.ids.length} stop${d.ids.length===1?'':'s'} &middot; ${h1(d.hrs)} h &middot; ${d.logged?'logged':'est.'}</small></span><b class="mono">${mi0(d.miles)} mi</b></div>`).join('')}</div>
       <details class="sbmore" id="dmapWrap"${DMAP?' open':''}><summary>&#128247; Screenshot</summary>${driveMap(snap)}</details>
     </section>`:`<div class="card empty">No drive yet &mdash; shoot a stop and it shows up here.</div>`}
-    ${runs.length?`<select class="runpick" id="runPick" aria-label="Past runs"><option value="">Past runs &mdash; pick one to see it</option>${runs.map(r=>`<option value="${r.key}"${r.key===RUNPICK?' selected':''}>${escHTML(r.name)} &middot; ${r.span} &middot; ${mi0(r.miles)} mi</option>`).join('')}</select>`:''}
+    ${runs.length?`<select class="runpick" id="runPick" aria-label="Past runs"><option value="">Past runs &mdash; 4+ stops or a long haul</option>${runs.map(r=>`<option value="${r.key}"${r.key===RUNPICK?' selected':''}>${escHTML(r.name)} &middot; ${r.span} &middot; ${mi0(r.miles)} mi</option>`).join('')}</select>`:''}
     ${pick?`<section class="card drv" id="runCard">
       <div class="drvh"><span class="lab">${escHTML(pick.name)} &middot; ${pick.span}${pick.mates.size?' &middot; with '+[...pick.mates].map(m=>CREW[m].short).join(' &amp; '):''}</span>
         <span class="drvt"><b class="mono">${mi0(pick.miles)}</b> mi</span></div>
