@@ -988,7 +988,7 @@ const PAST_RUNS=[
  ['2026-08-30','cody','home','job:2026-9334',8,[]],                          // Sunday: Tim and Cody drive up to Lincoln for Target 217
  ['2026-08-31','cody','job:2026-9334','job:2026-9334',8,['2026-9334']],      // Monday: the first shoot, with Cody. Cody left Tuesday; Tim finished
  ['2026-09-02',null,'job:2026-9334','home',8,['2026-0001'],462],             // Norfolk, then home (the log's 9/2 + the 9/3 drive home)
- ['2026-09-09',null,'home','home',8,['2026-0000','2026-0938','2026-1896','2026-6911'],448],
+ ['2026-09-09','gabe','home','home',8,['2026-0000','2026-0938','2026-1896','2026-6911'],448],   // Manhattan / Salina with Gabe
  ['2026-09-11',null,'home','home',8,['2026-4479','2026-8316'],133],          // Parkville, Lansing, then Belton (not shot) — the log has the whole loop
  ['2026-09-13',null,'home','home',8,['2026-1803','2026-1902','2026-4662','2026-6674'],58],
  ['2026-09-15','gabe','home','home',7,['2026-9658']],                        // Cameron with Gabe — TSC 2805
@@ -3366,7 +3366,7 @@ function migrate(){
   // its route and crew, gains any stop it was missing, and is locked. A date with no day gets the run.
   // (v2, 9/26: the Lincoln first shoot was with Cody — a day this migration wrote itself is brought up to
   // the record; a day Tim planned keeps its route and gains only crew and stops)
-  if(S.mig.pastruns0926!==2){ S.mig.pastruns0926=2;
+  if(S.mig.pastruns0926!==3){ S.mig.pastruns0926=3;   // v3: Gabe on the 9/9 Salina run
     PAST_RUNS.forEach(r=>{ const d=S.days.find(x=>x.date===r[0]), stamp=Date.parse(r[0]+'T23:00:00Z');
       if(!d){ S.days.push(pastRunDay(r)); return }
       const ours=!!(d.locked&&d.locked.by==='tim'&&d.locked.at===stamp);
