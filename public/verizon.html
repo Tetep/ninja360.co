@@ -528,6 +528,7 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
 .drvdays i{width:20px;height:5px;border-radius:3px}
 .drvdays span{display:flex;flex-direction:column;font-size:13.5px} .drvdays small{color:var(--ink3);font-size:11.5px}
 .drvdays>div>b{font-size:17px}
+.runpick{display:block;width:100%;max-width:100%;margin:12px 0 10px;padding:11px 12px;border-radius:10px;border:1px solid var(--line2);background:var(--surf2);color:var(--ink);font:600 14px Archivo,-apple-system,sans-serif}
 .sbmore{margin:14px 0 4px}
 .sbmore>summary{cursor:pointer;list-style:none;border:1px solid var(--line2);border-radius:10px;padding:11px 14px;font-weight:600;font-size:13.5px;color:var(--ink2);background:var(--surf2)}
 .sbmore>summary::-webkit-details-marker{display:none}
@@ -2958,7 +2959,7 @@ function renderBoardMore(){
    else — points, belts, records, the job list, CSV — sits one tap down under "Points & job list".
    Miles are the day as driven: start → the stops that were shot, in plan order → end,
    priced with the same mi() / ROAD factor the planner uses. A day with nothing shot drove nowhere. */
-let BMORE=false, DMAP=false;   // the points accordion and the map screenshot: closed until asked, and they stay how he left them
+let BMORE=false, DMAP=false, RUNPICK='';   // the points accordion, the map screenshot and the past run he picked: they stay how he left them
 const DRIVE_COL=['#F4801F','#CD040B','#3B82D6','#2C9B6A','#8B2FC9','#C9A227','#6B6058'];
 function drivenDays(){
   const today=ymd(new Date());
@@ -3064,6 +3065,22 @@ function renderBoard(){
         ${wk.length?`<div class="pwk">this week <b class="mono">${mi0(wkMi)}</b> mi</div>`:''}</div></article>`};
   const fmtD=k=>new Date(k+'T12:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
   const snapMates=new Set(); snap.forEach(d=>d.mates.forEach(m=>snapMates.add(m)));
+  // the documented runs: days that slept out of town chain into one run (Wichita is three days), the rest stand alone
+  const runs=(()=>{const out=[]; driven.forEach(d=>{const p=out[out.length-1], last=p&&p.days[p.days.length-1];
+      if(last&&String(last.day.endKey).startsWith('job:')&&last.day.endKey===d.day.startKey)p.days.push(d); else out.push({days:[d]})});
+    const fS=k=>new Date(k+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'});
+    out.forEach(r=>{const ids=r.days.flatMap(d=>d.ids), a=r.days[0].date, b=r.days[r.days.length-1].date;
+      const far=ids.length?ids.reduce((m,id)=>mi(BASE,LL(BY[id]))>mi(BASE,LL(BY[m]))?id:m,ids[0]):null, towns=[...new Set(ids.map(id=>BY[id].c))];
+      const endJob=String(r.days[0].day.endKey).startsWith('job:')&&BY[r.days[0].day.endKey.slice(4)];
+      r.key=a; r.miles=r.days.reduce((t,d)=>t+d.miles,0); r.n=ids.length; r.span=a===b?fmtD(a):fS(a)+'–'+fS(b);
+      r.mates=new Set(r.days.flatMap(d=>[...d.mates]));
+      // a run that slept out is named for the town it slept in (Lincoln, Wichita); a day trip for its farthest stop
+      const home=r.days.length>1&&endJob?endJob.c:(far?BY[far].c:(endJob?endJob.c:'Run'));
+      r.name=home+(towns.length>1?' +'+(towns.length-1):'')});
+    return out.reverse()})();
+  const pick=runs.find(r=>r.key===RUNPICK);
+  const dayRows=list=>list.map((d,i)=>`<div><i style="background:${DRIVE_COL[i%DRIVE_COL.length]}"></i>
+        <span><b>${fmtD(d.date)}</b><small>${d.ids.length} stop${d.ids.length===1?'':'s'} &middot; ${h1(d.hrs)} h &middot; ${d.logged?'logged':'est.'}</small></span><b class="mono">${mi0(d.miles)} mi</b></div>`).join('');
   $('#s-board').innerHTML=`
     ${verizonTotal()}
     <section class="plyrs">
@@ -3078,8 +3095,16 @@ function renderBoard(){
         <span><b>${fmtD(d.date)}</b><small>${d.ids.length} stop${d.ids.length===1?'':'s'} &middot; ${h1(d.hrs)} h &middot; ${d.logged?'logged':'est.'}</small></span><b class="mono">${mi0(d.miles)} mi</b></div>`).join('')}</div>
       <details class="sbmore" id="dmapWrap"${DMAP?' open':''}><summary>&#128247; Screenshot</summary>${driveMap(snap)}</details>
     </section>`:`<div class="card empty">No drive yet &mdash; shoot a stop and it shows up here.</div>`}
+    ${runs.length?`<select class="runpick" id="runPick" aria-label="Past runs"><option value="">Past runs &mdash; pick one to see it</option>${runs.map(r=>`<option value="${r.key}"${r.key===RUNPICK?' selected':''}>${escHTML(r.name)} &middot; ${r.span} &middot; ${mi0(r.miles)} mi</option>`).join('')}</select>`:''}
+    ${pick?`<section class="card drv" id="runCard">
+      <div class="drvh"><span class="lab">${escHTML(pick.name)} &middot; ${pick.span}${pick.mates.size?' &middot; with '+[...pick.mates].map(m=>CREW[m].short).join(' &amp; '):''}</span>
+        <span class="drvt"><b class="mono">${mi0(pick.miles)}</b> mi</span></div>
+      ${driveMap(pick.days)}
+      <div class="drvdays">${dayRows(pick.days)}</div>
+    </section>`:''}
     <details class="sbmore" id="sbMoreWrap"${BMORE?' open':''}><summary>Points &amp; job list</summary><div id="sbMore"></div></details>`;
   $('#sbMoreWrap').ontoggle=e=>{BMORE=e.target.open};
+  const rp=$('#runPick'); if(rp)rp.onchange=e=>{RUNPICK=e.target.value; render(); const c=$('#runCard'); if(c)c.scrollIntoView({behavior:'smooth',block:'start'})};
   const dm=$('#dmapWrap'); if(dm)dm.ontoggle=e=>{DMAP=e.target.open};
   renderBoardMore();
   $$('#s-board .dpin').forEach(g=>g.onclick=()=>jobSheet(g.dataset.info));
