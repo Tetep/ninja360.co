@@ -2915,8 +2915,15 @@ function renderBoardMore(){
 let BMORE=false;
 const DRIVE_COL=['#F4801F','#CD040B','#3B82D6','#2C9B6A','#8B2FC9','#C9A227','#6B6058'];
 function drivenDays(){
-  return S.days.filter(d=>d.date).map(d=>{
-    const ids=d.ids.filter(id=>BY[id]&&!BY[id].wp&&shot(id));
+  const today=ymd(new Date());
+  const days=S.days.filter(d=>d.date&&d.date<=today).sort((a,b)=>a.date.localeCompare(b.date));   // a day that has not come yet drove nowhere
+  // a stop is driven to once. It lands on the day it was shot when that day is on the plan;
+  // otherwise on the last past day that carried it — never on two, never on a day still ahead.
+  const home={};
+  days.forEach(d=>d.ids.forEach(id=>{const j=BY[id]; if(j&&!j.wp&&shot(id))home[id]=d.date}));
+  days.forEach(d=>d.ids.forEach(id=>{const l=home[id]&&lockOf(id); if(l&&l.d===d.date)home[id]=d.date}));
+  return days.map(d=>{
+    const ids=d.ids.filter(id=>home[id]===d.date);
     if(!ids.length)return null;
     const s=simulate(Object.assign({},d,{ids,allLive:true}));
     const mates=new Set(); if(d.crew&&CREW[d.crew])mates.add(d.crew);
