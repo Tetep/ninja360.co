@@ -353,10 +353,15 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
 .vz{border-top:3px solid var(--vz)}
 .vz .lab{color:var(--vz)}
 .vzrow{display:flex;align-items:center;justify-content:center;gap:16px;margin:8px 0 2px}
-.vzpie{width:144px;height:144px;flex:0 0 auto;filter:drop-shadow(0 1px 2px rgba(0,0,0,.12))}
-.vzsb{display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:1px;align-items:baseline;text-align:left}
-.vzsb b{font-size:30px;font-weight:700;letter-spacing:-1px;line-height:1.05;color:var(--ink)}
+.vzpiewrap{position:relative;flex:0 0 auto}
+.vzpie{width:144px;height:144px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.12))}
+.vzpct{position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);
+  background:var(--vz);color:#fff;font:800 13px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:-.2px;
+  padding:3px 11px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.28);border:2px solid var(--surf)}
+.vzsb{display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:2px;align-items:baseline;text-align:left}
+.vzsb b{font-size:34px;font-weight:700;letter-spacing:-1px;line-height:1.05;color:var(--ink)}
 .vzsb b.red{font-size:48px;color:var(--vz);letter-spacing:-2px}
+.vzsb b.dim{font-size:22px;color:var(--ink3)}
 .vzsb span{font-size:11px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink2)}
 .vzleg{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 16px;margin-top:10px;font-size:15px;color:var(--ink2)}
 .vzleg b{color:var(--ink);font-weight:700}
@@ -500,6 +505,35 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
 @keyframes pop{from{opacity:0;transform:translate(-50%,6px)}to{opacity:1;transform:translate(-50%,0)}}
 @keyframes up{from{transform:translateY(30px);opacity:.4}to{transform:translateY(0);opacity:1}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
+/* scoreboard: players + drive */
+.plyrs{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin-bottom:10px}
+.plyr{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;gap:14px;align-items:center;box-shadow:var(--shadow)}
+.plyr img{width:88px;height:88px;flex:none;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))}
+.plyr .pnm{font-size:17px;font-weight:800}
+.plyr .pnm small{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink3);margin-left:4px}
+.plyr .lab{margin-top:6px}
+.plyr .pv{font-size:34px;font-weight:700;line-height:1.05;color:var(--pc);letter-spacing:-1px}
+.plyr .pwk{font-size:12.5px;color:var(--ink2)} .plyr .pwk b{color:var(--ink)}
+.drv{border-top:3px solid var(--accent)}
+.drvh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.drvh .lab{color:var(--accent)}
+.drvt{font-size:14px;color:var(--ink2);font-weight:600} .drvt b{font-size:28px;color:var(--accent)}
+.dmap{background:var(--surf2);border-radius:10px;overflow:hidden}
+.dmap svg{display:block;width:100%;height:auto}
+.dmap .dpin{cursor:pointer}
+.dmap .dnum{font:700 14px "IBM Plex Mono",ui-monospace,monospace;fill:#fff}
+.dmap .dtown{font:600 19px Archivo,sans-serif;fill:var(--ink);stroke:var(--surf2);stroke-width:5px;paint-order:stroke}
+.drvdays{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:10px}
+.drvdays>div{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 11px}
+.drvdays i{width:20px;height:5px;border-radius:3px}
+.drvdays span{display:flex;flex-direction:column;font-size:13.5px} .drvdays small{color:var(--ink3);font-size:11.5px}
+.drvdays>div>b{font-size:17px}
+.sbmore{margin:14px 0 4px}
+.sbmore>summary{cursor:pointer;list-style:none;border:1px solid var(--line2);border-radius:10px;padding:11px 14px;font-weight:600;font-size:13.5px;color:var(--ink2);background:var(--surf2)}
+.sbmore>summary::-webkit-details-marker{display:none}
+.sbmore>summary::after{content:" ▾";color:var(--ink3)}
+.sbmore[open]>summary{margin-bottom:10px}
+.sbmore[open]>summary::after{content:" ▴"}
 </style>
 
 <header><div class="wrap"><div class="hrow">
@@ -2726,7 +2760,7 @@ function roadStats(){
   return {days:days.size, cities:cities.size, states:states.size,
     cityList:[...cities].sort(), stateList:[...states].sort()};
 }
-function renderBoard(){
+function renderBoardMore(){
   const now=new Date(), ws=weekStart(now), we=addDays(ws,6);
   const locks=allLocks();
   const earnedWeek=ptsBetween(ws,we);
@@ -2766,8 +2800,7 @@ function renderBoard(){
     : openJobs.map(j=>j.id);
   const dayOf={}; S.days.forEach((d,i)=>d.ids.forEach(id=>dayOf[id]=d.date||('Day '+(i+1))));
 
-  $('#s-board').innerHTML=`
-    ${verizonTotal()}
+  $('#sbMore').innerHTML=`
     <div class="sb-hero card">
       <div class="lab">This week &middot; ${ws.toLocaleDateString(undefined,{month:'short',day:'numeric'})}&ndash;${we.toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div>
       <div class="sb-big mono">${fmt(earnedWeek)}</div>
@@ -2871,6 +2904,91 @@ function renderBoard(){
   $$('#s-board [data-info],#s-board [data-note]').forEach(b=>b.onclick=()=>jobSheet(b.dataset.info||b.dataset.note));
   wireShot('#s-board');
   $('#csvBtn').onclick=doCsv;
+}
+
+/* ---------- the scoreboard: the ninja, the players, the drive ----------
+   Score opens on three things only: the Verizon ninja (how many done / left), the players
+   (miles driven, miles with each crew mate) and a snapshot of this week's drive. Everything
+   else — points, belts, records, the job list, CSV — sits one tap down under "Points & job list".
+   Miles are the day as driven: start → the stops that were shot, in plan order → end,
+   priced with the same mi() / ROAD factor the planner uses. A day with nothing shot drove nowhere. */
+let BMORE=false;
+const DRIVE_COL=['#F4801F','#CD040B','#3B82D6','#2C9B6A','#8B2FC9','#C9A227','#6B6058'];
+function drivenDays(){
+  return S.days.filter(d=>d.date).map(d=>{
+    const ids=d.ids.filter(id=>BY[id]&&!BY[id].wp&&shot(id));
+    if(!ids.length)return null;
+    const s=simulate(Object.assign({},d,{ids,allLive:true}));
+    const mates=new Set(); if(d.crew&&CREW[d.crew])mates.add(d.crew);
+    ids.forEach(id=>{const l=lockOf(id); if(l&&l.with&&CREW[l.with])mates.add(l.with)});
+    return {date:d.date,day:d,ids,miles:s.miles,mates};
+  }).filter(Boolean).sort((a,b)=>a.date.localeCompare(b.date));
+}
+function driveMap(days){
+  if(!days.length)return '';
+  const W=600,H=420,pad=54, k=Math.cos(39.5*Math.PI/180);
+  const pts=[]; days.forEach(d=>{pts.push(placeLL(d.day.startKey),placeLL(d.day.endKey)); d.ids.forEach(id=>pts.push(LL(BY[id])))});
+  const xs=pts.map(p=>p[1]*k), ys=pts.map(p=>p[0]);
+  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const sc=Math.min((W-2*pad-90)/Math.max(.05,x1-x0),(H-2*pad)/Math.max(.05,y1-y0));
+  const ox=(W-(x1-x0)*sc)/2, oy=(H-(y1-y0)*sc)/2;
+  const P=p=>[+(ox+(p[1]*k-x0)*sc).toFixed(1), +(oy+(y1-p[0])*sc).toFixed(1)];
+  let lines='',pins='',ends='',n=0; const named=new Set(), endSeen=new Set(), pl=[];
+  const towns=new Set(); days.forEach(d=>d.ids.forEach(id=>towns.add(BY[id].c)));
+  const label=towns.size<=10;
+  days.forEach((d,di)=>{const col=DRIVE_COL[di%DRIVE_COL.length];
+    const route=[placeLL(d.day.startKey),...d.ids.map(id=>LL(BY[id])),placeLL(d.day.endKey)].map(P);
+    lines+=`<polyline points="${route.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${col}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>`;
+    d.ids.forEach(id=>{n++; const [x,y]=P(LL(BY[id]));
+      // stops in the same strip mall share one pin: "1–2"
+      const near=pl.find(q=>Math.hypot(q.x-x,q.y-y)<16);
+      if(near)near.nums.push(n); else pl.push({x,y,col,id,nums:[n]})});
+    [d.day.startKey,d.day.endKey].forEach(key=>{ if(endSeen.has(key))return; endSeen.add(key);
+      const [x,y]=P(placeLL(key));
+      ends+= key==='home'
+        ? `<image href="/assets/ninja-mark.png" x="${x-30}" y="${y-30}" width="60" height="60"/><text class="dtown" x="${x}" y="${y+46}" text-anchor="middle">Home</text>`
+        : `<circle cx="${x}" cy="${y}" r="10" fill="#2b2e36" stroke="#fff" stroke-width="3"/>`});
+  });
+  pl.forEach(q=>{const j=BY[q.id], right=q.x<W-190, t=q.nums.length>1?q.nums[0]+'–'+q.nums[q.nums.length-1]:q.nums[0];
+    pins+=`<g class="dpin" data-info="${q.id}"><path d="M${q.x} ${q.y} l-14 -22 a17 17 0 1 1 28 0 z" fill="${q.col}" stroke="#fff" stroke-width="2"/>
+      <text x="${q.x}" y="${q.y-25}" text-anchor="middle" class="dnum"${String(t).length>2?' style="font-size:10px"':''}>${t}</text>
+      ${label&&!named.has(j.c)?`<text class="dtown" x="${right?q.x+20:q.x-20}" y="${q.y-22}" text-anchor="${right?'start':'end'}">${escHTML(j.c)}</text>`:''}</g>`;
+    named.add(j.c)});
+  return `<div class="dmap"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Map of the drive">${lines}${ends}${pins}</svg></div>`;
+}
+function renderBoard(){
+  const now=new Date(), ws=weekStart(now), A=ymd(ws), B=ymd(addDays(ws,6));
+  const driven=drivenDays(), week=driven.filter(d=>d.date>=A&&d.date<=B);
+  // the snapshot is this week's drive; before anything is shot this week, the last road day
+  const snap=week.length?week:driven.slice(-1);
+  const sum=(arr,f)=>arr.reduce((t,d)=>t+(f?(f(d)?d.miles:0):d.miles),0);
+  const mi0=n=>Math.round(n).toLocaleString();
+  const mates=Object.keys(CREW).filter(id=>id!=='tim'&&driven.some(d=>d.mates.has(id)));
+  if(!mates.includes('cody'))mates.unshift('cody');   // Cody always has a seat on the board
+  const player=(id,lab,all,wk)=>`<article class="plyr" style="--pc:${id==='tim'?'var(--accent)':id==='cody'?'#3B82D6':'var(--money)'}">
+      <img src="${badgeOf(id)}" alt="${escHTML(CREW[id].name)}">
+      <div><div class="pnm">${escHTML(CREW[id].short)} <small>${escHTML(CREW[id].role.split('·').pop().trim())}</small></div>
+        <div class="lab">${lab}</div><div class="pv mono">${mi0(all)}</div>
+        <div class="pwk">this week <b class="mono">${mi0(wk)}</b> mi</div></div></article>`;
+  const fmtD=k=>new Date(k+'T12:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
+  const snapMates=new Set(); snap.forEach(d=>d.mates.forEach(m=>snapMates.add(m)));
+  $('#s-board').innerHTML=`
+    ${verizonTotal()}
+    <section class="plyrs">
+      ${player('tim','Miles driven',sum(driven),sum(week))}
+      ${mates.map(id=>player(id,'Miles with '+CREW[id].short,sum(driven,d=>d.mates.has(id)),sum(week,d=>d.mates.has(id)))).join('')}
+    </section>
+    ${snap.length?`<section class="card drv">
+      <div class="drvh"><span class="lab">The drive &middot; ${week.length?'this week':fmtD(snap[0].date)}${snapMates.size?' &middot; with '+[...snapMates].map(m=>CREW[m].short).join(' &amp; '):''}</span>
+        <span class="drvt"><b class="mono">${mi0(sum(snap))}</b> mi</span></div>
+      ${driveMap(snap)}
+      <div class="drvdays">${snap.map((d,i)=>`<div><i style="background:${DRIVE_COL[i%DRIVE_COL.length]}"></i>
+        <span><b>${fmtD(d.date)}</b><small>${d.ids.length} stop${d.ids.length===1?'':'s'}</small></span><b class="mono">${mi0(d.miles)} mi</b></div>`).join('')}</div>
+    </section>`:`<div class="card empty">No drive yet &mdash; shoot a stop and the map fills in.</div>`}
+    <details class="sbmore" id="sbMoreWrap"${BMORE?' open':''}><summary>Points &amp; job list</summary><div id="sbMore"></div></details>`;
+  $('#sbMoreWrap').ontoggle=e=>{BMORE=e.target.open};
+  renderBoardMore();
+  $$('#s-board .dpin').forEach(g=>g.onclick=()=>jobSheet(g.dataset.info));
 }
 /* ================= SHELL ================= */
 let ready=false;
@@ -3438,13 +3556,13 @@ function verizonTotal(){
       <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="var(--ink)" stroke-opacity=".28" stroke-width="2"/>${rim(fd)}${label}</svg>`;
   return `<div class="sb-hero card vz" id="vzTotal">
       <div class="lab">Verizon &middot; scoreboard</div>
-      <div class="vzrow">${pie}
+      <div class="vzrow"><div class="vzpiewrap">${pie}<div class="vzpct">${pct}%</div></div>
         <div class="vzsb mono">
-          <b class="red" id="vzDone">${done}</b><span>shot</span>
+          <b class="red" id="vzDone">${done}</b><span>done</span>
           <b id="vzLeft">${left}</b><span>left</span>
-          <b id="vzAll">${total}</b><span>total</span>
+          <b class="dim" id="vzAll">${total}</b><span>total</span>
         </div></div>
-      <div class="vzleg"><span><i style="background:var(--vz);border-color:var(--vz)"></i><b>${pct}%</b> shot</span>${hold?'<span><i style="background:var(--ink2)"></i><b id="vzHold">'+hold+'</b> on hold</span>':''}<span><i style="background:var(--vz-fog)"></i><b>${fmt(leftPts)}</b> to go</span></div>
+      <div class="vzleg"><span><i style="background:var(--vz);border-color:var(--vz)"></i><b>${pct}%</b> done</span>${hold?'<span><i style="background:var(--ink2)"></i><b id="vzHold">'+hold+'</b> on hold</span>':''}<span><i style="background:var(--vz-fog)"></i><b>${fmt(leftPts)}</b> to go</span></div>
       ${owed?'<div class="vzowed"><b>'+owed+'</b> go-back'+(owed===1?'':'s')+' owed</div>':''}
     </div>`;
 }
