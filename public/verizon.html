@@ -819,10 +819,10 @@ function whoSheet(){
     el=>{el.querySelectorAll('[data-who]').forEach(b=>b.onclick=()=>{S.who=b.dataset.who; dirty(); closeSheet(); renderWho(); render(); if(!needsOath())toast(CREW[S.who].short+' is running today'); afterSignIn()});   // the call is the confirmation
         el.querySelector('#whoPhil').onclick=()=>oathSheet()});
 }
-/* ---------- the call ----------
-   After sign-in, the Philosophy — the same beat as the Dojo: pick who you are, read
-   what we answer to, accept once. Verbatim from Tim. Shown again if a different
-   ninja signs in on this device; re-readable any time from the who chip. */
+/* ---------- the Philosophy ----------
+   What we answer to, verbatim from Tim. Readable any time from the who chip. It used to be
+   an oath at the door — pick who you are, accept once, or wait behind a gate; Tim retired
+   that on 9/26. The app opens straight onto the work. */
 const PHIL=[
  {n:'I',  t:'Put People on the Map.',            lead:'When someone nearby searches, our client is who they find — and who they choose.',
   pts:['Great KC businesses deserve to be seen','We capture, optimize, and promote until they are','The proof lives on Google: found first, chosen more']},
@@ -830,7 +830,8 @@ const PHIL=[
   pts:['Listen first — the story comes before the shot list','Real people, real places — never staged, never stock','The drones and cameras serve the story, not the other way around']},
  {n:'III',t:'Always Sharpen the Blade.',         lead:'Get a little better every week — the craft, the tools, the results.',
   pts:['Try it, test it, keep what works','Own the misses and write down the lessons','New tech earns its place by serving the client, not the hype']}];
-const needsOath=()=>!!S.who&&(!S.oath||S.oath.who!==S.who);
+// 9/26, Tim's call: no oath at the door. The Philosophy is still a read from the who chip; it is never a gate.
+const needsOath=()=>false;
 function oathSheet(){
   const c=who(), nm=c?c.short:'Ninja';
   if(needsOath())showGate();   // under the sheet: any way out but "Yes" lands here
@@ -850,16 +851,7 @@ function oathSheet(){
 function afterSignIn(){ if(needsOath())setTimeout(oathSheet,250) }
 // Not accepted → the app stays behind the gate. /assets/ninja-not-ready.png is the Ninja mark
 // with the thumb turned down (Tim's call); swap the file by name to change it.
-function showGate(){
-  if($('#gate'))return;
-  const g=document.createElement('div'); g.id='gate';
-  g.innerHTML='<img src="/assets/ninja-not-ready.png" alt="" onerror="this.onerror=null;this.src=\'/assets/ninja-mark.png\'">'
-    +'<div class="gt">You are not ready.</div>'
-    +'<div class="gd"><div class="lab">Basic daily responsibilities</div><div>Be Positive, Be Professional, Be Humble.</div><div>Be Open and Flexible.</div><div class="fs">Finish Strong.</div></div>'
-    +'<div class="gc">Come back when you can do this.</div>'
-    +'<button class="ghost" id="gateRead">Read the Philosophy</button>';
-  document.body.appendChild(g); g.querySelector('#gateRead').onclick=()=>oathSheet();
-}
+function showGate(){}   // retired 9/26 with the oath — nothing walls the app off any more
 function hideGate(){const g=$('#gate'); if(g)g.remove()}
 // One place sets status, so the attribution, the lock and the Scoreboard always follow it.
 //
@@ -3639,7 +3631,9 @@ function boot(){
   ready=true;
   render();
   renderWho(); $('#whoChip').onclick=whoSheet;
-  detectWho().then(ok=>{ if(!ok&&!S.who)whoSheet(); else if(needsOath())oathSheet() });
+  // no sign-in at the door: Access names the runner when it can; otherwise the device stays with whoever
+  // it last had, and a fresh one starts as Tim. The chip in the header switches person any time.
+  detectWho().then(ok=>{ if(!ok&&!S.who){S.who='tim'; dirty(); renderWho(); render()} });
   setTimeout(fixGeo,1500);     // after the first paint, quietly place any city-level rows
   adoptLinkKey().then(ok=>{ if(ok&&!SYNCTIMERS)armSync() });
   if(syncOn()){syncChipShow(); syncPull(true).then(()=>syncPush());
