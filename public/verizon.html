@@ -763,7 +763,8 @@ function ptsBetween(a,b){const A=ymd(a),B=ymd(b);
 /* target = what the plan commits to in that week (owner's choice: derive from the plan) */
 function weekTarget(a,b){const A=ymd(a),B=ymd(b);const seen=new Set();let t=0;
   S.days.forEach(d=>{if(!d.date||d.date<A||d.date>B)return;
-    d.ids.forEach(i=>{const j=BY[i];if(j&&!j.wp&&!seen.has(i)){seen.add(i);t+=j.p;}});});
+    d.ids.forEach(i=>{const j=BY[i],l=lockOf(i);if(l&&l.d&&l.d<A)return;   // a return visit to a stop banked earlier commits nothing new
+      if(j&&!j.wp&&!seen.has(i)){seen.add(i);t+=j.p;}});});
   return t;}
 const BELTS=[['White',0],['Yellow',2500],['Orange',5000],['Green',10000],
              ['Blue',17500],['Brown',27500],['Black',40000]];
@@ -962,13 +963,43 @@ const GHOST_DAYS=[
  ['2026-09-10',['2026-3142','2026-0840','2026-4299','2026-7953','2026-8835','2026-1610','2026-7702']],
  ['2026-09-11',['2026-7954','2026-7106','2026-8888','2026-1339','2026-4049']]];
 const isGhostDay=d=>GHOST_DAYS.some(([gd,gids])=>d.date===gd&&d.ids.length===gids.length&&gids.every(i=>d.ids.includes(i)));
+/* The runs as driven — reconciled 9/26 against the QuickBooks mileage log, the QuickBooks invoices
+   and the IDS thread, then frozen. Each is a locked plan day: the stops in the order they were
+   shot, the crew, and where the day started and slept (a 'job:' key is a night out of town).
+   Nothing re-derives these; the drive and History read them as written.
+   [date, crew, start, end, startTime, ids] */
+const PAST_RUNS=[
+ ['2026-07-10',null,'home','home',8,['2026-3136']],
+ ['2026-07-24',null,'home','home',8,['2026-3142']],
+ ['2026-07-27',null,'home','home',8,['2026-3842']],
+ ['2026-08-04',null,'home','home',8,['2026-9221']],
+ ['2026-08-11',null,'home','home',8,['2026-1388','2026-1752']],
+ ['2026-08-13',null,'home','home',8,['2026-4963','2026-7412']],
+ ['2026-08-24',null,'home','home',8,['2026-4493','2026-5740','2026-8443']],
+ ['2026-08-25',null,'home','home',8,['2026-3933','2026-5401','2026-7575','2026-9433']],
+ ['2026-08-26',null,'home','home',8,['2026-0944','2026-1001','2026-4275']],
+ ['2026-08-27',null,'home','home',8,['2026-1820','2026-1862','2026-6931','2026-6997']],
+ ['2026-08-31',null,'home','job:2026-9334',8,['2026-9334']],                 // Target 217 Lincoln — first shoot, slept in Lincoln
+ ['2026-09-02',null,'job:2026-9334','home',8,['2026-0001']],                 // Norfolk, then home
+ ['2026-09-09',null,'home','home',8,['2026-0000','2026-0938','2026-1896','2026-6911']],
+ ['2026-09-11',null,'home','home',8,['2026-4479','2026-8316']],
+ ['2026-09-13',null,'home','home',8,['2026-1803','2026-1902','2026-4662','2026-6674']],
+ ['2026-09-15','gabe','home','home',7,['2026-9658']],                        // Cameron with Gabe — TSC 2805
+ ['2026-09-16',null,'home','home',8,['2026-5178']],
+ ['2026-09-17',null,'home','home',8,['2026-0726','2026-4318','2026-5640','2026-7338','2026-8119']],
+ ['2026-09-18',null,'home','job:2026-0840',6.5,['2026-6736','2026-8011','2026-4299','2026-0840']],   // Wichita Fri — slept in Wichita
+ ['2026-09-19',null,'job:2026-0840','job:2026-8172',8,['2026-7953','2026-8835','2026-8197','2026-1610','2026-1225','2026-8172']],
+ ['2026-09-20',null,'job:2026-8172','home',7,['2026-8317','2026-7954']],    // Park City and Andover on the way out, home up the turnpike
+ ['2026-09-24',null,'home','home',6.5,['2026-4084','2026-4522','2026-8804','2026-8888']],
+ ['2026-09-25','cody','home','home',6.5,['2026-9334','2026-5866']],         // Lincoln go-back with Cody, TCC 138266 Maryville on the way home
+];
+const pastRunDay=r=>Object.assign(blankDay(r[0]),{crew:r[1],startKey:r[2],endKey:r[3],startTime:r[4],pace:'split',
+  locked:{at:Date.parse(r[0]+'T23:00:00Z'),by:'tim'},ids:r[5].filter(i=>BY[i])});
+// a run that is over: dated, locked, every stop shot — it stays off the Plan rail and never becomes the active day
+const finishedRun=d=>!!(d&&d.date&&d.locked&&d.date<ymd(new Date())&&d.ids.length&&d.ids.every(shot));
 function seed(){
   S.sv={}; S.evRange=260; S.chargeAt={}; S.nav='plan';
-  S.days=[
-   Object.assign(blankDay('2026-09-15'),{startKey:'home',startTime:7,endKey:'home',crew:'gabe',pace:'split',
-     ids:['2026-9658']}),   // Tue: Cameron with Gabe — TSC 2805 (1,300). TCC 111911 was 9/17 and Chillicothe 9/16, per the register — the ledger holds those
-   Object.assign(blankDay('2026-09-25'),{startKey:'home',startTime:6.5,endKey:'home',crew:'cody',pace:'split',
-     locked:{at:Date.parse('2026-09-25T17:00:00Z'),by:'tim'},ids:['2026-9334','2026-5866']})];   // Fri: Lincoln with Cody — Target 217's go-back cleared, TCC 138266 Maryville on the way home
+  S.days=PAST_RUNS.map(pastRunDay);
   // Billed, per IDS Open Invoices V07 (2026-09-04).
   ['2026-3136','2026-3842','2026-9221','2026-9433','2026-3933','2026-5401','2026-7575',
    '2026-6931','2026-6997','2026-1388','2026-1668','2026-4493','2026-8443','2026-4275',
@@ -1248,7 +1279,7 @@ function openDayRoute(d){
 function counters(){
   const a=assigned();
   // waypoints (wp) — lunch, a hotel — ride the days but are not billable work
-  const weekIds=[...new Set(S.days.flatMap(d=>d.ids))].filter(i=>BY[i]&&!BY[i].wp);
+  const weekIds=[...new Set(S.days.filter(d=>!finishedRun(d)).flatMap(d=>d.ids))].filter(i=>BY[i]&&!BY[i].wp);   // runs that are over are not on the plan
   const weekPay=weekIds.reduce((t,i)=>t+BY[i].p,0);
   // Banked = LOCKED: Tim locked it in the field, or IDS already banked it. One definition.
   const bankedJobs=J.filter(j=>!j.wp&&LOCKED(j.id));
@@ -1733,7 +1764,8 @@ let F={q:'',st:'',cl:'',jst:'',app:'',sort:'near'};
 function renderPlan(){
   const d=day(), s=simulate(d);
   const rate=s.span>0?s.pay/s.span:0;
-  const rail=S.days.map((dd,i)=>{const ss=simulate(dd);
+  const rail=S.days.map((dd,i)=>{if(finishedRun(dd)&&i!==S.active)return '';   // runs that are over live on History and Score, not here
+    const ss=simulate(dd);
     const dt=dd.date?new Date(dd.date+'T12:00:00'):null;
     const lbl=dt?dt.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}):'No date';
     return `<button class="dchip ${i===S.active?'on':''}" data-i="${i}">
@@ -2595,7 +2627,7 @@ function idsUpdateText(){
   return L.join('\n');
 }
 function renderApp(){
-  const weekIds=[...new Set(S.days.flatMap(d=>d.ids))].filter(i=>BY[i]&&!BY[i].wp);
+  const weekIds=[...new Set(S.days.filter(d=>!finishedRun(d)).flatMap(d=>d.ids))].filter(i=>BY[i]&&!BY[i].wp);   // runs that are over are not on the plan
   const need=weekIds.filter(i=>!S.loaded[i]&&NEEDSVISIT(BY[i]));
   const spare=Object.keys(S.loaded).filter(i=>S.loaded[i]&&BY[i]&&!BY[i].wp&&weekIds.indexOf(i)<0&&!LOCKED(i));
   const have=weekIds.filter(i=>S.loaded[i]);
@@ -3307,6 +3339,15 @@ function migrate(){
     const ids=['2026-9334','2026-5866'].filter(i=>BY[i]), d=S.days.find(x=>x.date==='2026-09-25'), locked={at:Date.parse('2026-09-25T17:00:00Z'),by:'tim'};
     if(d){ d.crew=d.crew||'cody'; d.locked=d.locked||locked; ids.forEach(i=>{ if(!d.ids.includes(i))d.ids.push(i) }) }
     else S.days.push(Object.assign(blankDay('2026-09-25'),{crew:'cody',pace:'split',startTime:6.5,locked,ids})) }
+  // 9/26: the past runs are frozen. A day already on one of these dates is Tim's own record — it keeps
+  // its route and crew, gains any stop it was missing, and is locked. A date with no day gets the run.
+  if(!S.mig.pastruns0926){ S.mig.pastruns0926=1;
+    PAST_RUNS.forEach(r=>{ const d=S.days.find(x=>x.date===r[0]);
+      if(!d){ S.days.push(pastRunDay(r)); return }
+      d.crew=d.crew||r[1]; d.locked=d.locked||{at:Date.parse(r[0]+'T23:00:00Z'),by:'tim'};
+      r[5].forEach(i=>{ if(BY[i]&&!d.ids.includes(i))d.ids.push(i) }) });
+    sortDays();
+    if(finishedRun(S.days[S.active])){ const i=S.days.findIndex(d=>!finishedRun(d)); setDay(i<0?S.days.length-1:i) } }
   /* 2026-09-23: LOCK used to mean SHOT. A stop locked BEFORE the day it was parked on was a plan
      being locked in, not a store being shot — nobody shoots Thursday's stops on Tuesday. Turn each
      of those into what was meant: the day becomes a locked plan, the stop goes back to PLANNED,
