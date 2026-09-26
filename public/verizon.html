@@ -999,6 +999,7 @@ const PAST_RUNS=[
  ['2026-09-24',null,'home','home',6.5,['2026-4084','2026-4522','2026-8804','2026-8888']],
  ['2026-09-25','cody','home','home',6.5,['2026-9334','2026-5866']],         // Lincoln go-back with Cody, TCC 138266 Maryville on the way home
 ];
+const FROZEN=new Set(PAST_RUNS.map(r=>r[0]));   // a frozen run's stops ride its day whether or not the day is locked on this device
 const pastRunDay=r=>Object.assign(blankDay(r[0]),{crew:r[1],startKey:r[2],endKey:r[3],startTime:r[4],pace:'split',
   locked:{at:Date.parse(r[0]+'T23:00:00Z'),by:'tim'},ids:r[5].filter(i=>BY[i]),logMi:r[6]||0});
 // a run that is over: dated, locked, every stop shot — it stays off the Plan rail and never becomes the active day
@@ -2533,11 +2534,11 @@ function renderHistory(){
         +'<b class="mono hpts">'+fmt(d.pts)+'</b><span class="gbchev">'+(open?'▾':'▸')+'</span>'
       +'</button>'
       +(!open?'':'<div class="hbody">'
-        +(d.route?'<div class="hroute mono">'+hhmm(d.route.start)+'–'+hhmm(d.route.end)+' &middot; '+Math.round(d.route.miles)+' mi &middot; '+d.route.span.toFixed(1)+' h on the road</div>':'')
+        +(d.route?'<div class="hroute mono">'+hhmm(d.route.start)+'–'+hhmm(d.route.end)+' &middot; '+Math.round(d.route.miles)+' mi '+(d.route.logged?'logged':'est.')+' &middot; '+d.route.span.toFixed(1)+' h on the road</div>':'')
         +d.rows.slice().sort((a,b)=>a.j.c<b.j.c?-1:1).map(l=>
           '<div class="hstop"><button class="pjbtn" data-info="'+l.id+'"><b>'+escHTML(l.j.n)+'</b></button>'
-          +'<span class="hmeta">'+(l.ids?'<span class="badge a">IDS</span>':'')+(l.by&&CREW[l.by]?' '+escHTML(CREW[l.by].short):'')+'</span>'
-          +'<b class="mono">'+fmt(l.pts)+'</b></div>').join('')
+          +'<span class="hmeta">'+(l.ret?'<span class="badge acc">return</span>':'')+(l.ids?'<span class="badge a">IDS</span>':'')+(l.by&&CREW[l.by]?' '+escHTML(CREW[l.by].short):'')+'</span>'
+          +'<b class="mono">'+(l.ret?'&mdash;':fmt(l.pts))+'</b></div>').join('')
       +'</div>')
     +'</div>';
   };
@@ -2753,25 +2754,27 @@ let BF='week';
    in the app (pre-book work, a walk-in) still shows up, just without a route underneath it.
    Mileage for a tax log lives in QuickBooks; this is what was shot, where, and for whom. */
 function historyDays(){
-  const m={};
+  const m={}, bucket=k=>(m[k]=m[k]||{k,d:k==='—'?'':k,pts:0,n:0,cities:new Set(),states:new Set(),mates:new Set(),rows:[]});
   allLocks().forEach(l=>{
-    const k=l.d||'—';   // an em dash groups anything IDS banked with no onsite date on record
-    const b=(m[k]=m[k]||{k,d:l.d||'',pts:0,n:0,cities:new Set(),states:new Set(),mates:new Set(),rows:[]});
+    const b=bucket(l.d||'—');   // an em dash groups anything IDS banked with no onsite date on record
     b.pts+=l.pts; b.n++; b.rows.push(l);
     if(l.j&&!l.j.wp){b.cities.add(l.j.c+', '+l.j.s); b.states.add(l.j.s)}
     if(l.with&&CREW[l.with])b.mates.add(l.with);
+  });
+  // a return drive — Lincoln's go-back, the Gap — is a stop on the day it was driven, worth nothing twice.
+  // The day's crew, miles (logged where the log has it) and hours come from the same drive Score shows.
+  drivenDays().forEach(dd=>{
+    const b=bucket(dd.date);
+    dd.ids.forEach(id=>{ const l=lockOf(id); if(!l||l.d===dd.date)return;
+      b.n++; b.rows.push({id,j:BY[id],d:dd.date,pts:0,ret:true,with:dd.day.crew||''}); b.cities.add(BY[id].c+', '+BY[id].s); b.states.add(BY[id].s) });
+    dd.mates.forEach(x=>b.mates.add(x));
+    b.route={miles:dd.miles,logged:dd.logged,span:dd.hrs,start:dd.day.startTime,end:(dd.day.startTime||8)+dd.hrs,startKey:dd.day.startKey,endKey:dd.day.endKey};
   });
   const days=Object.values(m).sort((a,b)=>{
     if(!a.d&&!b.d)return 0; if(!a.d)return 1; if(!b.d)return -1;   // no-date bucket sinks to the bottom
     return b.d.localeCompare(a.d);
   });
-  days.forEach(d=>{
-    d.plan=d.d?S.days.find(x=>x.date===d.d):null;
-    // the day as it was driven — shot stops in the order they were tapped, then whatever was left — not the run still ahead
-    if(d.plan){const ids=d.plan.ids.filter(shot).concat(d.plan.ids.filter(id=>!shot(id)));
-      const s=simulate(Object.assign({},d.plan,{ids,allLive:true})); d.route={miles:s.miles,span:s.span,end:s.end,start:d.plan.startTime,
-      startKey:d.plan.startKey,endKey:d.plan.endKey}}
-  });
+  days.forEach(d=>{ d.plan=d.d?S.days.find(x=>x.date===d.d):null });
   return days;
 }
 function weekBuckets(){
@@ -2969,7 +2972,7 @@ function drivenDays(){
   const undated={};
   plans.forEach(d=>d.ids.forEach(id=>{ const j=BY[id]; if(!j||j.wp||!shot(id))return; const on=(lockOf(id)||{}).d;
     if(!on)undated[id]=d.date;                        // the last past plan that carried it
-    else if(on<d.date&&dayLocked(d))add(d.date,id);   // a locked plan after the shoot is a return drive — Lincoln's go-back, the Gap
+    else if(on<d.date&&(dayLocked(d)||FROZEN.has(d.date)))add(d.date,id);   // a locked plan after the shoot is a return drive — Lincoln's go-back, the Gap
   }));
   Object.keys(undated).forEach(id=>add(undated[id],id));
   const far=ids=>ids.reduce((m,id)=>mi(BASE,LL(BY[id]))>mi(BASE,LL(BY[m]))?id:m,ids[0]);
