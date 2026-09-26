@@ -353,16 +353,32 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
 .vz{border-top:3px solid var(--vz)}
 .vz .lab{color:var(--vz)}
 .vzrow{display:flex;align-items:center;justify-content:center;gap:16px;margin:8px 0 2px}
-.vzpie{width:144px;height:144px;flex:0 0 auto;filter:drop-shadow(0 1px 2px rgba(0,0,0,.12))}
-.vzsb{display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:1px;align-items:baseline;text-align:left}
-.vzsb b{font-size:30px;font-weight:700;letter-spacing:-1px;line-height:1.05;color:var(--ink)}
+.vzpiewrap{position:relative;flex:0 0 auto}
+.vzpie{width:144px;height:144px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.12))}
+.vzpct{position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);
+  background:var(--vz);color:#fff;font:800 13px "IBM Plex Mono",ui-monospace,monospace;letter-spacing:-.2px;
+  padding:3px 11px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.28);border:2px solid var(--surf)}
+.vzsb{display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:2px;align-items:baseline;text-align:left}
+.vzsb b{font-size:34px;font-weight:700;letter-spacing:-1px;line-height:1.05;color:var(--ink)}
 .vzsb b.red{font-size:48px;color:var(--vz);letter-spacing:-2px}
+.vzsb b.dim{font-size:22px;color:var(--ink3)}
 .vzsb span{font-size:11px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink2)}
 .vzleg{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 16px;margin-top:10px;font-size:15px;color:var(--ink2)}
 .vzleg b{color:var(--ink);font-weight:700}
 .vzleg i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:6px;border:1px solid var(--line2)}
 .vzowed{margin-top:6px;font-size:15px;color:var(--ink2)}
 .vzowed b{color:var(--vz);font-weight:700}
+/* the players: who banked what, straight off the lock ledger */
+.players{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:460px){.players{grid-template-columns:1fr}}
+.player{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;gap:12px;align-items:center}
+.player img{width:56px;height:56px;border-radius:50%;object-fit:cover;background:#111;flex:none;border:2px solid var(--line2)}
+.pinfo{min-width:0}
+.pname{font-size:15px;font-weight:800;color:var(--ink);line-height:1.15}
+.pname small{display:block;font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--ink3);margin-top:1px}
+.plab{font-size:10.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink2);margin-top:6px}
+.pv{font-size:25px;font-weight:700;letter-spacing:-1px;color:var(--vz);line-height:1.1}
+.pwk{font-size:11.5px;color:var(--ink2);margin-top:1px}
 /* the bar: one line, always closed until he asks */
 .livebtn{display:block;width:100%;margin:9px 0 0;padding:15px 16px;border:0;border-radius:13px;
   background:linear-gradient(135deg,#F47920,#D8600F);color:#fff;font-size:19px;font-weight:800;
@@ -2726,6 +2742,27 @@ function roadStats(){
   return {days:days.size, cities:cities.size, states:states.size,
     cityList:[...cities].sort(), stateList:[...states].sort()};
 }
+// who banked what — straight off the same lock ledger everything else on Score reads, grouped by whoever tapped it done
+function crewCards(){
+  const ws=weekStart(new Date()), we=addDays(ws,6);
+  const m={};
+  allLocks().forEach(l=>{
+    const w=l.by; if(!w||!CREW[w])return;
+    const b=(m[w]=m[w]||{who:w,pts:0,n:0,wkPts:0,wkN:0});
+    b.pts+=l.pts; b.n++;
+    if(l.d&&l.d>=ymd(ws)&&l.d<=ymd(we)){b.wkPts+=l.pts; b.wkN++;}
+  });
+  const rows=Object.values(m).sort((a,b)=>b.pts-a.pts);
+  if(!rows.length)return '';
+  return `<div class="players">${rows.map(r=>{const c=CREW[r.who];
+    return `<div class="player"><img src="${c.emblem||badgeOf(r.who)}" alt="${escHTML(c.name)}">
+      <div class="pinfo">
+        <div class="pname">${escHTML(c.short)}<small>${escHTML(c.role)}</small></div>
+        <div class="plab">Points banked</div>
+        <div class="pv mono">${fmt(r.pts)}</div>
+        <div class="pwk">${r.n} stop${r.n===1?'':'s'} shot${r.wkN?' &middot; '+fmt(r.wkPts)+' this week':''}</div>
+      </div></div>`}).join('')}</div>`;
+}
 function renderBoard(){
   const now=new Date(), ws=weekStart(now), we=addDays(ws,6);
   const locks=allLocks();
@@ -2768,6 +2805,7 @@ function renderBoard(){
 
   $('#s-board').innerHTML=`
     ${verizonTotal()}
+    ${crewCards()}
     <div class="sb-hero card">
       <div class="lab">This week &middot; ${ws.toLocaleDateString(undefined,{month:'short',day:'numeric'})}&ndash;${we.toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div>
       <div class="sb-big mono">${fmt(earnedWeek)}</div>
@@ -3438,13 +3476,13 @@ function verizonTotal(){
       <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="var(--ink)" stroke-opacity=".28" stroke-width="2"/>${rim(fd)}${label}</svg>`;
   return `<div class="sb-hero card vz" id="vzTotal">
       <div class="lab">Verizon &middot; scoreboard</div>
-      <div class="vzrow">${pie}
+      <div class="vzrow"><div class="vzpiewrap">${pie}<div class="vzpct">${pct}%</div></div>
         <div class="vzsb mono">
-          <b class="red" id="vzDone">${done}</b><span>shot</span>
+          <b class="red" id="vzDone">${done}</b><span>done</span>
           <b id="vzLeft">${left}</b><span>left</span>
-          <b id="vzAll">${total}</b><span>total</span>
+          <b class="dim" id="vzAll">${total}</b><span>total</span>
         </div></div>
-      <div class="vzleg"><span><i style="background:var(--vz);border-color:var(--vz)"></i><b>${pct}%</b> shot</span>${hold?'<span><i style="background:var(--ink2)"></i><b id="vzHold">'+hold+'</b> on hold</span>':''}<span><i style="background:var(--vz-fog)"></i><b>${fmt(leftPts)}</b> to go</span></div>
+      <div class="vzleg"><span><i style="background:var(--vz);border-color:var(--vz)"></i><b>${pct}%</b> done</span>${hold?'<span><i style="background:var(--ink2)"></i><b id="vzHold">'+hold+'</b> on hold</span>':''}<span><i style="background:var(--vz-fog)"></i><b>${fmt(leftPts)}</b> to go</span></div>
       ${owed?'<div class="vzowed"><b>'+owed+'</b> go-back'+(owed===1?'':'s')+' owed</div>':''}
     </div>`;
 }
