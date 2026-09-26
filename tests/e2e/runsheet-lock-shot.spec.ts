@@ -198,7 +198,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
   });
 
   test('↑/↓ move the stop on the row, and Undo of a SHOT puts the stop back where it was', async ({ page }) => {
-    const t = today(), AT = new Date(t + 'T09:00:00').getTime();
+    const t = today(), AT = Date.now() - 60_000;
     await open(page, state({
       days: [day({ date: t, ids: [OSAGE, EMPORIA, SALINA] })], activeDate: t,
       locks: { [OSAGE]: { d: t, pts: 100, by: 'tim', with: '', at: AT, sd: t } },
@@ -343,7 +343,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
   });
 
   test('un-shot on one phone survives a pull on the other', async ({ page }) => {
-    const t = today(), AT = new Date(t + 'T09:00:00').getTime();
+    const t = today(), AT = Date.now() - 60_000;   // stamped a minute ago — "09:00 today" is in the future on an early CI run
     await open(page, state({
       days: [day({ date: t, ids: [OSAGE] })], activeDate: t,
       locks: { [OSAGE]: { d: t, pts: 100, by: 'tim', with: '', at: AT, sd: t } },
