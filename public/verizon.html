@@ -966,7 +966,7 @@ function seed(){
   S.sv={}; S.evRange=260; S.chargeAt={}; S.nav='plan';
   S.days=[
    Object.assign(blankDay('2026-09-15'),{startKey:'home',startTime:7,endKey:'home',crew:'gabe',pace:'split',
-     ids:['2026-9658','2026-4318','2026-5178']}),   // Tue: Cameron with Gabe — TSC 2805 (1,300), TCC, Chillicothe on the way home
+     ids:['2026-9658']}),   // Tue: Cameron with Gabe — TSC 2805 (1,300). TCC 111911 was 9/17 and Chillicothe 9/16, per the register — the ledger holds those
    Object.assign(blankDay('2026-09-25'),{startKey:'home',startTime:6.5,endKey:'home',crew:'cody',pace:'split',
      locked:{at:Date.parse('2026-09-25T17:00:00Z'),by:'tim'},ids:['2026-9334','2026-5866']})];   // Fri: Lincoln with Cody — Target 217's go-back cleared, TCC 138266 Maryville on the way home
   // Billed, per IDS Open Invoices V07 (2026-09-04).
@@ -3298,7 +3298,7 @@ function mergeState(j){
    and never argues with a change made in the field afterwards. */
 function migrate(){
   if(!S.mig.cameron0915){ S.mig.cameron0915=1;
-    if(!S.days.some(d=>d.date==='2026-09-15'))S.days.push(Object.assign(blankDay('2026-09-15'),{crew:'gabe',pace:'split',startTime:7,ids:['2026-9658','2026-4318','2026-5178'].filter(i=>BY[i])})) }
+    if(!S.days.some(d=>d.date==='2026-09-15'))S.days.push(Object.assign(blankDay('2026-09-15'),{crew:'gabe',pace:'split',startTime:7,ids:['2026-9658'].filter(i=>BY[i])})) }
   // Fri 9/25: Lincoln with Cody — Target 217's go-back cleared, Maryville shot on the drive home. The day
   // was never planned in the app, so without it the miles with Cody read zero. A day already on that
   // date keeps its crew if one was set and just gains the two stops. Locked, because a locked plan
