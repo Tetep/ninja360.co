@@ -42,6 +42,7 @@ function clean(body) {
     .slice(0, 200).map(x => ({ id: x.id, at: Number.isFinite(x.at) ? x.at : 0, d: DATE.test(String(x.d || '')) ? x.d : '' })) : [];
   return {
     date: body.date, name: String(body.name || '').slice(0, 48), by: String(body.by || '').slice(0, 24),
+    dev: String(body.dev || '').slice(0, 24), devName: String(body.devName || '').slice(0, 24),   // which of Tim's devices published it
     at: Number.isFinite(body.at) ? body.at : Date.now(),
     shot, carried: ids(body.carried), skipped: ids(body.skipped),
     pts: Number.isFinite(body.pts) ? body.pts : 0, miles: Number.isFinite(body.miles) ? body.miles : 0,

@@ -420,6 +420,14 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
 .tchip.on{color:var(--money);border-color:var(--money)}
 .golivecard{border-left:3px solid var(--accent);margin-top:10px}
 .golive{min-height:58px;font-size:18px}
+.nowcard{border-left:3px solid var(--accent)}
+.nowclock{font-size:16px;font-weight:700;color:var(--ink)}
+.nowtimer{display:flex;align-items:baseline;gap:8px;margin-top:8px}
+.nowtimer [data-now-timer]{font-size:30px;font-weight:800;color:var(--ink);letter-spacing:-.5px}
+.nowtimer [data-now-timer].running{color:var(--money)}
+.nowbtns button.big{min-height:52px;font-size:16px;font-weight:700;flex:1 1 150px;white-space:nowrap}
+.nowbtns button.stop{background:var(--bad);border-color:var(--bad);color:#fff}
+.nowbtns button.go{background:var(--money);border-color:var(--money);color:#fff}
 .gbcard{border:1px solid var(--ret);border-top:0;border-radius:0 0 10px 10px;margin-top:0;
   background:linear-gradient(180deg,rgba(139,47,201,.05),transparent 60%)}
 .gbrow{border-top:1px solid var(--line)}
@@ -561,7 +569,7 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
 </div>
 
 <nav id="nav">
-  <button data-s="today" class="on"><span class="ic">📍</span>Today</button>
+  <button data-s="today" class="on"><span class="ic">📍</span>Now</button>
   <button data-s="plan"><span class="ic">🗓️</span>Plan</button>
   <button data-s="clusters"><span class="ic">🗺️</span>Clusters</button>
   <button data-s="app"><span class="ic">📮</span>IDS</button>
@@ -657,7 +665,7 @@ const IDS_LOADED=[
    '2026-5006','2026-5167','2026-5178','2026-5221','2026-5264','2026-5350','2026-5393',
    '2026-5401','2026-5436','2026-5444','2026-5479','2026-5511','2026-5640','2026-5740',
    '2026-5866','2026-6911','2026-6997','2026-7575','2026-7681','2026-8443','2026-8804'];
-let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},punch:{},locks:{},showBanked:false,here:{key:'home',time:8},nav:'plan',activeDate:'',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{},who:null,by:{},oath:null,mig:{},geo:{},sync:{key:'',v:0,at:0},binds:[],checkin:{},report:{to:'',cc:'',sent:{}},unshot:{},published:{}};
+let S={days:[],active:0,sv:{},loaded:{},status:{},notes:{},timers:{},punch:{},locks:{},showBanked:false,here:{key:'home',time:8},nav:'plan',activeDate:'',custom:[],places:{},lastRequest:null,evRange:260,chargeAt:{},who:null,by:{},oath:null,mig:{},geo:{},sync:{key:'',v:0,at:0},binds:[],checkin:{},report:{to:'',cc:'',sent:{}},unshot:{},published:{},devices:{}};
 const svc=j=>(S.sv&&S.sv[j.id]!==undefined)?S.sv[j.id]:j.sv;
 /* ---------- the equation ----------
    A crew mate costs 150 a day; every charge costs 30. Net is what the day is worth.
@@ -718,7 +726,7 @@ function lockJob(id,on){
   if(on){const n=new Date(), today=ymd(n);
     const dd=shotDayOf(id);
     const d=(dd&&dd.date&&dd.date<=today)?dd.date:today;   // the day it sits on — never a day that has not come
-    S.locks[id]={d,pts:j.p,by:S.who||'',with:(dd&&dd.crew)||'',at:n.getTime(),sd:today};}
+    S.locks[id]={d,pts:j.p,by:S.who||'',with:(dd&&dd.crew)||'',at:n.getTime(),sd:today,dev:DEVICE.id||''};}
   else unshotJob(id);
 }
 // un-marking is a fact with a time on it, or a crew merge would hand the lock straight back
@@ -937,7 +945,7 @@ const byEmblem=id=>{const c=S.by[id]&&CREW[S.by[id]]; return c?c.emblem:null};
 function jobTimerState(id){const rec=S.timers&&S.timers[id]; if(!rec)return{elapsedMs:0,running:false,label:'00:00:00'}; const elapsedMs=(rec.elapsedMs||0)+(rec.startedAt?Date.now()-rec.startedAt:0); return{elapsedMs,running:!!rec.startedAt,label:formatDuration(elapsedMs)};}
 function jobNoteText(id){return String(S.notes&&S.notes[id]||'').trim();}
 function jobTooltip(id){const note=jobNoteText(id); const t=jobTimerState(id); const bits=[]; if(note)bits.push('Note: '+note); bits.push(t.running?'Timer: '+t.label+' (running)':'Timer: '+t.label); return bits.join(' | ');}
-function toggleTimer(id){const rec=S.timers[id]||{elapsedMs:0}; if(rec.startedAt){ rec.elapsedMs=(rec.elapsedMs||0)+Date.now()-rec.startedAt; delete rec.startedAt; } else { rec.startedAt=Date.now(); } S.timers[id]=rec; return rec;}
+function toggleTimer(id){const rec=S.timers[id]||{elapsedMs:0}; if(rec.startedAt){ rec.elapsedMs=(rec.elapsedMs||0)+Date.now()-rec.startedAt; delete rec.startedAt; } else { rec.startedAt=Date.now(); rec.by=S.who||''; rec.dev=DEVICE.id||''; } S.timers[id]=rec; return rec;}
 function resetTimer(id){delete S.timers[id];}
 function blankDay(date){return{id:'d'+Math.random().toString(36).slice(2,8),date:date||'',
   startKey:'home',startTime:8,endKey:'home',ids:[],startCharge:100,crew:null,pace:'split'}}
@@ -1345,17 +1353,17 @@ function reachable(){
    bindings ride the crew sync. No day-editing, no runs list, no map -- just the checklist
    he needs standing in a parking lot: check in, see how far the next stop is, get
    directions, mark it done. */
-let RUN_HERE=null;   // {lat,lon} from the phone's own GPS, refreshed on tap
+let RUN_HERE=null, RUN_HERE_AT=0;   // the device's own GPS fix and when it was taken — kept fresh by the watch on Now
 function checkIn(id){
   S.checkin=S.checkin||{};
-  S.checkin[id]={at:Date.now(),by:S.who||''};
+  S.checkin[id]={at:Date.now(),by:S.who||'',dev:DEVICE.id||''};
   dirty(); render();
   toast('Checked in — '+(BY[id]?BY[id].c:''));
 }
 function runLocate(silent){
   if(!navigator.geolocation){ if(!silent)toast('GPS is not available here'); return }
   navigator.geolocation.getCurrentPosition(pos=>{
-    RUN_HERE=[pos.coords.latitude,pos.coords.longitude];
+    RUN_HERE=[pos.coords.latitude,pos.coords.longitude]; RUN_HERE_AT=Date.now();
     render();
     if(!silent)toast('Location updated');
   },()=>{ if(!silent)toast('Could not get your location') },{enableHighAccuracy:true,timeout:8000,maximumAge:60000});
@@ -1376,7 +1384,7 @@ function todayDay(){
 }
 const publishedOf=date=>(date&&S.published&&S.published[date])||null;
 const niceTime=at=>new Date(at).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
-const pubLine=p=>niceTime(p.at)+(p.by&&CREW[p.by]?' by '+CREW[p.by].short:'')+' · '+p.shot.length+' shot'
+const pubLine=p=>niceTime(p.at)+(p.by&&CREW[p.by]?' by '+CREW[p.by].short:'')+(p.dev&&devName(p.dev)?' on '+devName(p.dev):'')+' · '+p.shot.length+' shot'
   +(p.carried.length?' · '+p.carried.length+' carried':'')+(p.skipped.length?' · '+p.skipped.length+' skipped':'')
   +' · journal ✓ · email '+(p.email==='sent'?'✓ sent':p.email==='pending'?'…':'✗ not sent');
 /* the go-backs bar: every stop that owes a named list, nearest first, with its list one tap down */
@@ -1424,10 +1432,10 @@ function renderToday(){
   const ids=d.ids.filter(i=>BY[i]), live=ids.filter(i=>!shot(i)), doneN=ids.length-live.length;
   const s=simulate(d), pct=ids.length?Math.round(doneN/ids.length*100):0;
   const t=todayISO(), when=!d.date?'No date':d.date===t?'Today':d.date>t?'Next up':'Last plan';
-  const pub=publishedOf(d.date);
+  const pub=publishedOf(d.date), cur=currentStop(d,s);
   const crewChip=syncOn()?'<button class="tchip on" id="crewChip"><span class="livedot"></span>Crew ✓ '+escHTML(liveAgo())+'</button>'
                          :'<button class="tchip" id="crewChip">Crew sync off</button>';
-  $('#s-today').innerHTML=
+  $('#s-today').innerHTML=nowCardHTML(d,s,cur)+
     `<div class="card runhead">
       <div class="row" style="justify-content:space-between;align-items:center;gap:8px;margin:0">
         <div class="lab">${when}${dayLocked(d)?' · 🔒 locked':' · not locked'}</div>${crewChip}</div>
@@ -1437,7 +1445,6 @@ function renderToday(){
       <div class="row" style="margin-top:9px">
         ${S.days.filter(liveDay).length>1?'<select id="todayDay" aria-label="Which day" style="max-width:160px">'+S.days.map((dd,i)=>(liveDay(dd)||dd===d)?'<option value="'+i+'"'+(dd===d?' selected':'')+'>'+(dd.date?niceDate(dd.date):'No date')+' — '+dd.ids.length+'</option>':'').join('')+'</select>':''}
         ${live.length?'<button class="ghost" id="tNav">🧭 Navigate the day</button>':''}
-        <button class="ghost" id="tLoc">📡 ${RUN_HERE?'Update my location':'Where am I'}</button>
         <button class="ghost" id="tReroute">🔀 Re-route</button>
         ${dayNotLoaded(d).length?'<button class="ghost" id="tAsk" style="color:var(--accent);border-color:var(--accent)">📮 '+dayNotLoaded(d).length+' not in app</button>':''}
       </div></div>`
@@ -1462,7 +1469,6 @@ function renderToday(){
         <button class="livebtn golive" id="tGoLive">⚡ GO LIVE${pub?' AGAIN':''}<small>${pub?'re-publish this day':'publish this day — journal + IDS'}</small></button></div>`:'');
   const td=$('#todayDay'); if(td)td.onchange=e=>{const dd=S.days[+e.target.value]; TODAY_PICK=dd?dd.id:''; setDay(+e.target.value); render(); dirty()};
   const nv=$('#tNav'); if(nv)nv.onclick=()=>{bindRoute(d,true); dirty(); openDayRoute(d)};
-  $('#tLoc').onclick=()=>runLocate(false);
   $('#tReroute').onclick=()=>rerouteSheet(d);
   const ak=$('#tAsk'); if(ak)ak.onclick=()=>dayAskSheet(d);
   $('#crewChip').onclick=()=>syncSheet();
@@ -1473,23 +1479,112 @@ function renderToday(){
   wireShot('#s-today');
   wireGbBar(d);
   const gl=$('#tGoLive'); if(gl)gl.onclick=()=>goLiveSheet(d);
+  wireNowCard(d,cur);
+}
+/* ---------- the Now card: the stop in hand ----------
+   Standing in a parking lot he needs five answers and one button: what time it is, where he is,
+   which stop he is heading to, whether the shoot timer is running — and the next act. Nothing is
+   typed: the clock is the device's, and the position follows the device's GPS while Now is open
+   (iOS asks once per device). The acts run in order: Navigate → (arrive — the GPS says so, or
+   I'm here) → Start shooting → Stop → Complete, on to the next. */
+const durTxt=h=>h<1?Math.max(0,Math.round(h*60))+'m':Math.floor(h)+'h '+String(Math.round((h%1)*60)).padStart(2,'0')+'m';
+const fixAgo=()=>{if(!RUN_HERE_AT)return 'no fix'; const m=Math.round((Date.now()-RUN_HERE_AT)/60000); return m<1?'just now':m+'m ago'};
+const navTo=j=>window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(j.a+', '+j.c+', '+j.s)+'&travelmode=driving','_blank','noopener');
+/* where you are: a GPS watch while Now is on screen and the app is in front — no button. A refusal
+   is remembered for a minute so it is not re-asked on every render. */
+let WATCH_ID=null, GEO_ERR=0, GEO_ERR_AT=0, WATCH_LL=null, WATCH_PAINT=0;
+function startWatch(){
+  if(WATCH_ID!==null||!navigator.geolocation)return;
+  if(GEO_ERR&&Date.now()-GEO_ERR_AT<60000)return;
+  try{ WATCH_ID=navigator.geolocation.watchPosition(pos=>{
+      const ll=[pos.coords.latitude,pos.coords.longitude], moved=!WATCH_LL||mi(WATCH_LL,ll)>0.1;
+      RUN_HERE=ll; RUN_HERE_AT=Date.now(); GEO_ERR=0; S.here={key:'gps',ll,time:S.here.time};
+      // repaint when he has moved a tenth of a mile, or once a minute — not on every GPS tick
+      if(moved||Date.now()-WATCH_PAINT>60000){WATCH_LL=ll; WATCH_PAINT=Date.now(); if(S.nav==='today'&&!sheetEls)render()} },
+    err=>{GEO_ERR=(err&&err.code)||2; GEO_ERR_AT=Date.now(); stopWatch(); if(S.nav==='today'&&!sheetEls)render()},
+    {enableHighAccuracy:true,maximumAge:30000,timeout:30000}) }catch(e){}
+}
+function stopWatch(){ if(WATCH_ID!==null){try{navigator.geolocation.clearWatch(WATCH_ID)}catch(e){} WATCH_ID=null} }
+// the stop in hand: one being timed, else one checked in today, else the next unshot stop in drive order
+function currentStop(d,s){
+  const rows=s.rows.filter(r=>BY[r.id]&&!BY[r.id].wp&&!shot(r.id)), since=Date.now()-12*3600e3;
+  return rows.find(r=>jobTimerState(r.id).running)||rows.find(r=>S.checkin&&S.checkin[r.id]&&S.checkin[r.id].at>since)||rows[0]||null;
+}
+function nowCardHTML(d,s,cur){
+  const t=nowH();
+  const head='<div class="row" style="justify-content:space-between;align-items:center;margin:0;gap:8px">'
+    +'<span class="nowclock mono" data-clock>'+escHTML(clockLabel())+'</span>'
+    +'<button class="tchip" id="devChip" title="Which device this is">'+escHTML(DEVICE.name||'This device')+'</button></div>'
+    +(clockOff()?'<div class="hint" style="color:var(--bad);margin:4px 0 0">⚠ This device\'s clock is '+Math.round(Math.abs(CLOCK_SKEW)/60000)+' min '+(CLOCK_SKEW>0?'fast':'slow')+' — every shot is stamped with it. Set the time automatically in the device\'s settings.</div>':'');
+  if(!cur){ const any=d.ids.some(i=>BY[i]&&!BY[i].wp);
+    return '<div class="card nowcard">'+head+'<div class="lab" style="margin-top:8px">'+(any?'Day done':'Nothing on this day')+'</div>'
+      +'<div class="rh-sub">'+(any?'Every stop is shot — GO LIVE at the bottom publishes the day.':'Build it on Plan, or tap Re-route to pull a stop in from where you are.')+'</div></div>'}
+  const id=cur.id, j=BY[id], tm=jobTimerState(id), ci=S.checkin&&S.checkin[id];
+  const pos=d.ids.filter(i=>BY[i]&&!BY[i].wp), k=pos.filter(shot).length+1;   // stop N of M: the ones already shot, plus this one
+  const dist=RUN_HERE?mi(RUN_HERE,LL(j)):null, here=dist!==null&&dist<0.3;
+  const eta=dist!==null?t+drive(dist):cur.arr;
+  const hours=t<j.o?'opens '+hhmm(j.o):t<j.x?'open till '+hhmm(j.x)+' · '+durTxt(j.x-t)+' left':'closed at '+hhmm(j.x);
+  const late=eta+svc(j)*paceMult(d)>j.x;
+  const state=tm.running?'shooting':(tm.elapsedMs>0?'stopped':(ci||here?'arrived':'heading'));
+  const done=GOBACK(id)?'<button class="prim big" id="nowList">↩ Tick the go-back list · '+punchLeft(id)+' left</button>'
+                      :'<button class="prim big go" id="nowDone">✓ Complete — next stop</button>';
+  const btns=state==='heading'?'<button class="prim big" id="nowNav">🧭 Navigate</button><button class="ghost big" id="nowHere">📍 I\'m here</button>'
+    :state==='arrived'?'<button class="prim big" id="nowStart">▶ Start shooting</button>'+(GOBACK(id)?'':'<button class="ghost" id="nowDone">✓ Complete</button>')+'<button class="ghost" id="nowNav">🧭 Navigate</button>'
+    :state==='shooting'?'<button class="prim big stop" id="nowStop">⏹ Stop timer</button>'+(GOBACK(id)?'':'<button class="ghost" id="nowDone">✓ Complete</button>')
+    :done+'<button class="ghost" id="nowStart">▶ Resume</button>';
+  const where=dist!==null?(here?'📍 You are here':'📍 '+dist.toFixed(1)+' mi away · ETA '+hhmm(eta))+' <span class="hint" style="margin:0">· GPS '+escHTML(fixAgo())+'</span>'
+    :GEO_ERR===1?'📍 Location is off for this site — Settings › Privacy › Location Services › Safari Websites › While Using. Planned arrival '+hhmm(cur.arr)
+    :!navigator.geolocation?'No GPS on this device · planned arrival '+hhmm(cur.arr)
+    :'📍 Finding you… · planned arrival '+hhmm(cur.arr);
+  return '<div class="card nowcard">'+head
+    +'<div class="lab" style="margin-top:8px">'+({heading:'Heading to',arrived:'At the stop',shooting:'Shooting',stopped:'Shot — confirm'})[state]+' · '+k+' of '+pos.length+'</div>'
+    +'<div class="rh-name">'+escHTML(j.n)+'</div>'
+    +'<div class="ad">'+escHTML(j.a)+', '+escHTML(j.c)+', '+escHTML(j.s)+'</div>'
+    +'<div class="hrs mono" style="margin-top:4px">'+escHTML(hours)+(late&&state==='heading'?' <span class="badge bad">won\'t make it before close</span>':'')+'</div>'
+    +'<div class="hrs mono" style="margin-top:2px">'+where+'</div>'
+    +(tm.running||tm.elapsedMs>0?'<div class="nowtimer"><span class="mono'+(tm.running?' running':'')+'" data-now-timer="'+id+'">'+tm.label+'</span><span class="hint" style="margin:0">'+(tm.running?'on site':'shooting time')+'</span></div>':'')
+    +'<div class="row nowbtns" style="margin-top:10px">'+btns+'</div></div>';
+}
+function wireNowCard(d,cur){
+  const dc=$('#devChip'); if(dc)dc.onclick=deviceSheet;
+  if(!cur)return;
+  const on=(sel,fn)=>{const b=$(sel); if(b)b.onclick=fn};
+  on('#nowNav',()=>navTo(BY[cur.id]));
+  on('#nowHere',()=>checkIn(cur.id));
+  on('#nowStart',()=>startShoot(cur.id));
+  on('#nowStop',()=>stopShoot(cur.id));
+  on('#nowDone',()=>completeStop(d,cur.id));
+  on('#nowList',()=>jobSheet(cur.id));
+}
+function startShoot(id){
+  S.checkin=S.checkin||{}; if(!S.checkin[id])S.checkin[id]={at:Date.now(),by:S.who||'',dev:DEVICE.id||''};   // starting the clock means you are there
+  const rec=S.timers[id]; if(!(rec&&rec.startedAt))toggleTimer(id);
+  dirty(); render(); toast('▶ Timer running — '+BY[id].c);
+}
+function stopShoot(id){
+  const rec=S.timers[id]; if(rec&&rec.startedAt)toggleTimer(id);
+  dirty(); render(); toast('⏹ '+jobTimerState(id).label+' on site — '+BY[id].c);
+}
+function completeStop(d,id){
+  const rec=S.timers[id]; if(rec&&rec.startedAt)toggleTimer(id);   // the clock stops with the shot
+  if(!markShot(id,true)){render(); dirty(); return}
+  render(); dirty();
+  const nx=currentStop(d,simulate(d)), j=nx&&BY[nx.id];
+  toast('✓ '+BY[id].c+' shot'+(j?' — next: '+j.c+(RUN_HERE?' · '+Math.round(mi(RUN_HERE,LL(j)))+' mi':''):' — day done, GO LIVE when you are ready'),
+    j?{label:'Navigate',fn:()=>navTo(j)}:null);
 }
 /* Re-route: where you are, what time it is, and every stop still reachable from there ranked by
    points per hour. Adding one puts it on the day on screen — unless that plan is locked. */
 function rerouteSheet(d){
+  S.here.time=nowH(); if(RUN_HERE)S.here={key:'gps',ll:RUN_HERE,time:S.here.time};   // the device knows the time and where it is
   const list=reachable(), open=list.filter(r=>r.ok), shut=list.filter(r=>!r.ok);
   const opts=(S.here.key==='gps'?'<option value="gps" selected>Current location (GPS)</option>':'')
     + Object.entries(PLACES).map(([k,v])=>`<option value="${k}" ${S.here.key===k?'selected':''}>${v.name}</option>`).join('')
     + J.filter(j=>!HOLD(j)).slice().sort((a,b)=>a.c<b.c?-1:1)
         .map(j=>`<option value="job:${j.id}" ${S.here.key==='job:'+j.id?'selected':''}>${j.c}, ${j.s} — ${j.n}</option>`).join('');
   sheet('Re-route from here','Everything below is measured from where you are, at that time, against each store\'s own closing time.',
-    `<div class="row">
-      <div class="fld" style="flex:1;min-width:190px"><span class="lab" id="lab-here">I'm at</span>
-        <select id="hereSel" aria-labelledby="lab-here" style="max-width:none;width:100%">${opts}</select></div>
-      <div class="fld"><span class="lab" id="lab-heret">Time now</span><input type="time" id="hereT" aria-labelledby="lab-heret" value="${hhmm(S.here.time)}"></div>
-      <button class="ghost" id="nowBtn">Use clock</button>
-      <button class="ghost" id="gpsBtn">📡 Locate me</button>
-    </div>
+    `<div class="hint" style="margin:0 0 6px">${RUN_HERE?'📍 From where you are, at '+hhmm(nowH())+' · GPS '+escHTML(fixAgo()):'No GPS fix on this device — measuring from:'}</div>
+    ${RUN_HERE?'':'<select id="hereSel" aria-label="Measure from" style="max-width:none;width:100%">'+opts+'</select>'}
     <div class="strip" style="margin-top:8px">
       <div class="mcell"><div class="lab">Can still reach</div><div class="v g">${open.length}</div></div>
       <div class="mcell"><div class="lab">Value in reach</div><div class="v g">${fmt(open.reduce((t,r)=>t+r.j.p,0))}</div></div>
@@ -1506,16 +1601,7 @@ function rerouteSheet(d){
       || '<div class="empty">Nothing is still open from here. Try an earlier time or a different starting point.</div>'}</div>`,
     el=>{
       const again=()=>{dirty(); render(); rerouteSheet(d)};
-      el.querySelector('#hereSel').onchange=e=>{S.here.key=e.target.value; delete S.here.ll; again()};
-      el.querySelector('#hereT').onchange=e=>{if(!e.target.value)return; const p=e.target.value.split(':'); S.here.time=(+p[0])+(+p[1])/60; again()};
-      el.querySelector('#nowBtn').onclick=()=>{const n=new Date(); S.here.time=n.getHours()+n.getMinutes()/60; again()};
-      el.querySelector('#gpsBtn').onclick=()=>{
-        if(!navigator.geolocation){toast('GPS is not available here — pick a spot from the list');return}
-        toast('Getting your location…');
-        navigator.geolocation.getCurrentPosition(pos=>{
-          S.here={key:'gps',ll:[pos.coords.latitude,pos.coords.longitude],time:S.here.time};
-          const n=new Date(); S.here.time=n.getHours()+n.getMinutes()/60; again(); toast('Measuring from your GPS position')},
-          ()=>toast('Could not get a fix — pick a spot from the list'),{timeout:8000,maximumAge:60000})};
+      const hs=el.querySelector('#hereSel'); if(hs)hs.onchange=e=>{S.here.key=e.target.value; delete S.here.ll; again()};
       el.querySelectorAll('[data-take]').forEach(b=>b.onclick=()=>{const id=b.dataset.take;
         if(dayLocked(d)){lockedToast();return}
         if(!d.ids.includes(id)){d.ids.push(id); toast('Added to this day')}
@@ -1557,7 +1643,7 @@ function goLiveSheet(d){
 async function publishDay(d,parts,say){
   say=say||(()=>{});
   if(!syncOn()){ say('Turning crew sync on…'); await crewOn(true); if(!syncOn())throw new Error('crew sync would not start') }
-  const rec={date:d.date||'',name:bindName(d),by:S.who||'',at:Date.now(),
+  const rec={date:d.date||'',name:bindName(d),by:S.who||'',dev:DEVICE.id||'',devName:DEVICE.name||'',at:Date.now(),
     shot:parts.shot.map(i=>({id:i,at:(S.locks[i]&&S.locks[i].at)||0,d:(S.locks[i]&&S.locks[i].d)||d.date||''})),
     carried:parts.carried.slice(),skipped:parts.skipped.slice(),
     pts:parts.shot.reduce((t,i)=>t+BY[i].p,0),
@@ -1567,7 +1653,7 @@ async function publishDay(d,parts,say){
   if(!r.ok){let why='HTTP '+r.status; try{const j=await r.json(); why=j.error||why}catch(e){} throw new Error('journal refused ('+why+')')}
   const j=await r.json();
   S.published=(S.published&&typeof S.published==='object')?S.published:{};
-  S.published[d.date]={at:rec.at,by:rec.by,shot:parts.shot.slice(),carried:rec.carried,skipped:rec.skipped,n:j.n||0,email:'pending'};
+  S.published[d.date]={at:rec.at,by:rec.by,dev:rec.dev,shot:parts.shot.slice(),carried:rec.carried,skipped:rec.skipped,n:j.n||0,email:'pending'};
   dirty();
   say('Journal ✓ entry '+(j.n||'?')+' — opening the IDS email…');
   // the email hand-off: the draft opens in the mail app, and it is marked sent only when Tim says it went
@@ -3129,9 +3215,11 @@ function render(){
   else if(S.nav==='app')renderApp();
   else if(S.nav==='board')renderBoard();
   else if(S.nav==='history')renderHistory();
+  if(S.nav==='today'&&document.visibilityState!=='hidden')startWatch(); else stopWatch();   // GPS only while Now is on screen
   refreshLiveTimers();
 }
 $$('#nav button').forEach(b=>b.onclick=()=>{S.nav=b.dataset.s;render();window.scrollTo(0,0);dirty()});
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden')stopWatch(); else if(ready&&S.nav==='today')startWatch() });
 let toastT;
 function toast(m,act){const old=document.querySelector('.toast');if(old)old.remove();
   const e=document.createElement('div');e.className='toast';
@@ -3162,14 +3250,14 @@ const LSKEY='ninja360-runsheet-v2';
    Locks are facts with a person and a time on them, so a merge unions them; an un-shot is a fact
    too (S.unshot), and on each stop the later of the two wins. Everything else is last-write-wins,
    and a write that would clobber somebody else's is refused by the server and merged here first. */
-const SHARED=['days','sv','loaded','status','notes','timers','punch','locks','custom','places','chargeAt','by','geo','evRange','lastRequest','mig','binds','checkin','report','unshot','published'];
+const SHARED=['days','sv','loaded','status','notes','timers','punch','locks','custom','places','chargeAt','by','geo','evRange','lastRequest','mig','binds','checkin','report','unshot','published','devices'];
 const syncOn=()=>!!(S.sync&&S.sync.key&&S.sync.key.length>=8);
 const takeShared=s=>{const o={}; SHARED.forEach(k=>{if(s[k]!==undefined)o[k]=s[k]}); return o};
 function mergeShared(remote){
   if(!remote||typeof remote!=='object')return false;
   const mine=S.locks||{}, theirs=remote.locks||{};
   const myBinds=Array.isArray(S.binds)?S.binds:[];
-  const mySent=(S.report&&S.report.sent)||{}, myUn=S.unshot||{}, myPub=S.published||{};
+  const mySent=(S.report&&S.report.sent)||{}, myUn=S.unshot||{}, myPub=S.published||{}, myDev=S.devices||{};
   const myPlans=new Map((Array.isArray(S.days)?S.days:[]).filter(d=>d&&d.date&&(d.locked||d.unlocked)).map(d=>[d.date,{locked:d.locked||null,unlocked:d.unlocked||null}]));
   SHARED.forEach(k=>{if(remote[k]!==undefined)S[k]=remote[k]});
   // a plan lock, and an unlock, are facts with a time on them: the crew copy's days win, but on
@@ -3197,6 +3285,10 @@ function mergeShared(remote){
   // a GO LIVE receipt is a fact with a time on it — the later publish of a day wins, whichever device did it
   S.published=(S.published&&typeof S.published==='object'&&!Array.isArray(S.published))?S.published:{};
   Object.entries(myPub).forEach(([dt,p])=>{const t=S.published[dt]; if(p&&(!t||(p.at||0)>(t.at||0)))S.published[dt]=p});
+  // the device register: every device the crew copy has seen, the latest sighting of each wins
+  S.devices=(S.devices&&typeof S.devices==='object'&&!Array.isArray(S.devices))?S.devices:{};
+  Object.entries(myDev).forEach(([id,v])=>{const t=S.devices[id]; if(v&&(!t||(v.last||0)>(t.last||0)))S.devices[id]=v});
+  registerDevice();
   S.locks=locks;
   convertFutureLocks();   // a phone still on the old build may hand back locks dated ahead of their day
   S.days.forEach(d=>{if(!isFinite(d.startTime))d.startTime=8; if(!Array.isArray(d.ids))d.ids=[];
@@ -3330,6 +3422,8 @@ function chip(txt,cls){const e=$('#syncChip');if(!e)return;e.textContent=txt;e.c
 function stampNow(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
 const NAVS=['today','plan','clusters','app','board','history'];
 function refreshLiveTimers(){
+   $$('[data-clock]').forEach(el=>{el.textContent=clockLabel()});
+   $$('[data-now-timer]').forEach(el=>{const st=jobTimerState(el.dataset.nowTimer); el.textContent=st.label; el.classList.toggle('running',st.running)});
    $$('.live-timer').forEach(el=>{const id=el.dataset.liveTimer; const st=jobTimerState(id); el.textContent=st.label+(st.running?' • run':''); el.classList.toggle('running',st.running); el.title=jobTooltip(id);});
 }
 function mergeState(j){
@@ -3371,6 +3465,7 @@ function mergeState(j){
     :{to:'',cc:'',sent:{}};   // who the IDS update goes to, which onsite dates they have already been told, and whether the first-run seed has been laid
   S.unshot=(j.unshot&&typeof j.unshot==='object'&&!Array.isArray(j.unshot))?j.unshot:{};   // un-shot tombstones — {at,by} per stop
   S.published=(j.published&&typeof j.published==='object'&&!Array.isArray(j.published))?j.published:{};   // GO LIVE receipts, per day
+  S.devices=(j.devices&&typeof j.devices==='object'&&!Array.isArray(j.devices))?j.devices:{};   // Tim's devices by id — name, last seen, sessions
   // Tue Sep 15 — Cameron with Gabe (TSC 2805, TCC 111911, Chillicothe on the way home). Once.
   S.sync=(j.sync&&typeof j.sync==='object'&&!Array.isArray(j.sync))?j.sync:{key:'',v:0,at:0};   // crew sync: key is per device, never shared state
   S.geo=(j.geo&&typeof j.geo==='object'&&!Array.isArray(j.geo))?j.geo:{};   // coordinates the browser resolved for rows that shipped city-level
@@ -3640,6 +3735,59 @@ async function addWaypoint(name,a,c,s,mins,latlon){
 let CJ_OPEN=false, PL_OPEN=false, ST_OPEN=false;
 let GB_OPEN=false, GB_ROW='';   // the go-back accordion: the bar, and which row is showing its list
 let APP_SENT_OPEN=false;        // the IDS tab: whether the "already sent" dates are unfolded
+/* ---------- this device, and the time ----------
+   Tim runs the sheet on his own four devices — iPhone, the big iPad, the iPad mini, and a laptop or
+   desktop. Each names itself the first time it opens (the two iPads told apart by screen size) and
+   keeps that name in its own storage, never in the crew copy, where every device would overwrite
+   the others. The crew copy keeps a register instead (S.devices), and every field act — check in,
+   timer, SHOT, GO LIVE — carries the device's id. The clock: every stamp in the ledger is this
+   device's clock, so once a session it is checked against the server's, and Now says so if it is off. */
+const DEVKEY='ninja360-device';
+let DEVICE={id:'',name:'',n:0,first:0,last:0}, CLOCK_SKEW=0, CLOCK_CHECKED=false;
+function guessDeviceName(){const u=navigator.userAgent||'';
+  if(/iPhone/.test(u))return 'iPhone';
+  if(/iPad/.test(u)||(/Macintosh/.test(u)&&navigator.maxTouchPoints>1))return Math.min(screen.width,screen.height)<=768?'iPad mini':'iPad Pro';   // the mini is 744pt across, the big ones 834+
+  if(/Android/.test(u))return /Mobile/.test(u)?'Android phone':'Android tablet';
+  return 'Computer';   // laptop or desktop — one tap in the device sheet says which
+}
+function loadDevice(){
+  let d=null; try{d=JSON.parse(localStorage.getItem(DEVKEY)||'null')}catch(e){}
+  if(!d||!d.id)d={id:'dev-'+Math.random().toString(36).slice(2,8),name:guessDeviceName(),first:Date.now(),n:0};
+  d.n=(d.n||0)+1; d.last=Date.now(); DEVICE=d;
+  try{localStorage.setItem(DEVKEY,JSON.stringify(d))}catch(e){}
+  registerDevice();
+}
+function registerDevice(){
+  S.devices=(S.devices&&typeof S.devices==='object'&&!Array.isArray(S.devices))?S.devices:{};
+  if(DEVICE.id)S.devices[DEVICE.id]={name:DEVICE.name,last:DEVICE.last,n:DEVICE.n,who:S.who||''};
+}
+function renameDevice(name){ name=String(name||'').trim().slice(0,24); if(!name)return false;
+  DEVICE.name=name; try{localStorage.setItem(DEVKEY,JSON.stringify(DEVICE))}catch(e){} registerDevice(); dirty(); return true }
+const devName=id=>(id&&S.devices&&S.devices[id]&&S.devices[id].name)||'';
+const nowH=()=>{const n=new Date(); return n.getHours()+n.getMinutes()/60+n.getSeconds()/3600};
+const clockLabel=()=>new Date().toLocaleDateString([],{weekday:'short'})+' '+hhmm(nowH());   // the same 24-hour clock as every hour on the sheet
+// once a session: how far this device's clock sits from the server's (the Date header, to the second)
+async function timeCheck(){
+  try{ const t0=Date.now(), r=await fetch(location.pathname,{method:'HEAD',cache:'no-store'}), t1=Date.now();
+    const srv=Date.parse(r.headers.get('date')||''); if(!isFinite(srv))return;
+    CLOCK_SKEW=Math.round((t0+t1)/2-srv); CLOCK_CHECKED=true; if(S.nav==='today')render();
+  }catch(e){}
+}
+const clockOff=()=>CLOCK_CHECKED&&Math.abs(CLOCK_SKEW)>120000;   // two minutes is a real error, not network lag
+function deviceSheet(){
+  const list=Object.entries(S.devices||{}).sort((a,b)=>(b[1].last||0)-(a[1].last||0));
+  sheet('This device','Named once, remembered here. Every check-in, timer, SHOT and GO LIVE carries it.',
+    '<div class="row" style="align-items:flex-end"><div class="fld" style="flex:1;min-width:170px"><span class="lab" id="lab-dev">Name</span>'
+    +'<input id="devName" type="text" maxlength="24" value="'+escHTML(DEVICE.name)+'" aria-labelledby="lab-dev" style="width:100%"></div>'
+    +'<button class="prim" id="devSave">Save</button></div>'
+    +'<div class="row" style="margin-top:6px">'+['iPhone','iPad Pro','iPad mini','Laptop','Desktop'].map(n=>'<button class="ghost" data-devname="'+n+'">'+n+'</button>').join('')+'</div>'
+    +'<div class="hint" style="margin-top:6px">Opened '+DEVICE.n+' time'+(DEVICE.n===1?'':'s')+' here since '+escHTML(niceTime(DEVICE.first||Date.now()))+'.'
+      +(CLOCK_CHECKED?(clockOff()?' ⚠ The clock is '+Math.round(Math.abs(CLOCK_SKEW)/60000)+' min '+(CLOCK_SKEW>0?'fast':'slow')+'.':' Clock checked — on time.'):'')+'</div>'
+    +(list.length?'<div class="lab" style="margin-top:12px">Your devices</div>'+list.map(([id,v])=>'<div class="idsrow"><span class="idsid">'+(id===DEVICE.id?'★ this one':'')+'</span><span class="idsn">'+escHTML(v.name||id)+(v.who&&CREW[v.who]?' · '+escHTML(CREW[v.who].short):'')+'</span><span class="idsd">'+(v.n||0)+'× · last '+escHTML(niceTime(v.last||0))+'</span></div>').join(''):''),
+    el=>{ const inp=el.querySelector('#devName');
+      el.querySelector('#devSave').onclick=()=>{ if(renameDevice(inp.value)){closeSheet(); render(); toast('This device is '+DEVICE.name)} };
+      el.querySelectorAll('[data-devname]').forEach(b=>b.onclick=()=>{inp.value=b.dataset.devname}) });
+}
 function boot(){
   let local=null;
   try{
@@ -3652,6 +3800,7 @@ function boot(){
   applyGeo();                  // …and any coordinates the browser resolved on an earlier run
   applyPlaces();               // …and custom places in PLACES, so the day dropdowns list them
   migrate();                   // …and whatever this build knows that this device does not
+  loadDevice();                // …and which of Tim's devices this is
   dirty();                     // save either way, so a migration flag is not re-applied next load
   const today=new Date(), iso=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
   const ti=S.days.findIndex(d=>d.date===iso);
@@ -3659,8 +3808,11 @@ function boot(){
   const stale=!cur||!cur.date||cur.date<iso;   // the day you were on is in the past
   if(ti>=0&&stale&&ti!==S.active)S.active=ti;
   S.activeDate=(S.days[S.active]&&S.days[S.active].date)||'';
+  // on the iPhone, a day with stops still to shoot opens on Now — that is what the phone is for on a run day
+  if(/iPhone/.test(navigator.userAgent||'')&&S.days.some(d=>d.date===iso&&d.ids.some(i=>BY[i]&&!BY[i].wp&&!shot(i))))S.nav='today';
   ready=true;
   render();
+  timeCheck();                 // is this device's clock right? every stamp is its clock
   renderWho(); $('#whoChip').onclick=whoSheet;
   // no sign-in at the door: Access names the runner when it can; otherwise the device stays with whoever
   // it last had, and a fresh one starts as Tim. The chip in the header switches person any time.
