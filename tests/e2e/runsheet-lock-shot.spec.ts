@@ -294,7 +294,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(n).toBeGreaterThanOrEqual(12);
     await expect(page.locator('#s-app .badge', { hasText: 'invoice # new' })).toHaveCount(0);
     await expect(page.locator('#s-app .badge', { hasText: 'sheet has 08/21' })).toHaveCount(2);
-    await expect(page.locator('#s-app .badge', { hasText: 'sheet has 09/10' })).toHaveCount(5);   // the 9/9 Manhattan / Salina run: the book says 9/9, the sheet 9/10
+    await expect(page.locator('#s-app .badge', { hasText: 'sheet has 09/10' })).toHaveCount(0);   // the Manhattan / Salina run was 9/10 — book and sheet agree now
     for (const id of ['2026-3142', '2026-4479', '2026-4522'])   // Gap (on neither tab), Lansing (no date on Master), Osage City (shot 9/24)
       await expect(page.locator('#s-app .idsrow', { hasText: id }).locator('.badge', { hasText: 'new' })).toHaveCount(1);
 
@@ -377,6 +377,19 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
       return { lock: !!G.eval('S.locks["' + id + '"]'), shot: G.eval('shot("' + id + '")') };
     }, [TOPEKA, AT, t] as const);
     expect(back).toEqual({ lock: false, shot: false });
+  });
+
+  test('the Manhattan / Salina run moves to 9/10 on a phone that has the 9/9 frozen day', async ({ page }) => {
+    // what the 9/26 past-runs migration left on Tim's phone: a locked 9/9 day with its own stamp
+    const nine = { ...day({ id: 'dMan', date: '2026-09-09', ids: ['2026-0000', '2026-0938', '2026-1896', '2026-6911'], crew: 'gabe' }),
+      locked: { at: Date.parse('2026-09-09T23:00:00Z'), by: 'tim' }, logMi: 448 };
+    await open(page, state({ days: [nine, day()], active: 1, activeDate: tomorrow() }));
+    const s = await saved(page);
+    const run = s.days.filter((d: any) => d.date === '2026-09-09' || d.date === '2026-09-10');
+    expect(run).toHaveLength(1);
+    expect(run[0]).toMatchObject({ date: '2026-09-10', crew: 'gabe', logMi: 448 });
+    expect(run[0].ids).toContain('2026-8093');   // Salina's Victra rode that run too
+    expect(s.mig.manhattan0910).toBe(1);
   });
 
   test('Score: the Verizon running total adds up, and moves when a stop is shot', async ({ page }) => {
