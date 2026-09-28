@@ -91,6 +91,19 @@
   </nav>
 </header>
 
+<section class="date-band">
+  <div class="wrap center">
+    <div class="kicker">Launching</div>
+    <div class="date-big">December&hellip; 15th ish</div>
+    <div class="date-caveat">(Although, that may be incorrect.)</div>
+    <form class="notify-inline" id="notify-form">
+      <input type="email" id="notify-email" required placeholder="your@email.com" autocomplete="email">
+      <button type="submit" class="btn btn-red">Notify Me</button>
+    </form>
+    <div class="thanks" id="notify-thanks" style="display:none;">You're on the list. Behave until then.</div>
+  </div>
+</section>
+
 <section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy">
@@ -146,6 +159,38 @@
           <a href="https://facebook.com/generationallyincorrect" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook" aria-hidden="true"></i></a>
           <a href="https://tiktok.com/@generationallyincorrect" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok" aria-hidden="true"></i></a>
         </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hosts-band alt">
+  <div class="wrap center">
+    <div class="hosts-label">Produced by these three companies — and these three men</div>
+    <div class="hosts">
+      <div class="host">
+        <div class="host-photo" tabindex="0">
+          <img class="host-logo" src="assets/erik-logo.png" alt="Lucky 13 Studios">
+          <img class="host-face" src="assets/erik.jpg" alt="Erik Juergensen">
+        </div>
+        <span>Erik Juergensen</span>
+        <span class="host-company">Lucky 13 Studios</span>
+      </div>
+      <div class="host">
+        <div class="host-photo" tabindex="0">
+          <img class="host-logo" src="assets/gabe-logo.png" alt="Lucid Cinematics">
+          <img class="host-face" src="assets/gabe.jpg" alt="Gabe Miller">
+        </div>
+        <span>Gabe Miller</span>
+        <span class="host-company">Lucid Cinematics</span>
+      </div>
+      <div class="host">
+        <div class="host-photo" tabindex="0">
+          <img class="host-logo" src="assets/tim-logo.jpg" alt="Ninja-360">
+          <img class="host-face" src="assets/tim.jpg" alt="Tim Petet">
+        </div>
+        <span>Tim Petet</span>
+        <span class="host-company">Ninja-360</span>
       </div>
     </div>
   </div>
@@ -248,6 +293,33 @@
       });
     }
   })();
+
+  // Notify Me — same "not wired to GHL yet" pattern as the rest of the site:
+  // shows the thank-you state so the page doesn't look broken, but only logs
+  // to the console until a real GI Notify Me V01 form ID is set below.
+  (function () {
+    var GI_NOTIFY_FORM_ID = '';
+    var form = document.getElementById('notify-form');
+    if (!form) return;
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var email = document.getElementById('notify-email').value;
+      if (!GI_NOTIFY_FORM_ID) {
+        console.warn('GI_NOTIFY_FORM_ID is not set — email captured nowhere but the console:', email);
+      }
+      form.style.display = 'none';
+      document.getElementById('notify-thanks').style.display = 'block';
+    });
+  })();
+
+  // Host photo/logo swap — CSS :hover covers desktop; touch devices get no
+  // real hover, so tapping toggles a class that does the same thing.
+  document.querySelectorAll('.host-photo').forEach(function (el) {
+    el.addEventListener('click', function () { el.classList.toggle('flipped'); });
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.classList.toggle('flipped'); }
+    });
+  });
 </script>
 </body>
 </html>
