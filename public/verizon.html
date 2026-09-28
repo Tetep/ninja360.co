@@ -697,7 +697,7 @@ function lockOf(id){
 }
 const LOCKED=id=>!!lockOf(id);
 /* PLANNED = parked on a locked plan and not shot yet. PAID = QuickBooks shows every invoice settled. */
-const planDayOf=id=>S.days.find(x=>x&&x.locked&&Array.isArray(x.ids)&&x.ids.includes(id))||null;
+const planDayOf=id=>S.days.find(x=>x&&x.locked&&liveDay(x)&&Array.isArray(x.ids)&&x.ids.includes(id))||null;   // a plan that has gone by plans nothing
 const PLANNED=id=>!!planDayOf(id)&&!shot(id)&&!(BY[id]&&BY[id].wp);
 const PAID=j=>!!(j&&j.pd);
 const dayLocked=d=>!!(d&&d.locked);
@@ -1106,7 +1106,14 @@ function afterFieldMark(id){
   return names;
 }
 /* ---------- assignment helpers ---------- */
-function assigned(){const m={};S.days.forEach((d,i)=>d.ids.forEach(id=>m[id]=i));return m}
+/* A day is live plan if it has no date yet or its date has not gone by. A day that has gone by is
+   history: it stays in S.days for History and the drive, but it is off the Plan rail, it does not
+   hold its stops — anything it never shot is back in the pool, Clusters and Re-route — and nothing
+   plans against it. */
+const liveDay=d=>!!d&&(!d.date||d.date>=todayISO());
+function assigned(){const m={};S.days.forEach((d,i)=>{if(liveDay(d))d.ids.forEach(id=>m[id]=i)});return m}
+// what the map offers: the day's own stops, and everything still owed a visit that no other live day holds
+function mapVisible(d){const a=assigned(), di=S.days.indexOf(d); return j=>!!j&&(d.ids.includes(j.id)||(NEEDSVISIT(j)&&(a[j.id]===undefined||a[j.id]===di)))}
 function unscheduled(){const a=assigned();
   return J.filter(j=>NEEDSVISIT(j)&&a[j.id]===undefined)}
 function day(){return S.days[S.active]}
@@ -1282,7 +1289,7 @@ function openDayRoute(d){
 function counters(){
   const a=assigned();
   // waypoints (wp) — lunch, a hotel — ride the days but are not billable work
-  const weekIds=[...new Set(S.days.filter(d=>!finishedRun(d)).flatMap(d=>d.ids))].filter(i=>BY[i]&&!BY[i].wp);   // runs that are over are not on the plan
+  const weekIds=[...new Set(S.days.filter(liveDay).flatMap(d=>d.ids))].filter(i=>BY[i]&&!BY[i].wp);   // runs that are over are not on the plan
   const weekPay=weekIds.reduce((t,i)=>t+BY[i].p,0);
   // Banked = LOCKED: Tim locked it in the field, or IDS already banked it. One definition.
   const bankedJobs=J.filter(j=>!j.wp&&LOCKED(j.id));
@@ -1428,7 +1435,7 @@ function renderToday(){
       <div class="rh-sub">${doneN} of ${ids.length} shot · ${fmt(s.pay)}${s.net!==s.pay?' ('+fmt(s.net)+' net)':''} · leave ${hhmm(d.startTime)}${live.length?' · finish '+hhmm(s.end)+' · '+Math.round(s.miles)+' mi left':''}</div>
       <div class="bar2" style="margin-top:8px"><span style="width:${pct}%"></span></div>
       <div class="row" style="margin-top:9px">
-        ${S.days.length>1?'<select id="todayDay" aria-label="Which day" style="max-width:160px">'+S.days.map((dd,i)=>'<option value="'+i+'"'+(dd===d?' selected':'')+'>'+(dd.date?niceDate(dd.date):'No date')+' — '+dd.ids.length+'</option>').join('')+'</select>':''}
+        ${S.days.filter(liveDay).length>1?'<select id="todayDay" aria-label="Which day" style="max-width:160px">'+S.days.map((dd,i)=>(liveDay(dd)||dd===d)?'<option value="'+i+'"'+(dd===d?' selected':'')+'>'+(dd.date?niceDate(dd.date):'No date')+' — '+dd.ids.length+'</option>':'').join('')+'</select>':''}
         ${live.length?'<button class="ghost" id="tNav">🧭 Navigate the day</button>':''}
         <button class="ghost" id="tLoc">📡 ${RUN_HERE?'Update my location':'Where am I'}</button>
         <button class="ghost" id="tReroute">🔀 Re-route</button>
@@ -1797,9 +1804,11 @@ function jobSheet(id){
 /* ================= PLAN ================= */
 let F={q:'',st:'',cl:'',jst:'',app:'',sort:'near'};
 function renderPlan(){
+  // the day on screen is always a live one — the next one up, or a fresh one if none is planned
+  if(!liveDay(day())){const i=S.days.findIndex(liveDay); if(i>=0)setDay(i); else{S.days.push(blankDay('')); setDay(S.days.length-1)}}
   const d=day(), s=simulate(d);
   const rate=s.span>0?s.pay/s.span:0;
-  const rail=S.days.map((dd,i)=>{if(finishedRun(dd)&&i!==S.active)return '';   // runs that are over live on History and Score, not here
+  const rail=S.days.map((dd,i)=>{if(!liveDay(dd))return '';   // a day that has gone by lives on History and Score, not here
     const ss=simulate(dd);
     const dt=dd.date?new Date(dd.date+'T12:00:00'):null;
     const lbl=dt?dt.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}):'No date';
@@ -1821,14 +1830,7 @@ function renderPlan(){
       <div class="bs-tag">We put you on the M.A.P.</div>
       <img src="${bannerOf(S.who)}" alt="${escHTML(who()?who().name+' — '+who().role:'Ninja 360')}">
     </div>
-    ${(()=>{const lb=latestBind(), me=bindName(d), n=bindList().length;
-      return '<div class="lab" style="margin:8px 0 5px">Route names</div>'
-        +(lb?'<div class="runs"><button class="runbtn bind on" data-pull="'+escHTML(lb.id)+'"><b>★ '+escHTML(lb.id)+'</b><small>latest · '+bindProg(lb)+' · '+fmt(lb.pay)+' · '+bindAgo(lb)+'</small></button></div>'
-          :'<div class="hint" style="margin:0 0 6px">Lock a plan and it gets a name you can say out loud: DATE:TIME:Solo or W/Cody.</div>')
-        +'<div class="row" style="margin:6px 0 0;align-items:center">'
-        +(n?'<button class="ghost" id="bBinds">All names ('+n+')</button>':'')
-        +'<span class="mono hint" style="margin:0">this day: '+escHTML(me)+'</span></div>'})()}
-    <div class="lab" style="margin:8px 0 5px">Runs</div><div class="runs">${RUNS.map(r=>`<button class="runbtn${runLoaded(r)?' on':''}" data-run="${r.id}"><b>${escHTML(r.name)}</b><small>${escHTML(r.sub)}${runLoaded(r)?' · loaded':''}</small></button>`).join('')}</div>
+    <div class="lab" style="margin:8px 0 5px">Runs</div><div class="runs">${RUNS.filter(r=>r.days.some(rd=>rd.date>=todayISO())).map(r=>`<button class="runbtn${runLoaded(r)?' on':''}" data-run="${r.id}"><b>${escHTML(r.name)}</b><small>${escHTML(r.sub)}${runLoaded(r)?' · loaded':''}</small></button>`).join('')}</div>
     <div class="lab" style="margin:8px 0 5px">Days</div><div class="rail">${rail}</div>
     <div class="mapbox" style="margin:8px 0 4px"><div id="lmap" role="region" aria-label="Job map"></div><svg id="map" viewBox="0 0 720 470" role="img" aria-label="Job map (offline)"></svg></div>
     <div class="hint" style="margin:0 0 10px">Tap a pin for details. Pins wear the brand's colour until the stop is shot, then they turn green; a stop that owes a go-back turns red. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left. ⚡ chips are DC fast chargers only (50kW+) — on the road and near your stops; chips wear the network’s colors (Love’s red, EVgo navy) an orange halo means a truck stop at an interstate exit, and the teal chip with the orange ring and gold ★ is IONNA — your network. Tap one for plugs, power, and directions.</div>
@@ -1929,8 +1931,6 @@ function renderPlan(){
   const ba=$('#bAsk'); if(ba)ba.onclick=()=>dayAskSheet(d);
   $('#bNav').onclick=()=>{bindRoute(d,true); dirty(); openDayRoute(d)};   // if he is driving it, it is bound
   $$('[data-run]').forEach(b=>b.onclick=()=>{const r=RUNS.find(x=>x.id===b.dataset.run); if(r)loadRun(r)});
-  $$('[data-pull]').forEach(b=>b.onclick=()=>pullBind(b.dataset.pull));
-  const bbs=$('#bBinds'); if(bbs)bbs.onclick=bindSheet;
   const bD=$('#bDel'); if(bD)bD.onclick=()=>{if(S.days.length<2){toast('Keep at least one day');return}
     const snap={idx:S.active,day:JSON.parse(JSON.stringify(d))};
     S.days.splice(S.active,1);S.active=Math.max(0,S.active-1);render();dirty();
@@ -2103,7 +2103,8 @@ function renderMap(){
   const d=day(), key=S.active+'|'+d.ids.join(',')+'|'+d.startKey+'|'+d.endKey;
   if(key!==LFIT){LFIT=key;   // only re-frame when the route itself changes, not on every status tick
     const pts=[placeLL(d.startKey)].concat(d.ids.map(i=>BY[i]).filter(j=>j&&isFinite(j.lat)).map(j=>[j.lat,j.lon]),[placeLL(d.endKey)]);
-    const b=d.ids.length?L.latLngBounds(pts):L.latLngBounds(J.filter(j=>isFinite(j.lat)).map(j=>[j.lat,j.lon]).concat([BASE]));
+    const vis=mapVisible(d), pick=J.filter(j=>isFinite(j.lat)&&vis(j));
+    const b=d.ids.length?L.latLngBounds(pts):L.latLngBounds((pick.length?pick:J.filter(j=>isFinite(j.lat))).map(j=>[j.lat,j.lon]).concat([BASE]));
     if(b.isValid())LMAP.fitBounds(b,{padding:[36,36],maxZoom:13});
     loadRouteChargers(d);   // the chargers that matter — around every stop — at any zoom
   }
@@ -2118,9 +2119,10 @@ function drawPins(){
   if(!LMAP||!LLAYER)return; LLAYER.clearLayers();
   const d=day(), band=zoomBand(LMAP.getZoom()), close=band===2, mid=band>=1; LZ=band;
   const late=new Set(d.ids.length?simulate(d).rows.filter(r=>r.late).map(r=>r.id):[]);
+  const vis=mapVisible(d);   // shot, removed, held and other days' stops are not on this map
   // jobs sharing a location become one pin
   const groups=new Map();
-  J.forEach(j=>{ if(!isFinite(j.lat)||!isFinite(j.lon))return;
+  J.forEach(j=>{ if(!vis(j)||!isFinite(j.lat)||!isFinite(j.lon))return;
     const k=j.lat.toFixed(4)+','+j.lon.toFixed(4); if(!groups.has(k))groups.set(k,[]); groups.get(k).push(j) });
   groups.forEach(list=>{
     const todays=d.ids.map(i=>BY[i]).filter(j=>j&&list.includes(j));
@@ -2301,14 +2303,15 @@ function chargerPopupHTML(p){
 function renderMapSVG(){
   const el=$('#map'); if(!el)return;
   const pad=24,W=720,H=470;
-  const lats=J.map(j=>j.lat).concat([BASE[0]]),lons=J.map(j=>j.lon).concat([BASE[1]]);
+  const vis=mapVisible(day()), JV=J.filter(j=>isFinite(j.lat)&&vis(j)), JB=JV.length?JV:J;   // the offline map shows the same set
+  const lats=JB.map(j=>j.lat).concat([BASE[0]]),lons=JB.map(j=>j.lon).concat([BASE[1]]);
   const la0=Math.min(...lats),la1=Math.max(...lats),lo0=Math.min(...lons),lo1=Math.max(...lons);
   const k=Math.cos((la0+la1)/2*Math.PI/180);
   const sc=Math.min((W-2*pad)/((lo1-lo0)*k),(H-2*pad)/(la1-la0));
   const ox=pad+((W-2*pad)-(lo1-lo0)*k*sc)/2, oy=pad+((H-2*pad)-(la1-la0)*sc)/2;
   const px=(la,lo)=>[ox+(lo-lo0)*k*sc,oy+(la1-la)*sc];
   const d=day(),a=assigned(),mine=new Set(d.ids);let g='';
-  J.forEach(j=>{const p=px(j.lat,j.lon);
+  JV.forEach(j=>{const p=px(j.lat,j.lon);
     const r=j.p>=1000?7.5:j.p>=300?5:3.2;
     let f='var(--ink3)',o=.5;
     if(HOLD(j)||j.st==='Removed'){f='var(--line2)';o=.5}
@@ -2666,7 +2669,7 @@ function idsUpdateText(){
   return L.join('\n');
 }
 function renderApp(){
-  const weekIds=[...new Set(S.days.filter(d=>!finishedRun(d)).flatMap(d=>d.ids))].filter(i=>BY[i]&&!BY[i].wp);   // runs that are over are not on the plan
+  const weekIds=[...new Set(S.days.filter(liveDay).flatMap(d=>d.ids))].filter(i=>BY[i]&&!BY[i].wp);   // runs that are over are not on the plan
   const need=weekIds.filter(i=>!S.loaded[i]&&NEEDSVISIT(BY[i]));
   const spare=Object.keys(S.loaded).filter(i=>S.loaded[i]&&BY[i]&&!BY[i].wp&&weekIds.indexOf(i)<0&&!LOCKED(i));
   const have=weekIds.filter(i=>S.loaded[i]);

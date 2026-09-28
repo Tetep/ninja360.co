@@ -191,15 +191,16 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
       locks: { [TOPEKA]: { d: yesterday(), pts: 100, by: 'tim', with: '', at: AT } },
       status: { [TOPEKA]: 'captured' }, by: { [TOPEKA]: 'tim' },
     }));
-    await expect(page.locator('#stops .stop.done')).toHaveCount(1);
-    await expect(page.locator('#lockbar')).toHaveCount(0);
-    expect((await saved(page)).locks[TOPEKA].d).toBe(yesterday());
+    // yesterday is History's now — off the Plan rail — and the shot is still a shot, not turned into a plan lock
+    await expect(page.locator('#s-plan .dchip[data-i]')).toHaveCount(1);   // the fresh day Plan opened on, not yesterday
+    const s0 = await saved(page);
+    expect(s0.locks[TOPEKA].d).toBe(yesterday());
+    expect(s0.days.find((d: any) => d.date === yesterday()).locked).toBeFalsy();
     // History costs the day as it was driven, not the (empty) run still ahead
     await page.locator('#nav button[data-s="history"]').click();
     await page.locator('#s-history [data-hrow]').first().click();   // newest day first — yesterday; rows open on tap
     const route = page.locator('#s-history .hroute').first();
-    await expect(route).toBeVisible();
-    expect(parseInt((/(\d+) mi/.exec(await route.innerText()) || ['', '0'])[1], 10)).toBeGreaterThan(0);
+    await expect(route).toHaveText(/[1-9]\d* mi/);   // retried until the row has painted its route line
   });
 
   test('↑/↓ move the stop on the row, and Undo of a SHOT puts the stop back where it was', async ({ page }) => {
@@ -407,6 +408,27 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await expect(page.locator('#vzTotal .vzpie image')).toHaveCount(1);
     await expect(page.locator('#vzTotal .vzpie [data-cover="left"]')).toHaveCount(1);
     await expect(page.locator('#vzTotal .vzpie text')).toContainText(String(after.left));
+  });
+
+  test('Plan starts from today: past days, finished trips and stale route names are gone, and a stop left on a past day is back in the pool', async ({ page }) => {
+    await open(page, state({
+      days: [day({ id: 'dPast', date: yesterday(), ids: [TOPEKA] }), day({ id: 'dNow', date: today(), ids: [MARYSVILLE] })],
+      active: 1, activeDate: today(),
+      binds: [{ id: '2026-09-25:06:00:W/Cody', date: '2026-09-25', ids: [MARYSVILLE], stops: 1, shot: 0, pay: 100, net: 100, at: 1 }],
+    }));
+    await expect(page.locator('#s-plan .dchip[data-i]')).toHaveCount(1);                       // today only — yesterday is History's
+    await expect(page.locator('#s-plan')).not.toContainText('Route bindings');
+    await expect(page.locator('#s-plan')).not.toContainText('Route names');
+    await expect(page.locator('#s-plan [data-run]', { hasText: 'Wichita' })).toHaveCount(0);     // a finished trip is not a run to load
+    const r = await page.evaluate(([tp, ms]) => { const G: any = window;
+      return {
+        pool: G.eval('unscheduled().map(j=>j.id)').includes(tp),
+        planned: G.eval('PLANNED("' + tp + '")'),
+        map: G.eval('(()=>{const v=mapVisible(day()); return [BY["' + tp + '"],BY["' + ms + '"],BY["2026-4522"]].map(v)})()'),
+      }; }, [TOPEKA, MARYSVILLE] as const);
+    expect(r.pool).toBe(true);                    // Topeka was never shot yesterday — it is back to be picked
+    expect(r.planned).toBe(false);
+    expect(r.map).toEqual([true, true, false]);   // Topeka to pick, Marysville on the day, Osage City shot 9/24 — not on the map
   });
 
   test('Today: the day in drive order with SHOT; GO LIVE writes the journal and marks sent only on a yes', async ({ page }) => {
