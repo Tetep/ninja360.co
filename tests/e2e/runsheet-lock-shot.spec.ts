@@ -263,8 +263,9 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     // IDS keeps the first visit as the sheet's Onsite Date: 9/10, not the revisit — so nothing "completed" today
     await page.locator('#nav button[data-s="app"]').click();
     const msg = await page.locator('#idsMsg').innerText();
-    expect(msg).not.toContain('COMPLETED —');
-    expect(msg).not.toContain(SALINA);       // and the list is cleared, so Salina is no longer under GO-BACKS either
+    expect(msg).not.toContain('COMPLETED — ' + dayLabel(today()).toUpperCase());
+    const goBacks = (msg.split('GO-BACKS')[1] || '').split('\n\n')[0];
+    expect(goBacks).not.toContain(SALINA);   // and the list is cleared, so Salina is no longer under GO-BACKS either
   });
 
   test('IDS tab: dates to report shrink when sent, come back on undo, and survive a merge', async ({ page }) => {
