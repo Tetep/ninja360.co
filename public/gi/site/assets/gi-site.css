@@ -100,6 +100,44 @@ small,.small{font-size:.8rem}
 .btn-ghost:hover{background:var(--gi-paper-lift)}
 .btn-sm{padding:9px 16px;font-size:12px}
 
+/* ---------- live date band (a joke, not a ticking countdown — the real
+   date keeps moving, so the copy owns that instead of a clock pretending
+   otherwise) ---------- */
+.date-band{background:var(--gi-ink);padding:36px 0;text-align:center}
+.date-band .kicker{color:var(--gi-red)}
+.date-big{
+  font-family:var(--gi-font-display);color:var(--gi-panel);text-transform:uppercase;
+  font-size:clamp(1.9rem,5.5vw,3.4rem);line-height:1.05;letter-spacing:.01em;
+}
+.date-caveat{font-family:var(--gi-font-hand);color:var(--gi-card);font-size:clamp(14px,2vw,17px);margin-top:10px}
+.date-band .notify-inline{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:440px;margin:24px auto 0}
+.date-band .notify-inline input[type=email]{
+  flex:1;min-width:200px;padding:13px 16px;border:2px solid var(--gi-panel);border-radius:999px;
+  background:rgba(255,245,236,.08);color:var(--gi-panel);font-family:var(--gi-font-body);font-size:14px;outline:none;
+}
+.date-band .notify-inline input[type=email]::placeholder{color:rgba(255,245,236,.55)}
+.date-band .notify-inline .btn-red{border-color:var(--gi-panel)}
+.date-band .thanks{color:var(--gi-panel);font-family:var(--gi-font-type);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px;margin-top:18px}
+
+/* ---------- hosts (photo↔logo hover-swap trio) ---------- */
+.hosts-label{
+  font-family:var(--gi-font-type);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  font-weight:700;color:var(--gi-muted);text-align:center;margin-bottom:24px;
+}
+.hosts{display:flex;gap:28px;justify-content:center;flex-wrap:wrap}
+.host{display:flex;flex-direction:column;align-items:center;gap:8px}
+.host-photo{
+  position:relative;width:96px;height:96px;border-radius:999px;overflow:hidden;
+  border:2px solid var(--gi-ink);background:var(--gi-card);cursor:pointer;
+  box-shadow:3px 3px 0 rgba(24,23,21,.22);
+}
+.host-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .2s ease}
+.host-photo .host-face{opacity:0}
+.host-photo:hover .host-logo,.host-photo.flipped .host-logo{opacity:0}
+.host-photo:hover .host-face,.host-photo.flipped .host-face{opacity:1}
+.host span{font-family:var(--gi-font-body);font-size:12.5px;font-weight:700;color:var(--gi-ink);text-align:center}
+.host .host-company{font-family:var(--gi-font-type);font-size:10px;font-weight:600;color:var(--gi-muted);text-transform:uppercase;letter-spacing:.5px}
+
 /* ---------- hero (v2: two columns, logo panel right) ---------- */
 .hero{padding:56px 0}
 .hero-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:44px;align-items:center}
@@ -265,6 +303,8 @@ footer .small b{color:var(--gi-paper)}
 @media(max-width:480px){
   .steps{grid-template-columns:1fr}
   .seats{grid-template-columns:1fr 1fr}
+  .hosts{gap:18px}
+  .host-photo{width:84px;height:84px}
 }
 @media(max-width:640px){
   .wrap{padding:0 16px}
