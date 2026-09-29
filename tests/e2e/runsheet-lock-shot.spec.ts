@@ -444,6 +444,12 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(r.map).toEqual([true, true, false]);   // Topeka to pick, Marysville on the day, Osage City shot 9/24 — not on the map
   });
 
+  test('GO LIVE waits for a date: an undated day says so instead of offering to publish', async ({ page }) => {
+    await open(page, state({ days: [day({ date: '', ids: [TOPEKA] })], activeDate: '', nav: 'today' }), '#s-today');
+    await expect(page.locator('#tGoLive')).toHaveCount(0);
+    await expect(page.locator('#s-today .golivecard')).toContainText('no date yet');
+  });
+
   test('Today: the day in drive order with SHOT; GO LIVE writes the journal and marks sent only on a yes', async ({ page }) => {
     const t = today(), AT = Date.now() - 3600_000;
     const posted: any[] = [];
@@ -452,7 +458,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
       ? r.fulfill({ contentType: 'application/json', body: JSON.stringify({ v: 0, updatedAt: 0, state: null }) })
       : r.fulfill({ contentType: 'application/json', body: JSON.stringify({ v: 1, updatedAt: Date.now() }) }));
     await page.route('**/api/journal', r => { posted.push(JSON.parse(r.request().postData() || '{}'));
-      r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, n: posted.length, at: Date.now() }) }); });
+      r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, id: 'x' + posted.length, at: Date.now() }) }); });
     await open(page, state({
       days: [day({ date: t, ids: [TOPEKA, MARYSVILLE], locked: { at: 1, by: 'tim' } })], activeDate: t,
       locks: { [TOPEKA]: { d: t, pts: 100, by: 'tim', with: '', at: AT, sd: t } }, status: { [TOPEKA]: 'captured' }, by: { [TOPEKA]: 'tim' },
@@ -478,7 +484,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(posted[0].shot.map((x: any) => x.id)).toEqual([TOPEKA]);
     let s = await saved(page);
     expect(s.nav).toBe('today');
-    expect(s.published[t]).toMatchObject({ shot: [TOPEKA], carried: [MARYSVILLE], email: 'sent', n: 1 });
+    expect(s.published[t]).toMatchObject({ shot: [TOPEKA], carried: [MARYSVILLE], email: 'sent', entry: 'x1' });
     expect(s.report.sent[TOPEKA]).toMatchObject({ d: t });
     // the server refuses → nothing re-published, the first receipt stands, nothing else marked sent
     await page.unroute('**/api/journal');

@@ -1457,7 +1457,8 @@ function renderToday(){
           +'<div class="pay mono">'+fmt(j.p)+'</div></div>'}).join('')
       :'<div class="empty">No stops on this day yet — build it on Plan, or tap Re-route to pull one in from where you are.</div>')
     +gbBarHTML()
-    +(ids.length?`<div class="card golivecard">
+    +(ids.length&&!d.date?'<div class="card golivecard"><div class="lab">End of day</div><div class="hint" style="margin:3px 0 0">This day has no date yet — set it on Plan, then GO LIVE can publish it.</div></div>':'')
+    +(ids.length&&d.date?`<div class="card golivecard">
         ${pub?'<div class="lab">Published</div><div class="rh-sub">'+escHTML(pubLine(pub))+'</div>':'<div class="lab">End of day</div><div class="hint" style="margin:3px 0 0">Confirm what was shot, write the day to the crew journal, send IDS the update. Nothing is marked sent until it is.</div>'}
         <button class="livebtn golive" id="tGoLive">⚡ GO LIVE${pub?' AGAIN':''}<small>${pub?'re-publish this day':'publish this day — journal + IDS'}</small></button></div>`:'');
   const td=$('#todayDay'); if(td)td.onchange=e=>{const dd=S.days[+e.target.value]; TODAY_PICK=dd?dd.id:''; setDay(+e.target.value); render(); dirty()};
@@ -1556,6 +1557,7 @@ function goLiveSheet(d){
 }
 async function publishDay(d,parts,say){
   say=say||(()=>{});
+  if(!d.date)throw new Error('this day has no date — set it on Plan first');   // the journal files a day by its date
   if(!syncOn()){ say('Turning crew sync on…'); await crewOn(true); if(!syncOn())throw new Error('crew sync would not start') }
   const rec={date:d.date||'',name:bindName(d),by:S.who||'',at:Date.now(),
     shot:parts.shot.map(i=>({id:i,at:(S.locks[i]&&S.locks[i].at)||0,d:(S.locks[i]&&S.locks[i].d)||d.date||''})),
@@ -1567,9 +1569,9 @@ async function publishDay(d,parts,say){
   if(!r.ok){let why='HTTP '+r.status; try{const j=await r.json(); why=j.error||why}catch(e){} throw new Error('journal refused ('+why+')')}
   const j=await r.json();
   S.published=(S.published&&typeof S.published==='object')?S.published:{};
-  S.published[d.date]={at:rec.at,by:rec.by,shot:parts.shot.slice(),carried:rec.carried,skipped:rec.skipped,n:j.n||0,email:'pending'};
+  S.published[d.date]={at:rec.at,by:rec.by,shot:parts.shot.slice(),carried:rec.carried,skipped:rec.skipped,entry:j.id||'',email:'pending'};
   dirty();
-  say('Journal ✓ entry '+(j.n||'?')+' — opening the IDS email…');
+  say('Journal ✓ written — opening the IDS email…');
   // the email hand-off: the draft opens in the mail app, and it is marked sent only when Tim says it went
   const msg=idsUpdateText(), dates=datesToReport();
   await openIdsMail(msg);
