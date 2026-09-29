@@ -191,15 +191,16 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
       locks: { [TOPEKA]: { d: yesterday(), pts: 100, by: 'tim', with: '', at: AT } },
       status: { [TOPEKA]: 'captured' }, by: { [TOPEKA]: 'tim' },
     }));
-    await expect(page.locator('#stops .stop.done')).toHaveCount(1);
-    await expect(page.locator('#lockbar')).toHaveCount(0);
-    expect((await saved(page)).locks[TOPEKA].d).toBe(yesterday());
+    // yesterday is History's now — off the Plan rail — and the shot is still a shot, not turned into a plan lock
+    await expect(page.locator('#s-plan .dchip[data-i]')).toHaveCount(1);   // the fresh day Plan opened on, not yesterday
+    const s0 = await saved(page);
+    expect(s0.locks[TOPEKA].d).toBe(yesterday());
+    expect(s0.days.find((d: any) => d.date === yesterday()).locked).toBeFalsy();
     // History costs the day as it was driven, not the (empty) run still ahead
     await page.locator('#nav button[data-s="history"]').click();
     await page.locator('#s-history [data-hrow]').first().click();   // newest day first — yesterday; rows open on tap
     const route = page.locator('#s-history .hroute').first();
-    await expect(route).toBeVisible();
-    expect(parseInt((/(\d+) mi/.exec(await route.innerText()) || ['', '0'])[1], 10)).toBeGreaterThan(0);
+    await expect(route).toHaveText(/[1-9]\d* mi/);   // retried until the row has painted its route line
   });
 
   test('↑/↓ move the stop on the row, and Undo of a SHOT puts the stop back where it was', async ({ page }) => {
@@ -294,7 +295,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(n).toBeGreaterThanOrEqual(12);
     await expect(page.locator('#s-app .badge', { hasText: 'invoice # new' })).toHaveCount(0);
     await expect(page.locator('#s-app .badge', { hasText: 'sheet has 08/21' })).toHaveCount(2);
-    await expect(page.locator('#s-app .badge', { hasText: 'sheet has 09/10' })).toHaveCount(5);   // the 9/9 Manhattan / Salina run: the book says 9/9, the sheet 9/10
+    await expect(page.locator('#s-app .badge', { hasText: 'sheet has 09/10' })).toHaveCount(0);   // the Manhattan / Salina run was 9/10 — book and sheet agree now
     for (const id of ['2026-3142', '2026-4479', '2026-4522'])   // Gap (on neither tab), Lansing (no date on Master), Osage City (shot 9/24)
       await expect(page.locator('#s-app .idsrow', { hasText: id }).locator('.badge', { hasText: 'new' })).toHaveCount(1);
 
@@ -379,6 +380,19 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(back).toEqual({ lock: false, shot: false });
   });
 
+  test('the Manhattan / Salina run moves to 9/10 on a phone that has the 9/9 frozen day', async ({ page }) => {
+    // what the 9/26 past-runs migration left on Tim's phone: a locked 9/9 day with its own stamp
+    const nine = { ...day({ id: 'dMan', date: '2026-09-09', ids: ['2026-0000', '2026-0938', '2026-1896', '2026-6911'], crew: 'gabe' }),
+      locked: { at: Date.parse('2026-09-09T23:00:00Z'), by: 'tim' }, logMi: 448 };
+    await open(page, state({ days: [nine, day()], active: 1, activeDate: tomorrow() }));
+    const s = await saved(page);
+    const run = s.days.filter((d: any) => d.date === '2026-09-09' || d.date === '2026-09-10');
+    expect(run).toHaveLength(1);
+    expect(run[0]).toMatchObject({ date: '2026-09-10', crew: 'gabe', logMi: 448 });
+    expect(run[0].ids).toContain('2026-8093');   // Salina's Victra rode that run too
+    expect(s.mig.manhattan0910).toBe(1);
+  });
+
   test('Score: the Verizon running total adds up, and moves when a stop is shot', async ({ page }) => {
     const y = yesterday();
     await open(page, state({ days: [day({ date: y, ids: [TOPEKA] })], activeDate: y, nav: 'board' }), '#s-board');
@@ -409,6 +423,33 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await expect(page.locator('#vzTotal .vzpie text')).toContainText(String(after.left));
   });
 
+  test('Plan starts from today: past days, finished trips and stale route names are gone, and a stop left on a past day is back in the pool', async ({ page }) => {
+    await open(page, state({
+      days: [day({ id: 'dPast', date: yesterday(), ids: [TOPEKA] }), day({ id: 'dNow', date: today(), ids: [MARYSVILLE] })],
+      active: 1, activeDate: today(),
+      binds: [{ id: '2026-09-25:06:00:W/Cody', date: '2026-09-25', ids: [MARYSVILLE], stops: 1, shot: 0, pay: 100, net: 100, at: 1 }],
+    }));
+    await expect(page.locator('#s-plan .dchip[data-i]')).toHaveCount(1);                       // today only — yesterday is History's
+    await expect(page.locator('#s-plan')).not.toContainText('Route bindings');
+    await expect(page.locator('#s-plan')).not.toContainText('Route names');
+    await expect(page.locator('#s-plan [data-run]', { hasText: 'Wichita' })).toHaveCount(0);     // a finished trip is not a run to load
+    const r = await page.evaluate(([tp, ms]) => { const G: any = window;
+      return {
+        pool: G.eval('unscheduled().map(j=>j.id)').includes(tp),
+        planned: G.eval('PLANNED("' + tp + '")'),
+        map: G.eval('(()=>{const v=mapVisible(day()); return [BY["' + tp + '"],BY["' + ms + '"],BY["2026-4522"]].map(v)})()'),
+      }; }, [TOPEKA, MARYSVILLE] as const);
+    expect(r.pool).toBe(true);                    // Topeka was never shot yesterday — it is back to be picked
+    expect(r.planned).toBe(false);
+    expect(r.map).toEqual([true, true, false]);   // Topeka to pick, Marysville on the day, Osage City shot 9/24 — not on the map
+  });
+
+  test('GO LIVE waits for a date: an undated day says so instead of offering to publish', async ({ page }) => {
+    await open(page, state({ days: [day({ date: '', ids: [TOPEKA] })], activeDate: '', nav: 'today' }), '#s-today');
+    await expect(page.locator('#tGoLive')).toHaveCount(0);
+    await expect(page.locator('#s-today .golivecard')).toContainText('no date yet');
+  });
+
   test('Today: the day in drive order with SHOT; GO LIVE writes the journal and marks sent only on a yes', async ({ page }) => {
     const t = today(), AT = Date.now() - 3600_000;
     const posted: any[] = [];
@@ -417,7 +458,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
       ? r.fulfill({ contentType: 'application/json', body: JSON.stringify({ v: 0, updatedAt: 0, state: null }) })
       : r.fulfill({ contentType: 'application/json', body: JSON.stringify({ v: 1, updatedAt: Date.now() }) }));
     await page.route('**/api/journal', r => { posted.push(JSON.parse(r.request().postData() || '{}'));
-      r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, n: posted.length, at: Date.now() }) }); });
+      r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, id: 'x' + posted.length, at: Date.now() }) }); });
     await open(page, state({
       days: [day({ date: t, ids: [TOPEKA, MARYSVILLE], locked: { at: 1, by: 'tim' } })], activeDate: t,
       locks: { [TOPEKA]: { d: t, pts: 100, by: 'tim', with: '', at: AT, sd: t } }, status: { [TOPEKA]: 'captured' }, by: { [TOPEKA]: 'tim' },
@@ -443,7 +484,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(posted[0].shot.map((x: any) => x.id)).toEqual([TOPEKA]);
     let s = await saved(page);
     expect(s.nav).toBe('today');
-    expect(s.published[t]).toMatchObject({ shot: [TOPEKA], carried: [MARYSVILLE], email: 'sent', n: 1 });
+    expect(s.published[t]).toMatchObject({ shot: [TOPEKA], carried: [MARYSVILLE], email: 'sent', entry: 'x1' });
     expect(s.report.sent[TOPEKA]).toMatchObject({ d: t });
     // the server refuses → nothing re-published, the first receipt stands, nothing else marked sent
     await page.unroute('**/api/journal');
