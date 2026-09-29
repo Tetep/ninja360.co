@@ -1,22 +1,27 @@
 /* The crew journal — what GO LIVE writes.
  *
  * The run sheet keeps its plan on the phone; the crew copy (state.js) is the same plan mirrored.
- * Neither is a record of what happened. This is: one append-only list per crew key, one entry per
- * published day — which stops were shot (with the ledger's stamps), which were carried, which
- * were skipped, who published, when. The app keeps only the receipt; anything that wants the
- * truth of a day (the sheet update, the Score tab, a person asking "what did you run Thursday")
- * reads it here.
+ * Neither is a record of what happened. This is: one entry per published day — which stops were
+ * shot (with the ledger's stamps), which were carried, which were skipped, who published, from
+ * which device, when. The app keeps only the receipt; anything that wants the truth of a day (the
+ * sheet update, the Score tab, a person asking "what did you run Thursday") reads it here.
  *
  * Same key discipline as state.js: the crew key is hashed into the storage key, never stored, and
- * a wrong key reads an empty list rather than someone else's.
+ * a wrong key reads an empty journal rather than someone else's.
  *
- *   GET  /api/journal            -> { n, entries: [...] } newest first (up to 200), ?date=YYYY-MM-DD to filter
- *   POST /api/journal  {entry}   -> { ok, n, at }   appends; n is the entry's number in the list
+ * Every entry is its own KV key — `<crew slot>:<receivedAt, zero-padded>-<random>` — so two devices
+ * publishing in the same second both land: nothing is read, modified and written back, nothing is
+ * trimmed, and the key's timestamp orders the journal. KV listing is eventually consistent, so a
+ * new entry can take up to a minute to show in GET; it is never lost. Entries the first build wrote
+ * (one JSON list under the bare slot key) are still read.
+ *
+ *   GET  /api/journal            -> { n, entries: [...] } newest first (up to 200); ?date=YYYY-MM-DD filters
+ *   POST /api/journal  {entry}   -> { ok, id, at }   appends; id is the entry's own key
  */
 
 const MIN_KEY = 8;
 const MAX_ENTRY = 16 * 1024;   // a day is a few hundred bytes; this is generous
-const KEEP = 400;              // entries kept per crew — over a year of days
+const READ_MAX = 200;          // entries returned by one GET
 const ID = /^[a-z0-9-]{1,24}$/i, DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 const json = (obj, status = 200) =>
@@ -57,10 +62,20 @@ export async function onRequest({ request, env }) {
   const id = await slot(key);
 
   if (request.method === 'GET') {
-    const list = (await env.RUNSHEET.get(id, { type: 'json' })) || [];
     const date = new URL(request.url).searchParams.get('date');
-    const out = (date ? list.filter(e => e.date === date) : list).slice().reverse().slice(0, 200);
-    return json({ n: list.length, entries: out });
+    const keys = [];
+    let cursor;
+    do {
+      const page = await env.RUNSHEET.list({ prefix: id + ':', cursor });
+      keys.push(...page.keys);
+      cursor = page.list_complete ? undefined : page.cursor;
+    } while (cursor);
+    // keys list in lexical order, and the zero-padded timestamp makes that time order: newest last
+    const wanted = keys.filter(k => !date || (k.metadata && k.metadata.date === date)).slice(-READ_MAX).reverse();
+    const fresh = (await Promise.all(wanted.map(k => env.RUNSHEET.get(k.name, { type: 'json' })))).filter(Boolean);
+    const legacy = (await env.RUNSHEET.get(id, { type: 'json' })) || [];
+    const old = (date ? legacy.filter(e => e && e.date === date) : legacy).slice().reverse();
+    return json({ n: keys.length + legacy.length, entries: fresh.concat(old).slice(0, READ_MAX) });
   }
 
   if (request.method === 'POST') {
@@ -75,13 +90,10 @@ export async function onRequest({ request, env }) {
     const entry = clean(body);
     if (!entry) return json({ error: 'bad-entry', detail: 'Expected {date: YYYY-MM-DD, shot: [{id,at,d}], carried: [], skipped: []}.' }, 400);
 
-    let list = (await env.RUNSHEET.get(id, { type: 'json' })) || [];
-    entry.n = list.length + 1;
     entry.receivedAt = Date.now();
-    list.push(entry);
-    if (list.length > KEEP) list = list.slice(-KEEP);
-    await env.RUNSHEET.put(id, JSON.stringify(list));
-    return json({ ok: true, n: entry.n, at: entry.receivedAt });
+    entry.id = String(entry.receivedAt).padStart(15, '0') + '-' + crypto.randomUUID().slice(0, 8);
+    await env.RUNSHEET.put(id + ':' + entry.id, JSON.stringify(entry), { metadata: { date: entry.date } });
+    return json({ ok: true, id: entry.id, at: entry.receivedAt });
   }
 
   return json({ error: 'method' }, 405);
