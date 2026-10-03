@@ -3413,6 +3413,10 @@ function migrate(){
       r[5].forEach(i=>{ if(BY[i]&&!d.ids.includes(i))d.ids.push(i) }) });
     sortDays();
     if(finishedRun(S.days[S.active])){ const i=S.days.findIndex(d=>!finishedRun(d)); setDay(i<0?S.days.length-1:i) } }
+  // A frozen run is the record. A field lock on one of its stops carries the book's onsite date, not the
+  // date of whatever plan day the SHOT tap happened to land on — otherwise the stop reads as a "return"
+  // on the day it was first shot, worth nothing, and the day's points sit on the wrong date. Every boot.
+  PAST_RUNS.forEach(r=>r[5].forEach(id=>{ const l=S.locks&&S.locks[id], j=BY[id]; if(l&&j&&j.dt&&l.d!==j.dt)l.d=j.dt }));
   // the QuickBooks log's miles for the days it covered — a number Tim typed himself stands
   if(!S.mig.logmi0926){ S.mig.logmi0926=1;
     PAST_RUNS.forEach(r=>{ const d=r[6]&&S.days.find(x=>x.date===r[0]); if(d&&!(d.logMi>0))d.logMi=r[6] }) }
