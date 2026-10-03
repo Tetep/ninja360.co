@@ -2571,8 +2571,8 @@ function renderHistory(){
         +(d.route?'<div class="hroute mono">'+hhmm(d.route.start)+'–'+hhmm(d.route.end)+' &middot; '+Math.round(d.route.miles)+' mi '+(d.route.logged?'logged':'est.')+' &middot; '+d.route.span.toFixed(1)+' h on the road</div>':'')
         +d.rows.slice().sort((a,b)=>a.j.c<b.j.c?-1:1).map(l=>
           '<div class="hstop"><button class="pjbtn" data-info="'+l.id+'"><b>'+escHTML(l.j.n)+'</b></button>'
-          +'<span class="hmeta">'+(l.ret?'<span class="badge acc">return</span>':'')+(l.ids?'<span class="badge a">IDS</span>':'')+(l.by&&CREW[l.by]?' '+escHTML(CREW[l.by].short):'')+'</span>'
-          +'<b class="mono">'+(l.ret?'&mdash;':fmt(l.pts))+'</b></div>').join('')
+          +'<span class="hmeta">'+(l.ids?'<span class="badge a">IDS</span>':'')+(l.by&&CREW[l.by]?' '+escHTML(CREW[l.by].short):'')+'</span>'
+          +'<b class="mono">'+(l.ret?'<span class="hint">banked '+escHTML(niceDate((lockOf(l.id)||{}).d||''))+'</span>':fmt(l.pts))+'</b></div>').join('')
       +'</div>')
     +'</div>';
   };
