@@ -532,6 +532,12 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
 .drvdays i{width:20px;height:5px;border-radius:3px}
 .drvdays span{display:flex;flex-direction:column;font-size:13.5px} .drvdays small{color:var(--ink3);font-size:11.5px}
 .drvdays>div>b{font-size:17px}
+.dmap .arun{cursor:pointer}
+.dmap .atown{font:600 13px Archivo,sans-serif;fill:var(--ink2);stroke:var(--surf2);stroke-width:4px;paint-order:stroke}
+.achips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.achip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:12px;background:var(--surf2);color:var(--ink2)}
+.achip i{width:14px;height:4px;border-radius:2px;background:var(--c)}
+.achip.on{border-color:var(--c);color:var(--ink);font-weight:700;background:var(--surf)}
 .runpick{display:block;width:100%;max-width:100%;margin:12px 0 10px;padding:11px 12px;border-radius:10px;border:1px solid var(--line2);background:var(--surf2);color:var(--ink);font:600 14px Archivo,-apple-system,sans-serif}
 .sbmore{margin:14px 0 4px}
 .sbmore>summary{cursor:pointer;list-style:none;border:1px solid var(--line2);border-radius:10px;padding:11px 14px;font-weight:600;font-size:13.5px;color:var(--ink2);background:var(--surf2)}
@@ -2969,7 +2975,7 @@ function renderBoardMore(){
    else — points, belts, records, the job list, CSV — sits one tap down under "Points & job list".
    Miles are the day as driven: start → the stops that were shot, in plan order → end,
    priced with the same mi() / ROAD factor the planner uses. A day with nothing shot drove nowhere. */
-let BMORE=false, DMAP=false, RUNPICK='';   // the points accordion, the map screenshot and the past run he picked: they stay how he left them
+let BMORE=false, DMAP=false, RUNPICK='', MAPRUN='';   // the points accordion, the map screenshot, the past run he picked, the run lit on the big map: they stay how he left them
 const DRIVE_COL=['#F4801F','#CD040B','#3B82D6','#2C9B6A','#8B2FC9','#C9A227','#6B6058'];
 function drivenDays(){
   const today=ymd(new Date());
@@ -3054,6 +3060,33 @@ function driveMap(days){
     named.add(j.c)});
   return `<div class="dmap"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Map of the drive">${lines}${ends}${pins}</svg></div>`;
 }
+/* Every mile on one map. The long hauls are the lines; the local days — the KC knot — are drawn
+   thin and faint so they read as texture, not noise. Towns past 60 miles get a name. Tap a route
+   or its chip and that run lights up alone; tap again to let them all back. */
+function allRunsMap(runs){
+  if(!runs.length)return '';
+  const W=600,H=480,pad=36, k=Math.cos(39.5*Math.PI/180);
+  const pts=[]; runs.forEach(r=>r.days.forEach(d=>{pts.push(placeLL(d.day.startKey),placeLL(d.day.endKey)); d.ids.forEach(id=>pts.push(LL(BY[id])))}));
+  const xs=pts.map(p=>p[1]*k), ys=pts.map(p=>p[0]);
+  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const sc=Math.min((W-2*pad)/Math.max(.05,x1-x0),(H-2*pad)/Math.max(.05,y1-y0));
+  const ox=(W-(x1-x0)*sc)/2, oy=(H-(y1-y0)*sc)/2;
+  const P=p=>[+(ox+(p[1]*k-x0)*sc).toFixed(1), +(oy+(y1-p[0])*sc).toFixed(1)];
+  const col=i=>`hsl(${(i*53+20)%360} 70% 44%)`;
+  const isFar=r=>r.days.some(d=>d.ids.some(id=>mi(BASE,LL(BY[id]))>60));
+  let lines='',dots='',labels='',chips=''; const named=new Set();
+  runs.forEach((r,i)=>{ const c=col(i), sel=MAPRUN===r.key, dim=!!MAPRUN&&!sel, far=isFar(r);
+    r.days.forEach(d=>{ const route=[placeLL(d.day.startKey),...d.ids.map(id=>LL(BY[id])),placeLL(d.day.endKey)].map(P);
+      lines+=`<polyline class="arun" data-run="${r.key}" points="${route.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${c}" stroke-width="${sel?7:far?4:2}" stroke-linejoin="round" stroke-linecap="round" opacity="${dim?.1:far?.85:.5}"/>`;
+      d.ids.forEach(id=>{ const j=BY[id],[x,y]=P(LL(j));
+        dots+=`<circle cx="${x}" cy="${y}" r="${sel?6:3.5}" fill="${c}" stroke="#fff" stroke-width="1.5" opacity="${dim?.12:.95}"/>`;
+        if(!named.has(j.c)&&mi(BASE,LL(j))>60&&(!MAPRUN||sel)){ named.add(j.c); labels+=`<text class="atown" x="${x+9}" y="${y+4}">${escHTML(j.c)}</text>` } }) });
+    chips+=`<button class="achip${sel?' on':''}" data-run="${r.key}" style="--c:${c}"><i></i>${escHTML(r.name)} &middot; ${Math.round(r.miles).toLocaleString()} mi</button>`;
+  });
+  const [hx,hy]=P(placeLL('home'));
+  const home=`<image href="/assets/ninja-mark.png" x="${hx-22}" y="${hy-22}" width="44" height="44"/><text class="dtown" x="${hx}" y="${hy+36}" text-anchor="middle">Home</text>`;
+  return `<div class="dmap"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Every run on one map">${lines}${dots}${labels}${home}</svg></div><div class="achips">${chips}</div>`;
+}
 function renderBoard(){
   const now=new Date(), ws=weekStart(now), A=ymd(ws), B=ymd(addDays(ws,6));
   const driven=drivenDays(), week=driven.filter(d=>d.date>=A&&d.date<=B);
@@ -3076,7 +3109,7 @@ function renderBoard(){
   const fmtD=k=>new Date(k+'T12:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
   const snapMates=new Set(); snap.forEach(d=>d.mates.forEach(m=>snapMates.add(m)));
   // the documented runs: days that slept out of town chain into one run (Wichita is three days), the rest stand alone
-  const runs=(()=>{const out=[]; driven.forEach(d=>{const p=out[out.length-1], last=p&&p.days[p.days.length-1];
+  let runs=(()=>{const out=[]; driven.forEach(d=>{const p=out[out.length-1], last=p&&p.days[p.days.length-1];
       if(last&&String(last.day.endKey).startsWith('job:')&&last.day.endKey===d.day.startKey)p.days.push(d); else out.push({days:[d]})});
     const fS=k=>new Date(k+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'});
     out.forEach(r=>{const ids=r.days.flatMap(d=>d.ids), a=r.days[0].date, b=r.days[r.days.length-1].date;
@@ -3087,8 +3120,9 @@ function renderBoard(){
       // a run that slept out is named for the town it slept in (Lincoln, Wichita); a day trip for its farthest stop
       const home=r.days.length>1&&endJob?endJob.c:(far?BY[far].c:(endJob?endJob.c:'Run'));
       r.name=home+(towns.length>1?' +'+(towns.length-1):'')});
-    return out.reverse().filter(r=>r.n>=4||r.miles>=300)})();   // every run counts toward the miles; only these get a screenshot: four stops or more, or 300 miles or more
-  const pick=runs.find(r=>r.key===RUNPICK);
+    return out.reverse()})();
+  const allRuns=runs, pick=runs.find(r=>r.key===RUNPICK);
+  runs=runs.filter(r=>r.n>=4||r.miles>=300);   // every run counts toward the miles and the big map; only these get a screenshot: four stops or more, or 300 miles or more
   const dayRows=list=>list.map((d,i)=>`<div><i style="background:${DRIVE_COL[i%DRIVE_COL.length]}"></i>
         <span><b>${fmtD(d.date)}</b><small>${d.ids.length} stop${d.ids.length===1?'':'s'} &middot; ${h1(d.hrs)} h &middot; ${d.logged?'logged':'est.'}</small></span><b class="mono">${mi0(d.miles)} mi</b></div>`).join('');
   $('#s-board').innerHTML=`
@@ -3098,6 +3132,11 @@ function renderBoard(){
       ${mates.map(id=>player(id,'Miles with '+CREW[id].short,d=>d.mates.has(id))).join('')}
     </section>
     <div class="hint" style="margin:-4px 0 10px;text-align:center">Miles: QuickBooks log where it has the day, the app's estimate otherwise.</div>
+    ${allRuns.length?`<section class="card drv" id="allMap">
+      <div class="drvh"><span class="lab">Every mile &middot; ${allRuns.length} runs${MAPRUN?' &middot; tap again to show all':' &middot; tap a run to light it up'}</span>
+        <span class="drvt"><b class="mono">${mi0(sum(driven))}</b> mi</span></div>
+      ${allRunsMap(allRuns)}
+    </section>`:''}
     ${snap.length?`<section class="card drv">
       <div class="drvh"><span class="lab">The drive &middot; ${week.length?'this week':fmtD(snap[0].date)}${snapMates.size?' &middot; with '+[...snapMates].map(m=>CREW[m].short).join(' &amp; '):''}</span>
         <span class="drvt"><b class="mono">${mi0(sum(snap))}</b> mi</span></div>
@@ -3116,6 +3155,7 @@ function renderBoard(){
   $('#sbMoreWrap').ontoggle=e=>{BMORE=e.target.open};
   const rp=$('#runPick'); if(rp)rp.onchange=e=>{RUNPICK=e.target.value; render(); const c=$('#runCard'); if(c)c.scrollIntoView({behavior:'smooth',block:'start'})};
   const dm=$('#dmapWrap'); if(dm)dm.ontoggle=e=>{DMAP=e.target.open};
+  $$('#allMap [data-run]').forEach(e=>e.onclick=()=>{MAPRUN=MAPRUN===e.dataset.run?'':e.dataset.run; render()});
   renderBoardMore();
   $$('#s-board .dpin').forEach(g=>g.onclick=()=>jobSheet(g.dataset.info));
 }
