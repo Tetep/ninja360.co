@@ -3459,6 +3459,9 @@ function migrate(){
     if(BY[id]&&!shot(id)){ let d=S.days.find(x=>x.date===iso);
       if(!d){ d=Object.assign(blankDay(iso),{ids:[id],locked:{at:Date.now(),by:'tim'}}); S.days.push(d); sortDays(); try{bindRoute(d,true)}catch(e){} }
       else if(!d.ids.includes(id))d.ids.push(id) } }
+  // 98172 was NOT shot Sunday 10/4 — drop the stale Sunday plan day if it holds nothing else; the store stays Open on the list
+  if(!S.mig.notsun98172){ S.mig.notsun98172=1; const id='2026-6674', i=S.days.findIndex(x=>x.date==='2026-10-04'&&x.ids.length===1&&x.ids[0]===id);
+    if(i>=0&&!shot(id)){ S.days.splice(i,1); if(S.active>=S.days.length)S.active=Math.max(0,S.days.length-1) } }
   if(S.mig.pastruns0926!==9){ S.mig.pastruns0926=9;   // v9: Mon 10/5, solo — Belton / Butler / Nevada / Fort Scott / Paola   // v8: Wireless Zone 131968 Independence on the Friday 10/2 run
     PAST_RUNS.forEach(r=>{ const d=S.days.find(x=>x.date===r[0]), stamp=Date.parse(r[0]+'T23:00:00Z');
       if(!d){ S.days.push(pastRunDay(r)); return }
