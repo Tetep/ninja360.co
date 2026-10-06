@@ -545,6 +545,23 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
 .sbmore>summary::after{content:" ▾";color:var(--ink3)}
 .sbmore[open]>summary{margin-bottom:10px}
 .sbmore[open]>summary::after{content:" ▴"}
+
+.octbig{font-size:26px;font-weight:600;margin:2px 0 6px}.octbig small{font:500 12px Archivo,-apple-system,sans-serif;color:var(--ink3);margin-left:4px}
+.octbar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:2px 0 10px}.octbar i{display:block}
+.octt{width:100%;border-collapse:collapse;font-size:13.5px}.octt td{padding:6px 2px;border-top:1px solid var(--line);vertical-align:top}.octt tr:first-child td{border-top:0}
+.octt td:not(:first-child){text-align:right;white-space:nowrap;padding-left:8px}.octt small{display:block;color:var(--ink3);font-size:11.5px}
+.octtot td{font-weight:700;border-top:2px solid var(--line2)}.octdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}
+.octt td.octd{text-align:left;white-space:nowrap;font-weight:600;color:var(--ink2);padding-right:10px}
+.octt td.octx{text-align:left;white-space:normal;padding-left:0}
+.omap{height:340px;border-radius:10px;overflow:hidden;background:var(--surf2)}.omap .dmap{height:100%}
+.octpin{width:24px;height:24px;border-radius:50%;border:2px solid #fff;color:#fff;font:700 12px "IBM Plex Mono",monospace;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px #0006}
+.octbed{font-size:16px}.octco{font:700 11px Archivo,sans-serif;color:#8B2FC9;text-align:center;text-shadow:0 0 3px #fff,0 0 3px #fff}
+.octday{border-left:4px solid var(--c);padding:2px 0 2px 10px;margin:12px 0 0}.octdh{display:flex;justify-content:space-between;gap:8px;font-size:14px}.octdh span{color:var(--ink3);font-size:12.5px}
+.octday ol{list-style:none;margin:6px 0;padding:0}.octday li{display:flex;gap:8px;align-items:center;padding:3px 0;font-size:13.5px}.octday li>span:nth-child(2){flex:1}.octday li em{color:var(--ret);font-style:normal;font-weight:600;font-size:12px}
+.octn{width:20px;height:20px;border-radius:50%;color:#fff;font:700 11px "IBM Plex Mono",monospace;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.octst{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 6px;border-radius:6px}.octst.ok{background:var(--money-soft);color:var(--money)}.octst.warn{background:var(--warn-soft);color:var(--warn)}
+.octm{font-size:13px}.octf{color:var(--warn);font-weight:700;font-size:12px}.octg{color:var(--money);font-weight:700;font-size:12px}
+.octpre{display:flex;gap:9px;align-items:flex-start;padding:7px 0;font-size:13.5px;border-top:1px solid var(--line)}.octpre:first-of-type{border-top:0}.octpre input{margin-top:3px;flex:none}
 </style>
 
 <header><div class="wrap"><div class="hrow">
@@ -564,6 +581,7 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
   <section id="s-app" class="hide"></section>
   <section id="s-board" class="hide"></section>
   <section id="s-history" class="hide"></section>
+  <section id="s-oct" class="hide"></section>
 </div>
 
 <nav id="nav">
@@ -573,6 +591,7 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
   <button data-s="app"><span class="ic">📮</span>IDS</button>
   <button data-s="board"><span class="ic">🥋</span>Score</button>
   <button data-s="history"><span class="ic">📜</span>History</button>
+  <button data-s="oct"><span class="ic">🎯</span>Oct</button>
 </nav>
 
 <!-- Leaflet: a real basemap (roads, state lines, city names) when online. If this
@@ -3185,6 +3204,154 @@ function renderBoard(){
 }
 /* ================= SHELL ================= */
 let ready=false;
+/* ---------- October strategy page ----------
+   A planning view, not a ledger: where the month's stops are, what each block of days is worth,
+   and what the miles really look like. Straight lines on the map; miles use the app's road factor. */
+const OCT_CO=[37.0,-102.04];   // the Colorado line, at Liberal's latitude
+const OCT_KS=[
+  {d:'Thu 10/15',home:true,stops:['2026-4049','2026-1339','2026-8652','2026-5933','2026-8093'],night:'Salina',planMi:340,
+   note:'Salina is the go-back ($0) — exterior signage + monument sign. Marysville 2026-8652 · Concordia 2026-5933.'},
+  {d:'Fri 10/16',stops:['2026-7983','2026-1376','2026-5976','2026-7106','2026-8145','2026-7702'],night:'Wellington / Wichita',planMi:220},
+  {d:'Sat 10/17',stops:['2026-6638','2026-7727','2026-8633','2026-8402'],night:'Hays',planMi:215,note:'Confirm Saturday hours: Pratt, Great Bend, Hays.'},
+  {d:'Sun 10/18',stops:['2026-7860','2026-8981','2026-6830'],end:OCT_CO,planMi:210,
+   note:'Three Cellular Sales stores — verify Sunday hours (typically 12–5). Fallback: drop Liberal (~140-mi detour), go west from Garden City.'}];
+const OCT_GOBACK='2026-8093';
+const OCT_BLOCKS=[
+  {k:'done',name:'Already invoiced + Cody 10/6',dates:'10/1–10/6',n:22,usd:2200,col:'#8a8f98'},
+  {k:'vbv',name:'Valvoline Blue Springs',dates:'10/7',n:0,usd:500,col:'#6B6058'},
+  {k:'spr',name:'Springfield week',dates:'10/12–14',n:33,usd:3300,col:'#3B82D6',hub:[37.209,-93.292],hubName:'Springfield MO',radius:130,who:'Tim + Cody · Kevin’s'},
+  {k:'ks',name:'Cody · Kansas → Colorado',dates:'10/15–18',n:17,usd:1700,col:'#F4801F',who:'Cody solo'},
+  {k:'stl',name:'St. Louis week',dates:'10/26–28',n:34,usd:3400,col:'#2C9B6A',hub:[38.627,-90.199],hubName:'St. Louis MO',radius:80,who:'Tim + Cody · + Jefferson City on Tim’s Wed exit'}];
+const OCT_CAL=[['Wed 10/7','Valvoline Blue Springs 9:30'],['Thu 10/8','54th call 1:00 + Spotlight AM'],['Fri 10/9','Billing run'],
+  ['Mon–Wed 10/12–14','Springfield (Tim + Cody)'],['Thu 10/15','Cody leaves west · Tim home Thu–Fri (Spotlight / 54th prototype)'],['Fri 10/16','Billing + PDFs'],
+  ['~10/18–10/24','Cody in Colorado — must be back Sun 10/25'],['Mon–Wed 10/26–28','St. Louis (Tim + Cody) · Jefferson City on Tim’s Wed exit (Sullivan → JC → home)'],['Fri 10/30','Billing run']];
+const OCT_PRE=['Michelle: “accounts to load” in three parts — Springfield 33, Kansas 17 + Salina go-back, St. Louis 34',
+  'Confirm Sunday hours for Dodge / Garden / Liberal; Saturday hours for Pratt / Great Bend / Hays',
+  'Salina go-back needs the IDS feedback note in Cody’s hands','Cody’s IDS app access confirmed'];
+let OMAP=null;
+const octS=()=>{ if(!S.oct||typeof S.oct!=='object')S.oct={}; const o=S.oct;
+  if(!['all','done','vbv','spr','ks','stl'].includes(o.block))o.block='all';
+  o.pay=o.pay==='stop'?'stop':'day'; o.nights=[0,1,2,3].includes(o.nights)?o.nights:1; o.done=(o.done&&typeof o.done==='object')?o.done:{}; return o };
+const octOpen=j=>!j.wp&&j.ch==='Verizon'&&!HOLD(j)&&j.st!=='Removed'&&(j.st==='Open'||j.st==='Scheduled'||!j.st)&&!LOCKED(j.id);
+function octKs(){
+  let prev=BASE;
+  return OCT_KS.map(d=>{
+    const st=d.stops.map(id=>BY[id]).filter(Boolean);
+    const pts=[prev,...st.map(LL)]; let m=0, drv=0; for(let i=1;i<pts.length;i++){const l=mi(pts[i-1],pts[i]); m+=l; drv+=drive(l)}
+    const shoot=st.reduce((t,j)=>t+(j.id===OCT_GOBACK?0.4:svc(j)),0);
+    let toBorder=0; if(d.end){toBorder=mi(pts[pts.length-1],d.end)}
+    const r=Object.assign({},d,{st,pts,miles:m,toBorder,drv:drv,shoot:shoot,from:prev});
+    if(st.length)prev=LL(st[st.length-1]); return r });
+}
+function octPools(){
+  const ks=new Set(OCT_KS.flatMap(d=>d.stops)), seen=new Set(), out={};
+  OCT_BLOCKS.filter(b=>b.hub).forEach(b=>{ out[b.k]=J.filter(j=>octOpen(j)&&!ks.has(j.id)&&!seen.has(j.id)&&isFinite(j.lat)&&mi(b.hub,LL(j))<=b.radius);
+    out[b.k].forEach(j=>seen.add(j.id)) });
+  const left=J.filter(j=>octOpen(j)&&!ks.has(j.id)&&!seen.has(j.id));
+  return {pools:out,left:left,ks:ks};
+}
+function octMapSVG(lines,dots,home){
+  const W=600,H=440,pad=34,k=Math.cos(38*Math.PI/180);
+  const pts=[home,...lines.flatMap(l=>l.pts),...dots.map(d=>d.ll)];
+  const xs=pts.map(p=>p[1]*k), ys=pts.map(p=>p[0]);
+  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const sc=Math.min((W-2*pad)/Math.max(.05,x1-x0),(H-2*pad)/Math.max(.05,y1-y0));
+  const ox=(W-(x1-x0)*sc)/2, oy=(H-(y1-y0)*sc)/2;
+  const P=p=>[+(ox+(p[1]*k-x0)*sc).toFixed(1), +(oy+(y1-p[0])*sc).toFixed(1)];
+  let g=''; lines.forEach(l=>{g+=`<polyline points="${l.pts.map(P).map(p=>p.join(',')).join(' ')}" fill="none" stroke="${l.col}" stroke-width="${l.w||4}"${l.dash?' stroke-dasharray="6 5"':''} stroke-linejoin="round" opacity=".9"/>`});
+  dots.forEach(d=>{const [x,y]=P(d.ll); g+=`<circle cx="${x}" cy="${y}" r="${d.r||4}" fill="${d.col}" stroke="#fff" stroke-width="1.5"/>`+(d.t?`<text class="dtown" x="${x+7}" y="${y+4}">${escHTML(d.t)}</text>`:'')});
+  const [hx,hy]=P(home); g+=`<image href="/assets/ninja-mark.png" x="${hx-18}" y="${hy-18}" width="36" height="36"/>`;
+  return `<div class="dmap"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="October map">${g}</svg></div>`;
+}
+function octDrawMap(sel,ks,P){
+  const box=$('#omap'); if(!box)return;
+  const showKs=sel==='all'||sel==='ks', blocks=OCT_BLOCKS.filter(b=>b.hub&&(sel==='all'||sel===b.k));
+  const lines=[], dots=[];
+  if(showKs){ ks.forEach((d,i)=>{ const col=DRIVE_COL[i%DRIVE_COL.length]; lines.push({pts:d.pts.concat(d.end?[d.end]:[]),col,w:4}); d.st.forEach(j=>dots.push({ll:LL(j),col,r:4,t:sel==='ks'?j.c:'',j:j,day:i})) });
+    lines.push({pts:[OCT_CO,[40.0,-102.05]],col:'#8B2FC9',w:3,dash:1}) }
+  blocks.forEach(b=>{ lines.push({pts:[BASE,b.hub],col:b.col,w:2,dash:1}); (P.pools[b.k]||[]).forEach(j=>dots.push({ll:LL(j),col:b.col,r:3.5,t:sel===b.k?j.c:''})) });
+  const hasL=typeof window.L!=='undefined'&&!!L.map;
+  if(!hasL){ blocks.forEach(b=>dots.push({ll:b.hub,col:b.col,r:6,t:b.hubName})); if(showKs)dots.push({ll:OCT_CO,col:'#8B2FC9',r:5,t:'Colorado'});
+    box.outerHTML='<div id="omap">'+octMapSVG(lines,dots,BASE)+'</div>'; return }
+  if(OMAP){try{OMAP.remove()}catch(e){} OMAP=null}
+  OMAP=L.map(box,{zoomSnap:.5}); L.tileLayer(TILES,{maxZoom:19,attribution:TILE_ATTR}).addTo(OMAP);
+  const all=[BASE];
+  lines.forEach(l=>{ L.polyline(l.pts,{color:l.col,weight:l.w||4,opacity:.85,dashArray:l.dash?'6 6':null}).addTo(OMAP); l.pts.forEach(p=>all.push(p)) });
+  let n=0; if(showKs)ks.forEach((d,i)=>{ const col=DRIVE_COL[i%DRIVE_COL.length];
+    d.st.forEach(j=>{ n++; L.marker(LL(j),{icon:L.divIcon({className:'',iconSize:[24,24],iconAnchor:[12,12],html:`<div class="octpin" style="background:${col}">${n}</div>`})})
+      .bindTooltip(escHTML(j.n)+(j.id===OCT_GOBACK?' · go-back':''),{direction:'top'}).addTo(OMAP) });
+    if(d.night&&d.st.length)L.marker(LL(d.st[d.st.length-1]),{icon:L.divIcon({className:'',iconSize:[22,22],iconAnchor:[-4,26],html:'<div class="octbed">🛏️</div>'})}).bindTooltip('Night: '+escHTML(d.night)).addTo(OMAP) });
+  if(showKs)L.marker(OCT_CO,{icon:L.divIcon({className:'',iconSize:[90,20],iconAnchor:[45,-4],html:'<div class="octco">→ Colorado</div>'})}).addTo(OMAP);
+  dots.filter(d=>!d.j).forEach(d=>{ L.circleMarker(d.ll,{radius:d.r||4,color:'#fff',weight:1.5,fillColor:d.col,fillOpacity:.95}).addTo(OMAP); all.push(d.ll) });
+  blocks.forEach(b=>L.marker(b.hub,{icon:L.divIcon({className:'',iconSize:[110,20],iconAnchor:[55,-4],html:`<div class="octco" style="color:${b.col}">${escHTML(b.hubName)}</div>`})}).addTo(OMAP));
+  L.marker(BASE,{icon:L.divIcon({className:'',iconSize:[34,34],iconAnchor:[17,17],html:'<img src="/assets/ninja-mark.png" width="34" height="34" alt="Home">'})}).addTo(OMAP);
+  dots.filter(d=>d.j).forEach(d=>all.push(d.ll));
+  OMAP.fitBounds(L.latLngBounds(all),{padding:[28,28],maxZoom:10});
+  setTimeout(()=>{try{OMAP.invalidateSize()}catch(e){}},0);
+}
+function renderOct(){
+  const o=octS(), sel=o.block, ks=octKs(), P=octPools();
+  const tot=OCT_BLOCKS.reduce((t,b)=>t+b.usd,0), caps=OCT_BLOCKS.reduce((t,b)=>t+b.n,0);
+  const usd=n=>'$'+Math.round(n).toLocaleString(), mi0=n=>Math.round(n).toLocaleString();
+  const ksBill=ks.flatMap(d=>d.st).filter(j=>j.id!==OCT_GOBACK);
+  const ksOpen=ksBill.filter(octOpen).length;
+  const bar=OCT_BLOCKS.map(b=>`<i style="flex:${b.usd};background:${b.col}" title="${escHTML(b.name)}"></i>`).join('');
+  const chips=`<button class="achip${sel==='all'?' on':''}" data-ob="all" style="--c:var(--accent)"><i></i>Whole month</button>`
+    +OCT_BLOCKS.map(b=>`<button class="achip${sel===b.k?' on':''}" data-ob="${b.k}" style="--c:${b.col}"><i></i>${escHTML(b.dates)} &middot; ${usd(b.usd)}</button>`).join('');
+  // the picture
+  const picture=`<table class="octt"><tbody>`+OCT_BLOCKS.map(b=>`<tr><td><span class="octdot" style="background:${b.col}"></span>${escHTML(b.name)}<small>${escHTML(b.dates)}${b.who?' · '+escHTML(b.who):''}</small></td><td class="mono">${b.n||'—'}</td><td class="mono">${usd(b.usd)}</td></tr>`).join('')
+    +`<tr class="octtot"><td>October</td><td class="mono">${caps} captures</td><td class="mono">${usd(tot)}</td></tr></tbody></table>`;
+  const openV=J.filter(octOpen).length, covered=ksBill.filter(octOpen).length+P.pools.spr.length+P.pools.stl.length;
+  const leftTowns={}; P.left.forEach(j=>{leftTowns[j.c]=(leftTowns[j.c]||0)+1});
+  const cover=`<div class="hint"><b>${openV}</b> Verizon stops are Open on the sheet right now. This plan reaches <b>${covered}</b> of them (${openV?Math.round(covered/openV*100):0}%). Net 30 — all of it lands in November.</div>`
+    +(P.left.length?`<div class="hint"><b>Left for November (${P.left.length}):</b> ${Object.entries(leftTowns).sort().map(([c,n])=>escHTML(c)+(n>1?' ×'+n:'')).join(' · ')}.</div>`:'');
+  // the selected block
+  let detail='';
+  if(sel==='ks'||sel==='all'){
+    const planSum=ks.reduce((t,d)=>t+d.planMi,0), appSum=ks.reduce((t,d)=>t+d.miles,0), bord=ks.reduce((t,d)=>t+d.toBorder,0);
+    const days=ks.map((d,i)=>{ const col=DRIVE_COL[i%DRIVE_COL.length], diff=(d.miles-d.planMi)/d.planMi, off=Math.abs(diff)>.15;
+      let n=ks.slice(0,i).reduce((t,x)=>t+x.st.length,0);
+      return `<div class="octday" style="--c:${col}"><div class="octdh"><b>${d.d}</b><span>${d.night?'night in '+escHTML(d.night):'→ Colorado'}</span></div>
+        <ol>${d.st.map(j=>{n++; return `<li><span class="octn" style="background:${col}">${n}</span><span>${escHTML(j.n.replace(/ - /,' · '))}${j.id===OCT_GOBACK?' <em>go-back $0</em>':''}</span><span class="octst ${octOpen(j)||j.id===OCT_GOBACK?'ok':'warn'}">${escHTML(j.id===OCT_GOBACK?'owed':j.st||'Open')}</span></li>`}).join('')}</ol>
+        <div class="octm">Plan <b class="mono">~${d.planMi}</b> mi &middot; map <b class="mono">${mi0(d.miles)}</b> mi ${off?`<span class="octf">${diff>0?'+':''}${Math.round(diff*100)}% — check</span>`:'<span class="octg">✓ close</span>'}${d.toBorder?` <span class="hint" style="display:inline">+ ${mi0(d.toBorder)} mi on to the Colorado line</span>`:''}</div>
+        <div class="hint" style="margin:2px 0 0">≈ ${(Math.round(d.drv*10)/10)} h driving + ${(Math.round(d.shoot*10)/10)} h shooting${d.note?' · '+escHTML(d.note):''}</div></div>`}).join('');
+    // economics for the sweep
+    const rev=ksBill.length*100, day=o.pay==='day', cody=day?200*ks.length:50*ksBill.length, hotel=o.nights*150, net=rev-cody-hotel;
+    const eco=`<div class="card"><div class="lab">Cody's deal — Kansas sweep</div>
+      <div class="achips" style="margin:8px 0 4px"><button class="achip${day?' on':''}" data-op="day" style="--c:#3B82D6"><i></i>$200 a day × ${ks.length}</button><button class="achip${!day?' on':''}" data-op="stop" style="--c:#3B82D6"><i></i>$50 a stop × ${ksBill.length}</button></div>
+      <div class="achips" style="margin:4px 0 8px">${[0,1,2,3].map(n=>`<button class="achip${o.nights===n?' on':''}" data-on="${n}" style="--c:#8B2FC9"><i></i>${n} hotel night${n===1?'':'s'}</button>`).join('')}</div>
+      <table class="octt"><tbody><tr><td>Revenue (${ksBill.length} billable)</td><td class="mono">${usd(rev)}</td></tr><tr><td>Cody</td><td class="mono">− ${usd(cody)}</td></tr><tr><td>Hotels Tim pays ($150 a night)</td><td class="mono">− ${usd(hotel)}</td></tr>
+      <tr class="octtot"><td>Net to Tim</td><td class="mono">${usd(net)}</td></tr></tbody></table>
+      <div class="hint">Per diem and fuel not included — Cody's car, his trip. Hannibal sets the deal.</div></div>`;
+    detail=`<div class="card"><div class="lab">Kansas → Colorado · Thu 10/15 – Sun 10/18</div>
+      <div class="hint" style="margin-top:2px">Cody solo. ${ksOpen} of ${ksBill.length} billable stops are Open on the sheet${ksOpen<ksBill.length?' — <b>some are not</b>':''}. Plan ~${planSum} mi through Liberal; the map says <b>${mi0(appSum)}</b> mi through Liberal${bord?' + '+mi0(bord)+' on to the line':''}.</div>${days}</div>`+eco;
+  }
+  if(sel==='spr'||sel==='stl'){
+    const b=OCT_BLOCKS.find(x=>x.k===sel), pool=P.pools[sel]||[], rt=2*mi(BASE,b.hub), towns={};
+    pool.forEach(j=>{towns[j.c]=(towns[j.c]||0)+1});
+    detail=`<div class="card"><div class="lab">${escHTML(b.name)} · ${escHTML(b.dates)}</div>
+      <div class="octbig mono">${mi0(rt)} mi <small>round trip from home to ${escHTML(b.hubName)}</small></div>
+      <div class="hint">Plan: ${b.n} captures (${usd(b.usd)}). The map finds <b>${pool.length}</b> Open Verizon stops within ${b.radius} road-miles of ${escHTML(b.hubName)}${pool.length!==b.n?' — <b>'+(pool.length<b.n?b.n-pool.length+' short of':'over')+' the plan</b>':' — matches the plan'}. ${escHTML(b.who||'')}</div>
+      <div class="hint">${Object.entries(towns).sort((a,c)=>c[1]-a[1]||(a[0]<c[0]?-1:1)).map(([c,n])=>escHTML(c)+(n>1?' ×'+n:'')).join(' · ')}</div></div>`;
+  }
+  if(sel==='done'||sel==='vbv'){
+    const b=OCT_BLOCKS.find(x=>x.k===sel);
+    detail=`<div class="card"><div class="lab">${escHTML(b.name)} · ${escHTML(b.dates)}</div><div class="hint">${sel==='done'?'Already banked: the 10/1–10/6 runs (22 stops, $2,200). See Score and History for the miles.':'One shoot, $500 flat — Wed 10/7, 9:30.'}</div></div>`;
+  }
+  const calendar=`<div class="card"><div class="lab">Calendar (proposed)</div><table class="octt"><tbody>`+OCT_CAL.map(r=>`<tr><td class="octd">${escHTML(r[0])}</td><td class="octx">${escHTML(r[1])}</td></tr>`).join('')+`</tbody></table></div>`;
+  const pre=`<div class="card"><div class="lab">Pre-flight</div>`+OCT_PRE.map((t,i)=>`<label class="octpre"><input type="checkbox" data-pre="${i}" ${o.done[i]?'checked':''}><span>${escHTML(t)}</span></label>`).join('')+`</div>`;
+  $('#s-oct').innerHTML=`<div class="card"><div class="lab">October strategy</div>
+    <div class="octbig mono">${usd(tot)} <small>${caps} captures · ${OCT_BLOCKS.length} blocks</small></div>
+    <div class="octbar">${bar}</div>${picture}${cover}</div>
+    <div class="card"><div class="achips" style="margin:0 0 8px">${chips}</div><div id="omap" class="omap"></div>
+    <div class="hint">Straight lines, not roads — miles use the app's ×${ROAD} road factor. 🛏️ = night out · dashed purple = the Colorado line.</div></div>`
+    +detail+(sel==='all'?'':'')+calendar+pre;
+  octDrawMap(sel,ks,P);
+  $$('#s-oct [data-ob]').forEach(b=>b.onclick=()=>{o.block=b.dataset.ob; render(); dirty()});
+  $$('#s-oct [data-op]').forEach(b=>b.onclick=()=>{o.pay=b.dataset.op; render(); dirty()});
+  $$('#s-oct [data-on]').forEach(b=>b.onclick=()=>{o.nights=+b.dataset.on; render(); dirty()});
+  $$('#s-oct [data-pre]').forEach(b=>b.onchange=()=>{o.done[b.dataset.pre]=b.checked; dirty()});
+}
 function render(){
   if(!ready||!S.days.length)return;
   renderCounters();
@@ -3198,6 +3365,7 @@ function render(){
   else if(S.nav==='app')renderApp();
   else if(S.nav==='board')renderBoard();
   else if(S.nav==='history')renderHistory();
+  else if(S.nav==='oct')renderOct();
   refreshLiveTimers();
 }
 $$('#nav button').forEach(b=>b.onclick=()=>{S.nav=b.dataset.s;render();window.scrollTo(0,0);dirty()});
@@ -3231,7 +3399,7 @@ const LSKEY='ninja360-runsheet-v2';
    Locks are facts with a person and a time on them, so a merge unions them; an un-shot is a fact
    too (S.unshot), and on each stop the later of the two wins. Everything else is last-write-wins,
    and a write that would clobber somebody else's is refused by the server and merged here first. */
-const SHARED=['days','sv','loaded','status','notes','timers','punch','locks','custom','places','chargeAt','by','geo','evRange','lastRequest','mig','binds','checkin','report','unshot','published'];
+const SHARED=['days','sv','loaded','status','notes','timers','punch','locks','custom','places','chargeAt','by','geo','evRange','lastRequest','mig','binds','checkin','report','unshot','published','oct'];
 const syncOn=()=>!!(S.sync&&S.sync.key&&S.sync.key.length>=8);
 const takeShared=s=>{const o={}; SHARED.forEach(k=>{if(s[k]!==undefined)o[k]=s[k]}); return o};
 function mergeShared(remote){
@@ -3397,7 +3565,7 @@ function syncSheet(){
 }
 function chip(txt,cls){const e=$('#syncChip');if(!e)return;e.textContent=txt;e.className='tbtn '+(cls||'')}
 function stampNow(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
-const NAVS=['today','plan','clusters','app','board','history'];
+const NAVS=['today','plan','clusters','app','board','history','oct'];
 function refreshLiveTimers(){
    $$('.live-timer').forEach(el=>{const id=el.dataset.liveTimer; const st=jobTimerState(id); el.textContent=st.label+(st.running?' • run':''); el.classList.toggle('running',st.running); el.title=jobTooltip(id);});
 }
