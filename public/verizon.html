@@ -1873,6 +1873,7 @@ function renderPlan(){
       <div class="fld"><span class="lab" id="lab-crew">Crew mate</span><select id="fCrew" aria-labelledby="lab-crew"><option value="">Solo</option>${Object.entries(CREW).filter(([k])=>k!==S.who).map(([k,c])=>`<option value="${k}" ${d.crew===k?'selected':''}>${escHTML(c.short)} · ${escHTML(c.role.split(' · ')[0])}</option>`).join('')}</select></div>
       ${d.crew?`<div class="fld"><span class="lab" id="lab-pace">Pace</span><select id="fPace" aria-labelledby="lab-pace">${Object.entries(PACE).map(([k,p])=>`<option value="${k}" ${d.pace===k?'selected':''}>${p.label}</option>`).join('')}</select></div>`:''}
       <div class="fld"><span class="lab" id="lab-logmi">Logged miles</span><input id="fLogMi" type="number" inputmode="decimal" min="0" step="1" placeholder="from QuickBooks" value="${d.logMi>0?d.logMi:''}" aria-labelledby="lab-logmi"></div>
+      <div class="fld"><span class="lab" id="lab-qbcsv">QuickBooks trips</span><label class="ghost" style="cursor:pointer;display:inline-block">Import mileage CSV<input id="fQbCsv" type="file" accept=".csv,text/csv" hidden></label></div>
       <span class="hint" style="flex-basis:100%;margin:0">Leave home full — home charge is cheap. On the road, buy only enough to land home at 10–20%; under 10% anywhere reads low.</span>
       ${dayLocked(d)?'':'<button class="prim" id="bLock">🔒 LOCK PLAN</button><button class="ghost" id="bAuto">Auto-order</button>'}
       ${dayNotLoaded(d).length?'<button class="ghost" id="bAsk" style="color:var(--accent);border-color:var(--accent)">📮 Ask IDS for '+dayNotLoaded(d).length+'</button>':'<span class="badge v" style="align-self:center">all in app</span>'}
@@ -1966,6 +1967,9 @@ function renderPlan(){
   const fCw=$('#fCrew'); if(fCw)fCw.onchange=e=>{d.crew=CREW[e.target.value]?e.target.value:null; rebind(d); render(); dirty(); toast(d.crew?CREW[d.crew].short+' rides along — '+PACE[d.pace].label:'Solo day')};
   const fP=$('#fPace'); if(fP)fP.onchange=e=>{d.pace=PACE[e.target.value]?e.target.value:'split'; rebind(d); render(); dirty()};
   const fL=$('#fLogMi'); if(fL)fL.onchange=e=>{const v=parseFloat(e.target.value); d.logMi=v>0?v:0; render(); dirty(); toast(d.logMi?d.logMi+' mi logged for the day':'Back to the road estimate')};
+  const fQ=$('#fQbCsv'); if(fQ)fQ.onchange=async e=>{ const f=e.target.files&&e.target.files[0]; if(!f)return;
+    const r=qbMileage(await f.text(),true); render(); dirty();
+    toast(r.days?('QuickBooks: '+r.days+' day'+(r.days>1?'s':'')+' updated, '+Math.round(r.mi)+' mi'+(r.skipped?' · '+r.skipped+' trip day'+(r.skipped>1?'s':'')+' with no run':'')):'No business trips found in that file') };
   const stAdd=$('#stAdd'); if(stAdd)stAdd.onclick=async()=>{
     stAdd.disabled=true; const msg=$('#stMsg'); if(msg){msg.textContent='Placing on the map…';msg.style.color=''}
     const r=await addWaypoint($('#stName').value,$('#stAddr').value,$('#stCity').value,$('#stSt').value,$('#stMin').value,$('#stLL').value);
@@ -2978,6 +2982,24 @@ function renderBoardMore(){
    priced with the same mi() / ROAD factor the planner uses. A day with nothing shot drove nowhere. */
 let BMORE=false, DMAP=false, RUNPICK='', MAPRUN='';   // the points accordion, the map screenshot, the past run he picked, the run lit on the big map: they stay how he left them
 const DRIVE_COL=['#F4801F','#CD040B','#3B82D6','#2C9B6A','#8B2FC9','#C9A227','#6B6058'];
+// QuickBooks mileage export -> each run day's logged miles. Business + unreviewed trips count, PERSONAL never does;
+// a re-import replaces a day's total, so late-syncing trips just correct it. Frozen runs with miles on the record are left alone.
+function qbMileage(text,apply){
+  const rows=[]; let f=[],q=false,cur='';
+  for(let i=0;i<text.length;i++){ const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++} else q=false } else cur+=c }
+    else if(c==='"')q=true; else if(c===','){f.push(cur);cur=''}
+    else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n')i++; f.push(cur);cur=''; if(f.length>1)rows.push(f); f=[] }
+    else cur+=c }
+  if(cur||f.length){f.push(cur);rows.push(f)}
+  const hd=(rows.shift()||[]).map(x=>x.trim().toLowerCase()), iD=hd.indexOf('date'), iT=hd.indexOf('type'), iM=hd.indexOf('distance');
+  const by={}; if(iD>=0&&iM>=0)rows.forEach(r=>{ const d=(r[iD]||'').trim(), t=(r[iT]||'').trim().toUpperCase(), m=parseFloat(r[iM]);
+    if(/^\d{4}-\d{2}-\d{2}$/.test(d)&&m>0&&t!=='PERSONAL')by[d]=(by[d]||0)+m });
+  let days=0,mi=0,skipped=0;
+  Object.entries(by).forEach(([d,m])=>{ const day=S.days.find(x=>x.date===d); if(!day||PAST_RUNS.some(r=>r[0]===d&&r[6])){skipped++;return}
+    if(apply)day.logMi=Math.round(m*10)/10; days++; mi+=m });
+  return {by,days,mi,skipped};
+}
 function drivenDays(){
   const today=ymd(new Date());
   const plans=S.days.filter(d=>d.date&&d.date<=today).sort((a,b)=>a.date.localeCompare(b.date));
@@ -3459,6 +3481,9 @@ function migrate(){
     if(BY[id]&&!shot(id)){ let d=S.days.find(x=>x.date===iso);
       if(!d){ d=Object.assign(blankDay(iso),{ids:[id],locked:{at:Date.now(),by:'tim'}}); S.days.push(d); sortDays(); try{bindRoute(d,true)}catch(e){} }
       else if(!d.ids.includes(id))d.ids.push(id) } }
+  // 98172 was NOT shot Sunday 10/4 — drop the stale Sunday plan day if it holds nothing else; the store stays Open on the list
+  if(!S.mig.notsun98172){ S.mig.notsun98172=1; const id='2026-6674', i=S.days.findIndex(x=>x.date==='2026-10-04'&&x.ids.length===1&&x.ids[0]===id);
+    if(i>=0&&!shot(id)){ S.days.splice(i,1); if(S.active>=S.days.length)S.active=Math.max(0,S.days.length-1) } }
   if(S.mig.pastruns0926!==9){ S.mig.pastruns0926=9;   // v9: Mon 10/5, solo — Belton / Butler / Nevada / Fort Scott / Paola   // v8: Wireless Zone 131968 Independence on the Friday 10/2 run
     PAST_RUNS.forEach(r=>{ const d=S.days.find(x=>x.date===r[0]), stamp=Date.parse(r[0]+'T23:00:00Z');
       if(!d){ S.days.push(pastRunDay(r)); return }
