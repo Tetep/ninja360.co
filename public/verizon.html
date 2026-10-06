@@ -994,11 +994,11 @@ const PAST_RUNS=[
  ['2026-09-13',null,'home','home',8,['2026-1803','2026-1902','2026-4662'],58],   // Blue Springs x2, Lee's Summit. Cellular Sales 98172 Independence was NOT shot (Phygii blank, Tim 10/4)
  ['2026-09-15','gabe','home','home',7,['2026-9658']],                        // Cameron with Gabe — TSC 2805
  ['2026-09-16',null,'home','home',8,['2026-5178']],
- ['2026-09-17',null,'home','home',8,['2026-0726','2026-4318','2026-5640','2026-7338','2026-8119']],
+ ['2026-09-17',null,'home','home',8,['2026-0726','2026-4318','2026-5640','2026-7338','2026-8119'],810],
  ['2026-09-18',null,'home','job:2026-0840',6.5,['2026-6736','2026-8011','2026-4299','2026-0840']],   // Wichita Fri — slept in Wichita
  ['2026-09-19',null,'job:2026-0840','job:2026-8172',8,['2026-7953','2026-8835','2026-8197','2026-1610','2026-1225','2026-8172']],
  ['2026-09-20',null,'job:2026-8172','home',7,['2026-8317','2026-7954'],260], // Park City and Andover on the way out, home up the turnpike
- ['2026-09-24',null,'home','home',6.5,['2026-4084','2026-4522','2026-8804','2026-8888']],
+ ['2026-09-24',null,'home','home',6.5,['2026-4084','2026-4522','2026-8804','2026-8888'],473],
  ['2026-09-25','cody','home','home',6.5,['2026-9334','2026-5866']],         // Lincoln go-back with Cody, TCC 138266 Maryville on the way home
  ['2026-09-30','cody','home','home',8,['2026-8651','2026-1004','2026-1388-2','2026-7476'],205],   // KC metro with Cody — Lenexa, KCK, N Church Rd (2nd capture), N Oak
  ['2026-10-01',null,'home','home',8,['2026-5350','2026-5565','2026-5694','2026-8248']],           // Thu, solo — Leawood go-back cleared, Overland Park, Olathe, N Oak Trfy
@@ -3500,6 +3500,9 @@ function migrate(){
   // the QuickBooks log's miles for the days it covered — a number Tim typed himself stands
   if(!S.mig.logmi0926){ S.mig.logmi0926=1;
     PAST_RUNS.forEach(r=>{ const d=r[6]&&S.days.find(x=>x.date===r[0]); if(d&&!(d.logMi>0))d.logMi=r[6] }) }
+  // 10/6: Tim set 9/17 (Joplin) and 9/24 to the History numbers — QuickBooks never tracked those days
+  if(!S.mig.logmi1006){ S.mig.logmi1006=1;
+    PAST_RUNS.forEach(r=>{ if(r[0]==='2026-09-17'||r[0]==='2026-09-24'){ const d=S.days.find(x=>x.date===r[0]); if(d)d.logMi=r[6] } }) }
   // 9/28: the Manhattan / Salina run was Thursday 9/10 (Tim), not 9/9. The 9/9 day the past-runs migration
   // wrote (its own stamp, so nobody else's day) moves to 9/10 — or, if a 9/10 day is already there, hands it
   // its stops, crew and miles and goes, so the run is one day in History and the drive, on the right date.
