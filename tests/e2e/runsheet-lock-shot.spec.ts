@@ -83,8 +83,8 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
 
     // two live stops (the "Arrive home" tail is a .stop card too), real miles, nothing planned or shot yet
     await expect(page.locator('#stops [data-shot]')).toHaveCount(2);
+    await expect.poll(() => milesOnPlan(page)).toBeGreaterThan(0);   // the strip paints its miles a beat after the page
     const milesBefore = await milesOnPlan(page);
-    expect(milesBefore).toBeGreaterThan(0);
     await expect(page.locator('#stops .badge.pl')).toHaveCount(0);
     await expect(page.locator('#lockbar')).toHaveCount(0);
     const shotBefore = await shotCount(page);
@@ -442,6 +442,52 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(r.pool).toBe(true);                    // Topeka was never shot yesterday — it is back to be picked
     expect(r.planned).toBe(false);
     expect(r.map).toEqual([true, true, false]);   // Topeka to pick, Marysville on the day, Osage City shot 9/24 — not on the map
+  });
+
+  test('Now: the clock, this device, and the stop in hand — the GPS says you are there, start, stop, complete, on to the next', async ({ page }) => {
+    const t = today();
+    await page.context().grantPermissions(['geolocation']);
+    await page.context().setGeolocation({ latitude: 39.02836, longitude: -95.74839 });   // standing at Russell 131502, Topeka
+    await open(page, state({ days: [day({ date: t, ids: [TOPEKA, MARYSVILLE], locked: { at: 1, by: 'tim' } })], activeDate: t, nav: 'today' }), '#s-today');
+    const card = page.locator('#s-today .nowcard');
+    await expect(card.locator('[data-clock]')).toHaveText(/\d{1,2}:\d{2}/);
+    const dev = await page.evaluate(() => JSON.parse(localStorage.getItem('ninja360-device') || '{}'));
+    expect(dev.id).toMatch(/^dev-/);
+    await expect(page.locator('#devChip')).toContainText(dev.name);
+    await expect(card).toContainText('At the stop');          // the GPS put him there — nothing to tap, nothing typed
+    await expect(card).toContainText('You are here');
+    await expect(card).toContainText('Topeka');
+    await page.locator('#nowStart').click();
+    await expect(card).toContainText('Shooting');
+    let s = await saved(page);
+    expect(s.timers[TOPEKA].startedAt).toBeTruthy();
+    expect(s.checkin[TOPEKA].dev).toBe(dev.id);
+    await page.locator('#nowStop').click();
+    await expect(card).toContainText('Shot — confirm');
+    await page.locator('#nowDone').click();
+    await expect(card).toContainText('Heading to');             // on to the next
+    await expect(card).toContainText('2 of 2');
+    await expect(card).toContainText('Marysville');
+    await expect(card).toContainText('mi away');
+    s = await saved(page);
+    expect(s.locks[TOPEKA]).toMatchObject({ d: t, dev: dev.id });
+    expect(s.timers[TOPEKA].startedAt).toBeUndefined();
+    expect(s.devices[dev.id]).toMatchObject({ name: dev.name });
+    // one tap names the device, and it stays named
+    await page.locator('#devChip').click();
+    await page.locator('.sheet [data-devname="iPhone"]').click();
+    await page.locator('.sheet #devSave').click();
+    await expect(page.locator('#devChip')).toContainText('iPhone');
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('ninja360-device') || '{}').name)).toBe('iPhone');
+  });
+
+  test('Time check: a device clock minutes off says so on Now', async ({ page }) => {
+    await page.route('**/verizon.html', r => r.request().method() === 'HEAD'
+      ? r.fulfill({ status: 200, headers: { date: new Date(Date.now() - 10 * 60_000).toUTCString() }, body: '' })
+      : r.continue());
+    const t = today();
+    await open(page, state({ days: [day({ date: t, ids: [TOPEKA] })], activeDate: t, nav: 'today' }), '#s-today');
+    await expect(page.locator('#s-today .nowcard')).toContainText('10 min fast');
   });
 
   test('GO LIVE waits for a date: an undated day says so instead of offering to publish', async ({ page }) => {
