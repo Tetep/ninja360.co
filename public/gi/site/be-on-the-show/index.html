@@ -3,15 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>
-  /* GI CONTESTANT SIGNUP — live GHL embed, permanent GI sub-account form.
-     The ?src= query param (northland/chamber/aca/realtor/social/card —
-     the six QR codes) is read on load and passed straight through to the
-     embed so source tracking survives in GHL. Corrected to the actual
-     Podcast form (Tim, 9/22/26) — the prior id, p7FC8idY6HwpFud2p8kM,
-     was the wrong form. */
-  var GI_FORM_ID = 'OSSMxHOfrwmxYsYrYiIY';
-</script>
 <meta name="robots" content="noindex, nofollow">
 <!-- <link rel="canonical" href="https://generationallyincorrect.com/be-on-the-show"> -->
 <title>Be On The Show — Generationally Incorrect</title>
@@ -27,61 +18,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/gi-site.css">
-<style>
-  /* Promo video pop-up (Tim, 9/22/26) — same pattern as the home page's
-     trailer pop-up: shows once per visit, autoplays muted with a "Tap for
-     sound" button (browsers block unmuted autoplay either way). Playback is
-     hard-capped at 51s: the source file glitches out after that (a bad
-     render on the outro), so it never gets the chance to play. */
-  #promo-popup{
-    position:fixed; inset:0; z-index:500; background:rgba(24,23,21,.92);
-    display:flex; align-items:center; justify-content:center; padding:20px;
-    opacity:1; visibility:visible;
-    transition:opacity .25s ease, visibility 0s linear 0s;
-  }
-  #promo-popup.hide{ opacity:0; visibility:hidden; pointer-events:none; transition:opacity .25s ease, visibility 0s linear .25s; }
-  .promo-popup-frame{
-    position:relative; width:min(92vw,720px); border-radius:8px; overflow:hidden;
-    background:var(--gi-ink); border:2px solid var(--gi-red); box-shadow:0 16px 44px rgba(0,0,0,.5);
-  }
-  .promo-popup-frame video{ display:block; width:100%; aspect-ratio:16/9; background:var(--gi-ink); }
-  #promo-popup-close{
-    position:absolute; top:8px; right:8px; z-index:2; width:34px; height:34px; border-radius:50%;
-    background:rgba(0,0,0,.55); color:var(--gi-panel); border:1px solid rgba(255,255,255,.35);
-    font-size:16px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
-  }
-  #promo-popup-close:hover{ background:rgba(0,0,0,.75); }
-  .promo-popup-actions{
-    display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center;
-    padding:12px; background:var(--gi-ink); border-top:2px solid var(--gi-red);
-  }
-  #promo-sound-btn{
-    padding:12px 22px; min-height:44px; border-radius:999px; cursor:pointer;
-    background:var(--gi-red); color:var(--gi-panel); border:2px solid var(--gi-panel);
-    font-family:var(--gi-font-display); font-weight:400; letter-spacing:.08em;
-    text-transform:uppercase; font-size:14px;
-  }
-  #promo-sound-btn:hover{ filter:brightness(1.12); }
-  #promo-popup-skip{
-    padding:12px 20px; min-height:44px; border-radius:999px; cursor:pointer;
-    background:transparent; color:var(--gi-panel); border:2px solid rgba(255,255,255,.5);
-    font-family:var(--gi-font-display); font-weight:400; letter-spacing:.08em;
-    text-transform:uppercase; font-size:13px;
-  }
-  #promo-popup-skip:hover{ border-color:var(--gi-panel); }
-</style>
 </head>
 <body>
-<div id="promo-popup" role="dialog" aria-modal="true" aria-label="Show promo">
-  <div class="promo-popup-frame">
-    <button id="promo-popup-close" type="button" aria-label="Close video">✕</button>
-    <video id="gi-promo-video" src="../assets/be-on-the-show-promo.mp4" autoplay muted playsinline></video>
-    <div class="promo-popup-actions">
-      <button id="promo-sound-btn" type="button" aria-pressed="false">🔊 Tap for sound</button>
-      <button id="promo-popup-skip" type="button">Skip to the form →</button>
-    </div>
-  </div>
-</div>
 
 <header class="masthead">
   <div class="bar">
@@ -112,14 +50,21 @@
 
 <section>
   <div class="wrap center">
-    <!-- No static logo card here (Tim, 9/22/26) — the promo pop-up already
-         carries the branding on load, so a second logo above the form was
-         redundant once it closes. See #promo-popup above. -->
+    <!-- Promo video (Tim, 10/21/26) — no longer a forced autoplay pop-up;
+         just sits inline above the form with native controls, so it's
+         there to watch but never in the way. -->
+    <div class="video-frame" style="max-width:640px;margin:0 auto 28px">
+      <video src="../assets/be-on-the-show-promo.mp4" controls playsinline></video>
+    </div>
     <div class="signup-panel" style="margin-top:0;max-width:600px">
-      <!-- min-height is a fallback only — form_embed.js below auto-resizes the
-           iframe to the form's real content height so the page scrolls as one
-           piece instead of scrolling inside a clipped box (Tim, 9/22/26). -->
-      <iframe id="gi-signup-iframe" style="width:100%;min-height:1800px;border:0;display:block" title="Contestant signup" loading="lazy"></iframe>
+      <!-- Swapped to the Google Form (Tim, interim form while GHL is sorted
+           out). Standard Google Forms embed: ?embedded=true, fixed height —
+           Google Forms has no cross-origin auto-resize script the way GHL's
+           form_embed.js did, so a long form shows its own internal scrollbar
+           inside the iframe if it runs past this height. The old ?src=
+           QR-source-tracking passthrough is dropped for now; it depended on
+           GHL's field mapping and doesn't carry over automatically. -->
+      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdIn8QpHLdFLGMXhl8lrP4_D2UWtOj5lbSGiLLGJBYjVm-rKA/viewform?embedded=true" style="width:100%;height:1400px;border:0;display:block" title="Contestant signup" loading="lazy">Loading…</iframe>
     </div>
     <p class="small muted" style="margin-top:16px">Questions? <a href="mailto:hello@generationallyincorrect.com">hello@generationallyincorrect.com</a></p>
   </div>
@@ -133,94 +78,6 @@
 </footer>
 
 <script src="../assets/gi-site.js"></script>
-<script>
-/* Promo video pop-up — shows every time this page is landed on (Tim,
-   9/22/26: it should pop up again if they click back to the page, so
-   unlike the home page intro this does NOT suppress itself with
-   sessionStorage). Autoplays muted, closes on the X, on "Skip to the
-   form", on Esc, on a click outside, and at the 51s mark — the source
-   file glitches out past that (bad render on the outro), so playback
-   never reaches it. Plain HTML5 <video> API since this is a self-hosted
-   file, not a YouTube embed. */
-(function () {
-  'use strict';
-  var popup = document.getElementById('promo-popup');
-  var closeBtn = document.getElementById('promo-popup-close');
-  var skipBtn = document.getElementById('promo-popup-skip');
-  var soundBtn = document.getElementById('promo-sound-btn');
-  var video = document.getElementById('gi-promo-video');
-  if (!popup || !video) return;
-
-  var CUTOFF = 51; // seconds — last clean frame before the outro glitch
-
-  function closePopup() {
-    popup.classList.add('hide');
-    video.pause();
-  }
-
-  if (closeBtn) closeBtn.addEventListener('click', closePopup);
-  if (skipBtn) skipBtn.addEventListener('click', closePopup);
-  popup.addEventListener('click', function (e) {
-    if (e.target === popup) closePopup();
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && !popup.classList.contains('hide')) closePopup();
-  });
-  video.addEventListener('timeupdate', function () {
-    if (video.currentTime >= CUTOFF) closePopup();
-  });
-
-  if (soundBtn) {
-    soundBtn.addEventListener('click', function () {
-      if (video.muted) {
-        video.muted = false;
-        video.volume = 1;
-        soundBtn.textContent = '🔇 Mute';
-        soundBtn.setAttribute('aria-pressed', 'true');
-      } else {
-        video.muted = true;
-        soundBtn.textContent = '🔊 Tap for sound';
-        soundBtn.setAttribute('aria-pressed', 'false');
-      }
-    });
-  }
-
-  // Clicking the browser Back button can restore this page from bfcache
-  // instead of reloading it — the popup would otherwise stay hidden with
-  // the video sitting mid-playback, since no script re-runs on that kind
-  // of restore. Reset everything when that happens.
-  window.addEventListener('pageshow', function (e) {
-    if (!e.persisted) return;
-    popup.classList.remove('hide');
-    video.currentTime = 0;
-    video.muted = true;
-    if (soundBtn) {
-      soundBtn.textContent = '🔊 Tap for sound';
-      soundBtn.setAttribute('aria-pressed', 'false');
-    }
-    video.play().catch(function () {});
-  });
-})();
-</script>
-<script>
-/* Point the embed at GI_FORM_ID (defined at the top of <head>) and pass the
-   ?src= tracking param straight through — GHL's own workflow does the rest
-   (tagging, pipeline card, notifications, SMS). Unchanged from the prior
-   build — kept exactly as specified ("keep the current embed and resize
-   script"). */
-(function () {
-  'use strict';
-  var params = new URLSearchParams(window.location.search);
-  var src = params.get('src');
-  var url = 'https://links.ninja360.net/widget/form/' + GI_FORM_ID;
-  if (src) url += '?src=' + encodeURIComponent(src);
-  document.getElementById('gi-signup-iframe').src = url;
-})();
-</script>
-<!-- GHL's own auto-resize script for embedded forms: listens for the form's
-     real content height and sets the iframe to match, so the page scrolls
-     as one piece instead of scrolling inside a clipped box (Tim, 9/22/26). -->
-<script src="https://links.ninja360.net/js/form_embed.js"></script>
 <a class="egg" href="../dashboard/" aria-label="Design reference"></a>
 </body>
 </html>
