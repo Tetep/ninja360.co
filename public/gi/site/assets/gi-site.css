@@ -264,7 +264,7 @@ footer.footer-v2 .tag{font-family:var(--gi-font-body);font-size:13px;color:#f3e2
 .breadcrumbs a{color:var(--gi-muted);text-decoration:none}
 .breadcrumbs a:hover{color:var(--gi-red)}
 .video-frame{aspect-ratio:16/9;width:100%;border:2px solid var(--gi-ink);outline:1px solid var(--gi-ink);outline-offset:3px;background:var(--gi-deep);overflow:hidden}
-.video-frame iframe{width:100%;height:100%;border:0;display:block}
+.video-frame iframe,.video-frame video{width:100%;height:100%;border:0;display:block}
 .transcript{border:2px solid var(--gi-ink);background:var(--gi-paper-lift);margin-top:20px}
 .transcript summary{cursor:pointer;list-style:none;font-family:var(--gi-font-type);letter-spacing:1.5px;text-transform:uppercase;font-size:13px;color:var(--gi-ink);padding:15px 18px;display:flex;justify-content:space-between;align-items:center}
 .transcript summary::after{content:'+';font-size:18px;color:var(--gi-red);font-family:var(--gi-font-hand)}
