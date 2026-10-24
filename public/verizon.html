@@ -3725,6 +3725,7 @@ function mergeShared(remote){
   const mine=S.locks||{}, theirs=remote.locks||{};
   const myBinds=Array.isArray(S.binds)?S.binds:[];
   const mySent=(S.report&&S.report.sent)||{}, myUn=S.unshot||{}, myPub=S.published||{};
+  const myDev=(S.devices&&typeof S.devices==='object'&&!Array.isArray(S.devices))?S.devices:{};   // taken before the crew copy overwrites S, like the rest
   const myPlans=new Map((Array.isArray(S.days)?S.days:[]).filter(d=>d&&d.date&&(d.locked||d.unlocked)).map(d=>[d.date+'|'+driverOf(d),{locked:d.locked||null,unlocked:d.unlocked||null}]));
   SHARED.forEach(k=>{if(remote[k]!==undefined)S[k]=remote[k]});
   // a plan lock, and an unlock, are facts with a time on them: the crew copy's days win, but on
