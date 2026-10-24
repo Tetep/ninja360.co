@@ -674,7 +674,8 @@ const PLACES={home:{name:'🥷 Home base — Kansas City MO',ll:BASE,addr:HOME_A
   // Tim's friend, where he sleeps Oct 8–15. Seeded on the middle of Crane; the browser
   // resolves the real driveway on first load and saves it under S.geo['place:crane'].
   crane:{name:'🛏️ Crane MO — friend\'s place',addr:CRANE_ADDR,ll:[36.9047,-93.5716],geo:0},
-  kevin:{name:'🛏️ Kevin’s — Springfield MO',ll:[37.2090,-93.2923]}};
+  kevin:{name:'🛏️ Kevin’s — Springfield MO',ll:[37.2090,-93.2923]},
+  stlhotel:{name:'🛏️ Holiday Inn Express & Suites St. Louis Airport (STLLF)',addr:'10000 Natural Bridge Rd, St. Louis, MO 63134',ll:[38.7327,-90.3524]}};
 
 // Verified against the IDS field app (Phygii) with its Verizon filter on, 2026-09-11, from Tim's
 // own screen. 49 Verizon-channel locations matched the board by site number, every one of them.
@@ -3432,6 +3433,81 @@ const OCT_KS=[
   {d:'Sun 10/18',stops:['2026-7860','2026-8981','2026-6830'],end:OCT_CO,planMi:210,
    note:'Three Cellular Sales stores — verify Sunday hours (typically 12–5). Fallback: drop Liberal (~140-mi detour), go west from Garden City.'}];
 const OCT_GOBACK='2026-8093';
+/* ---------- the STL run, Tue 10/27 – Thu 10/29 ----------
+   Tim's locked plan v3 (Drive: "STL-RUN-2026-10-27-29 v3 — LOCKED PLAN", locked 10/23). Two cars, two nights at the
+   airport Holiday Inn Express, home Thursday. Every stop is PLANNED — a locked plan day, nothing shot, invoiced or paid
+   (Rule 42: a plan is not a completion). The stops ride the weekly consolidated invoice on Fri 10/30, so nothing here
+   touches an invoice number. Store ids below are the doc's own site numbers, looked up in DATA; the comment is the
+   doc's label. The doc's pool (Saint Robert, Lebanon, Farmington, Desloge, Potosi) stays off every day. */
+const STL_RUN={
+  lockAt:Date.parse('2026-10-23T12:00:00Z'),   // the day Tim locked it; a fixed stamp so every device agrees and a later unlock wins
+  days:[
+  {date:'2026-10-27',who:'tim',from:'home',to:'stlhotel',at:6.5,
+    ids:[
+      '2026-5616',   // Alton TCC 118612
+      '2026-7091',   // Granite City WZ 125062
+      '2026-0853',   // Edwardsville Verizon 74635
+      '2026-7130',   // Collinsville Russell 118276
+      '2026-6003',   // Collinsville TCC 118085
+      '2026-7168',   // Highland Russell 122957
+    ],
+    note:'STL run, locked plan v3 (Tim 10/23). Leave KC 6:30, on site about 11:30. Illinois north: Alton, Granite City, Edwardsville, Collinsville ×2, Highland. Hotel Tue + Wed: Holiday Inn Express & Suites St. Louis Airport (STLLF), 10000 Natural Bridge Rd, 63134. LOAs printed clean, one set per car. Weekly invoice Fri 10/30 (Net 30, card OFF) — no per-stop invoices; INV-000143 to 145 were the last.'},
+  {date:'2026-10-27',who:'cody',from:'home',to:'stlhotel',at:6.5,
+    ids:[
+      '2026-5221',   // Troy TCC 123693
+      '2026-1916',   // Wentzville Verizon 101483
+      '2026-4971',   // Lake Saint Louis TCC 138979
+      '2026-1229',   // O'Fallon TCC 74622
+      '2026-1241',   // Saint Peters TCC 85143
+      '2026-6382',   // Saint Peters Cellular Sales 119217
+    ],
+    note:'STL run, locked plan v3 (Tim 10/23). Leave KC 6:30, on site about 11:30. St. Charles County: Troy to Saint Peters. Saint Peters Cellular Sales 119217: Cellular Sales LOA ONLY. On Hold on the IDS Master Sheet (read 10/23): O’Fallon TCC 74622, Saint Peters TCC 85143. Hotel Tue + Wed: Holiday Inn Express & Suites St. Louis Airport (STLLF), 10000 Natural Bridge Rd, 63134. LOAs printed clean, one set per car. Weekly invoice Fri 10/30 (Net 30, card OFF) — no per-stop invoices; INV-000143 to 145 were the last.'},
+  {date:'2026-10-28',who:'tim',from:'stlhotel',to:'stlhotel',at:8,
+    ids:[
+      '2026-8571',   // Shiloh TCC 138618
+      '2026-0785',   // Fairview Heights Verizon 74640
+      '2026-5487',   // Belleville TCC 139598
+      '2026-4326',   // Belleville Russell 122958
+      '2026-6974',   // Freeburg Russell 125749
+      '2026-8514',   // Waterloo Russell 125747
+      '2026-1249',   // Richmond Heights Verizon 74631
+    ],
+    note:'STL run, locked plan v3 (Tim 10/23). Illinois south: Shiloh, Fairview Heights, Belleville ×2, Freeburg, Waterloo, then Richmond Heights. Hotel Tue + Wed: Holiday Inn Express & Suites St. Louis Airport (STLLF), 10000 Natural Bridge Rd, 63134. LOAs printed clean, one set per car. Weekly invoice Fri 10/30 (Net 30, card OFF) — no per-stop invoices; INV-000143 to 145 were the last.'},
+  {date:'2026-10-28',who:'cody',from:'stlhotel',to:'stlhotel',at:8,
+    ids:[
+      '2026-4283',   // Bridgeton WZ 140320
+      '2026-5444',   // Florissant Russell 133314
+      '2026-8475',   // Florissant TCC 138627
+      '2026-7013',   // Olivette TCC 142708
+      '2026-1728',   // Creve Coeur TCC 74634
+      '2026-5745',   // Chesterfield Russell 132935
+    ],
+    note:'STL run, locked plan v3 (Tim 10/23). North, central and west county: Bridgeton, Florissant ×2, Olivette, Creve Coeur, Chesterfield. On Hold on the IDS Master Sheet (read 10/23): Creve Coeur TCC 74634. Hotel Tue + Wed: Holiday Inn Express & Suites St. Louis Airport (STLLF), 10000 Natural Bridge Rd, 63134. LOAs printed clean, one set per car. Weekly invoice Fri 10/30 (Net 30, card OFF) — no per-stop invoices; INV-000143 to 145 were the last.'},
+  {date:'2026-10-29',who:'tim',from:'stlhotel',to:'home',at:8,
+    ids:[
+      '2026-1430',   // Kirkwood TCC 74639
+      '2026-7681',   // Fenton TCC 132937
+      '2026-6662',   // Arnold TCC 104355
+      '2026-8161',   // Festus TCC 126856
+    ],
+    note:'STL run, locked plan v3 (Tim 10/23). Check out, finish south, I-44 home: Kirkwood, Fenton, Arnold, Festus. The plan doc says 5 stops and names 4; the fifth is not named yet. On Hold on the IDS Master Sheet (read 10/23): Kirkwood TCC 74639. Hotel Tue + Wed: Holiday Inn Express & Suites St. Louis Airport (STLLF), 10000 Natural Bridge Rd, 63134. LOAs printed clean, one set per car. Weekly invoice Fri 10/30 (Net 30, card OFF) — no per-stop invoices; INV-000143 to 145 were the last.'},
+  {date:'2026-10-29',who:'cody',from:'stlhotel',to:'home',at:8,
+    ids:[
+      '2026-8213',   // Chippewa Russell 129647
+      '2026-6046',   // Lemay Ferry TCC 128669
+      '2026-7464',   // Telegraph WZ 117823
+      '2026-6238',   // Washington Russell 109038
+      '2026-6841',   // Sullivan Russell 131454
+      '2026-4877',   // Rolla TCC 122172
+    ],
+    note:'STL run, locked plan v3 (Tim 10/23). Check out, then Chippewa, Lemay Ferry, Telegraph, Washington, Sullivan, Rolla, I-44 home. Hotel Tue + Wed: Holiday Inn Express & Suites St. Louis Airport (STLLF), 10000 Natural Bridge Rd, 63134. LOAs printed clean, one set per car. Weekly invoice Fri 10/30 (Net 30, card OFF) — no per-stop invoices; INV-000143 to 145 were the last.'},
+  ],
+  flags:{'2026-6382':'Cellular Sales LOA ONLY.'}};   // Saint Peters Cellular Sales 119217
+STL_RUN.n=STL_RUN.days.reduce((t,d)=>t+d.ids.length,0);
+STL_RUN.codyDays=STL_RUN.days.filter(d=>d.who==='cody').length; STL_RUN.codyDay=COST.coDay;   // $125 a day, Tim ruling 10/21
+STL_RUN.split=['Tue','Wed','Thu'].map((w,k)=>w+' Tim '+STL_RUN.days[k*2].ids.length+' / Cody '+STL_RUN.days[k*2+1].ids.length).join(' · ');
+const stlLines=()=>'<div class="hint"><b>Cody</b> · '+STL_RUN.codyDays+' days × $'+STL_RUN.codyDay+' = $'+(STL_RUN.codyDays*STL_RUN.codyDay)+' · PLANNED, not owed until the days are worked.</div>'
+  +'<div class="hint"><b>Billing</b> · one weekly consolidated invoice, Fri 10/30 (Net 30, card OFF). INV-000143 to 145 were the last per-stop invoices; the STL stops get no invoice rows.</div>';
 const OCT_BLOCKS=[   // as of 10/22 — the done blocks are QuickBooks invoice counts by date raised; the rest is plan
   {k:'done',name:'Invoiced 10/1–10/7 ✓',dates:'10/1–10/7',n:21,usd:2100,col:'#8a8f98',who:'INV-000098 to 119 · Tim, and Cody solo 10/6'},
   {k:'vbv',name:'Valvoline Blue Springs ✓',dates:'10/7',n:1,usd:500,col:'#6B6058',who:'done · INV-000116'},
@@ -3441,7 +3517,7 @@ const OCT_BLOCKS=[   // as of 10/22 — the done blocks are QuickBooks invoice c
   {k:'col',name:'Columbia → home ✓ (Tim)',dates:'10/20',n:3,usd:300,col:'#2C7A7B',who:'INV-000143 to 145 · Columbia reshoot, Clinton, Warrensburg cut for daylight — go-backs open'},
   {k:'spr',name:'Springfield — ON HOLD',dates:'no date',n:15,usd:1500,col:'#9DB4D6',hub:[37.209,-93.292],hubName:'Springfield MO',radius:130,who:'Tim 10/21: “No Springfield yet” · Kevin’s ($0) when it runs'},
   {k:'ks',name:'Cody · western Kansas — TENTATIVE',dates:'no date',n:17,usd:1700,col:'#F4801F',who:'Cody solo · not reconfirmed · the 10/12–14 window passed unrun'},
-  {k:'stl',name:'St. Louis week — PROPOSED',dates:'10/26–28?',n:34,usd:3400,col:'#2C9B6A',hub:[38.627,-90.199],hubName:'St. Louis MO',radius:80,who:'Tim + Cody · proposed for 10/26, not confirmed · Jefferson City already shot 10/20 ✓'}];
+  {k:'stl',name:'St. Louis run — PLANNED',dates:'10/27–29',n:STL_RUN.n,usd:STL_RUN.n*100,col:'#2C9B6A',hub:[38.627,-90.199],hubName:'St. Louis MO',radius:80,who:'Tim + Cody · locked 10/23 · two nights at the airport HIE · Cody '+STL_RUN.codyDays+' × $'+STL_RUN.codyDay+' = $'+(STL_RUN.codyDays*STL_RUN.codyDay)+', PLANNED, not owed until worked'}];
 const OCT_NMO=['2026-5952','2026-5995','2026-5479'];
 const OCT_CAL=[['Wed 10/7','Valvoline Blue Springs ✓ (INV-000116) · Independence 98172 go-back reshot ✓'],['Thu 10/8','Cody solo, North MO ✓ done — Kirksville · Hannibal · Moberly, then Columbia and home in the minivan, ~500 mi ($125 day) · 54th call 1:00 + Spotlight AM'],
   ['Fri 10/9','Billing run — Cody $125 bill, three IDS invoices for Kirksville / Hannibal / Moberly, Master → Completed. No field run.'],
@@ -3456,8 +3532,8 @@ const OCT_CAL=[['Wed 10/7','Valvoline Blue Springs ✓ (INV-000116) · Independe
   ['Western Kansas · TENTATIVE, no date','Cody solo (V03): 17 stops, rooms in Hutchinson and Hays. The 10/12–14 window passed unrun — Cody did Kansas on 10/13 and 10/15 instead. Tim has not reconfirmed.'],
   ['Fri 10/16','Billing + PDFs'],['Later in Oct','Cody to Colorado (dates open) — must be back Sun 10/25'],
   ['Fri 10/23','Billing run — INV-000143 to 145 go on the Friday register (137 to 142 already sent)'],
-  ['Mon–Wed 10/26–28 · PROPOSED','St. Louis (Tim + Cody) — proposed for 10/26, not confirmed · Jefferson City already shot Tue 10/20 ✓ (INV-000143)'],
-  ['Springfield · ON HOLD','Tim 10/21: “No Springfield yet.” What is left down there waits; Kevin’s is still $0 lodging when it runs.'],['Fri 10/30','Billing run']];
+  ['Tue–Thu 10/27–29 · PLANNED',"STL run, Tim + Cody, locked 10/23 — nothing shot, invoiced or paid yet. Two nights (Tue + Wed) at Holiday Inn Express & Suites St. Louis Airport (STLLF), 10000 Natural Bridge Rd, 63134. "+STL_RUN.split+" ·  "+STL_RUN.n+" stops named; the plan doc says 36 (Thu Tim: 5 on the header, 4 named). LOAs printed clean, one set per car. Pool, not scheduled: Saint Robert, Lebanon, Farmington, Desloge, Potosi."],
+  ['Springfield · ON HOLD','Tim 10/21: “No Springfield yet.” What is left down there waits; Kevin’s is still $0 lodging when it runs.'],['Fri 10/30','Billing run — ONE weekly consolidated invoice for the whole STL run (Net 30, card OFF). INV-000143 to 145 were the last per-stop invoices; no invoice rows for the STL stops. Cody’s '+STL_RUN.codyDays+' × $'+STL_RUN.codyDay+' = $'+(STL_RUN.codyDays*STL_RUN.codyDay)+' is owed only once the days are worked.']];
 const OCT_PRE=['Michelle: “accounts to load” in three parts — Springfield 33, Kansas 17 + Salina go-back, St. Louis 34',
   'Confirm Sunday hours for Dodge / Garden / Liberal; Saturday hours for Pratt / Great Bend / Hays',
   'Salina go-back needs the IDS feedback note in Cody’s hands','Cody’s IDS app access confirmed'];
@@ -3567,7 +3643,7 @@ function renderOct(){
     detail=`<div class="card"><div class="lab">${escHTML(b.name)} · ${escHTML(b.dates)}</div>
       <div class="octbig mono">${mi0(rt)} mi <small>round trip from home to ${escHTML(b.hubName)}</small></div>
       <div class="hint">Plan: ${b.n} captures (${usd(b.usd)}). The map finds <b>${pool.length}</b> Open Verizon stops within ${b.radius} road-miles of ${escHTML(b.hubName)}${pool.length!==b.n?' — <b>'+(pool.length<b.n?b.n-pool.length+' short of':'over')+' the plan</b>':' — matches the plan'}. ${escHTML(b.who||'')}</div>
-      <div class="hint">${Object.entries(towns).sort((a,c)=>c[1]-a[1]||(a[0]<c[0]?-1:1)).map(([c,n])=>escHTML(c)+(n>1?' ×'+n:'')).join(' · ')}</div></div>`;
+      <div class="hint">${Object.entries(towns).sort((a,c)=>c[1]-a[1]||(a[0]<c[0]?-1:1)).map(([c,n])=>escHTML(c)+(n>1?' ×'+n:'')).join(' · ')}</div>${sel==='stl'?stlLines():''}</div>`;
   }
   if(sel==='done'||sel==='vbv'){
     const b=OCT_BLOCKS.find(x=>x.k===sel);
@@ -3997,6 +4073,19 @@ function migrate(){
         try{bindRoute(d,true)}catch(e){} } });
     S.days=S.days.filter(d=>!(d.date===T20&&!d.ids.length));
     S.days.forEach(d=>{ if(d.date==='2026-10-13'&&driverOf(d)==='cody'&&d.note)d.note=d.note.replace('Pay is $125 local or $200 if he overnights — not settled.','Pay is $125 a day (Tim ruling 10/21).') });
+    S.active=Math.max(0,Math.min(S.active||0,S.days.length-1)) }
+  // 10/23: the STL run (STL_RUN above) — six locked plan days, Tim's and Cody's cars on Tue 10/27, Wed 10/28 and Thu 10/29.
+  // Locked is what makes a stop PLANNED here; nothing is banked, dated or invoiced. A day that is already on one of those
+  // dates for that driver is left exactly as it is, and the flag on Saint Peters Cellular Sales goes in as a quick note.
+  if(!S.mig.stl1027){ S.mig.stl1027=1; const made=[];
+    STL_RUN.days.forEach(sd=>{ const drv=sd.who==='cody'?'cody':'tim';
+      if(S.days.some(d=>d.date===sd.date&&driverOf(d)===drv)){ console.warn('STL run: kept the day already on '+sd.date+' for '+drv); return }
+      const d=Object.assign(blankDay(sd.date),{startKey:sd.from,startTime:sd.at,endKey:sd.to,ids:sd.ids.filter(i=>BY[i]),
+        driver:drv==='cody'?'cody':null,vehicle:drv==='cody'?'own':'ev',note:sd.note,locked:{at:STL_RUN.lockAt,by:'tim'}});
+      S.days.push(d); made.push(d) });
+    S.notes=(S.notes&&typeof S.notes==='object'&&!Array.isArray(S.notes))?S.notes:{};
+    Object.keys(STL_RUN.flags).forEach(id=>{ const t=STL_RUN.flags[id], cur=jobNoteText(id); if(!cur)S.notes[id]=t; else if(cur.indexOf(t)<0)S.notes[id]=cur+' · '+t });
+    sortDays(); made.forEach(d=>{ try{bindRoute(d,true)}catch(e){} });
     S.active=Math.max(0,Math.min(S.active||0,S.days.length-1)) }
   // the QuickBooks log's miles for the days it covered — a number Tim typed himself stands
   if(!S.mig.logmi0926){ S.mig.logmi0926=1;
