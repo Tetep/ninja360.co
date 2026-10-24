@@ -35,7 +35,7 @@ const day = (over: Record<string, unknown> = {}) => ({
 const MIG = {
   cameron0915: 1, lincoln0925: 1, notshot98172: 1, shoot98172: 1, notsun98172: 1, notshot4049: 1,
   plan1007: 1, vehicle1007: 1, run1008: 1, run1013: 1, run1016: 1, run1020: 1,
-  pastruns0926: 12, logmi0926: 1, logmi1006: 1, manhattan0910: 1, manhattan0909: 1, planlock0923: 1, sheetdates1003: 1, sync1021: 1,
+  pastruns0926: 12, logmi0926: 1, logmi1006: 1, manhattan0910: 1, manhattan0909: 1, planlock0923: 1, sheetdates1003: 1, sync1021: 1, stl1027: 1,
 };
 const migBut = (...skip: string[]) => Object.fromEntries(Object.entries(MIG).filter(([k]) => !skip.includes(k)));
 
