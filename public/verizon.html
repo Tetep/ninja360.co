@@ -670,7 +670,7 @@ const gbItems=id=>punchList(id).map((t,i)=>({t,i,done:punchDone(id,i)}));
 const HOME_ADDR='3205 NE 70th Terrace, Kansas City, MO';   // Tim's home base — every day starts and ends here unless he says otherwise
 const CRANE_ADDR='137 Rocky Mountain Rd, Crane, MO';
 const PLACES={home:{name:'🥷 Home base — Kansas City MO',ll:BASE,addr:HOME_ADDR},liberty:{name:'Liberty MO',ll:[39.2460,-94.4190]},
-  columbia:{name:'🛏️ Columbia MO — Tatem’s dorm ($0 lodging)',ll:COL},
+  columbia:{name:'🛏️ Columbia MO — Tatem’s dorm (0 pts lodging)',ll:COL},
   // Tim's friend, where he sleeps Oct 8–15. Seeded on the middle of Crane; the browser
   // resolves the real driveway on first load and saves it under S.geo['place:crane'].
   crane:{name:'🛏️ Crane MO — friend\'s place',addr:CRANE_ADDR,ll:[36.9047,-93.5716],geo:0},
@@ -1213,16 +1213,16 @@ const RUNS=[
  // Pittsburg and Neosho instead, and Wednesday became a real day: the lake and I-44, Osage
  // Beach through Rolla and Saint Robert to Camdenton. Rogersville is the one left standing —
  // 32 miles from the friend's place, easy to bolt onto whichever day has room on the week.
- // 10/7 — superseded: Tim solo in Springfield Mon–Fri, lodging at Kevin's ($0), his Equinox. The Crane plan this
+ // 10/7 — superseded: Tim solo in Springfield Mon–Fri, lodging at Kevin's (0 pts), his Equinox. The Crane plan this
  // replaced had Tim out from Oct 8; Oct 8 is now Cody's North MO day. Hours: every store here is "assumed 10–7"
  // — the sheet has none. Thursday is thin on purpose of the list Tim sent (West Plains + what is reachable).
  {id:'cody-north-mo',name:'Cody solo · Thu 10/8 · North MO',sub:'3 stops · 300 pts · Kirksville, Hannibal, Moberly · Tim’s minivan · ~313 business miles',
   days:[
    {date:'2026-10-08',startKey:'home',startTime:7.75,endKey:'home',crew:null,driver:'cody',vehicle:'van',locked:1,ids:['2026-5952','2026-5995','2026-5479'],
-    note:'Cody solo · Tim’s minivan · $125 contractor day · leave Gladstone 7:45. ~10:45 Kirksville (TCC 104086, 2202 1/2 N Baltimore St) · ~2:00 Hannibal (TCC 139018, 3525 Stardust Dr) · ~4:30 Moberly (TCC 133817, 1320 E Highway 24 Ste J-K), then gas at Moberly. The leg to Columbia is personal, not a stop; home ~10 PM. Stay north of I-70 outbound: I-35 N → US-36 E → US-63 N; US-63 S → US-36 E; US-24 W. Upload in IDS Capture before leaving the lot; text Tim “SHOT — town”; a closed store = door photo + posted hours, and still counts.'}]},
- {id:'springfield-oct',name:'Springfield · Mon 10/12 – Fri 10/16 · Tim solo',sub:'28 stops · 2,800 pts · Tim solo in his Equinox · lodging $0 with Kevin · home Friday via MO-13',
+    note:'Cody solo · Tim’s minivan · 125 pts contractor day · leave Gladstone 7:45. ~10:45 Kirksville (TCC 104086, 2202 1/2 N Baltimore St) · ~2:00 Hannibal (TCC 139018, 3525 Stardust Dr) · ~4:30 Moberly (TCC 133817, 1320 E Highway 24 Ste J-K), then gas at Moberly. The leg to Columbia is personal, not a stop; home ~10 PM. Stay north of I-70 outbound: I-35 N → US-36 E → US-63 N; US-63 S → US-36 E; US-24 W. Upload in IDS Capture before leaving the lot; text Tim “SHOT — town”; a closed store = door photo + posted hours, and still counts.'}]},
+ {id:'springfield-oct',name:'Springfield · Mon 10/12 – Fri 10/16 · Tim solo',sub:'28 stops · 2,800 pts · Tim solo in his Equinox · lodging 0 pts with Kevin · home Friday via MO-13',
   days:[
-   {date:'2026-10-12',startKey:'home',startTime:8,endKey:'kevin',crew:null,note:'City — Tim solo, Equinox. Sleeps at Kevin’s ($0).',
+   {date:'2026-10-12',startKey:'home',startTime:8,endKey:'kevin',crew:null,note:'City — Tim solo, Equinox. Sleeps at Kevin’s (0 pts).',
     ids:['2026-8541','2026-8321','2026-4178','2026-4135','2026-7930','2026-4815','2026-1173','2026-7988','2026-8706','2026-4041']},
    {date:'2026-10-13',startKey:'kevin',startTime:8,endKey:'kevin',crew:null,note:'East — Rogersville, Marshfield, Mountain Grove, Houston, Ava.',
     ids:['2026-4866','2026-6230','2026-5941','2026-7036','2026-5726']},
@@ -3427,7 +3427,7 @@ let ready=false;
 const OCT_CO=[37.0,-102.04];   // the Colorado line, at Liberal's latitude
 const OCT_KS=[
   {d:'Thu 10/15',home:true,stops:['2026-4049','2026-1339','2026-8652','2026-5933','2026-8093'],night:'Salina',planMi:340,
-   note:'Salina is the go-back ($0) — exterior signage + monument sign. Marysville 2026-8652 · Concordia 2026-5933.'},
+   note:'Salina is the go-back (0 pts) — exterior signage + monument sign. Marysville 2026-8652 · Concordia 2026-5933.'},
   {d:'Fri 10/16',stops:['2026-7983','2026-1376','2026-5976','2026-7106','2026-8145','2026-7702'],night:'Wellington / Wichita',planMi:220},
   {d:'Sat 10/17',stops:['2026-6638','2026-7727','2026-8633','2026-8402'],night:'Hays',planMi:215,note:'Confirm Saturday hours: Pratt, Great Bend, Hays.'},
   {d:'Sun 10/18',stops:['2026-7860','2026-8981','2026-6830'],end:OCT_CO,planMi:210,
@@ -3504,38 +3504,38 @@ const STL_RUN={
   ],
   flags:{'2026-6382':'Cellular Sales LOA ONLY.'}};   // Saint Peters Cellular Sales 119217
 STL_RUN.n=STL_RUN.days.reduce((t,d)=>t+d.ids.length,0);
-STL_RUN.codyDays=STL_RUN.days.filter(d=>d.who==='cody').length; STL_RUN.codyDay=COST.coDay;   // $125 a day, Tim ruling 10/21
+STL_RUN.codyDays=STL_RUN.days.filter(d=>d.who==='cody').length; STL_RUN.codyDay=COST.coDay;   // 125 pts a day, Tim ruling 10/21
 STL_RUN.split=['Tue','Wed','Thu'].map((w,k)=>w+' Tim '+STL_RUN.days[k*2].ids.length+' / Cody '+STL_RUN.days[k*2+1].ids.length).join(' · ');
-const stlLines=()=>'<div class="hint"><b>Cody</b> · 2 of '+STL_RUN.codyDays+' days worked (Tue + Wed) × $'+STL_RUN.codyDay+' = $250 owed, pay Fri 10/30 · Thursday pending its evidence.</div>'
+const stlLines=()=>'<div class="hint"><b>Cody</b> · 2 of '+STL_RUN.codyDays+' days worked (Tue + Wed) × '+STL_RUN.codyDay+' pts = 250 pts owed, pay Fri 10/30 · Thursday pending its evidence.</div>'
   +'<div class="hint"><b>Billing</b> · one weekly consolidated invoice, Fri 10/30 (Net 30, card OFF). INV-000143 to 145 were the last per-stop invoices; the STL stops get no invoice rows.</div>';
 const OCT_BLOCKS=[   // as of 10/22 — the done blocks are QuickBooks invoice counts by date raised; the rest is plan
   {k:'done',name:'Invoiced 10/1–10/7 ✓',dates:'10/1–10/7',n:21,usd:2100,col:'#8a8f98',who:'INV-000098 to 119 · Tim, and Cody solo 10/6'},
   {k:'vbv',name:'Valvoline Blue Springs ✓',dates:'10/7',n:1,usd:500,col:'#6B6058',who:'done · INV-000116'},
   {k:'nmo',name:'Cody solo · North MO ✓',dates:'10/8',n:3,usd:300,col:'#B54903',who:'done · minivan · ~500 mi · INV-000120 to 122'},
-  {k:'sprdone',name:'Springfield week ✓ (Tim)',dates:'10/13–17',n:13,usd:1300,col:'#3B82D6',who:'Tim solo · Equinox · Kevin’s ($0) · INV-000123 to 125, 133 to 142'},
-  {k:'cody',name:'Cody · Kansas ✓',dates:'10/13 + 10/15',n:7,usd:700,col:'#F4801F',who:'Cody solo · own car · $125 a day · INV-000126 to 132 · Salina go-back $0'},
+  {k:'sprdone',name:'Springfield week ✓ (Tim)',dates:'10/13–17',n:13,usd:1300,col:'#3B82D6',who:'Tim solo · Equinox · Kevin’s (0 pts) · INV-000123 to 125, 133 to 142'},
+  {k:'cody',name:'Cody · Kansas ✓',dates:'10/13 + 10/15',n:7,usd:700,col:'#F4801F',who:'Cody solo · own car · 125 pts a day · INV-000126 to 132 · Salina go-back 0 pts'},
   {k:'col',name:'Columbia → home ✓ (Tim)',dates:'10/20',n:3,usd:300,col:'#2C7A7B',who:'INV-000143 to 145 · Columbia reshoot, Clinton, Warrensburg cut for daylight — go-backs open'},
-  {k:'spr',name:'Springfield — ON HOLD',dates:'no date',n:15,usd:1500,col:'#9DB4D6',hub:[37.209,-93.292],hubName:'Springfield MO',radius:130,who:'Tim 10/21: “No Springfield yet” · Kevin’s ($0) when it runs'},
+  {k:'spr',name:'Springfield — ON HOLD',dates:'no date',n:15,usd:1500,col:'#9DB4D6',hub:[37.209,-93.292],hubName:'Springfield MO',radius:130,who:'Tim 10/21: “No Springfield yet” · Kevin’s (0 pts) when it runs'},
   {k:'ks',name:'Cody · western Kansas — TENTATIVE',dates:'no date',n:17,usd:1700,col:'#F4801F',who:'Cody solo · not reconfirmed · the 10/12–14 window passed unrun'},
-  {k:'stl',name:'St. Louis run — days 1–2 ✓, Thu running',dates:'10/27–29',n:STL_RUN.n,usd:STL_RUN.n*100,col:'#2C9B6A',hub:[38.627,-90.199],hubName:'St. Louis MO',radius:80,who:'Tim + Cody · 24 shot Tue–Wed ($2,400) — Tim, Wed night: everything shot but Highland, now Thursday’s first stop · Thu 10/29 running, evidence tonight · ONE consolidated invoice Fri 10/30 · Cody 2 days worked = $250 owed, Thu pending'}];
+  {k:'stl',name:'St. Louis run — days 1–2 ✓, Thu running',dates:'10/27–29',n:STL_RUN.n,usd:STL_RUN.n*100,col:'#2C9B6A',hub:[38.627,-90.199],hubName:'St. Louis MO',radius:80,who:'Tim + Cody · 24 shot Tue–Wed (2,400 pts) — Tim, Wed night: everything shot but Highland, now Thursday’s first stop · Thu 10/29 running, evidence tonight · ONE consolidated invoice Fri 10/30 · Cody 2 days worked = 250 pts owed, Thu pending'}];
 const OCT_NMO=['2026-5952','2026-5995','2026-5479'];
-const OCT_CAL=[['Wed 10/7','Valvoline Blue Springs ✓ (INV-000116) · Independence 98172 go-back reshot ✓'],['Thu 10/8','Cody solo, North MO ✓ done — Kirksville · Hannibal · Moberly, then Columbia and home in the minivan, ~500 mi ($125 day) · 54th call 1:00 + Spotlight AM'],
-  ['Fri 10/9','Billing run — Cody $125 bill, three IDS invoices for Kirksville / Hannibal / Moberly, Master → Completed. No field run.'],
-  ['Tue–Fri 10/13–16','Springfield — Tim solo, his Equinox, stays with Kevin ($0 lodging), home Friday via MO-13. Started Tuesday: nothing was shot Monday. Tue Nixa, Ozark, Rogersville ✓'],
+const OCT_CAL=[['Wed 10/7','Valvoline Blue Springs ✓ (INV-000116) · Independence 98172 go-back reshot ✓'],['Thu 10/8','Cody solo, North MO ✓ done — Kirksville · Hannibal · Moberly, then Columbia and home in the minivan, ~500 mi (125 pts day) · 54th call 1:00 + Spotlight AM'],
+  ['Fri 10/9','Billing run — Cody’s day bill (125 pts), three IDS invoices for Kirksville / Hannibal / Moberly, Master → Completed. No field run.'],
+  ['Tue–Fri 10/13–16','Springfield — Tim solo, his Equinox, stays with Kevin (0 pts lodging), home Friday via MO-13. Started Tuesday: nothing was shot Monday. Tue Nixa, Ozark, Rogersville ✓'],
   ['Tue 10/13','Cody solo in Kansas: Topeka (Russell 131502) ✓, Salina go-back ✓, Concordia ✓, Marysville ✓'],
   ['Wed 10/14','Not logged yet'],
   ['Thu 10/15','Tim: Republic, W Sunshine, W Chestnut, W Republic Rd ✓ · Cody: Iola, Chanute, Parsons, Pittsburg ✓ (southeast Kansas)'],
   ['Fri 10/16','Tim: E Sunshine, Victra 94085, Verizon 91883, Willard ✓ (INV-000137 to 140) · Marshfield not shot · Cody’s four on MO-13 (Buffalo, Bolivar ×2, Stockton) not shot — those five are Open again'],
   ['Sat 10/17','Aurora ✓ (INV-000141) · Monett ✓ (INV-000142)'],
-  ['Sun 10/19','Topeka 131502 VDS go-back done ✓ ($0 — INV-000126 stands; in the IDS update sent 10/20)'],
+  ['Sun 10/19','Topeka 131502 VDS go-back done ✓ (0 pts — INV-000126 stands; in the IDS update sent 10/20)'],
   ['Tue 10/20','Tim, Columbia → home: Jefferson City ✓ (INV-000143) · Osage Beach ✓ (INV-000144) · Camdenton ✓ (INV-000145) · the Columbia 142016 reshoot and the Clinton / Warrensburg go-backs were cut for daylight — still open'],
   ['Western Kansas · TENTATIVE, no date','Cody solo (V03): 17 stops, rooms in Hutchinson and Hays. The 10/12–14 window passed unrun — Cody did Kansas on 10/13 and 10/15 instead. Tim has not reconfirmed.'],
   ['Fri 10/16','Billing + PDFs'],['Later in Oct','Cody to Colorado (dates open) — must be back Sun 10/25'],
   ['Fri 10/23','Billing run — INV-000143 to 145 go on the Friday register (137 to 142 already sent)'],
   ['Tue 10/27','STL day 1 ✓ — Tim, Illinois north: Alton, Granite City, Edwardsville, Collinsville ×2 ✓ · Highland missed → Thursday’s first stop · Cody, St. Charles Co: Troy, Wentzville, Lake Saint Louis, O’Fallon, Saint Peters ×2 ✓ (O’Fallon TCC 74622 + Saint Peters TCC 85143 released by Betsy 10/27)'],
-  ['Wed 10/28','STL day 2 ✓ — Tim, Illinois south: Shiloh, Fairview Heights, Belleville ×2, Freeburg, Waterloo, Richmond Heights ✓ · Cody, north/central/west county: Bridgeton, Florissant ×2, Olivette, Creve Coeur, Chesterfield ✓. Tim, Wed night: “all Brandon Cody and I’s shots are completed” (Highland excepted). 24 shot Tue–Wed, $2,400 — nothing invoiced until Fri 10/30.'],
+  ['Wed 10/28','STL day 2 ✓ — Tim, Illinois south: Shiloh, Fairview Heights, Belleville ×2, Freeburg, Waterloo, Richmond Heights ✓ · Cody, north/central/west county: Bridgeton, Florissant ×2, Olivette, Creve Coeur, Chesterfield ✓. Tim, Wed night: “all Brandon Cody and I’s shots are completed” (Highland excepted). 24 shot Tue–Wed, 2,400 pts — nothing invoiced until Fri 10/30.'],
   ['Thu 10/29 · RUNNING','STL day 3 — Tim: Highland first (missed Tuesday), then Kirkwood, Fenton, Arnold, Festus · Cody: Chippewa, Lemay Ferry, Telegraph, Washington, Sullivan, Rolla · I-44 home. Evidence tonight (field-run-2026-10-29.md); nothing is marked shot until it arrives. Lebanon TCC 99252 is On Hold — not shot without a release.'],
-  ['Springfield · ON HOLD','Tim 10/21: “No Springfield yet.” What is left down there waits; Kevin’s is still $0 lodging when it runs.'],['Fri 10/30','Billing run — ONE weekly consolidated invoice for the whole STL run (Net 30, card OFF). INV-000143 to 145 were the last per-stop invoices; no invoice rows for the STL stops. Cody: Tue + Wed worked = $250 owed and payable; Thursday’s $125 rides on tonight’s evidence.']];
+  ['Springfield · ON HOLD','Tim 10/21: “No Springfield yet.” What is left down there waits; Kevin’s is still 0 pts lodging when it runs.'],['Fri 10/30','Billing run — ONE weekly consolidated invoice for the whole STL run (Net 30, card OFF). INV-000143 to 145 were the last per-stop invoices; no invoice rows for the STL stops. Cody: Tue + Wed worked = 250 pts owed and payable; Thursday’s 125 rides on tonight’s evidence.']];
 const OCT_PRE=['Michelle: “accounts to load” in three parts — Springfield 33, Kansas 17 + Salina go-back, St. Louis 34',
   'Confirm Sunday hours for Dodge / Garden / Liberal; Saturday hours for Pratt / Great Bend / Hays',
   'Salina go-back needs the IDS feedback note in Cody’s hands','Cody’s IDS app access confirmed'];
@@ -3604,7 +3604,7 @@ function octDrawMap(sel,ks,P){
 function renderOct(){
   const o=octS(), sel=o.block, ks=octKs(), P=octPools();
   const tot=OCT_BLOCKS.reduce((t,b)=>t+b.usd,0), caps=OCT_BLOCKS.reduce((t,b)=>t+b.n,0);
-  const usd=n=>'$'+Math.round(n).toLocaleString(), mi0=n=>Math.round(n).toLocaleString();
+  const usd=n=>Math.round(n).toLocaleString()+' pts', mi0=n=>Math.round(n).toLocaleString();
   const ksBill=ks.flatMap(d=>d.st).filter(j=>j.id!==OCT_GOBACK);
   const ksOpen=ksBill.filter(octOpen).length;
   const bar=OCT_BLOCKS.map(b=>`<i style="flex:${b.usd};background:${b.col}" title="${escHTML(b.name)}"></i>`).join('');
@@ -3624,15 +3624,15 @@ function renderOct(){
     const days=ks.map((d,i)=>{ const col=DRIVE_COL[i%DRIVE_COL.length], diff=(d.miles-d.planMi)/d.planMi, off=Math.abs(diff)>.15;
       let n=ks.slice(0,i).reduce((t,x)=>t+x.st.length,0);
       return `<div class="octday" style="--c:${col}"><div class="octdh"><b>${d.d}</b><span>${d.night?'night in '+escHTML(d.night):'→ Colorado'}</span></div>
-        <ol>${d.st.map(j=>{n++; return `<li><span class="octn" style="background:${col}">${n}</span><span>${escHTML(j.n.replace(/ - /,' · '))}${j.id===OCT_GOBACK?' <em>go-back $0</em>':''}</span><span class="octst ${octOpen(j)||j.id===OCT_GOBACK?'ok':'warn'}">${escHTML(j.id===OCT_GOBACK?'owed':j.st||'Open')}</span></li>`}).join('')}</ol>
+        <ol>${d.st.map(j=>{n++; return `<li><span class="octn" style="background:${col}">${n}</span><span>${escHTML(j.n.replace(/ - /,' · '))}${j.id===OCT_GOBACK?' <em>go-back 0 pts</em>':''}</span><span class="octst ${octOpen(j)||j.id===OCT_GOBACK?'ok':'warn'}">${escHTML(j.id===OCT_GOBACK?'owed':j.st||'Open')}</span></li>`}).join('')}</ol>
         <div class="octm">Plan <b class="mono">~${d.planMi}</b> mi &middot; map <b class="mono">${mi0(d.miles)}</b> mi ${off?`<span class="octf">${diff>0?'+':''}${Math.round(diff*100)}% — check</span>`:'<span class="octg">✓ close</span>'}${d.toBorder?` <span class="hint" style="display:inline">+ ${mi0(d.toBorder)} mi on to the Colorado line</span>`:''}</div>
         <div class="hint" style="margin:2px 0 0">≈ ${(Math.round(d.drv*10)/10)} h driving + ${(Math.round(d.shoot*10)/10)} h shooting${d.note?' · '+escHTML(d.note):''}</div></div>`}).join('');
     // economics for the sweep
-    const rev=ksBill.length*100, cody=125*ks.length, hotel=o.nights*150, net=rev-cody-hotel;   // $125 a day, never per visit (Tim ruling 10/21)
+    const rev=ksBill.length*100, cody=125*ks.length, hotel=o.nights*150, net=rev-cody-hotel;   // 125 pts a day, never per visit (Tim ruling 10/21)
     const eco=`<div class="card"><div class="lab">Cody's deal — Kansas sweep</div>
-      <div class="achips" style="margin:8px 0 4px"><span class="achip on" style="--c:#3B82D6"><i></i>$125 a day × ${ks.length} (Tim, 10/21)</span></div>
+      <div class="achips" style="margin:8px 0 4px"><span class="achip on" style="--c:#3B82D6"><i></i>125 pts a day × ${ks.length} (Tim, 10/21)</span></div>
       <div class="achips" style="margin:4px 0 8px">${[0,1,2,3].map(n=>`<button class="achip${o.nights===n?' on':''}" data-on="${n}" style="--c:#8B2FC9"><i></i>${n} hotel night${n===1?'':'s'}</button>`).join('')}</div>
-      <table class="octt"><tbody><tr><td>Revenue (${ksBill.length} billable)</td><td class="mono">${usd(rev)}</td></tr><tr><td>Cody</td><td class="mono">− ${usd(cody)}</td></tr><tr><td>Hotels Tim pays ($150 a night)</td><td class="mono">− ${usd(hotel)}</td></tr>
+      <table class="octt"><tbody><tr><td>Revenue (${ksBill.length} billable)</td><td class="mono">${usd(rev)}</td></tr><tr><td>Cody</td><td class="mono">− ${usd(cody)}</td></tr><tr><td>Rooms Tim pays (150 pts a night)</td><td class="mono">− ${usd(hotel)}</td></tr>
       <tr class="octtot"><td>Net to Tim</td><td class="mono">${usd(net)}</td></tr></tbody></table>
       <div class="hint">Per diem and fuel not included — Cody's car, his trip. Hannibal sets the deal.</div></div>`;
     detail=`<div class="card"><div class="lab">Western Kansas · Cody solo · TENTATIVE</div>
@@ -3649,13 +3649,13 @@ function renderOct(){
   }
   if(sel==='done'||sel==='vbv'){
     const b=OCT_BLOCKS.find(x=>x.k===sel);
-    detail=`<div class="card"><div class="lab">${escHTML(b.name)} · ${escHTML(b.dates)}</div><div class="hint">${sel==='done'?'Already banked: the runs of 10/1–10/7, raised as INV-000098 to 119 — 21 Verizon stops, $2,100 (Valvoline is its own block). See Score and History for the miles.':'Done Wed 10/7 — one shoot, $500 flat, invoiced INV-000116 (Bureau Veritas via IDS).'}</div></div>`;
+    detail=`<div class="card"><div class="lab">${escHTML(b.name)} · ${escHTML(b.dates)}</div><div class="hint">${sel==='done'?'Already banked: the runs of 10/1–10/7, raised as INV-000098 to 119 — 21 Verizon stops, 2,100 pts (Valvoline is its own block). See Score and History for the miles.':'Done Wed 10/7 — one shoot, 500 pts flat, invoiced INV-000116 (Bureau Veritas via IDS).'}</div></div>`;
   }
   if(sel==='nmo'){
     const b=OCT_BLOCKS.find(x=>x.k==='nmo'), dd=drivenDays().find(x=>x.date==='2026-10-08'), allShot=OCT_NMO.every(i=>shot(i));
     detail=`<div class="card"><div class="lab">${escHTML(b.name)} · Thu 10/8</div>
       <ol style="list-style:none;margin:6px 0;padding:0">${OCT_NMO.map((id,i)=>{const j=BY[id]; return `<li style="display:flex;gap:8px;padding:3px 0;font-size:13.5px"><span class="octn" style="background:${b.col}">${i+1}</span><span style="flex:1">${escHTML(j.n.replace(/ - /,' · '))}</span><span class="octst ${shot(id)||octOpen(j)?'ok':'warn'}">${escHTML(shot(id)?(j.inv?'invoiced':'shot · invoice owed'):(j.st||'Open'))}</span></li>`}).join('')}</ol>
-      <div class="hint">${allShot&&dd?`Cody solo in Tim’s minivan: Kirksville → Hannibal → Moberly, then Columbia (personal) and home. <b>${mi0(dd.miles)} mi</b>${dd.logged?' — Cody’s number':' est.'} · the map says ${mi0(dd.est)} · $125 day.`:`Cody solo, Tim’s minivan.`}</div></div>`;
+      <div class="hint">${allShot&&dd?`Cody solo in Tim’s minivan: Kirksville → Hannibal → Moberly, then Columbia (personal) and home. <b>${mi0(dd.miles)} mi</b>${dd.logged?' — Cody’s number':' est.'} · the map says ${mi0(dd.est)} · 125 pts day.`:`Cody solo, Tim’s minivan.`}</div></div>`;
   }
   const calendar=`<div class="card"><div class="lab">Calendar (proposed)</div><table class="octt"><tbody>`+OCT_CAL.map(r=>`<tr><td class="octd">${escHTML(r[0])}</td><td class="octx">${escHTML(r[1])}</td></tr>`).join('')+`</tbody></table></div>`;
   const pre=`<div class="card"><div class="lab">Pre-flight</div>`+OCT_PRE.map((t,i)=>`<label class="octpre"><input type="checkbox" data-pre="${i}" ${o.done[i]?'checked':''}><span>${escHTML(t)}</span></label>`).join('')+`</div>`;
@@ -4014,7 +4014,7 @@ function migrate(){
     const tim=Object.assign(blankDay(T),{startKey:'home',startTime:8,endKey:'kevin',ids:['2026-8706','2026-4041','2026-4866'].filter(i=>BY[i]),locked:lk(),
       note:'Springfield: Nixa, Ozark, Rogersville. Tim solo, sleeps at Kevin’s.'});
     const cody=Object.assign(blankDay(T),{startKey:'home',startTime:8,endKey:'home',driver:'cody',vehicle:'own',ids:['2026-4049','2026-8093','2026-5933','2026-8652'].filter(i=>BY[i]),locked:lk(),
-      note:'Cody solo in Kansas: Russell 131502 Topeka, the Salina go-back (signage and monument sign, $0), Concordia. Marysville is still to shoot. Pay is $125 a day (Tim ruling 10/21).'});
+      note:'Cody solo in Kansas: Russell 131502 Topeka, the Salina go-back (signage and monument sign, 0 pts), Concordia. Marysville is still to shoot. Pay is 125 pts a day (Tim ruling 10/21).'});
     S.days.push(tim,cody);
     const th=S.days.find(d=>d.date==='2026-10-15'&&d.ids.join()==='2026-8615,2026-4576,2026-4877');
     if(th){ th.ids=['2026-8541','2026-8321','2026-4135','2026-7988','2026-4178','2026-4815','2026-1173','2026-7930','2026-6230'].filter(i=>BY[i]);
@@ -4066,7 +4066,7 @@ function migrate(){
   // Camdenton, then the Clinton and Warrensburg go-backs. 2–4 were shot (INV-000143 to 145); 1, 5 and 6 were cut for daylight and
   // stay open as go-backs (Return Owed, with their lists). The day keeps only what was shot — a locked past day with unshot stops
   // reads wrong — and a SHOT tap dated 10/20 on one of the three is cleared. No mileage is estimated: QuickBooks tracked none,
-  // so the day carries the map's figure marked est. until Tim's odometer is typed in. Cody's rate is $125 a day (Tim ruling 10/21).
+  // so the day carries the map's figure marked est. until Tim's odometer is typed in. Cody's rate is 125 pts a day (Tim ruling 10/21).
   if(!S.mig.sync1021){ S.mig.sync1021=1; const T20='2026-10-20', gb=['2026-8947','2026-7761','2026-5436'];
     gb.forEach(id=>{ const l=S.locks&&S.locks[id]; if(l&&l.d===T20)delete S.locks[id] });
     S.days.forEach(d=>{ if(d.date!==T20||!Array.isArray(d.ids))return; d.ids=d.ids.filter(i=>!gb.includes(i));
@@ -4074,7 +4074,7 @@ function migrate(){
         d.note='Columbia (Tatem’s) → home: Jefferson City, Osage Beach, Camdenton shot (INV-000143 to 145). The Columbia 142016 reshoot and the Clinton and Warrensburg go-backs were on the sheet too — cut for daylight, home from Camdenton (Tim, 10/21). Mileage: nothing logged — needs Tim’s odometer.';
         try{bindRoute(d,true)}catch(e){} } });
     S.days=S.days.filter(d=>!(d.date===T20&&!d.ids.length));
-    S.days.forEach(d=>{ if(d.date==='2026-10-13'&&driverOf(d)==='cody'&&d.note)d.note=d.note.replace('Pay is $125 local or $200 if he overnights — not settled.','Pay is $125 a day (Tim ruling 10/21).') });
+    S.days.forEach(d=>{ if(d.date==='2026-10-13'&&driverOf(d)==='cody'&&d.note)d.note=d.note.replace('Pay is $125 local or $200 if he overnights — not settled.','Pay is 125 pts a day (Tim ruling 10/21).') });
     S.active=Math.max(0,Math.min(S.active||0,S.days.length-1)) }
   // 10/23: the STL run (STL_RUN above) — six locked plan days, Tim's and Cody's cars on Tue 10/27, Wed 10/28 and Thu 10/29.
   // Locked is what makes a stop PLANNED here; nothing is banked, dated or invoiced. A day that is already on one of those
@@ -4097,7 +4097,7 @@ function migrate(){
   // comes off the Tue day and leads Thursday — a locked past day with an unshot stop reads as a shot that never
   // happened. Thursday itself is left alone: it is being driven today, and its evidence comes tonight
   // (field-run-2026-10-29.md). No mileage is written: no odometer was reported.
-  if(!S.mig.stl1029){ S.mig.stl1029=1;
+  if((S.mig.stl1029|0)<2){ S.mig.stl1029=2;   // v2: points, not dollars, on every note and card
     const SHOT={'2026-10-27':{tim:['2026-5616','2026-7091','2026-0853','2026-7130','2026-6003'],
                               cody:['2026-5221','2026-1916','2026-4971','2026-1229','2026-1241','2026-6382']},
                 '2026-10-28':{tim:['2026-8571','2026-0785','2026-5487','2026-4326','2026-6974','2026-8514','2026-1249'],
@@ -4119,9 +4119,10 @@ function migrate(){
       thu.note=(thu.note||'').replace('Check out, finish south, I-44 home: Kirkwood','Highland Russell 122957 first (missed Tuesday), then check out, finish south, I-44 home: Kirkwood');
       try{bindRoute(thu,true)}catch(e){} }
     const asRan=(date,who,txt)=>{ const d=S.days.find(x=>x.date===date&&driverOf(x)===who); if(d){ d.note=txt; try{bindRoute(d,true)}catch(e){} } };
-    asRan('2026-10-27','cody','STL run day 1, as it went (Tim, 10/28 night): all six shot — Troy, Wentzville, Lake Saint Louis, O’Fallon (released by Betsy 10/27), Saint Peters ×2 (TCC released by Betsy 10/27; Cellular Sales LOA ONLY). One consolidated invoice Fri 10/30 (Net 30, card OFF). Cody day worked: $125.');
+    asRan('2026-10-27','cody','STL run day 1, as it went (Tim, 10/28 night): all six shot — Troy, Wentzville, Lake Saint Louis, O’Fallon (released by Betsy 10/27), Saint Peters ×2 (TCC released by Betsy 10/27; Cellular Sales LOA ONLY). One consolidated invoice Fri 10/30 (Net 30, card OFF). Cody day worked: 125 pts.');
     asRan('2026-10-28','tim','STL run day 2, as it went (Tim, 10/28 night): all seven shot — Shiloh, Fairview Heights, Belleville ×2, Freeburg, Waterloo, then Richmond Heights. One consolidated invoice Fri 10/30 (Net 30, card OFF).');
-    asRan('2026-10-28','cody','STL run day 2, as it went (Tim, 10/28 night): all six shot — Bridgeton, Florissant ×2, Olivette, Creve Coeur (released by Betsy 10/27), Chesterfield. One consolidated invoice Fri 10/30 (Net 30, card OFF). Cody day worked: $125.');
+    asRan('2026-10-28','cody','STL run day 2, as it went (Tim, 10/28 night): all six shot — Bridgeton, Florissant ×2, Olivette, Creve Coeur (released by Betsy 10/27), Chesterfield. One consolidated invoice Fri 10/30 (Net 30, card OFF). Cody day worked: 125 pts.');
+    S.days.forEach(d=>{ if(d.note&&d.note.indexOf('$')>=0)d.note=d.note.replace(/\$(\d[\d,]*)/g,'$1 pts') });   // we speak in points — any dollar a stored note still carries converts
     S.active=Math.max(0,Math.min(S.active||0,S.days.length-1)) }
   // the QuickBooks log's miles for the days it covered — a number Tim typed himself stands
   if(!S.mig.logmi0926){ S.mig.logmi0926=1;
