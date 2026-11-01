@@ -3678,7 +3678,7 @@ function render(){
   $$('#nav button').forEach(b=>{const on=b.dataset.s===S.nav;
     b.classList.toggle('on',on);
     if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
-  if(S.nav==='today')renderToday();
+  if(S.nav==='today'){ renderToday(); if(document.visibilityState!=='hidden')startWatch() } /* first load / tab mount: startWatch is a no-op if running or just refused */
   else if(S.nav==='plan')renderPlan();
   else if(S.nav==='clusters')renderClusters();
   else if(S.nav==='app')renderApp();
