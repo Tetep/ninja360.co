@@ -1,4 +1,4 @@
-import { test, expect, request } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 const routes = [
   '/',
@@ -50,10 +50,9 @@ test.describe('production smoke checks', () => {
   // The logged-in checks below only mean something if the gate is really up: with no credentials
   // the Dojo must answer 401, so a green run proves the secrets did the unlocking.
   test('Dojo refuses requests without the login', async ({ baseURL }) => {
-    const anon = await request.newContext({ baseURL });
-    const res = await anon.get('/', { maxRedirects: 0 });
-    expect(res.status(), 'Dojo should be password-gated').toBe(401);
-    await anon.dispose();
+    // Plain fetch: Playwright's request contexts inherit the config's httpCredentials.
+    const res = await fetch(new URL('/', baseURL), { redirect: 'manual' });
+    expect(res.status, 'Dojo should be password-gated').toBe(401);
   });
 
   for (const route of routes) {
