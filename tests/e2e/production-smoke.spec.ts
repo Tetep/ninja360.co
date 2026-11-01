@@ -47,11 +47,19 @@ const routes = [
 ];
 
 test.describe('production smoke checks', () => {
+  // The logged-in checks below only mean something if the gate is really up: with no credentials
+  // the Dojo must answer 401, so a green run proves the secrets did the unlocking.
+  test('Dojo refuses requests without the login', async ({ baseURL }) => {
+    // Plain fetch: Playwright's request contexts inherit the config's httpCredentials.
+    const res = await fetch(new URL('/', baseURL), { redirect: 'manual' });
+    expect(res.status, 'Dojo should be password-gated').toBe(401);
+  });
+
   for (const route of routes) {
     test(route + ' responds and remains mobile-safe', async ({ page, baseURL }) => {
       const first = await page.goto(route, { waitUntil: 'domcontentloaded' });
       expect(first, 'No response returned from server').not.toBeNull();
-      expect(first?.ok(), 'Route returned non-2xx status').toBeTruthy();
+      expect(first?.status(), 'Route did not return 200 (a 401 means the Dojo login failed)').toBe(200);
 
       if (route === '/') {
         // Ensure unlocked state before asserting scroll and overflow.
