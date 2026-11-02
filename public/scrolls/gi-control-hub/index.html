@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generationally Incorrect · The Control Hub · Ninja-360</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#F47920; --deep:#E05F00; --charcoal:#3D3D3D; --gray:#404040;
+    --warm:#F9F7F5; --line:#E0DCD8; --dead:#9b948e; --warn:#B03A2E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:#fff;line-height:1.55;font-size:16.5px}
+  .accent-top{height:4px;background:var(--orange)}
+  .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+  section{padding:38px 0}
+  h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif;line-height:1.1;text-transform:uppercase;letter-spacing:.5px}
+  h1{font-size:42px;font-weight:800}
+  h2{font-size:26px;font-weight:800;color:var(--deep);margin:0 0 14px;border-bottom:1px solid var(--line);padding-bottom:5px}
+  h3{font-size:18px;font-weight:700;margin:18px 0 6px;color:var(--charcoal)}
+  p{margin-bottom:11px}
+  .alt{background:var(--warm)}
+  .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:var(--orange)}
+  .kicker{font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:12.5px;color:var(--deep);margin-bottom:8px}
+  .sub{font-size:18px;color:var(--gray);max-width:700px}
+
+  .isnot{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+  .isnot .card{border:2px solid var(--line);border-radius:8px;padding:14px 18px;background:#fff}
+  .isnot .card.is{border-color:var(--orange)}
+  .isnot .lbl{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+  .isnot .is .lbl{color:var(--deep)}
+  .isnot .not .lbl{color:var(--warn)}
+  .isnot p{margin:0;font-size:14.5px;color:var(--gray)}
+  .isnot b{color:var(--charcoal)}
+
+  .flow{background:#fff;border:2px solid var(--orange);border-radius:8px;padding:16px 20px;margin-top:8px;font-size:15px}
+  .flow b{color:var(--deep)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:8px}
+  .box{border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:#fff;font-size:14.5px}
+  .box .h{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:.5px;color:var(--deep);margin-bottom:3px}
+  .box b{color:var(--charcoal)}
+
+  .gate{border:2px solid var(--deep);padding:18px 22px;margin:8px 0 4px;background:#fff}
+  .gate .disp{color:var(--deep);font-size:21px;font-weight:800}
+  .decide{counter-reset:d;list-style:none;margin:12px 0 0}
+  .decide li{padding:10px 0 10px 44px;border-bottom:1px dashed var(--line);position:relative;font-size:15.5px}
+  .decide li:last-child{border-bottom:none}
+  .decide li::before{counter-increment:d;content:counter(d);position:absolute;left:4px;top:8px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:24px;color:var(--orange)}
+  .decide b{color:var(--deep)}
+
+  table{border-collapse:collapse;width:100%;font-size:14.5px;background:#fff}
+  th{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.5px;font-size:14px;text-align:left;color:var(--deep);border-bottom:2px solid var(--orange);padding:8px 10px}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  td b{color:var(--charcoal)}
+  .n360-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .n360-tw table{min-width:520px}
+
+  .callout{background:var(--charcoal);color:#fff;border-radius:8px;padding:18px 22px;margin-top:20px}
+  .callout .disp{color:var(--orange);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .callout p{color:#e8e2dc;font-size:14.5px;margin:0}
+  .callout b{color:#fff}
+
+  .moves{list-style:none;margin:8px 0 0}
+  .moves li{padding:9px 0 9px 34px;border-bottom:1px dashed var(--line);position:relative;font-size:15px}
+  .moves li:before{content:"☐";position:absolute;left:6px;top:7px;color:var(--orange);font-size:18px}
+  .moves li:last-child{border-bottom:none}
+  .moves b{color:var(--deep)}
+
+  .pill{display:inline-block;background:var(--warm);border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--deep)}
+  .pill-open{border-color:var(--warn);color:var(--warn)}
+
+  .footer{font-size:12.5px;color:#8a847e;margin-top:24px;border-top:1px solid var(--line);padding:14px 0 4px}
+  @media(max-width:720px){
+    .isnot,.grid2,.grid3{grid-template-columns:1fr}
+    h1{font-size:32px}
+  }
+  @media print{@page{margin:9mm}body{font-size:11.5px}.callout,.flow,.gate{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+<meta name="description" content="Generationally Incorrect · The Control Hub — the voting system, the topic and guest pipelines, and the Monday-call ritual that feeds them. Consolidates a planning conversation into one spec.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Ninja-360 Dojo">
+<meta property="og:title" content="Generationally Incorrect · The Control Hub">
+<meta property="og:description" content="The voting system, the topic and guest pipelines, and the ritual that feeds them.">
+
+<link rel='stylesheet' href='/share/responsive-patch.css'>
+</head>
+<body>
+<!-- n360-unav: unified dojo nav -->
+<style>
+  .n360bar{position:sticky;top:0;z-index:90;background:#3D3D3D;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;min-height:48px}
+  .n360bar .n360wm{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:#F47920;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav{display:flex;gap:3px;margin-left:auto}
+  .n360bar nav a{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:13px;color:#e8e2dc;padding:0 10px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav a:hover{background:rgba(244,121,32,.25);color:#fff}
+  .n360toggle{display:none;width:44px;height:44px;margin-left:auto;flex:0 0 auto;border:none;border-radius:6px;background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .n360toggle span{display:block;width:22px;height:2px;background:#fff;border-radius:1px}
+  .n360toggle:hover{background:rgba(244,121,32,.25)}
+  .n360accent{height:4px;background:#F47920}
+  .n360crumb{background:#F9F7F5;border-bottom:1px solid #E0DCD8;font-size:13px;padding:7px 18px;color:#404040}
+  .n360crumb a{color:#E05F00;text-decoration:none;font-weight:700}
+  .n360crumb a:hover{text-decoration:underline}
+  .n360crumb .sep{color:#9B948E;margin:0 5px}
+  @media(max-width:640px){
+    .n360bar{flex-wrap:nowrap}
+    .n360toggle{display:flex}
+    .n360bar nav{display:none;flex-direction:column;gap:0;margin-left:0;position:absolute;top:100%;left:0;right:0;background:#3D3D3D;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 12px 20px rgba(0,0,0,.25)}
+    .n360bar.open nav{display:flex}
+    .n360bar nav a{font-size:15px;padding:13px 18px;border-radius:0;border-bottom:1px solid rgba(255,255,255,.1);min-height:48px}
+    .n360bar nav a:last-child{border-bottom:none}
+  }
+</style>
+<div class="n360bar">
+  <a class="n360wm" href="/">NINJA-360</a>
+  <button class="n360toggle" type="button" aria-expanded="false" aria-controls="n360nav" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <nav id="n360nav">
+    <a href="/">Dojo</a>
+    <a href="/gameplan">Game Plan</a>
+    <a href="/scrolls">Scrolls</a>
+    <a href="/crew">Crew</a>
+  </nav>
+</div>
+<div class="n360accent"></div>
+<div class="n360crumb"><a href="/">Dojo</a><span class="sep">&rsaquo;</span><a href="/scrolls">Scrolls</a><span class="sep">&rsaquo;</span><span>GI · Control Hub</span></div>
+<script>
+  (function(){
+    var t=document.querySelector('.n360toggle'),b=document.querySelector('.n360bar');
+    if(t&&b)t.addEventListener('click',function(){var o=b.classList.toggle('open');t.setAttribute('aria-expanded',String(o));});
+  })();
+</script>
+
+<div class="accent-top"></div>
+
+<section>
+  <div class="wrap">
+    <div class="wordmark">NINJA-360</div>
+    <div class="kicker" style="margin-top:16px">The Podcast · Voting, Pipeline &amp; Guest Ops</div>
+    <h1>Generationally Incorrect —<br>The Control Hub</h1>
+    <p class="sub" style="margin-top:14px">The real engine under the show: how a decision gets made, how a topic gets found and proven, and how a guest goes from a form submission to an on-air advocate. Captured from a planning conversation — everything here is mechanism and open questions, not a schedule.</p>
+    <div class="isnot">
+      <div class="card is">
+        <div class="lbl">What this scroll is</div>
+        <p>The spec for turning the dashboard mockup (<a href="/gi/site/dashboard/" style="color:var(--deep);font-weight:700">Command / Pipeline / Approvals / Topic Bank</a> — currently sample data, not wired to anything) into a real voting, pipeline, and guest-ops hub.</p>
+      </div>
+      <div class="card not">
+        <div class="lbl">What this scroll is not</div>
+        <p><b>Not a timeline.</b> Every date in the older GI scrolls is stale — this doc deliberately carries none. Also not the money — see <a href="/scrolls/gi-ninja-lane" style="color:var(--deep);font-weight:700">the Ninja-360 Lane</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 id="lanes">1 · Who Owns What</h2>
+    <div class="n360-tw"><table>
+      <tr><th>Lane</th><th>Owns</th></tr>
+      <tr><td><b>Lucky 13 — Erik</b></td><td>Hosting, guest relationships (Corresponding → Booked), the On Location correspondent format.</td></tr>
+      <tr><td><b>Lucid — Gabe</b></td><td>Shooting, editing, the clip + quote-card system.</td></tr>
+      <tr><td><b>Ninja-360 — Tim</b></td><td>Distribution/social, the GHL sub-account and its automations, the dashboard itself, the funnel.</td></tr>
+      <tr><td><b>All three</b></td><td>Every vote — Candidates, Topics, Panels. 2-of-3, logged in the GHL pipeline. If it isn't in the pipeline, it isn't decided.</td></tr>
+    </table></div>
+    <p style="margin-top:14px">A companion visual map of the two pipelines below, colored by this same ownership, exists as a separate diagram — ask for the link if it's not already in hand.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 id="voting">2 · Voting &amp; Approvals</h2>
+    <div class="flow"><b>The core problem this solves:</b> one unvoted item stalls the whole workflow. The fix isn't a stricter deadline — it's not treating every decision the same way.</div>
+
+    <h3>Three vote types, three different mechanics</h3>
+    <div class="grid3">
+      <div class="box"><div class="h">Candidates</div>Highest stakes, lowest volume. A real person gets invited on camera — deserves a deliberate review with comments attached, not a swipe.</div>
+      <div class="box"><div class="h">Topics</div>Highest volume, lowest stakes per item. A full 72h cycle per topic chokes the backlog — wants a lightweight continuous backlog instead (see §3).</div>
+      <div class="box"><div class="h">Panels</div>Time-pressured — tied to a real shoot date. An unfilled seat 48h out is a different emergency than an undecided logo direction.</div>
+    </div>
+
+    <h3>Risk-tiered, not one rule for everything</h3>
+    <p>Reserve full <b>2-of-3 + 72h</b> for what's genuinely hard to undo — equity, Third Rail topics, brand, panel format. Low-stakes items (most individual topics, minor creative calls) can run <b>1-of-3 fast-track</b> or <b>no objection in 24h = approved</b>. The exact thresholds are an open call — see §6.</p>
+
+    <h3>Killing the bottleneck</h3>
+    <ul class="moves">
+      <li><b>A personal queue, not a shared board.</b> Each partner's first screen shows only what's blocking <i>on them</i>, specifically, and for how long.</li>
+      <li><b>Push the vote to them.</b> One-tap approve/reject/defer via SMS or push (GHL already does SMS automation) — a vote that requires opening a dashboard mostly doesn't happen.</li>
+      <li><b>A standing weekly digest.</b> "3 items waiting on you, blocking 2 episodes" sent on a fixed schedule, not something to remember to check.</li>
+      <li><b>Batch voting.</b> Clear five pending items in under two minutes, swipe-style, instead of opening five separate screens.</li>
+    </ul>
+
+    <h3>Make it a feedback machine, not a chore</h3>
+    <ul class="moves">
+      <li><b>Reward speed, not volume.</b> A streak indicator for voting within a set window — reinforces the one behavior that matters (the anchor metric is already "did we hit every date we promised," not episode count).</li>
+      <li><b>Visible momentum on items.</b> A 2-of-3 progress ring on every open vote (the dashboard mockup's Approvals screen already half-draws this) makes a vote feel like something actively closing.</li>
+      <li><b>The decision log as a highlight reel,</b> not just an audit trail — closing a vote should read like a small win.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 id="monday">3 · The Monday Call → Punch List</h2>
+    <div class="flow">Not everything that comes out of the call is a vote. <b>A decision</b> needs partner agreement and flows into §2's voting queue. <b>A task</b> is already agreed, just needs doing — it skips voting entirely and goes straight onto the punch list.</div>
+    <div class="grid2">
+      <div class="box"><div class="h">Owner</div>One person, accountable for closing it. Sits in <b>their</b> personal queue — same mechanic as a blocking vote.</div>
+      <div class="box"><div class="h">Followers</div>Visibility without ownership. Pinged on status changes (created / due soon / overdue / done); never sits in their action list.</div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="box"><div class="h">Timer</div>A due date rendered as a live countdown, same green→amber→red urgency treatment as the vote clock — one visual language for urgency, not two.</div>
+      <div class="box"><div class="h">Calendar</div>Sync <i>out</i> to Google Calendar — Erik already runs it day to day — rather than building a third calendar surface. The dashboard's own Calendar tab can mirror it.</div>
+    </div>
+    <div class="callout">
+      <div class="disp">The call's own shape</div>
+      <p>Four beats, every time: <b>(1)</b> review last week's punch list — closed / overdue. <b>(2)</b> run any votes ready to close. <b>(3)</b> capture new punch-list items and new topics live. <b>(4)</b> assign owner + due date + followers before anyone leaves the call.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 id="topic">4 · The Topic Lifecycle</h2>
+    <div class="n360-tw"><table>
+      <tr><th>Stage</th><th>What happens</th><th>Lane</th></tr>
+      <tr><td><b>Generate</b></td><td>Candidate topics from Question-of-the-Week submissions, pillar-prompted ideas (the existing "what's one belief your generation holds that others misunderstand" shape), partner pitches from the Monday call.</td><td>Ninja-360 (funnel) + shared</td></tr>
+      <tr><td><b>Public Test</b></td><td>YouTube/IG/TikTok polls — a <i>different</i> vote than the partner one. Partners vote on whether it's safe to air; the public votes on which approved topic is most interesting to actually make.</td><td>Ninja-360</td></tr>
+      <tr><td><b>On Location</b></td><td>A weekly correspondent shoot built around the week's winning topic — cheap, fast, validates a topic's real pull before committing a full panel slot to it. Doubles as its own content track so the feed never goes dark between full episodes.</td><td>Lucky 13 (host) + Lucid (shoot/edit)</td></tr>
+      <tr><td><b>Vote Gate</b></td><td>The partner appropriateness vote, per §2's risk tiers.</td><td>All three</td></tr>
+      <tr><td><b>Topic Bank</b></td><td>Scheduled against a booked panel.</td><td>Shared</td></tr>
+    </table></div>
+    <div class="callout">
+      <div class="disp">Open on this stage</div>
+      <p>Who's the correspondent — a rotating partner or a dedicated role (real cost difference)? Does a strong On Location result auto-promote a topic, or does it still need the full partner vote (appropriateness and popularity aren't the same gate)? What's On Location's cadence relative to the main show's own still-undecided cadence?</p>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 id="guest">5 · The Guest Lifecycle</h2>
+    <div class="n360-tw"><table>
+      <tr><th>Stage</th><th>What happens</th><th>Lane</th></tr>
+      <tr><td><b>Applied</b></td><td>Be on the Show (Google Form) — the public intake.</td><td>Ninja-360</td></tr>
+      <tr><td><b>Corresponding</b></td><td>Contact + activity log — this is a view into the guest's GHL contact record, not new infrastructure.</td><td>Lucky 13</td></tr>
+      <tr><td><b>Booked</b></td><td>Seat + date locked; fires a calendar event tied to the guest record.</td><td>Lucky 13</td></tr>
+      <tr><td><b>Release Signed</b></td><td><b>Automated GHL workflow:</b> booking triggers a send for e-signature (GHL's own native Documents &amp; Contracts feature — no new tool, no new guest login). On signature, the workflow auto-tags the contact and advances the pipeline card. Signed copy mirrors to a second, durable store (e.g. a Drive folder) on top of GHL's own — a legal document shouldn't live in only one system.</td><td>Ninja-360 (automation)</td></tr>
+      <tr><td><b>Filmed</b></td><td>Day-of rundown instantiates the Episode Anatomy table (Cold open → Opener → Topic → Steel-man → Common Ground → Outro) with real names, seats, and timing.</td><td>Lucky 13 + Lucid</td></tr>
+      <tr><td><b>Published</b></td><td>Anchor drops, clips drip over the following weeks.</td><td>Ninja-360</td></tr>
+      <tr><td><b>Advocate</b></td><td>Auto-sent to the guest once live: their own highlight clip and quote card, ready to share — not a "please post about us" ask. The warmest distribution channel available, since they already said yes to being on camera.</td><td>Ninja-360 (automation) + Lucid (asset)</td></tr>
+    </table></div>
+    <div class="callout">
+      <div class="disp">Not a Claude-drafted item</div>
+      <p>The release-form <i>language</i> is a real legal document — get it drafted or reviewed by an actual lawyer. This spec covers the workflow mechanics around it (trigger → send → sign → tag → store), not its wording.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 id="exists">6 · What Already Exists vs. What Needs Building</h2>
+    <div class="grid2">
+      <div class="box"><div class="h">Already exists</div>The dashboard mockup's Command / Pipeline / Approvals / Calendar / Topic Bank tabs — Approvals already draws the Proposed → Under Review → Voting Open columns with per-partner avatar status and a decision log; Pipeline already draws the Topic Bank as a staged board with pillar/partner/Third-Rail filters. All sample data, nothing wired.</div>
+      <div class="box"><div class="h">Needs building</div>Real data backing (§7's open call), the GHL workflow automations in §4–5, the Google Form → guest-CRM wiring, the Monday-call capture UI, the public-testing poll mechanism, and a defined On Location format.</div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 id="open">7 · Open Decisions This Spec Surfaces</h2>
+    <div class="gate">
+      <div class="disp">⚠ None of these are resolved here — they gate how the build actually starts</div>
+      <ol class="decide">
+        <li><b>Data architecture — the one that gates everything else.</b> Build the hub as a real front-end on top of GHL's actual Creative Approvals pipeline via its API (keeps one system of record, matches the existing "GHL is the engine room" decision, needs GHL API access + likely a small serverless layer since a static Cloudflare Pages site can't hold API secrets client-side) — versus an independent data store (faster to stand up, fully custom, but becomes a second system of record next to GHL). Recommendation on record: keep GHL as the one source of truth.</li>
+        <li><b>Risk-tier thresholds</b> — which decisions get full 2-of-3 + 72h vs. 1-of-3 fast-track vs. silence-is-approval.</li>
+        <li><b>On Location correspondent role</b> — rotating partner or dedicated hire.</li>
+        <li><b>E-sign tool</b> — GHL's native Documents &amp; Contracts vs. a dedicated third-party e-sign product.</li>
+        <li><b>On Location cadence</b> — runs independently weekly regardless of what the main panel show's own cadence vote lands on, or follows it.</li>
+      </ol>
+    </div>
+    <p style="margin-top:18px"><span class="pill">Related</span> <a href="/gi/site/dashboard/" style="color:var(--deep);font-weight:700">GI · Dashboard (the mockup this spec builds on)</a> &nbsp;·&nbsp; <span class="pill">Related</span> <a href="/scrolls/gi-master-plan" style="color:var(--deep);font-weight:700">GI · Master Plan</a> &nbsp;·&nbsp; <span class="pill">Related</span> <a href="/scrolls/gi-next-steps" style="color:var(--deep);font-weight:700">GI · Next Steps</a> &nbsp;·&nbsp; <span class="pill">Related</span> <a href="/scrolls/gi-ninja-lane" style="color:var(--deep);font-weight:700">GI · The Ninja-360 Lane</a></p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="footer">
+      Generationally Incorrect · The Control Hub · Ninja-360 Digital Media LLC · Filed 2026-11-02 — no target dates included by design<br>
+      Put them on the map · Tell the truth beautifully · Always sharpen the blade<br>
+      © 2026 Ninja-360 Digital Media LLC | Kansas City, MO
+    </div>
+  </div>
+</section>
+
+<script defer src='/share/responsive-patch.js'></script>
+<link rel="stylesheet" href="/share/easter-egg.css">
+<div id="egg-badge" title="???"><img src="/assets/dojo-head-ninja.png" alt=""></div>
+<div id="egg-pop"><b>🥷 Built by Head Ninja Tim Petet</b><br>Founder, Ninja 360 Digital Media.</div>
+<script src="/share/easter-egg.js"></script>
+</body>
+</html>

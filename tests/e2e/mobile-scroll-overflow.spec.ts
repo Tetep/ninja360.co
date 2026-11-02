@@ -25,6 +25,7 @@ const routes = [
   '/scrolls/gi-next-steps',
   '/scrolls/gi-ninja-lane',
   '/scrolls/gi-domain-strategy',
+  '/scrolls/gi-control-hub',
   '/scrolls/kpi-gameplan',
   '/scrolls/mission-board',
   '/scrolls/operating-rhythm',
