@@ -17,59 +17,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="assets/gi-site.css">
-<style>
-  /* Home-only: the intro popup (item 5, done in #83 — kept as-is, only
-     relocated into the v2 page shell and re-pointed at the shared tokens
-     now that this page loads gi-site.css instead of its own local vars). */
-  #intro-popup{
-    position:fixed; inset:0; z-index:500; background:rgba(24,23,21,.92);
-    display:flex; align-items:center; justify-content:center; padding:20px;
-    opacity:1; visibility:visible;
-    transition:opacity .25s ease, visibility 0s linear 0s;
-  }
-  #intro-popup.hide{ opacity:0; visibility:hidden; pointer-events:none; transition:opacity .25s ease, visibility 0s linear .25s; }
-  .intro-popup-frame{
-    position:relative; width:min(92vw,720px); border-radius:8px; overflow:hidden;
-    background:var(--gi-ink); border:2px solid var(--gi-red); box-shadow:0 16px 44px rgba(0,0,0,.5);
-  }
-  .intro-popup-frame iframe{ display:block; width:100%; aspect-ratio:16/9; border:0; }
-  #intro-popup-close{
-    position:absolute; top:8px; right:8px; z-index:2; width:34px; height:34px; border-radius:50%;
-    background:rgba(0,0,0,.55); color:var(--gi-panel); border:1px solid rgba(255,255,255,.35);
-    font-size:16px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
-  }
-  #intro-popup-close:hover{ background:rgba(0,0,0,.75); }
-  .intro-popup-actions{
-    display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center;
-    padding:12px; background:var(--gi-ink); border-top:2px solid var(--gi-red);
-  }
-  #intro-popup-sound{
-    padding:12px 22px; min-height:44px; border-radius:999px; cursor:pointer;
-    background:var(--gi-red); color:var(--gi-panel); border:2px solid var(--gi-panel);
-    font-family:var(--gi-font-display); font-weight:400; letter-spacing:.08em;
-    text-transform:uppercase; font-size:14px;
-  }
-  #intro-popup-sound:hover{ filter:brightness(1.12); }
-  #intro-popup-skip{
-    padding:12px 20px; min-height:44px; border-radius:999px; cursor:pointer;
-    background:transparent; color:var(--gi-panel); border:2px solid rgba(255,255,255,.5);
-    font-family:var(--gi-font-display); font-weight:400; letter-spacing:.08em;
-    text-transform:uppercase; font-size:13px;
-  }
-  #intro-popup-skip:hover{ border-color:var(--gi-panel); }
-</style>
 </head>
 <body>
-<div id="intro-popup" role="dialog" aria-modal="true" aria-label="Show intro">
-  <div class="intro-popup-frame">
-    <button id="intro-popup-close" type="button" aria-label="Close intro">✕</button>
-    <iframe id="gi-intro-player" src="https://www.youtube.com/embed/7ijIxOqyNCs?autoplay=1&mute=1&playsinline=1&controls=0&modestbranding=1&rel=0&enablejsapi=1" title="Generationally Incorrect — Intro" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    <div class="intro-popup-actions">
-      <button id="intro-popup-sound" type="button" aria-pressed="false">🔊 Tap for sound</button>
-      <button id="intro-popup-skip" type="button">Skip to the site →</button>
-    </div>
-  </div>
-</div>
 
 <header class="masthead">
   <div class="bar">
@@ -113,7 +62,7 @@
       <div class="cta-row">
         <a class="btn btn-red" href="/gi/site/be-on-the-show/">Be on the Show</a>
         <a class="btn btn-ghost" href="#listen">Listen</a>
-        <button class="btn btn-ghost" id="trailer-btn" type="button">▶ Watch the trailer</button>
+        <a class="btn btn-ghost" href="#trailer">▶ Watch the trailer</a>
       </div>
     </div>
     <div class="hero-art">
@@ -122,6 +71,16 @@
         <!-- Hero imagery slot: Tim to supply a photo/still for this panel.
              <img src="assets/hero-photo.jpg" alt="" style="border:2px solid var(--gi-ink)"> -->
       </div>
+    </div>
+  </div>
+</section>
+
+<section id="trailer">
+  <div class="wrap center">
+    <div class="kicker">Watch</div>
+    <h2>The trailer</h2>
+    <div class="video-frame" style="max-width:720px;margin:0 auto">
+      <iframe src="https://www.youtube.com/embed/7ijIxOqyNCs?playsinline=1&modestbranding=1&rel=0" title="Generationally Incorrect — Trailer" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
   </div>
 </section>
@@ -215,85 +174,6 @@
 
 <script src="assets/gi-site.js"></script>
 <script>
-  // Intro popup — shows once per visit, and can be reopened any time from the
-  // hero's "Watch the trailer" button. Closes on the X, on "Skip to the site",
-  // on Esc, on a click outside the video, and when the clip ends (via the
-  // YouTube IFrame API, so it reacts to the real end of playback). Unchanged
-  // behavior from #83 — only relocated into the v2 page shell.
-  (function () {
-    var popup = document.getElementById('intro-popup');
-    var closeBtn = document.getElementById('intro-popup-close');
-    var skipBtn = document.getElementById('intro-popup-skip');
-    var soundBtn = document.getElementById('intro-popup-sound');
-    var trailerBtn = document.getElementById('trailer-btn');
-    var frame = document.getElementById('gi-intro-player');
-    if (!popup) return;
-
-    var SEEN_KEY = 'gi-intro-seen';
-    var player;
-    var seen = false;
-    try { seen = sessionStorage.getItem(SEEN_KEY) === '1'; } catch (_) {}
-
-    if (seen) {
-      popup.classList.add('hide');
-      if (frame) frame.src = frame.src.replace('autoplay=1', 'autoplay=0');
-    }
-
-    function openPopup() {
-      popup.classList.remove('hide');
-      if (player && typeof player.playVideo === 'function') {
-        try { player.seekTo(0); player.playVideo(); } catch (_) {}
-      }
-    }
-    function closePopup() {
-      popup.classList.add('hide');
-      try { sessionStorage.setItem(SEEN_KEY, '1'); } catch (_) {}
-      if (player && typeof player.pauseVideo === 'function') {
-        try { player.pauseVideo(); } catch (_) {}
-      }
-    }
-
-    if (closeBtn) closeBtn.addEventListener('click', closePopup);
-    if (skipBtn) skipBtn.addEventListener('click', closePopup);
-    if (trailerBtn) trailerBtn.addEventListener('click', openPopup);
-    popup.addEventListener('click', function (e) {
-      if (e.target === popup) closePopup();
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !popup.classList.contains('hide')) closePopup();
-    });
-
-    var tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    document.head.appendChild(tag);
-
-    window.onYouTubeIframeAPIReady = function () {
-      player = new YT.Player('gi-intro-player', {
-        events: {
-          onStateChange: function (event) {
-            if (event.data === YT.PlayerState.ENDED) closePopup();
-          }
-        }
-      });
-    };
-
-    if (soundBtn) {
-      soundBtn.addEventListener('click', function () {
-        if (!player || typeof player.isMuted !== 'function') return;
-        if (player.isMuted()) {
-          player.unMute();
-          player.setVolume(100);
-          soundBtn.textContent = '🔇 Mute';
-          soundBtn.setAttribute('aria-pressed', 'true');
-        } else {
-          player.mute();
-          soundBtn.textContent = '🔊 Tap for sound';
-          soundBtn.setAttribute('aria-pressed', 'false');
-        }
-      });
-    }
-  })();
-
   // Notify Me — same "not wired to GHL yet" pattern as the rest of the site:
   // shows the thank-you state so the page doesn't look broken, but only logs
   // to the console until a real GI Notify Me V01 form ID is set below.
