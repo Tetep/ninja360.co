@@ -26,6 +26,7 @@ const routes = [
   '/scrolls/gi-ninja-lane',
   '/scrolls/gi-domain-strategy',
   '/scrolls/gi-control-hub',
+  '/scrolls/gi-game-plan',
   '/scrolls/kpi-gameplan',
   '/scrolls/mission-board',
   '/scrolls/operating-rhythm',
@@ -33,6 +34,7 @@ const routes = [
   '/scrolls/warp-speed',
   '/legacy/roadmaps/gabe',
   '/legacy/roadmaps/pavan',
+  '/gi',
   // No trailing slash, matching every other static route above: with
   // trailingSlash:'never', astro preview's own dev-style routing 404s a
   // directory-style URL that ends in "/" (it doesn't redirect, it serves its
