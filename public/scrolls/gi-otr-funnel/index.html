@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>On the Road — GHL Funnel Build Spec · Generationally Incorrect · Ninja-360</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#F47920; --deep:#E05F00; --charcoal:#3D3D3D; --gray:#404040;
+    --warm:#F9F7F5; --line:#E0DCD8; --warn:#B03A2E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Source Sans 3',sans-serif;color:var(--charcoal);background:#fff;line-height:1.55;font-size:16.5px}
+  .accent-top{height:4px;background:var(--orange)}
+  .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+  section{padding:38px 0}
+  h1,h2,h3,.disp{font-family:'Barlow Condensed',sans-serif;line-height:1.1;text-transform:uppercase;letter-spacing:.5px}
+  h1{font-size:42px;font-weight:800}
+  h2{font-size:26px;font-weight:800;color:var(--deep);margin:0 0 14px;border-bottom:1px solid var(--line);padding-bottom:5px}
+  h3{font-size:16.5px;font-weight:700;margin:18px 0 6px;color:var(--charcoal);text-transform:none;letter-spacing:0;font-family:'Source Sans 3',sans-serif}
+  p{margin-bottom:11px}
+  .alt{background:var(--warm)}
+  .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:var(--orange)}
+  .kicker{font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:12.5px;color:var(--deep);margin-bottom:8px}
+  .sub{font-size:18px;color:var(--gray);max-width:700px}
+  .backlink{display:inline-block;margin-top:4px;font-size:13px;color:#2E8C94;text-decoration:none;font-weight:600}
+  .backlink:hover{text-decoration:underline}
+
+  .moves{list-style:none;margin:8px 0 0}
+  .moves li{padding:9px 0 9px 34px;border-bottom:1px dashed var(--line);position:relative;font-size:15px}
+  .moves li:before{content:"☐";position:absolute;left:6px;top:7px;color:var(--orange);font-size:18px}
+  .moves li:last-child{border-bottom:none}
+  .moves b{color:var(--deep)}
+
+  .n360-tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);margin:10px 0}
+  table{border-collapse:collapse;width:100%;min-width:520px;font-size:14.5px;background:#fff}
+  th{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.5px;font-size:14px;text-align:left;color:var(--deep);border-bottom:2px solid var(--orange);padding:8px 10px;background:var(--warm)}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:0}
+  td b{color:var(--charcoal)}
+
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;background:var(--warm);border:1px solid var(--line);border-radius:3px;padding:1px 6px;white-space:nowrap}
+
+  figure{margin:14px 0 20px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--warm)}
+  figure img{display:block;width:100%;height:auto}
+  figcaption{font-size:13px;color:var(--gray);font-style:italic;padding:8px 14px;border-top:1px solid var(--line)}
+
+  .note{font-size:13.5px;color:var(--gray);font-style:italic;margin-top:14px}
+  .footer{font-size:12.5px;color:#8a847e;margin-top:24px;border-top:1px solid var(--line);padding:14px 0 4px}
+  ol,ul{padding-left:22px;margin:8px 0 14px}
+  li{margin-bottom:6px}
+  @media(max-width:720px){h1{font-size:30px}}
+  @media print{@page{margin:9mm}body{font-size:12px}}
+</style>
+<meta name="description" content="On the Road — GHL funnel build spec: street QR to GHL to Erik's casting form, the objects it adds, the build steps, the test checklist, and the open blockers.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Ninja-360 Dojo">
+<meta property="og:title" content="On the Road — GHL Funnel Build Spec">
+<meta property="og:description" content="Street QR into GHL, then Erik's casting form. The build steps, the test checklist, and the open blockers.">
+
+<link rel='stylesheet' href='/share/responsive-patch.css'>
+</head>
+<body>
+<!-- n360-unav: unified dojo nav -->
+<style>
+  .n360bar{position:sticky;top:0;z-index:90;background:#3D3D3D;color:#fff;display:flex;align-items:center;gap:14px;padding:0 18px;min-height:48px}
+  .n360bar .n360wm{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:2.5px;font-size:16px;color:#F47920;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav{display:flex;gap:3px;margin-left:auto}
+  .n360bar nav a{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;font-size:13px;color:#e8e2dc;padding:0 10px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+  .n360bar nav a:hover{background:rgba(244,121,32,.25);color:#fff}
+  .n360toggle{display:none;width:44px;height:44px;margin-left:auto;flex:0 0 auto;border:none;border-radius:6px;background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .n360toggle span{display:block;width:22px;height:2px;background:#fff;border-radius:1px}
+  .n360toggle:hover{background:rgba(244,121,32,.25)}
+  .n360accent{height:4px;background:#F47920}
+  .n360crumb{background:#F9F7F5;border-bottom:1px solid #E0DCD8;font-size:13px;padding:7px 18px;color:#404040}
+  .n360crumb a{color:#E05F00;text-decoration:none;font-weight:700}
+  .n360crumb a:hover{text-decoration:underline}
+  .n360crumb .sep{color:#9B948E;margin:0 5px}
+  @media(max-width:640px){
+    .n360bar{flex-wrap:nowrap}
+    .n360toggle{display:flex}
+    .n360bar nav{display:none;flex-direction:column;gap:0;margin-left:0;position:absolute;top:100%;left:0;right:0;background:#3D3D3D;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 12px 20px rgba(0,0,0,.25)}
+    .n360bar.open nav{display:flex}
+    .n360bar nav a{font-size:15px;padding:13px 18px;border-radius:0;border-bottom:1px solid rgba(255,255,255,.1);min-height:48px}
+    .n360bar nav a:last-child{border-bottom:none}
+  }
+</style>
+<div class="n360bar">
+  <a class="n360wm" href="/">NINJA-360</a>
+  <button class="n360toggle" type="button" aria-expanded="false" aria-controls="n360nav" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <nav id="n360nav">
+    <a href="/">Dojo</a>
+    <a href="/gameplan">Game Plan</a>
+    <a href="/scrolls">Scrolls</a>
+    <a href="/crew">Crew</a>
+  </nav>
+</div>
+<div class="n360accent"></div>
+<div class="n360crumb"><a href="/">Dojo</a><span class="sep">&rsaquo;</span><a href="/scrolls">Scrolls</a><span class="sep">&rsaquo;</span><span>GI · On the Road</span></div>
+<script>
+  (function(){
+    var t=document.querySelector('.n360toggle'),b=document.querySelector('.n360bar');
+    if(t&&b)t.addEventListener('click',function(){var o=b.classList.toggle('open');t.setAttribute('aria-expanded',String(o));});
+  })();
+</script>
+
+<div class="accent-top"></div>
+
+<section>
+  <div class="wrap">
+    <div class="wordmark">NINJA-360</div>
+    <a class="backlink" href="/scrolls/gi-game-plan/">← GI · Game Plan</a>
+    <div class="kicker" style="margin-top:10px">The Podcast · Nov 5, 2026 · Tim Petet · Partners Only</div>
+    <h1>On the Road —<br>GHL Funnel Build Spec</h1>
+    <p class="sub" style="font-size:15.5px;margin-top:8px">Source of truth: the living Claude Doc <a href="https://claude.ai/artifact/RSnevAa9xhy9bzzSPsMupC" style="color:var(--deep);font-weight:700">here</a> — this page is a dated snapshot.</p>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>Status and the funnel</h2>
+    <p><b>Tim owns this build, with no handoff. It's five GHL steps you can do in one sitting, then one phone test, then the QR cards get printed.</b> The funnel runs from a street QR into GHL, which keeps the venue and the fan, and then to Erik's Google Form for casting. Follow-up is manual (your phone) until SMS and email sending are live.</p>
+    <figure>
+      <img src="/assets/gi/gi-otr-funnel-diagram.png" width="1344" height="1152" loading="lazy" alt="On the Road funnel diagram: on the street, a person stops for a hook and scans the venue QR at road.generationallyincorrect.net/?src=venue. In GHL's GI OTR Fans V01 pipeline, the card moves Scanned (form saves venue, generation, 18+ check; tags source: on the road, gi: fan list) to Invited (Tim texts the apply link, email once live) — after 14 days with no application it moves to Fan Only and stays on the fan list. If they apply, the card moves to Applied, filling in Erik's Google Form, which feeds his Topic Matrix and the partner-vote casting process.">
+      <figcaption>On the Road funnel · street to GHL to Erik's form</figcaption>
+    </figure>
+    <p>The venue slug rides on the QR link, so every scan, applicant and sponsor report can be traced back to the night that produced it.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>What exists and what this adds</h2>
+    <p><b>This build adds one form, one pipeline, three workflows and one redirect. It leaves everything already in the GI sub-account (<code>whkhRNZwHhdpUToE7SpN</code>) alone.</b> Every new object is named "GI OTR … V01" so it sorts together and can't be mistaken for the casting objects.</p>
+    <div class="n360-tw"><table>
+      <tr><th>Object</th><th>Already there (don't touch)</th><th>New for On the Road</th></tr>
+      <tr><td><b>Forms</b></td><td>GI Contestant Signup V01 (old intake, being shut off)</td><td><b>GI OTR Street Signup V01</b></td></tr>
+      <tr><td><b>Custom fields</b></td><td>GI Show folder, GI Generation (7 options), GI Topic Choices</td><td><b>GI Source Venue</b> (hidden, filled by <code>?src=</code>)</td></tr>
+      <tr><td><b>Tags</b></td><td>9 GI tags (<code>gi generation: *</code>, <code>source: gi signup form</code>, <code>gi: shortlisted</code>)</td><td><code>source: on the road</code>, <code>gi: fan list</code>, <code>otr: invited</code>, <code>otr: applied</code>, <code>otr: no src</code></td></tr>
+      <tr><td><b>Pipelines</b></td><td>Marketing Pipeline, GI Contestants V01, Creative Approvals V01</td><td><b>GI OTR Fans V01</b></td></tr>
+      <tr><td><b>Workflows</b></td><td>GI Signup Intake V01, the ARCHIVE clone</td><td><b>GI OTR Intake V01</b>, <b>GI OTR Invite V01</b>, <b>GI OTR Applied V01</b></td></tr>
+      <tr><td><b>Calendars</b></td><td>GI Production Calendar V02</td><td>none</td></tr>
+      <tr><td><b>Link</b></td><td>links.ninja360.net form links</td><td><b>road.generationallyincorrect.net</b> redirect (Cloudflare)</td></tr>
+    </table></div>
+    <p>Casting itself stays in Erik's Google Form and its Topic Matrix. GHL's job is to catch the person on the street, remember where they came from, and get them to that form.</p>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>Step 1: Fields and tags</h2>
+    <p><b>Build these first. The form and workflows pick them from dropdowns, so they have to exist before you build those.</b> That's the same order the Aug 30 build used.</p>
+
+    <h3>Custom field: Settings → Custom Fields → folder "GI Show" → Add Field</h3>
+    <ol>
+      <li>Type: Single Line. Name: <code>GI Source Venue</code>. Object: Contact.</li>
+      <li>Save. Write down the merge key GHL gives it (expect <code>{{contact.gi_source_venue}}</code>).</li>
+      <li>Reuse the existing <b>GI Generation</b> field as-is. Don't make an On the Road copy, so street signups and the old signups use the same generation values.</li>
+    </ol>
+
+    <h3>Tags: Settings → Tags → Add Tag</h3>
+    <p class="note" style="margin-top:0">(lowercase, exactly as written)</p>
+    <div class="n360-tw"><table>
+      <tr><th>Tag</th><th>Applied by</th><th>Means</th></tr>
+      <tr><td><code>source: on the road</code></td><td>Intake workflow</td><td>Scanned a street QR</td></tr>
+      <tr><td><code>gi: fan list</code></td><td>Intake workflow</td><td>On the fan list. Stays on even if they never apply</td></tr>
+      <tr><td><code>otr: no src</code></td><td>Intake workflow</td><td>Came in without a venue. A broken QR or a forwarded link</td></tr>
+      <tr><td><code>otr: invited</code></td><td>Invite workflow, or you by hand</td><td>Got the apply link</td></tr>
+      <tr><td><code>otr: applied</code></td><td>Applied workflow</td><td>Shows up in Erik's Topic Matrix</td></tr>
+    </table></div>
+    <p><b>Venue slug rule:</b> lowercase, hyphens, no dates. Example: <code>smithville-rise-shine</code> (Smithville Rise and Shine is already on the marketing list). The night comes from the contact's Date Added, so one printed card per venue works every night you go back.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Step 2: Street form and QR links</h2>
+    <p><b>The form takes 20 seconds on a phone in a restaurant line: five things to fill in, plus one hidden field that records the venue.</b> Anything longer belongs in Erik's application, not here.</p>
+
+    <h3>Sites → Forms → Builder → New form → name it <code>GI OTR Street Signup V01</code></h3>
+    <div class="n360-tw"><table>
+      <tr><th>Order</th><th>Field</th><th>Required</th><th>Notes</th></tr>
+      <tr><td>1</td><td>First Name</td><td>Yes</td><td></td></tr>
+      <tr><td>2</td><td>Phone</td><td>Yes</td><td>For your personal text tonight</td></tr>
+      <tr><td>3</td><td>Email</td><td>Yes</td><td>For the apply link once email sending is live</td></tr>
+      <tr><td>4</td><td>GI Generation</td><td>Yes</td><td>The existing field and its 7 options</td></tr>
+      <tr><td>5</td><td>Age Confirmation</td><td>Yes</td><td>Same checkbox as the old form: "I confirm I am 18 years of age or older."</td></tr>
+      <tr><td>6</td><td>SMS consent boxes</td><td>No</td><td>Same wording as the old form. Consent you have to check to submit isn't real consent</td></tr>
+      <tr><td>7</td><td>GI Source Venue</td><td>Hidden</td><td>Field settings: turn on <b>Hidden</b>, set <b>Query Key</b> to <code>src</code></td></tr>
+    </table></div>
+    <p>Then:</p>
+    <ol>
+      <li>Styles: paper <code>#D9CFBA</code> background, ink <code>#181715</code> labels (Advanced tab → Label Color), rust <code>#963719</code> button with <code>#F5EFE2</code> text. Same placement as the Aug 30 restyle.</li>
+      <li>Submit button last. Nothing below it.</li>
+      <li>On submit, show this message: "You're on the list. Check your texts tonight. We'll send you a link to grab a seat on the show."</li>
+      <li>Save. Copy the form's share link: <code>https://links.ninja360.net/widget/form/&lt;FORM_ID&gt;</code>.</li>
+    </ol>
+
+    <h3>The link people scan: Cloudflare, generationallyincorrect.net zone</h3>
+    <p><b>Print a link you control, not the GHL form link.</b> If the form ever changes, you repoint one rule and every card already printed still works.</p>
+    <ol>
+      <li>DNS: add a proxied record for <code>road</code>. The orange-cloud placeholder A record <code>192.0.2.1</code> is fine, because the rule answers before it's ever reached.</li>
+      <li>Rules → Redirect Rules → Create: hostname equals <code>road.generationallyincorrect.net</code> → static URL <code>https://links.ninja360.net/widget/form/&lt;FORM_ID&gt;</code>, status <b>302</b>, <b>Preserve query string ON</b>.</li>
+      <li>QR per venue = <code>https://road.generationallyincorrect.net/?src=&lt;venue-slug&gt;</code>.</li>
+      <li>Keep 302 (not 301) so phones don't cache the old target if you repoint later.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>Step 3: GI OTR Fans V01 pipeline</h2>
+    <p><b>A separate pipeline keeps street scans out of the casting pipeline.</b> It also lets you report by venue: each card's Source is set to the venue slug.</p>
+    <h3>Opportunities → Pipelines → Create → <code>GI OTR Fans V01</code></h3>
+    <div class="n360-tw"><table>
+      <tr><th>#</th><th>Stage</th><th>How a card gets here</th><th>Status</th></tr>
+      <tr><td>1</td><td>Scanned</td><td>Intake workflow, the moment they submit</td><td>Open</td></tr>
+      <tr><td>2</td><td>Invited</td><td>You by hand after your personal text with the apply link. Once email is live, the intake workflow moves it the next morning</td><td>Open</td></tr>
+      <tr><td>3</td><td>Applied</td><td>You, when their name shows up in Erik's Topic Matrix</td><td><b>Won</b> (set by the Applied workflow)</td></tr>
+      <tr><td>4</td><td>Fan Only</td><td>Invite workflow, after 14 days with no application</td><td><b>Abandoned</b>. They stay on the fan list</td></tr>
+    </table></div>
+    <p>The Aug 30 lesson applies here too: stage and status are separate in GHL. Without the Applied workflow, cards sit Open forever.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Step 4: Workflows</h2>
+    <p><b>Three small workflows. They're built to run now, with no SMS and no contact-facing email. The email step slots in later without a rebuild.</b> Same GHL rules as August: pick tags and values from dropdowns, put any if/else last, Publish then Save, and two saves when you edit a published workflow.</p>
+
+    <h3>A. GI OTR Intake V01.</h3>
+    <p class="note" style="margin-top:0">Trigger: Form Submitted, filter Form is <code>GI OTR Street Signup V01</code>.</p>
+    <ol>
+      <li>Add Tag: <code>source: on the road</code>, <code>gi: fan list</code>.</li>
+      <li>Create Opportunity: pipeline GI OTR Fans V01, stage Scanned, name = Contact Full Name, source = <code>{{contact.gi_source_venue}}</code>, duplicates off.</li>
+      <li>Internal Notification (email to Tim): subject <code>OTR scan: {{contact.first_name}}, {{contact.gi_generation}} @ {{contact.gi_source_venue}}</code>.</li>
+      <li>Create Task, assigned to Tim, due in 12 hours: "Text {{contact.first_name}} the apply link, then move the card to Invited".</li>
+      <li>If/else (last): GI Source Venue is empty → Add Tag <code>otr: no src</code>. Otherwise, end.</li>
+    </ol>
+
+    <h3>B. GI OTR Invite V01.</h3>
+    <p class="note" style="margin-top:0">Trigger: Pipeline Stage Changed, pipeline GI OTR Fans V01, stage Invited.</p>
+    <ol>
+      <li>Add Tag: <code>otr: invited</code>.</li>
+      <li>Wait 5 days.</li>
+      <li>If/else: has tag <code>otr: applied</code> → end. Otherwise → Create Task for Tim: "Nudge {{contact.first_name}} once about applying".</li>
+      <li>Wait 9 days.</li>
+      <li>If/else: has tag <code>otr: applied</code> → end. Otherwise → Update Opportunity: stage Fan Only, status Abandoned.</li>
+    </ol>
+
+    <h3>C. GI OTR Applied V01.</h3>
+    <p class="note" style="margin-top:0">Trigger: Pipeline Stage Changed, pipeline GI OTR Fans V01, stage Applied.</p>
+    <ol>
+      <li>Update Opportunity: status Won.</li>
+      <li>Add Tag: <code>otr: applied</code>.</li>
+      <li>Remove from Workflow: GI OTR Invite V01.</li>
+    </ol>
+
+    <p><b>Later, once the .net sending domain is verified (don't build this yet):</b></p>
+    <ul>
+      <li>In A, before the if/else: Wait until 10:00 AM the next day → Send Email with the apply link → Update Opportunity to stage Invited. That replaces step 4's manual text.</li>
+      <li>In B, swap the nudge task for a reminder email.</li>
+      <li>Use Google Forms' <b>Get pre-filled link</b> on Erik's form, so the email link fills in name, email and generation with <code>{{contact.first_name}}</code>, <code>{{contact.email}}</code> and <code>{{contact.gi_generation}}</code>. Test it with a name that has a space or apostrophe first.</li>
+    </ul>
+    <p><b>Phase 2 (optional):</b> a short Apps Script on Erik's response sheet posts each new response to a GHL Inbound Webhook trigger, which moves the card to Applied automatically. Until then, matching names by hand once a week is fine at this volume.</p>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>Step 5: Nightly log and scoreboard</h2>
+    <p><b>GHL counts the scans for you. You only count the things it can't see:</b> how many people stopped, how many answered on camera, usable clips, and how the owner reacted. Both go into the Measures table in the On the Road field plan, one row per night.</p>
+
+    <h3>Contacts → Smart Lists. Save three:</h3>
+    <ol>
+      <li><code>OTR — last night</code>: tag <code>source: on the road</code>, Date Added = yesterday. This gives you the Signups column. Add a GI Generation column to read the Gen Z count off it.</li>
+      <li><code>OTR — no src</code>: tag <code>otr: no src</code>. Should stay empty. Anything here means a bad card or a forwarded link.</li>
+      <li><code>OTR — fan list</code>: tag <code>gi: fan list</code>. The list sponsors and episode announcements go to.</li>
+    </ol>
+    <p><b>Scoreboard:</b> Opportunities → GI OTR Fans V01, grouped by Source. That's scans and applicants per venue, which is the number you show a restaurant owner. Bring it to the Monday 7 AM call.</p>
+    <div class="n360-tw"><table>
+      <tr><th>Measures column</th><th>Where it comes from</th></tr>
+      <tr><td>Signups, Gen Z signups</td><td>Smart list <code>OTR — last night</code></td></tr>
+      <tr><td>Contestant applicants</td><td>Pipeline, Applied stage, by source</td></tr>
+      <tr><td>Source tag</td><td>The venue slug on the card</td></tr>
+      <tr><td>Stopped, answers on camera, usable clips, owner outcome</td><td>You, counted on site</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Test before printing</h2>
+    <p><b>No card gets printed until scan 1 below passes on your phone.</b> A venue tag that doesn't land is the one failure you can't fix after the night is over. Scan a QR on your phone over cellular, not desktop Wi-Fi, because that's how real people will do it.</p>
+    <ul class="moves">
+      <li><b>Scan 1:</b> QR for <code>?src=test-venue</code>, Generation X. Check: <code>road.</code> redirected to the form, and the URL still ends in <code>?src=test-venue</code>.</li>
+      <li>Contact created with first name, phone, email and GI Generation = Generation X.</li>
+      <li><b>GI Source Venue = <code>test-venue</code></b> on the contact. This is the critical check.</li>
+      <li>Tags: <code>source: on the road</code> and <code>gi: fan list</code> are there. <code>otr: no src</code> is not.</li>
+      <li>One card in GI OTR Fans V01 at Scanned, named after the contact, Source = <code>test-venue</code>.</li>
+      <li>The notification email arrived, with the generation and venue showing as text, not raw <code>{{…}}</code> tokens. Check spam before calling it missing.</li>
+      <li>The task "Text … the apply link" is on your task list.</li>
+      <li><b>Scan 2:</b> open the bare <code>road.generationallyincorrect.net</code> with no <code>?src=</code>. Check: the <code>otr: no src</code> tag lands.</li>
+      <li>Move the scan 1 card to Invited, then Applied. Check: status turns Won, <code>otr: applied</code> lands, and Enrollment History shows it left GI OTR Invite V01.</li>
+      <li>Enrollment History on all three workflows: every action Executed, none skipped.</li>
+      <li>Keep the test contact. Move its card to Fan Only as the known-good reference, the same as GI TestOne.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>Blockers and open decisions</h2>
+    <p><b>Nothing here blocks building steps 1 to 5. They block automating follow-up, and the release blocks filming.</b></p>
+    <div class="n360-tw"><table>
+      <tr><th>Item</th><th>Why it matters</th><th>Next move</th></tr>
+      <tr><td><b>On-camera release</b></td><td>Everyone filmed has to sign before they're on camera. The Talent Release is written for panelists, not 60-second street answers</td><td>Decide whether to use a short appearance release or the full Talent Release, and get the text reviewed. Then build it as its own QR form, with paper backups</td></tr>
+      <tr><td><b>No SMS (no number, no A2P)</b></td><td>GHL can't text anyone, so your phone does it for now</td><td>Personal texts until A2P is registered under the GI entity</td></tr>
+      <tr><td><b>Email sending on .net</b></td><td>Unknown whether the sending domain is verified. The automated invite and reminder wait on it</td><td>Check Settings → Email Services. If it isn't verified, add DKIM/SPF on Cloudflare, then build the "Later" steps</td></tr>
+      <tr><td><b>Erik's Google Form</b></td><td>Prefill needs entry IDs. A "Where did you meet us?" question would carry the venue into the Topic Matrix</td><td>Ask Erik: OK to add one question and use prefilled links?</td></tr>
+      <tr><td><b>First night date</b></td><td>The week of Nov 9 is also taping week (Thu Nov 12 backup, Sat Nov 14 primary)</td><td>Pick a night that doesn't collide. Erik gets the owner's OK in writing</td></tr>
+      <tr><td><b>Helper rate</b></td><td>A new cost against the $800/month cash budget</td><td>Partner vote in Creative Approvals</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="footer">
+      Generationally Incorrect · On the Road — GHL Funnel Build Spec · Ninja-360 Digital Media LLC · Updated 2026-11-06 · Partners only<br>
+      Put them on the map · Tell the truth beautifully · Always sharpen the blade<br>
+      © 2026 Ninja-360 Digital Media LLC | Kansas City, MO
+    </div>
+  </div>
+</section>
+
+<script defer src='/share/responsive-patch.js'></script>
+<link rel="stylesheet" href="/share/easter-egg.css">
+<div id="egg-badge" title="???"><img src="/assets/dojo-head-ninja.png" alt=""></div>
+<div id="egg-pop"><b>🥷 Built by Head Ninja Tim Petet</b><br>Founder, Ninja 360 Digital Media.</div>
+<script src="/share/easter-egg.js"></script>
+</body>
+</html>
