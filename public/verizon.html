@@ -707,14 +707,18 @@ const svc=j=>(S.sv&&S.sv[j.id]!==undefined)?S.sv[j.id]:svDef(j);
 /* ---------- the equation ----------
    A crew mate costs 150 a day; every charge costs 30. Net is what the day is worth.
    With a mate the work goes faster — how much faster is the pace, which climbs as they learn. */
-const COST={crewDay:150,charge:30,coDay:125};   // coDay: a contractor day when Cody drives a run on his own
+const COST={crewDay:150,charge:30,coDay:125,coNight:150};   // coDay: a contractor day when Cody drives a run on his own; coNight: that day when it ends in a room (Tim, 11/7)
 const VEH={ev:{label:'White EV',ev:true},van:{label:'Tim’s van'},own:{label:'Cody’s own car'}};   // only the EV has a battery, chargers and a range; gas vehicles run with no limit
 const vehOf=d=>(d&&VEH[d.vehicle])?d.vehicle:'ev', isEV=d=>vehOf(d)==='ev';
 const viaKeys=d=>(d&&Array.isArray(d.via))?d.via.filter(k=>PLACES[k]):[], viaLL=d=>viaKeys(d).map(placeLL);   // a personal leg before the day ends — Cody's run through Columbia
 const driverOf=d=>(d&&d.driver&&CREW[d.driver]&&d.driver!=='tim')?d.driver:'tim';
+// Tim's pay rulings for a contractor day that did not pay the standing rate: date → driver → pts. A table rather than a field on the
+// day, so the number holds on every phone whether or not it has the day yet. Fri 11/6: Cody's Kansas day ended in a room in El Dorado.
+const PAY_RULING={'2026-11-06':{cody:COST.coNight}};
+const coPayOf=d=>{ const r=d&&d.date&&PAY_RULING[d.date], v=r&&r[driverOf(d)]; return Number.isFinite(v)?v:COST.coDay };
 const PACE={train:{m:1.3,label:'Training — slower for now'},split:{m:0.6,label:'Split duties'},tuned:{m:0.3,label:'Fine-tuned — ~15 min a store'}};
 const paceMult=d=>(d&&d.crew&&CREW[d.crew])?(PACE[d.pace]||PACE.split).m:1;
-const dayCosts=d=>({crew:(d&&d.crew&&CREW[d.crew]?COST.crewDay:0)+(driverOf(d)!=='tim'?COST.coDay:0), charge:!isEV(d)?0:COST.charge*((d&&d.ids)||[]).filter(id=>S.chargeAt&&S.chargeAt[id]).length});
+const dayCosts=d=>({crew:(d&&d.crew&&CREW[d.crew]?COST.crewDay:0)+(driverOf(d)!=='tim'?coPayOf(d):0), charge:!isEV(d)?0:COST.charge*((d&&d.ids)||[]).filter(id=>S.chargeAt&&S.chargeAt[id]).length});
 const stat=id=>S.status[id]||'todo';
 const done=id=>stat(id)!=='todo';
 // Shot = this stop is finished and does not get driven to again. Three ways: Tim's own lock
@@ -833,8 +837,8 @@ const CREW={
         badge:'/assets/crew/web/crew-tim-emblem-320.webp',  banner:'/assets/crew/crew-tim-banner.png',  emails:[]},
   gabe:{short:'Gabe',name:'Gabriel Miller', role:'Creative · Video Ninja',       emblem:'/assets/crew/web/crew-gabe-emblem-96.webp',
         badge:'/assets/crew/web/crew-gabe-emblem-320.webp', banner:'/assets/crew/crew-gabe-banner.png', emails:[]},
-  cody:{short:'Cody',name:'Cody Petet',     role:'Field Ninja · Photo & Driver', emblem:'/assets/crew/web/crew-cody-emblem-96.webp',
-        badge:'/assets/crew/web/crew-cody-emblem-320.webp', banner:'/assets/crew/web/crew-cody-emblem-320.webp', emails:[]},
+  cody:{short:'Cody',name:'Cody Petet',     role:'Field Ninja · Photo & Driver', emblem:'/assets/crew/web/crew-cody-badge-96.webp',   // the Photography · Driver badge (Tim, 11/7); the older emblem files stay beside it
+        badge:'/assets/crew/web/crew-cody-badge-320.webp', banner:'/assets/crew/web/crew-cody-badge-320.webp', emails:[]},
   pavan:{short:'Pavan',name:'Pavan Ganta',  role:'Systems Architect · The Engine Builder', emblem:'/assets/crew/web/crew-pavan-emblem-96.webp',
         badge:'/assets/crew/web/crew-pavan-emblem-320.webp', banner:'/assets/crew/crew-pavan-banner.png', emails:[]},
   erik:{short:'Erik',name:'Erik Juergensen', role:'Studio Ally · Lucky 13',       emblem:'/assets/crew/web/crew-erik-emblem-96.webp',
@@ -4262,6 +4266,20 @@ function migrate(){
     asRan('2026-10-28','cody','STL run day 2, as it went (Tim, 10/28 night): all six shot — Bridgeton, Florissant ×2, Olivette, Creve Coeur (released by Betsy 10/27), Chesterfield. One consolidated invoice Fri 10/30 (Net 30, card OFF). Cody day worked: 125 pts.');
     S.days.forEach(d=>{ if(d.note&&d.note.indexOf('$')>=0)d.note=d.note.replace(/\$(\d[\d,]*)/g,'$1 pts') });   // we speak in points — any dollar a stored note still carries converts
     S.active=Math.max(0,Math.min(S.active||0,S.days.length-1)) }
+  // 11/7, Tim: "Tag Newton as: Need to discuss with me." Victra 118416 — Newton, KS was on Cody's Friday route, and IDS shows a
+  // partial upload: no 360, and the first check-in is missing its outside shots. A note on the stop, not a status — it stays
+  // Planned (Rule 42) and the ledger does not move. Anything already written on the stop stays; this goes after it.
+  if(!S.mig.newton1107){ S.mig.newton1107=1; const NEWTON='2026-5976', tag='Need to discuss with Tim — IDS shows a partial upload: no 360, first check-in missing the outside shots (Tim, 11/7).';
+    S.notes=(S.notes&&typeof S.notes==='object'&&!Array.isArray(S.notes))?S.notes:{};
+    if(BY[NEWTON]){ const cur=jobNoteText(NEWTON); if(!cur)S.notes[NEWTON]=tag; else if(cur.indexOf('Need to discuss with Tim')<0)S.notes[NEWTON]=cur+' · '+tag } }
+  // 11/7, Tim, for the books: Cody's Friday 11/6 Kansas day pays 150 pts — it ended in a room in El Dorado, so it is an overnight day,
+  // not a 125 local day (PAY_RULING above carries the number) — and the motel receipt is covered. Cody says the room was 90; the books
+  // take what the receipt says, so the photo is still owed. Only that day: the STL run and October stay at the 125 a day ruled 10/21.
+  // The note goes on the day once a phone has it; until then this tries again at boot, and the flag is set only when the day is found.
+  if(!S.mig.ovn1106){ const fri=S.days.find(d=>d.date==='2026-11-06'&&driverOf(d)==='cody');
+    if(fri){ S.mig.ovn1106=1;
+      const tag='Overnight in El Dorado: the day pays '+coPayOf(fri)+' pts, not '+COST.coDay+' (Tim, 11/7). Motel receipt covered — Cody says 90 pts; booked at what the receipt says, photo still owed.';
+      if(String(fri.note||'').indexOf('Overnight in El Dorado')<0)fri.note=(String(fri.note||'').trim()?String(fri.note).trim()+' · ':'')+tag } }
   // the QuickBooks log's miles for the days it covered — a number Tim typed himself stands
   if(!S.mig.logmi0926){ S.mig.logmi0926=1;
     PAST_RUNS.forEach(r=>{ const d=r[6]&&S.days.find(x=>x.date===r[0]); if(d&&!(d.logMi>0))d.logMi=r[6] }) }
