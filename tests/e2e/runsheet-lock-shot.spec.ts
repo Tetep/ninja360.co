@@ -36,6 +36,7 @@ const MIG = {
   cameron0915: 1, lincoln0925: 1, notshot98172: 1, shoot98172: 1, notsun98172: 1, notshot4049: 1,
   plan1007: 1, vehicle1007: 1, run1008: 1, run1013: 1, run1016: 1, run1020: 1,
   pastruns0926: 12, logmi0926: 1, logmi1006: 1, manhattan0910: 1, manhattan0909: 1, planlock0923: 1, sheetdates1003: 1, sync1021: 1, stl1027: 1, stl1029: 2,
+  newton1107: 1, ovn1106: 1,
 };
 const migBut = (...skip: string[]) => Object.fromEntries(Object.entries(MIG).filter(([k]) => !skip.includes(k)));
 
@@ -719,5 +720,66 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await expect(rows.nth(0).locator('a')).toHaveAttribute('href', /maps\.google\.com\/\?q=37\.8175,-96\.8829/);
     await expect(rows.nth(1)).toContainText('GO LIVE');
     await expect(rows.nth(1)).toContainText('2 shot');
+  });
+
+  // ── Tim, 11/7: the newer Cody badge, Newton tagged, and the overnight for the books ──────────────────────────────
+  const ev = (page: Page, code: string) => page.evaluate(c => (window as any).eval(c), code);
+
+  test('Cody’s badge is the newer one on the header chip, the who sheet and the banner, and the files load', async ({ page }) => {
+    await open(page, state({ who: 'cody', oath: { who: 'cody', at: 1 } }));
+    expect(await ev(page, '[CREW.cody.emblem, CREW.cody.badge, CREW.cody.banner].join("|")'))
+      .toBe('/assets/crew/web/crew-cody-badge-96.webp|/assets/crew/web/crew-cody-badge-320.webp|/assets/crew/web/crew-cody-badge-320.webp');
+    const chip = page.locator('#whoChip img');
+    await expect(chip).toHaveAttribute('src', '/assets/crew/web/crew-cody-badge-96.webp');
+    await expect.poll(() => chip.evaluate((i: HTMLImageElement) => i.complete ? i.naturalWidth : 0)).toBe(96);
+    // the sheet that offers the badge at 320 — fetched for real, a webp with a clear background
+    const res = await page.request.get('/assets/crew/web/crew-cody-badge-320.webp');
+    expect(res.status()).toBe(200);
+    expect(res.headers()['content-type']).toContain('image/webp');
+  });
+
+  const NEWTON = '2026-5976';   // Victra 118416 — Newton, KS
+
+  test('Newton is tagged "Need to discuss with Tim" once, and its status and ledger do not move', async ({ page }) => {
+    await open(page, state({ mig: migBut('newton1107'), notes: {} }));
+    const note = () => ev(page, 'S.notes["' + NEWTON + '"]') as Promise<string>;
+    expect(await note()).toContain('Need to discuss with Tim');
+    expect(await note()).toContain('no 360');
+    expect(await ev(page, 'S.mig.newton1107')).toBe(1);
+    expect(await ev(page, 'JSON.stringify([S.status["' + NEWTON + '"]||null, S.locks["' + NEWTON + '"]||null])')).toBe('[null,null]');
+    await page.reload();
+    expect(((await note()).match(/Need to discuss with Tim/g) || []).length).toBe(1);
+  });
+
+  test('Newton: a note somebody already wrote on the stop stays, and the tag follows it', async ({ page }) => {
+    await open(page, state({ mig: migBut('newton1107'), notes: { [NEWTON]: 'Gate code 4411' } }));
+    const n = await ev(page, 'S.notes["' + NEWTON + '"]') as string;
+    expect(n.startsWith('Gate code 4411 · Need to discuss with Tim')).toBe(true);
+  });
+
+  test('Cody’s Friday 11/6 overnight pays 150 and carries the receipt note; every other day stays at 125', async ({ page }) => {
+    const fri = day({ id: 'dfri', date: '2026-11-06', driver: 'cody', vehicle: 'own', ids: [STOCKTON], note: 'Kansas run.' });
+    const thu = day({ id: 'dthu', date: '2026-11-05', driver: 'cody', vehicle: 'own', ids: [BUFFALO], note: 'Topeka.' });
+    const timFri = day({ id: 'dtim', date: '2026-11-06', ids: [PARKCITY] });
+    await open(page, state({ days: [thu, fri, timFri], mig: migBut('ovn1106') }));
+    const d = (id: string) => 'S.days.find(x=>x.id==="' + id + '")';
+    // the numbers: a table of Tim's rulings, so they hold with or without the day's note
+    expect(JSON.parse(await ev(page, 'JSON.stringify([dayCosts(' + d('dfri') + ').crew, dayCosts(' + d('dthu') + ').crew, dayCosts(' + d('dtim') + ').crew])')))
+      .toEqual([150, 125, 0]);
+    // the words: Friday's day carries the ruling and the receipt, once; Thursday's note is untouched
+    const note = () => ev(page, d('dfri') + '.note') as Promise<string>;
+    expect((await note()).startsWith('Kansas run. · Overnight in El Dorado: the day pays 150 pts, not 125 (Tim, 11/7).')).toBe(true);
+    expect(await note()).toContain('Motel receipt covered');
+    expect(await note()).toContain('photo still owed');
+    expect(await ev(page, d('dthu') + '.note')).toBe('Topeka.');
+    expect(await ev(page, 'S.mig.ovn1106')).toBe(1);
+    await page.reload();
+    expect(((await note()).match(/Overnight in El Dorado/g) || []).length).toBe(1);
+  });
+
+  test('Cody’s overnight note waits for the day: no Friday on the phone sets no flag, and the 125 stands elsewhere', async ({ page }) => {
+    await open(page, state({ days: [day({ id: 'dwed', date: '2026-11-04', driver: 'cody', vehicle: 'own', ids: [BUFFALO] })], mig: migBut('ovn1106') }));
+    expect(await ev(page, '!!S.mig.ovn1106')).toBe(false);
+    expect(await ev(page, 'dayCosts(S.days.find(x=>x.id==="dwed")).crew')).toBe(125);
   });
 });
