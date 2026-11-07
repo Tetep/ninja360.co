@@ -836,6 +836,11 @@ const CREW={
         badge:'/assets/crew/web/crew-pavan-emblem-320.webp', banner:'/assets/crew/crew-pavan-banner.png', emails:[]},
   erik:{short:'Erik',name:'Erik Juergensen', role:'Studio Ally · Lucky 13',       emblem:'/assets/crew/web/crew-erik-emblem-96.webp',
         badge:'/assets/crew/web/crew-erik-emblem-320.webp',  banner:'/assets/crew/crew-erik-banner.png',  emails:[]}};
+// Who the sign-in offers (Tim, 11/7: "everyone but me and Brandon"). Everyone stays in CREW — History, Score, the
+// crew-mate and driver pickers and every old run still name them — but only these two can be picked on a device
+// or matched from an Access sign-in. A device already signed in as somebody else keeps them until it switches.
+const SIGNIN=['tim','cody'];
+const signable=()=>Object.entries(CREW).filter(([id])=>SIGNIN.includes(id));
 // the badge is the person: 96px on a pin, 320px on the agreement screen, the full
 // banner across the hero. Swap the file by name and every one of them follows.
 const badgeOf =id=>{const c=CREW[id]||CREW.tim; return c.badge||c.emblem};
@@ -843,8 +848,8 @@ const bannerOf=id=>{const c=CREW[id]||CREW.tim; return c.banner||c.badge||c.embl
 const who=()=>S.who&&CREW[S.who]?CREW[S.who]:null;
 function matchCrew(email,name){
   const e=String(email||'').toLowerCase(), n=String(name||'').toLowerCase();
-  for(const [id,c] of Object.entries(CREW)){ if(c.emails.some(x=>x.toLowerCase()===e))return id }
-  for(const [id,c] of Object.entries(CREW)){ const [first,last]=c.name.toLowerCase().split(' ');
+  for(const [id,c] of signable()){ if(c.emails.some(x=>x.toLowerCase()===e))return id }
+  for(const [id,c] of signable()){ const [first,last]=c.name.toLowerCase().split(' ');
     if(n&&n.includes(last)&&(n.includes(first)||n.includes(c.short.toLowerCase())))return id }
   return null;
 }
@@ -863,7 +868,7 @@ function renderWho(){
 }
 function whoSheet(){
   sheet('Who\'s running today?','Your emblem goes on every stop you mark SHOT.',
-    '<div class="shlist">'+Object.entries(CREW).map(([id,c])=>'<button class="shbtn who'+(id===S.who?' cur':'')+'" data-who="'+id+'"><img src="'+badgeOf(id)+'" alt="">'+escHTML(c.name)+' <small>'+escHTML(c.role)+'</small></button>').join('')+'</div><button class="ghost" id="whoPhil" style="width:100%;margin-top:8px">The Philosophy of the Ninja 360</button>',
+    '<div class="shlist">'+signable().map(([id,c])=>'<button class="shbtn who'+(id===S.who?' cur':'')+'" data-who="'+id+'"><img src="'+badgeOf(id)+'" alt="">'+escHTML(c.name)+' <small>'+escHTML(c.role)+'</small></button>').join('')+'</div><button class="ghost" id="whoPhil" style="width:100%;margin-top:8px">The Philosophy of the Ninja 360</button>',
     el=>{el.querySelectorAll('[data-who]').forEach(b=>b.onclick=()=>{S.who=b.dataset.who; dirty(); closeSheet(); renderWho(); render(); if(!needsOath())toast(CREW[S.who].short+' is running today'); afterSignIn()});   // the call is the confirmation
         el.querySelector('#whoPhil').onclick=()=>oathSheet()});
 }

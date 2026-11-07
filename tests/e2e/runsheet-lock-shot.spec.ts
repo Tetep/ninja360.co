@@ -564,4 +564,24 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     s = await saved(page);
     expect(s.published[t].skipped).toEqual([]);
   });
+
+  test('sign-in offers only Tim and Cody; the rest of the crew stays in the book', async ({ page }) => {
+    // Tim, 11/7: "everyone but me and Brandon". CREW still holds Gabe, Pavan and Erik — History, Score and the
+    // crew-mate picker name them on old runs — but nobody can sign in as them, by tap or by an Access name-match.
+    await open(page, state());
+    await page.locator('#whoChip').click();
+    const names = page.locator('.sheet .shbtn.who');
+    await expect(names).toHaveCount(2);
+    await expect(names.nth(0)).toContainText('Tim Petet');
+    await expect(names.nth(1)).toContainText('Cody Petet');
+    const offered = await page.evaluate(() => (window as any).eval('signable().map(x=>x[0])'));
+    expect(offered).toEqual(['tim', 'cody']);
+    const matched = await page.evaluate(() => {
+      const w = window as any;
+      return [w.matchCrew('', 'Gabriel Miller'), w.matchCrew('', 'Pavan Ganta'), w.matchCrew('', 'Erik Juergensen'), w.matchCrew('', 'Cody Petet'), w.matchCrew('', 'Tim Petet')];
+    });
+    expect(matched).toEqual([null, null, null, 'cody', 'tim']);
+    const kept = await page.evaluate(() => Object.keys((window as any).eval('CREW')));
+    expect(kept).toEqual(['tim', 'gabe', 'cody', 'pavan', 'erik']);
+  });
 });
