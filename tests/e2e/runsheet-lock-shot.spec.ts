@@ -333,9 +333,6 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(await page.evaluate(() => (window as any).datesToReport().length)).toBe(n);
   });
 
-  // RED on main since #113: mergeShared() in verizon.html reads myDev (the device register) and nothing declares it,
-  // so a crew copy with a state in it throws ReferenceError before the locks are unioned. An app bug, not a stale
-  // fixture — this test and the un-shot one below stay red on purpose until it is fixed.
   test('crew merge: a lock is kept, the later unlock wins, a stale build\'s future lock is converted', async ({ page }) => {
     await open(page, state());
     const r = await page.evaluate(([tm, stop, td]) => {
@@ -377,7 +374,6 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(r.f).toBe(true);
   });
 
-  // RED on main since #113 — the same myDev ReferenceError in mergeShared() (see above)
   test('un-shot on one phone survives a pull on the other', async ({ page }) => {
     const t = today(), AT = Date.now() - 60_000;   // stamped a minute ago — "09:00 today" is in the future on an early CI run
     await open(page, state({
