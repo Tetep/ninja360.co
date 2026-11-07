@@ -782,4 +782,69 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(await ev(page, '!!S.mig.ovn1106')).toBe(false);
     expect(await ev(page, 'dayCosts(S.days.find(x=>x.id==="dwed")).crew')).toBe(125);
   });
+
+  // ── phone widths (Tim, 11/7: "check mobile responsiveness") ────────────────────────────────────────────────────
+  // A phone that is handed a page wider than itself grows its layout viewport to fit, so clientWidth follows the overflow and
+  // noSidewaysScroll() cannot see it: these compare the page against the width the phone really is.
+  const TABS = ['today', 'plan', 'clusters', 'app', 'board', 'history', 'oct'];
+  const showTab = (page: Page, tab: string) => page.evaluate(t => (document.querySelector('#nav button[data-s="' + t + '"]') as HTMLElement).click(), tab);
+
+  test('phone widths: no tab scrolls sideways at 320, 360 or 390 px', async ({ page }) => {
+    await open(page, state());
+    for (const width of [320, 360, 390]) {
+      await page.setViewportSize({ width, height: 800 });
+      for (const tab of TABS) {
+        await showTab(page, tab);
+        await page.waitForTimeout(200);
+        const sw = await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth));
+        expect(sw, tab + ' tab at ' + width + ' px must fit the screen').toBeLessThanOrEqual(width);
+      }
+    }
+  });
+
+  test('phone widths: the header keeps its title and its buttons apart, and stays readable in the light theme', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'light' });
+    await open(page, state());
+    for (const width of [320, 360, 390, 412]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.waitForTimeout(100);
+      const g = await page.evaluate(() => {
+        const rect = (e: Element) => { const r = e.getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top, b: r.bottom }; };
+        const text = (sel: string) => { const rg = document.createRange(); rg.selectNodeContents(document.querySelector(sel)!); return rect(rg as unknown as Element); };
+        const rgb = (getComputedStyle(document.querySelector('header .hrow')!).backgroundColor.match(/\d+/g) || ['255', '255', '255']).map(Number);
+        return { words: [text('.hbrand h1'), text('.hbrand .sub')], btns: [...document.querySelectorAll('.hbtns button')].map(rect),
+          lum: (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255 };
+      });
+      const hit = g.btns.some(b => g.words.some(w => b.l < w.r && b.r > w.l && b.t < w.b && b.b > w.t));
+      expect(hit, 'title or tagline under a button at ' + width + ' px').toBe(false);
+      expect(g.lum, 'a dark box behind the header\'s light text at ' + width + ' px').toBeLessThan(0.3);
+    }
+  });
+
+  test('phone sheets: fields are 16 px so the page does not zoom, the number field is styled, and the journal map link is a real target', async ({ page }) => {
+    const t = today();
+    await stubCrewCopy(page);
+    await page.route('**/api/journal', r => r.fulfill({ contentType: 'application/json', body: JSON.stringify({ n: 1, entries: [
+      { kind: 'signout', by: 'cody', date: t, at: Date.now() - 60_000, miles: 312, milesSrc: 'est', shot: [],
+        loc: { lat: 37.8175, lon: -96.8829, acc: 30, place: 'El Dorado, KS' }, room: { type: 'hotel', cost: 90, place: 'El Dorado, KS' } }] }) }));
+    await open(page, state({ who: 'cody', oath: { who: 'cody', at: 1 }, sync: { key: 'test-crew-key-0925', v: 0, at: 0 }, nav: 'now' }), '#s-today');
+    await page.setViewportSize({ width: 360, height: 740 });
+    const metrics = (sel: string) => page.locator(sel).evaluate((e: Element) => ({ font: parseFloat(getComputedStyle(e).fontSize), h: e.getBoundingClientRect().height, w: e.getBoundingClientRect().width, border: getComputedStyle(e).borderTopWidth }));
+    await page.locator('#tSignOut').click();
+    for (const id of ['#soPlace', '#soMiles']) {
+      const m = await metrics('.sheet ' + id);
+      expect(m.font, id + ' font size').toBeGreaterThanOrEqual(16);
+      expect(m.h, id + ' height').toBeGreaterThanOrEqual(36);
+    }
+    await page.evaluate(() => (window as any).closeSheet());
+    await page.locator('#crewChip').click();
+    const sms = await metrics('.sheet #liveSmsTo');
+    expect(sms.font, 'number field font size').toBeGreaterThanOrEqual(16);
+    expect(sms.h, 'number field height').toBeGreaterThanOrEqual(36);
+    expect(sms.border, 'number field is styled like the others, not the browser default').toBe('1px');
+    await page.locator('.sheet #liveJournal').click();
+    const link = await metrics('.sheet #jrList a');
+    expect(link.w, 'map link width').toBeGreaterThanOrEqual(36);
+    expect(link.h, 'map link height').toBeGreaterThanOrEqual(30);
+  });
 });
