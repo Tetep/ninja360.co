@@ -61,13 +61,13 @@ const cell = async (page: Page, scope: string, label: string) => {
   return hit!.split('\n').slice(1).join(' ').trim();
 };
 
-async function open(page: Page, seed: Record<string, unknown>, tab = '#s-plan') {
+async function open(page: Page, seed: Record<string, unknown>, tab = '#s-plan', route = ROUTE) {
   // the app geocodes rows, loads tiles and chargers, and fetches fonts on start: none of it is under test,
   // and any of it can re-render the page mid-click
   await page.route(/nominatim\.openstreetmap\.org|tile\.openstreetmap\.org|api\.openchargemap\.io|fonts\.(googleapis|gstatic)\.com/, r => r.abort());
   // seed once: a reload must find what the app saved, not the seed again
   await page.addInitScript(([k, v]) => { if (!localStorage.getItem(k)) localStorage.setItem(k, JSON.stringify(v)); }, [LSKEY, seed] as const);
-  const res = await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
+  const res = await page.goto(route, { waitUntil: 'domcontentloaded' });
   expect(res?.status(), 'the run sheet should resolve').toBeLessThan(400);
   await expect(page.locator(tab)).toBeVisible();
 }
@@ -583,5 +583,32 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(matched).toEqual([null, null, null, 'cody', 'tim']);
     const kept = await page.evaluate(() => Object.keys((window as any).eval('CREW')));
     expect(kept).toEqual(['tim', 'gabe', 'cody', 'pavan', 'erik']);
+  });
+
+  test('a link made for Cody signs a fresh phone in as Cody, and never overrides a phone that already has somebody', async ({ page, browser }) => {
+    // fresh phone (nobody asked yet) opened from Cody's link
+    await open(page, state({ who: null, oath: null }), '#s-plan', ROUTE + '?who=cody');
+    await expect(page.locator('#whoChip img')).toHaveAttribute('alt', 'Cody');
+    expect((await saved(page)).who).toBe('cody');
+    // ?who= for somebody the sign-in no longer offers is ignored: a fresh phone starts as Tim
+    const p2 = await (await browser.newContext()).newPage();
+    await open(p2, state({ who: null, oath: null }), '#s-plan', ROUTE + '?who=gabe');
+    expect((await saved(p2)).who).toBe('tim');
+    // a phone that is already Tim stays Tim when it opens Cody's link
+    const p3 = await (await browser.newContext()).newPage();
+    await open(p3, state(), '#s-plan', ROUTE + '?who=cody');
+    expect((await saved(p3)).who).toBe('tim');
+  });
+
+  test('crew sync: each person gets their own link, ?who= before the # and the key after it', async ({ page }) => {
+    await open(page, state({ sync: { key: 'test-crew-key-0925', v: 0, at: 0 }, nav: 'now' }), '#s-today');
+    await page.locator('#crewChip').click();
+    const cody = page.locator('.sheet #liveLink-cody'), tim = page.locator('.sheet #liveLink-tim');
+    await expect(cody).toHaveText(/\/verizon\.html\?who=cody#crew=test-crew-key-0925$/);
+    await expect(tim).toHaveText(/\/verizon\.html\?who=tim#crew=test-crew-key-0925$/);
+    // the other person's link leads (it is the one you send); your own follows
+    await expect(page.locator('.sheet .lab').filter({ hasText: /link$/ })).toHaveText(['Cody’s link', 'Your link']);
+    await expect(page.locator('.sheet [data-lcopy="cody"]')).toHaveClass(/prim/);
+    await expect(page.locator('.sheet [data-lcopy="tim"]')).toHaveClass(/ghost/);
   });
 });

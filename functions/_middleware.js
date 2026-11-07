@@ -92,6 +92,38 @@ const TRACKER_PATH = /^\/(map|runsheet|verizon)?\/?$/i;
 // renders with a raw 256px image and no styles at all.
 const PASS_THROUGH = /^\/(assets\/|share\/|api\/|favicon\.svg$)/;
 
+// Link previews: whose run sheet this link is for. The link Tim texts Cody ends in ?who=cody, the one he saves for
+// himself in ?who=tim. A text message or a home-screen shortcut reads the page head without running the page, so the
+// head is rewritten here: that person's badge is the preview image and the icon. The crew key rides after the # and
+// never reaches this code. Any other ?who= is ignored and the page goes out as it is.
+const PERSON = {
+  tim: { name: 'Tim', title: 'Tim’s run sheet', badge: 'Tim Petet’s badge', home: 'Tim Runs' },
+  cody: { name: 'Cody', title: 'Cody’s run sheet', badge: 'Cody Petet’s badge', home: 'Cody Runs' },
+};
+
+function personalize(res, url) {
+  const who = (url.searchParams.get('who') || '').toLowerCase();
+  const p = Object.hasOwn(PERSON, who) ? PERSON[who] : null;
+  if (!p || res.status !== 200 || !(res.headers.get('content-type') || '').includes('text/html')) return res;
+  const icon = (file) => `/assets/crew/icons/${who}-${file}`;
+  const head = [
+    '<meta property="og:type" content="website">',
+    '<meta property="og:site_name" content="Ninja 360 Run Sheet">',
+    `<meta property="og:title" content="${p.title}">`,
+    '<meta property="og:description" content="Your plan, your stops, your route. Open it on your phone.">',
+    `<meta property="og:image" content="https://${url.host}${icon('og.jpg')}">`,
+    '<meta property="og:image:type" content="image/jpeg">',
+    '<meta property="og:image:width" content="1200">',
+    '<meta property="og:image:height" content="630">',
+    `<meta property="og:image:alt" content="${p.badge}">`,
+    '<meta name="twitter:card" content="summary_large_image">',
+    `<meta name="apple-mobile-web-app-title" content="${p.home}">`,
+    `<link rel="apple-touch-icon" sizes="180x180" href="${icon('180.png')}">`,
+    `<link rel="icon" type="image/png" sizes="192x192" href="${icon('192.png')}">`,
+  ].join('');
+  return new HTMLRewriter().on('head', { element: (el) => el.append(head, { html: true }) }).transform(res);
+}
+
 async function trackerHost({ request, next, env }) {
   const url = new URL(request.url);
   if (!TRACKER_HOST.test(url.hostname)) return next();
@@ -102,7 +134,7 @@ async function trackerHost({ request, next, env }) {
     const headers = new Headers(res.headers);
     headers.set('X-Robots-Tag', 'noindex, nofollow');
     headers.set('Cache-Control', 'no-store');
-    return new Response(res.body, { status: res.status, headers });
+    return personalize(new Response(res.body, { status: res.status, headers }), url);
   }
 
   if (PASS_THROUGH.test(url.pathname)) return next();

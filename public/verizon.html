@@ -841,6 +841,8 @@ const CREW={
 // or matched from an Access sign-in. A device already signed in as somebody else keeps them until it switches.
 const SIGNIN=['tim','cody'];
 const signable=()=>Object.entries(CREW).filter(([id])=>SIGNIN.includes(id));
+// a link made for somebody (?who=cody) answers "who are you" on a device that has not been asked yet
+const linkWho=()=>{ const w=(new URLSearchParams(location.search).get('who')||'').toLowerCase(); return SIGNIN.includes(w)?w:null };
 // the badge is the person: 96px on a pin, 320px on the agreement screen, the full
 // banner across the hero. Swap the file by name and every one of them follows.
 const badgeOf =id=>{const c=CREW[id]||CREW.tim; return c.badge||c.emblem};
@@ -3824,7 +3826,9 @@ function mintKey(){
   const a=pick(); let b=pick(); while(b===a)b=pick(); let c=pick(); while(c===a||c===b)c=pick();
   return a+'-'+b+'-'+c+'-'+(10+Math.floor(Math.random()*90));
 }
-const liveLink=()=>location.origin+location.pathname+'#crew='+encodeURIComponent(S.sync.key||'');
+// each person gets their own link: ?who= tells the server (functions/_middleware.js) whose badge is the text-message preview and
+// the home-screen icon, and tells a device that has not been asked yet who is running. The key stays after the #.
+const personLink=id=>location.origin+location.pathname+'?who='+id+'#crew='+encodeURIComponent(S.sync.key||'');
 const liveAgo=()=>{ if(!S.sync.at)return 'not yet';
   const m=Math.round((Date.now()-S.sync.at)/60000);
   return m<1?'just now':m<60?m+'m ago':Math.round(m/60)+'h ago'; };
@@ -3859,12 +3863,14 @@ function syncSheet(){
       :'One tap and this plan follows you onto every phone you pick up — and GO LIVE has a journal to write to.',
     (on
       ? '<div class="lab">Add a device</div>'
-        +'<div class="hint" style="margin:3px 0 7px">Send this link to the phone you want on the plan and open it there. That is the whole job — no key to type. The key rides in the part of the address after the #, which browsers never send to any server.</div>'
-        +'<pre class="req" id="liveLink">'+escHTML(liveLink())+'</pre>'
-        +'<div class="row" style="margin:8px 0 0">'
-          +'<button class="prim" id="liveCopy">Copy the link</button>'
-          +'<button class="ghost" id="liveSms">Text it</button>'
-          +'<button class="ghost" id="liveNow">Sync now</button></div>'
+        +'<div class="hint" style="margin:3px 0 7px">Send each person their own link and open it on their phone. The text-message preview and the home-screen icon are theirs. That is the whole job — no key to type. The key rides in the part of the address after the #, which browsers never send to any server.</div>'
+        +[...SIGNIN].sort((a,b)=>(a===S.who)-(b===S.who)).map(id=>   // the other person first: that is the one you send
+          '<div class="lab" style="margin:10px 0 3px">'+(id===S.who?'Your link':escHTML(CREW[id].short)+'’s link')+'</div>'
+          +'<pre class="req" id="liveLink-'+id+'">'+escHTML(personLink(id))+'</pre>'
+          +'<div class="row" style="margin:6px 0 0">'
+            +'<button class="'+(id===S.who?'ghost':'prim')+'" data-lcopy="'+id+'">Copy</button>'
+            +'<button class="ghost" data-lsms="'+id+'">Text it</button></div>').join('')
+        +'<div class="row" style="margin:12px 0 0"><button class="ghost" id="liveNow">Sync now</button></div>'
         +'<div class="lab" style="margin:14px 0 3px">Or read it out</div>'
         +'<div class="hint" style="margin:0 0 5px">Same thing, said aloud. Whoever types it on the other phone lands on this plan.</div>'
         +'<pre class="req" id="liveKey">'+escHTML(S.sync.key)+'</pre>'
@@ -3883,10 +3889,10 @@ function syncSheet(){
         const k=el.querySelector('#syncKey').value.trim();
         if(k.length<8){toast('That is too short to be one of ours');return}
         S.sync.key=k; closeSheet(); await crewOn(); };
-      const cp=el.querySelector('#liveCopy'); if(cp)cp.onclick=async()=>
-        toast(await copyText(liveLink(),el.querySelector('#liveLink'))?'Link copied — open it on the other phone':'Select the link and copy it');
-      const sm=el.querySelector('#liveSms'); if(sm)sm.onclick=()=>{
-        location.href='sms:?&body='+encodeURIComponent('Open this on your phone to get on the Ninja-360 run sheet: '+liveLink())};
+      el.querySelectorAll('[data-lcopy]').forEach(b=>b.onclick=async()=>{ const id=b.dataset.lcopy;
+        toast(await copyText(personLink(id),el.querySelector('#liveLink-'+id))?(id===S.who?'Link copied — save it to your home screen':'Link copied — open it on '+CREW[id].short+'’s phone'):'Select the link and copy it') });
+      el.querySelectorAll('[data-lsms]').forEach(b=>b.onclick=()=>{ const id=b.dataset.lsms;
+        location.href='sms:?&body='+encodeURIComponent((id===S.who?'':CREW[id].short+', ')+'open this on your phone to get on the Ninja-360 run sheet: '+personLink(id))});
       const nw=el.querySelector('#liveNow'); if(nw)nw.onclick=async()=>{closeSheet(); await syncPull(); await syncPush(); syncChipShow(); toast('Synced')};
       const off=el.querySelector('#liveOff'); if(off)off.onclick=()=>{
         if(!confirm('Take this device off the crew plan? Its own copy stays, and the link still works to put it back.'))return;
@@ -4454,8 +4460,8 @@ function boot(){
   timeCheck();                 // is this device's clock right? every stamp is its clock
   renderWho(); $('#whoChip').onclick=whoSheet;
   // no sign-in at the door: Access names the runner when it can; otherwise the device stays with whoever
-  // it last had, and a fresh one starts as Tim. The chip in the header switches person any time.
-  detectWho().then(ok=>{ if(!ok&&!S.who){S.who='tim'; dirty(); renderWho(); render()} });
+  // it last had, and a fresh one starts as whoever its link was made for, else Tim. The chip in the header switches person any time.
+  detectWho().then(ok=>{ if(!ok&&!S.who){S.who=linkWho()||'tim'; dirty(); renderWho(); render()} });
   setTimeout(fixGeo,1500);     // after the first paint, quietly place any city-level rows
   adoptLinkKey().then(ok=>{ if(ok&&!SYNCTIMERS)armSync() });
   if(syncOn()){syncChipShow(); syncPull(true).then(()=>syncPush());
