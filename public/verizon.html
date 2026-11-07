@@ -67,6 +67,13 @@ header{background:var(--head-bg);color:var(--head-ink);padding:12px 0 10px}
 header h1{font-size:18px;letter-spacing:-.2px;color:var(--head-ink)}
 header .sub{font-size:12px;color:var(--head-sub);margin-top:1px}
 .hrow{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+/* The History tab's row cards use this same class name (.hrow, further down: white surface, border, overflow:hidden). In the header that
+   turned the dark band into a white box holding near-white text. The box keeps its rounded outline, in the header's own colours. */
+header .hrow{background:var(--head-bg);border-color:var(--head-line)}
+/* On a phone the title, the tagline and the two buttons do not fit on one line (the title is 266px wide before the buttons start):
+   the buttons drop under the title, right-aligned, and the sync chip stays on one line. */
+.hbtns .tbtn{white-space:nowrap}
+@media (max-width:430px){ header .hrow{flex-wrap:wrap;padding:0 4px 6px} .hbrand{flex:1 1 100%} .hbtns{margin-left:auto} }
 .hbtns{display:flex;gap:6px;align-items:center}
 .tbtn{border:1px solid var(--head-line);color:var(--head-ink);border-radius:8px;padding:6px 10px;font-size:12px;min-height:32px}
 /* who's running: their emblem sits right beside the Ninja mark — one tap to switch */
@@ -137,9 +144,11 @@ header .sub{font-size:12px;color:var(--head-sub);margin-top:1px}
 .dchip.add{min-width:auto;display:flex;align-items:center;color:var(--accent);font-weight:600;border-style:dashed}
 .fld{display:flex;flex-direction:column;gap:3px}
 .row{display:flex;flex-wrap:wrap;gap:7px;align-items:end}
-select,input[type=date],input[type=time],input[type=text],input[type=number]{
+select,input[type=date],input[type=time],input[type=text],input[type=number],input[type=tel]{
   padding:8px 9px;border:1px solid var(--line2);border-radius:8px;background:var(--surf2);
   color:var(--ink);font-size:13.5px;font-family:inherit;max-width:210px;min-height:36px}
+/* a phone zooms the whole page when a field under 16px takes focus — the sheets are where thumbs type */
+.sheet input[type=text],.sheet input[type=number],.sheet input[type=tel],.sheet select{font-size:16px}
 .ghost{border:1px solid var(--line2);border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;background:var(--surf2);min-height:36px}
 .ghost.danger{color:var(--bad);border-color:var(--bad)}
 .prim{background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:9px 14px;font-weight:600;font-size:13.5px;min-height:38px}
@@ -189,6 +198,7 @@ select,input[type=date],input[type=time],input[type=text],input[type=number]{
 .idsrow .idsid{color:var(--ink2)}
 .idsrow .idsd{text-align:right}
 .idsrow .idsn{min-width:0;overflow-wrap:anywhere}
+#jrList .idsrow .idsn a{display:inline-block;padding:8px 8px;margin:-8px -4px;color:var(--accent);text-decoration:underline}   /* the map link: a thumb-sized target in the app's colour, the row does not grow */
 .idsrow .ad{font-size:11.5px}
 .filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .filters input{flex:1;min-width:130px;max-width:none}
@@ -564,6 +574,9 @@ a.prim{display:inline-flex;align-items:center;justify-content:center;text-decora
 .octtot td{font-weight:700;border-top:2px solid var(--line2)}.octdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}
 .octt td.octd{text-align:left;white-space:nowrap;font-weight:600;color:var(--ink2);padding-right:10px}
 .octt td.octx{text-align:left;white-space:normal;padding-left:0}
+/* the calendar's date column: one long label ("Western Kansas · TENTATIVE, no date") used to set the width of the whole column and push the page
+   sideways on a phone. It wraps now, in a column of its own size. */
+@media (max-width:430px){ .octt td.octd{white-space:normal;width:92px;padding-right:8px} }
 .omap{height:340px;border-radius:10px;overflow:hidden;background:var(--surf2)}.omap .dmap{height:100%}
 .octpin{width:24px;height:24px;border-radius:50%;border:2px solid #fff;color:#fff;font:700 12px "IBM Plex Mono",monospace;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px #0006}
 .octtent{background:var(--warn-soft);color:var(--warn);border-radius:8px;padding:8px 10px;font-size:12.5px;font-weight:600;margin:6px 0}
@@ -1798,7 +1811,7 @@ function signOutSheet(){
   sheet('Sign out — '+niceDate(date), mine.length+' stop'+(mine.length===1?'':'s')+' marked shot in the app today · '+fmt(mine.reduce((t,l)=>t+l.pts,0)),
     '<div class="lab">Where you are</div>'
     +'<div class="hint" id="soLoc" style="margin:3px 0 6px">Finding you…</div>'
-    +'<div class="row" style="margin:0"><input id="soPlace" type="text" autocomplete="off" placeholder="Town, if the phone cannot tell" style="flex:1;min-width:160px"><button class="ghost" id="soAgain">Find me again</button></div>'
+    +'<div class="row" style="margin:0"><input id="soPlace" type="text" autocomplete="off" placeholder="Type the town" style="flex:1;min-width:160px"><button class="ghost" id="soAgain">Find me again</button></div>'
     +'<div class="lab" style="margin-top:12px">Miles today</div>'
     +'<div class="row" style="align-items:center;margin:3px 0 0"><input id="soMiles" type="number" inputmode="decimal" min="0" max="2000" step="1" value="'+(est||'')+'" placeholder="odometer" style="width:120px"><span class="hint" id="soMilesHint" style="margin:0">'+(est?'Worked out from your stops. Change it if your odometer says different.':'Type the miles from your odometer.')+'</span></div>'
     +'<div class="lab" style="margin-top:12px">Room tonight</div>'
