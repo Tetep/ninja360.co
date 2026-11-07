@@ -611,4 +611,113 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await expect(page.locator('.sheet [data-lcopy="cody"]')).toHaveClass(/prim/);
     await expect(page.locator('.sheet [data-lcopy="tim"]')).toHaveClass(/ghost/);
   });
+
+  // Sign out: the end of the day from the phone in the field — where, miles, room — to the journal, with a text to Tim as the second channel.
+  const codyDay = (t: string, AT: number) => state({
+    who: 'cody', oath: { who: 'cody', at: 1 }, nav: 'today', activeDate: t,
+    sync: { key: 'test-crew-key-0925', v: 0, at: 0 },
+    report: { to: '', cc: '', sms: '+1 (555) 010-2030', sent: {} },
+    days: [day({ date: t, ids: [STOCKTON, BUFFALO], driver: 'cody', vehicle: 'own', locked: { at: 1, by: 'tim' } })],
+    locks: { [STOCKTON]: { d: t, pts: 100, by: 'cody', with: '', at: AT, sd: t } }, status: { [STOCKTON]: 'captured' }, by: { [STOCKTON]: 'cody' },
+  });
+  const stubCrewCopy = (page: Page) => page.route('**/api/state', r => r.request().method() === 'GET'
+    ? r.fulfill({ contentType: 'application/json', body: JSON.stringify({ v: 0, updatedAt: 0, state: null }) })
+    : r.fulfill({ contentType: 'application/json', body: JSON.stringify({ v: 1, updatedAt: Date.now() }) }));
+
+  test('sign out: location, miles and room go to the journal, and the text to Tim opens already written', async ({ page }) => {
+    const t = today(), AT = Date.now() - 3600_000, posted: any[] = [];
+    await page.context().grantPermissions(['geolocation']);
+    await page.context().setGeolocation({ latitude: 37.8175, longitude: -96.8829 });   // standing at Victra 118409, El Dorado, KS
+    await stubCrewCopy(page);
+    await page.route('**/api/journal', r => { posted.push(JSON.parse(r.request().postData() || '{}'));
+      r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, id: 'so1', at: Date.now() }) }); });
+    await open(page, codyDay(t, AT), '#s-today');
+    // Cody gets the one end-of-day button: no GO LIVE, no IDS email
+    await expect(page.locator('#tGoLive')).toHaveCount(0);
+    await page.locator('#tSignOut').click();
+    await expect(page.locator('.sheet #soLoc')).toContainText('Near El Dorado, KS');
+    await expect(page.locator('.sheet #soPlace')).toHaveValue('El Dorado, KS');
+    expect(parseInt(await page.locator('.sheet #soMiles').inputValue(), 10)).toBeGreaterThan(50);   // worked out from the stop he shot
+    await page.locator('.sheet [data-room="hotel"]').click();
+    await page.locator('.sheet #soCost').fill('90');
+    await page.locator('.sheet #soGo').click();
+    await expect(page.locator('.sheet #soStatus')).toContainText('Saved to the crew journal');
+    expect(posted).toHaveLength(1);
+    expect(posted[0]).toMatchObject({ kind: 'signout', by: 'cody', date: t, milesSrc: 'est',
+      loc: { place: 'El Dorado, KS' }, room: { type: 'hotel', cost: 90, place: 'El Dorado, KS' }, carried: [], skipped: [] });
+    expect(posted[0].loc.lat).toBeCloseTo(37.8175, 3);
+    expect(posted[0].shot.map((x: any) => x.id)).toEqual([STOCKTON]);
+    expect(posted[0].cid).toMatch(/^so-[a-z0-9]+$/);
+    // the second channel: a text to the saved number, already written
+    const href = await page.locator('.sheet #soText').getAttribute('href');
+    expect(href).toMatch(/^sms:\+15550102030\?&body=/);
+    const body = decodeURIComponent(href!.split('&body=')[1]);
+    expect(body).toContain('Cody signed out');
+    expect(body).toContain('El Dorado, KS');
+    expect(body).toContain('Hotel / motel $90');
+    expect(body).toContain('1 shot in the app');
+    await page.locator('.sheet #soClose').click();
+    await expect(page.locator('#soCard')).toContainText('journal ✓');
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('ninja360-runsheet-outbox') || '[]'))).toEqual([]);
+  });
+
+  test('sign out: a journal that says no keeps the report on the phone, the text still works, and it goes out later', async ({ page }) => {
+    const t = today(), AT = Date.now() - 3600_000, posted: any[] = []; let up = false;
+    await page.context().grantPermissions(['geolocation']);
+    await page.context().setGeolocation({ latitude: 37.8175, longitude: -96.8829 });
+    await stubCrewCopy(page);
+    await page.route('**/api/journal', r => up
+      ? (posted.push(JSON.parse(r.request().postData() || '{}')), r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, id: 'so2', at: Date.now() }) }))
+      : r.fulfill({ status: 503, contentType: 'application/json', body: '{"error":"no-store"}' }));
+    await open(page, codyDay(t, AT), '#s-today');
+    await page.locator('#tSignOut').click();
+    await expect(page.locator('.sheet #soPlace')).toHaveValue('El Dorado, KS');
+    await page.locator('.sheet #soMiles').fill('312');                       // typed: the odometer wins over the estimate
+    await page.locator('.sheet #soGo').click();
+    await expect(page.locator('.sheet #soStatus')).toContainText('journal refused');
+    await expect(page.locator('.sheet #soStatus')).toContainText('Kept on this phone');
+    await expect(page.locator('.sheet #soText')).toBeVisible();              // the backup channel is right there
+    let box = await page.evaluate(() => JSON.parse(localStorage.getItem('ninja360-runsheet-outbox') || '[]'));
+    expect(box).toHaveLength(1);
+    expect(box[0]).toMatchObject({ kind: 'signout', miles: 312, milesSrc: 'typed' });
+    await page.locator('.sheet #soClose').click();
+    await expect(page.locator('#soCard')).toContainText('not sent yet');
+    await expect(page.locator('#soCard')).toContainText('1 report waiting');
+    // the journal comes back: the saved report goes out once, and the outbox empties
+    up = true;
+    expect(await page.evaluate(() => (window as any).flushOutbox())).toBe(1);
+    expect(posted).toHaveLength(1);
+    expect(posted[0]).toMatchObject({ kind: 'signout', miles: 312, by: 'cody' });
+    box = await page.evaluate(() => JSON.parse(localStorage.getItem('ninja360-runsheet-outbox') || '[]'));
+    expect(box).toEqual([]);
+    expect(await page.evaluate(() => (window as any).flushOutbox())).toBe(0);   // nothing left to send twice
+  });
+
+  test('Crew journal lists what the phones reported, and the text number rides the crew sync', async ({ page }) => {
+    const t = today(), now = Date.now();
+    await stubCrewCopy(page);
+    await page.route('**/api/journal', r => r.fulfill({ contentType: 'application/json', body: JSON.stringify({ n: 2, entries: [
+      { kind: 'signout', by: 'cody', date: t, at: now - 60_000, miles: 312, milesSrc: 'est', shot: [{ id: STOCKTON, at: 1, d: t }],
+        loc: { lat: 37.8175, lon: -96.8829, acc: 30, place: 'El Dorado, KS' }, room: { type: 'hotel', cost: 90, place: 'El Dorado, KS' } },
+      { kind: 'golive', by: 'tim', date: t, at: now - 3600_000, miles: 120, shot: [{ id: STOCKTON, at: 1, d: t }, { id: BUFFALO, at: 1, d: t }] },
+    ] }) }));
+    await open(page, state({ sync: { key: 'test-crew-key-0925', v: 0, at: 0 }, nav: 'now' }), '#s-today');
+    await page.locator('#crewChip').click();
+    await page.locator('.sheet #liveSmsTo').fill('816 555 0100');
+    await page.locator('.sheet #liveSmsSave').click();
+    expect((await saved(page)).report.sms).toBe('816 555 0100');
+    await page.evaluate(() => (window as any).closeSheet());
+    await page.locator('#crewChip').click();
+    await page.locator('.sheet #liveJournal').click();
+    const rows = page.locator('.sheet #jrList .idsrow');
+    await expect(rows).toHaveCount(2);
+    await expect(rows.nth(0)).toContainText('Cody');
+    await expect(rows.nth(0)).toContainText('signed out');
+    await expect(rows.nth(0)).toContainText('El Dorado, KS');
+    await expect(rows.nth(0)).toContainText('312 mi (est.)');
+    await expect(rows.nth(0)).toContainText('Hotel / motel $90');
+    await expect(rows.nth(0).locator('a')).toHaveAttribute('href', /maps\.google\.com\/\?q=37\.8175,-96\.8829/);
+    await expect(rows.nth(1)).toContainText('GO LIVE');
+    await expect(rows.nth(1)).toContainText('2 shot');
+  });
 });

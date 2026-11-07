@@ -17,6 +17,9 @@
  *
  *   GET  /api/journal            -> { n, entries: [...] } newest first (up to 200); ?date=YYYY-MM-DD filters
  *   POST /api/journal  {entry}   -> { ok, id, at }   appends; id is the entry's own key
+ *
+ * An entry is a GO LIVE (`kind: 'golive'`, the default) or a sign-out (`kind: 'signout'`: `loc` {lat, lon, acc, place},
+ * `room` {type: none|hotel|airbnb|camp, cost, place}, `miles` with `milesSrc` est|typed, `cid`).
  */
 
 const MIN_KEY = 8;
@@ -38,6 +41,12 @@ async function slot(key) {
 
 const ids = v => Array.isArray(v) ? v.filter(x => typeof x === 'string' && ID.test(x)).slice(0, 200) : [];
 
+// A sign-out is the end-of-day report from a phone in the field: where it is, the miles, the room. It rides the same
+// journal as GO LIVE, told apart by `kind`. `cid` is the phone's own id for the report, so a retry that lands twice can
+// be told from two reports.
+const KINDS = ['golive', 'signout'], ROOMS = ['none', 'hotel', 'airbnb', 'camp'], MILES_SRC = ['est', 'typed'];
+const within = (v, lo, hi) => (typeof v === 'number' && Number.isFinite(v) && v >= lo && v <= hi) ? v : null;
+
 // keep only the fields an entry is allowed to have, in the shape the app writes them
 function clean(body) {
   if (!body || typeof body !== 'object') return null;
@@ -45,12 +54,19 @@ function clean(body) {
   const shot = Array.isArray(body.shot) ? body.shot
     .filter(x => x && typeof x === 'object' && typeof x.id === 'string' && ID.test(x.id))
     .slice(0, 200).map(x => ({ id: x.id, at: Number.isFinite(x.at) ? x.at : 0, d: DATE.test(String(x.d || '')) ? x.d : '' })) : [];
+  const l = body.loc && typeof body.loc === 'object' ? body.loc : null;
+  const loc = l ? { lat: within(l.lat, -90, 90), lon: within(l.lon, -180, 180), acc: within(l.acc, 0, 1e5), place: String(l.place || '').slice(0, 64) } : null;
+  const r = body.room && typeof body.room === 'object' && ROOMS.includes(body.room.type) ? body.room : null;
   return {
     date: body.date, name: String(body.name || '').slice(0, 48), by: String(body.by || '').slice(0, 24),
     dev: String(body.dev || '').slice(0, 24), devName: String(body.devName || '').slice(0, 24),   // which of Tim's devices published it
     at: Number.isFinite(body.at) ? body.at : Date.now(),
     shot, carried: ids(body.carried), skipped: ids(body.skipped),
     pts: Number.isFinite(body.pts) ? body.pts : 0, miles: Number.isFinite(body.miles) ? body.miles : 0,
+    kind: KINDS.includes(body.kind) ? body.kind : 'golive', cid: ID.test(String(body.cid || '')) ? body.cid : '',
+    milesSrc: MILES_SRC.includes(body.milesSrc) ? body.milesSrc : '',
+    loc: loc && (loc.lat !== null || loc.lon !== null || loc.place) ? loc : null,
+    room: r ? { type: r.type, cost: r.type === 'none' ? null : within(r.cost, 0, 5000), place: String(r.place || '').slice(0, 64) } : null,
   };
 }
 

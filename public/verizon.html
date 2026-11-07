@@ -420,6 +420,9 @@ table.pl [data-shot]:not(.go){border-color:var(--accent);color:var(--accent)}
 .tchip.on{color:var(--money);border-color:var(--money)}
 .golivecard{border-left:3px solid var(--accent);margin-top:10px}
 .golive{min-height:58px;font-size:18px}
+.signoutcard{border-left:3px solid var(--accent);margin-top:10px}
+#soRoom button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+a.prim{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
 .nowcard{border-left:3px solid var(--accent)}
 .nowclock{font-size:16px;font-weight:700;color:var(--ink)}
 .nowtimer{display:flex;align-items:baseline;gap:8px;margin-top:8px}
@@ -1531,10 +1534,11 @@ function renderToday(){
           +'<div class="pay mono">'+fmt(j.p)+'</div></div>'}).join('')
       :'<div class="empty">No stops on this day yet — build it on Plan, or tap Re-route to pull one in from where you are.</div>')
     +gbBarHTML()
-    +(ids.length&&!d.date?'<div class="card golivecard"><div class="lab">End of day</div><div class="hint" style="margin:3px 0 0">This day has no date yet — set it on Plan, then GO LIVE can publish it.</div></div>':'')
-    +(ids.length&&d.date?`<div class="card golivecard">
+    +((S.who||'tim')==='tim'&&ids.length&&!d.date?'<div class="card golivecard"><div class="lab">End of day</div><div class="hint" style="margin:3px 0 0">This day has no date yet — set it on Plan, then GO LIVE can publish it.</div></div>':'')
+    +((S.who||'tim')==='tim'&&ids.length&&d.date?`<div class="card golivecard">
         ${pub?'<div class="lab">Published</div><div class="rh-sub">'+escHTML(pubLine(pub))+'</div>':'<div class="lab">End of day</div><div class="hint" style="margin:3px 0 0">Confirm what was shot, write the day to the crew journal, send IDS the update. Nothing is marked sent until it is.</div>'}
-        <button class="livebtn golive" id="tGoLive">⚡ GO LIVE${pub?' AGAIN':''}<small>${pub?'re-publish this day':'publish this day — journal + IDS'}</small></button></div>`:'');
+        <button class="livebtn golive" id="tGoLive">⚡ GO LIVE${pub?' AGAIN':''}<small>${pub?'re-publish this day':'publish this day — journal + IDS'}</small></button></div>`:'')
+    +signOutCardHTML();
   const td=$('#todayDay'); if(td)td.onchange=e=>{const dd=S.days[+e.target.value]; TODAY_PICK=dd?dd.id:''; setDay(+e.target.value); render(); dirty()};
   const nv=$('#tNav'); if(nv)nv.onclick=()=>{bindRoute(d,true); dirty(); openDayRoute(d)};
   $('#tReroute').onclick=()=>rerouteSheet(d);
@@ -1547,6 +1551,7 @@ function renderToday(){
   wireShot('#s-today');
   wireGbBar(d);
   const gl=$('#tGoLive'); if(gl)gl.onclick=()=>goLiveSheet(d);
+  const so=$('#tSignOut'); if(so)so.onclick=signOutSheet;
   wireNowCard(d,cur);
 }
 /* ---------- the Now card: the stop in hand ----------
@@ -1734,6 +1739,121 @@ async function publishDay(d,parts,say){
   if(ok&&dates.length)markDatesSent(dates);
   dirty();
   toast(ok?'⚡ Live — '+parts.shot.length+' shot on the journal, IDS told':'Journal written — IDS email not confirmed, nothing marked sent');
+}
+/* ---------- SIGN OUT: the end of the day, from the phone in the field ----------
+   Where am I, how many miles, did I get a room. Three taps, nothing typed that the phone can work out. The report goes to
+   the crew journal (what Murdoch reads and the Crew journal sheet shows) and, as the second channel, to a text for Tim that
+   opens already written. If the journal cannot be reached the report waits on this phone and goes out by itself the next
+   time it can; the text is the way to say it now. (Tim, 11/7: location, miles, room; try / catch and a backup.) */
+const OUTBOX_KEY='ninja360-runsheet-outbox', LASTOUT_KEY='ninja360-runsheet-lastout';
+const outboxGet=()=>{ try{ const a=JSON.parse(localStorage.getItem(OUTBOX_KEY)||'[]'); return Array.isArray(a)?a:[] }catch(e){ return [] } };
+const outboxSet=a=>{ try{ localStorage.setItem(OUTBOX_KEY,JSON.stringify(a.slice(-30))) }catch(e){} };
+const lastOut=(date,who)=>{ try{ const r=JSON.parse(localStorage.getItem(LASTOUT_KEY)||'null'); return r&&r.date===date&&r.by===who?r:null }catch(e){ return null } };
+const idsSms=()=>String((S.report&&S.report.sms)||'').replace(/[^\d+]/g,'');
+const ROOM_LABEL={none:'No room',hotel:'Hotel / motel',airbnb:'Airbnb',camp:'Campsite'};
+// the town this phone is nearest to, from the book itself: no lookup, works with no signal
+function nearTown(lat,lon){
+  let best=null,bd=1e9; J.forEach(j=>{ if(j.wp||!isFinite(j.lat)||!isFinite(j.lon))return; const m=mi([lat,lon],LL(j)); if(m<bd){bd=m;best=j} });
+  return best&&bd<=30?best.c+', '+best.s:'';
+}
+// the miles the plan says were driven to the stops shot today, for this runner: an estimate the person can overwrite
+function signOutMiles(date,who){
+  const pl=S.days.find(x=>x.date===date&&driverOf(x)===who); if(!pl)return 0;
+  const ids=pl.ids.filter(i=>BY[i]&&!BY[i].wp&&shot(i)); if(!ids.length)return 0;
+  try{ return Math.round(simulate(Object.assign({},pl,{ids,allLive:true})).miles) }catch(e){ return 0 }
+}
+const signOutText=r=>(CREW[r.by]?CREW[r.by].short:r.by)+' signed out '+niceDate(r.date)+' — '+(r.loc&&r.loc.place?r.loc.place:'no location')
+  +' · '+r.miles+' mi'+(r.milesSrc==='est'?' (est.)':'')
+  +' · '+(r.room&&r.room.type!=='none'?ROOM_LABEL[r.room.type]+(r.room.cost?' $'+r.room.cost:''):'no room')
+  +' · '+r.shot.length+' shot in the app'+(r.loc&&r.loc.lat!=null?' · https://maps.google.com/?q='+r.loc.lat.toFixed(5)+','+r.loc.lon.toFixed(5):'');
+async function sendEntry(rec){
+  if(!syncOn())throw new Error('crew sync is off on this phone');   // never mint a key here: a new key would put this phone on a different crew copy
+  const r=await fetch('/api/journal',{method:'POST',headers:{'content-type':'application/json','x-crew-key':S.sync.key},body:JSON.stringify(rec)});
+  if(!r.ok){ let why='HTTP '+r.status; try{ const j=await r.json(); why=j.error||why }catch(e){} throw new Error('journal refused ('+why+')') }
+  return r.json();
+}
+let FLUSHING=false;
+async function flushOutbox(){
+  if(FLUSHING||!outboxGet().length||!syncOn())return 0; FLUSHING=true;
+  let n=0; const left=[];
+  try{ for(const rec of outboxGet()){ try{ await sendEntry(rec); n++ }catch(e){ left.push(rec) } } }
+  finally{ outboxSet(left); FLUSHING=false }
+  if(n){ toast('Sent '+n+' saved report'+(n===1?'':'s')+' to the journal'); if(S.nav==='today')render() }
+  return n;
+}
+function signOutCardHTML(){
+  const date=todayISO(), who=S.who||'tim', last=lastOut(date,who), waiting=outboxGet().length;
+  return '<div class="card signoutcard" id="soCard"><div class="lab">Sign out</div>'
+    +(last?'<div class="rh-sub">'+escHTML(niceTime(last.at)+' · '+(last.place||'no location')+' · '+last.miles+' mi · '+(last.room||'no room'))+(last.sent?' · journal ✓':' · not sent yet')+'</div>'
+      :'<div class="hint" style="margin:3px 0 0">End of the day: where you are, the miles, a room if you got one. It goes to the journal, and you can text it to Tim.</div>')
+    +(waiting?'<div class="hint" style="color:var(--warn)">'+waiting+' report'+(waiting===1?'':'s')+' waiting on this phone. It goes out when the phone can reach the journal.</div>':'')
+    +'<button class="livebtn golive" id="tSignOut">🌙 Sign out'+(last?' again':'')+'<small>location · miles · room</small></button></div>';
+}
+function signOutSheet(){
+  const date=todayISO(), who=S.who||'tim', mine=allLocks().filter(l=>l.d===date&&(!l.by||l.by===who)), est=signOutMiles(date,who);
+  sheet('Sign out — '+niceDate(date), mine.length+' stop'+(mine.length===1?'':'s')+' marked shot in the app today · '+fmt(mine.reduce((t,l)=>t+l.pts,0)),
+    '<div class="lab">Where you are</div>'
+    +'<div class="hint" id="soLoc" style="margin:3px 0 6px">Finding you…</div>'
+    +'<div class="row" style="margin:0"><input id="soPlace" type="text" autocomplete="off" placeholder="Town, if the phone cannot tell" style="flex:1;min-width:160px"><button class="ghost" id="soAgain">Find me again</button></div>'
+    +'<div class="lab" style="margin-top:12px">Miles today</div>'
+    +'<div class="row" style="align-items:center;margin:3px 0 0"><input id="soMiles" type="number" inputmode="decimal" min="0" max="2000" step="1" value="'+(est||'')+'" placeholder="odometer" style="width:120px"><span class="hint" id="soMilesHint" style="margin:0">'+(est?'Worked out from your stops. Change it if your odometer says different.':'Type the miles from your odometer.')+'</span></div>'
+    +'<div class="lab" style="margin-top:12px">Room tonight</div>'
+    +'<div class="row" id="soRoom" style="flex-wrap:wrap;gap:6px;margin:3px 0 0">'+Object.entries(ROOM_LABEL).map(([k,l])=>'<button class="ghost'+(k==='none'?' on':'')+'" data-room="'+k+'" aria-pressed="'+(k==='none')+'">'+l+'</button>').join('')+'</div>'
+    +'<div id="soRoomMore" class="row" hidden style="margin:6px 0 0;align-items:center"><input id="soCost" type="number" inputmode="decimal" min="0" max="5000" step="1" placeholder="cost" style="width:110px"><span class="hint" style="margin:0">Send Tim a photo of the receipt.</span></div>'
+    +'<div id="soStatus" class="hint mono" style="margin-top:10px;min-height:1em"></div>'
+    +'<div class="row" style="margin-top:10px"><button class="prim" id="soGo">Sign out</button><button class="ghost" id="soCancel">Not yet</button></div>'
+    +'<div id="soDone" hidden style="margin-top:12px"></div>',
+    el=>{
+      const q=s=>el.querySelector(s), loc={lat:null,lon:null,acc:null}, place=q('#soPlace'); let type='none', typed=false;
+      const find=()=>{ q('#soLoc').textContent='Finding you…';
+        if(!navigator.geolocation){ q('#soLoc').textContent='This phone will not say where it is. Type the town.'; return }
+        navigator.geolocation.getCurrentPosition(p=>{ loc.lat=p.coords.latitude; loc.lon=p.coords.longitude; loc.acc=Math.round(p.coords.accuracy||0);
+            const t=nearTown(loc.lat,loc.lon); if(t&&!place.value)place.value=t;
+            q('#soLoc').textContent='📍 '+(t?'Near '+t+' · ':'')+'within '+loc.acc+' m' },
+          err=>{ q('#soLoc').textContent=(err&&err.code===1?'Location is off for this page. ':'No fix yet. ')+'Type the town.' },
+          {enableHighAccuracy:true,timeout:12000,maximumAge:60000}) };
+      find(); q('#soAgain').onclick=find; q('#soCancel').onclick=closeSheet;
+      q('#soMiles').oninput=()=>{ typed=true; q('#soMilesHint').textContent='' };
+      q('#soRoom').querySelectorAll('[data-room]').forEach(b=>b.onclick=()=>{ type=b.dataset.room;
+        q('#soRoom').querySelectorAll('[data-room]').forEach(x=>{ x.classList.toggle('on',x===b); x.setAttribute('aria-pressed',String(x===b)) });
+        q('#soRoomMore').hidden=type==='none' });
+      q('#soGo').onclick=async()=>{
+        const btn=q('#soGo'), st=q('#soStatus'); btn.disabled=true;
+        const m=parseFloat(q('#soMiles').value), pl=place.value.trim().slice(0,64);
+        const rec={kind:'signout',cid:'so-'+Math.random().toString(36).slice(2,12)+Date.now().toString(36).slice(-4),date,name:date+':signout:'+((CREW[who]&&CREW[who].short)||who),
+          by:who,dev:DEVICE.id||'',devName:DEVICE.name||'',at:Date.now(),
+          shot:mine.map(l=>({id:l.id,at:l.at||0,d:l.d||date})),carried:[],skipped:[],pts:mine.reduce((t,l)=>t+l.pts,0),
+          miles:isFinite(m)&&m>=0?Math.round(m):0,milesSrc:(typed||!est)?'typed':'est',
+          loc:{lat:loc.lat,lon:loc.lon,acc:loc.acc,place:pl},
+          room:{type,cost:type==='none'?null:(parseFloat(q('#soCost').value)||0),place:pl}};
+        let ok=false;
+        try{ st.textContent='Saving to the journal…'; await sendEntry(rec); ok=true; st.textContent='✓ Saved to the crew journal' }
+        catch(e){ outboxSet(outboxGet().concat([rec])); st.textContent='✗ '+((e&&e.message)||'could not reach the journal')+'. Kept on this phone; it goes out when it can. Text Tim now.' }
+        try{ localStorage.setItem(LASTOUT_KEY,JSON.stringify({date,by:who,at:rec.at,place:pl,miles:rec.miles,room:type==='none'?'':ROOM_LABEL[type]+(rec.room.cost?' $'+rec.room.cost:''),sent:ok})) }catch(e){}
+        const txt=signOutText(rec), d=q('#soDone'); d.hidden=false;
+        d.innerHTML='<pre class="req" id="soTxt">'+escHTML(txt)+'</pre><div class="row" style="margin-top:8px">'
+          +'<a class="prim" id="soText" href="sms:'+idsSms()+'?&body='+encodeURIComponent(txt)+'">Text Tim</a>'
+          +'<button class="ghost" id="soCopy">Copy</button><button class="ghost" id="soClose">Done</button></div>';
+        q('#soClose').onclick=()=>{ closeSheet(); render() }; q('#soCopy').onclick=async()=>toast(await copyText(txt,q('#soTxt'))?'Copied':'Select the text and copy it');
+        btn.hidden=true; q('#soCancel').hidden=true; render();
+      }});
+}
+/* The Crew journal: what the phones have reported, newest first — the read side of GO LIVE and SIGN OUT. */
+const journalRow=e=>{ const who=CREW[e.by]?CREW[e.by].short:(e.by||'?'), out=e.kind==='signout', bits=[];
+  if(out){ if(e.loc&&e.loc.place)bits.push(escHTML(e.loc.place));
+    if(e.loc&&typeof e.loc.lat==='number'&&typeof e.loc.lon==='number')bits.push('<a href="https://maps.google.com/?q='+e.loc.lat+','+e.loc.lon+'" target="_blank" rel="noopener">map</a>');
+    bits.push(Math.round(e.miles||0)+' mi'+(e.milesSrc==='est'?' (est.)':''));
+    bits.push(e.room&&e.room.type&&e.room.type!=='none'?escHTML(ROOM_LABEL[e.room.type]||e.room.type)+(e.room.cost?' $'+Math.round(e.room.cost):''):'no room') }
+  else bits.push(Math.round(e.miles||0)+' mi');
+  bits.push((e.shot||[]).length+' shot');
+  return '<div class="idsrow"><span class="idsid">'+escHTML(niceTime(e.at))+'</span><span class="idsn"><b>'+escHTML(who)+'</b> · '+(out?'signed out':'GO LIVE '+escHTML(e.date||''))+' · '+bits.join(' · ')+'</span></div>' };
+function journalSheet(){
+  sheet('Crew journal','What the phones have reported, newest first.','<div id="jrList" class="hint">Loading…</div>',async el=>{
+    const box=el.querySelector('#jrList');
+    try{ const r=await fetch('/api/journal',{headers:{'x-crew-key':S.sync.key||''}}); if(!r.ok)throw new Error('HTTP '+r.status);
+      const es=((await r.json()).entries||[]).slice(0,25);
+      box.className=''; box.innerHTML=es.length?es.map(journalRow).join(''):'<div class="empty">Nothing reported yet.</div>' }
+    catch(e){ box.textContent='Could not read the journal ('+((e&&e.message)||'offline')+').' } });
 }
 /* The IDS email hand-off, shared by the IDS tab and GO LIVE: a mailto draft to the saved addresses.
    Mail apps drop a long body, so past 1,800 chars the text goes on the clipboard and the draft
@@ -3870,7 +3990,10 @@ function syncSheet(){
           +'<div class="row" style="margin:6px 0 0">'
             +'<button class="'+(id===S.who?'ghost':'prim')+'" data-lcopy="'+id+'">Copy</button>'
             +'<button class="ghost" data-lsms="'+id+'">Text it</button></div>').join('')
-        +'<div class="row" style="margin:12px 0 0"><button class="ghost" id="liveNow">Sync now</button></div>'
+        +'<div class="row" style="margin:12px 0 0"><button class="ghost" id="liveNow">Sync now</button><button class="ghost" id="liveJournal">Crew journal</button></div>'
+        +'<div class="lab" style="margin:14px 0 3px">Text sign-outs to</div>'
+        +'<div class="row" style="align-items:flex-end;margin:0"><input id="liveSmsTo" type="tel" inputmode="tel" autocomplete="off" placeholder="Tim\'s number" value="'+escHTML((S.report&&S.report.sms)||'')+'" style="flex:1;min-width:160px"><button class="ghost" id="liveSmsSave">Save</button></div>'
+        +'<div class="hint" style="margin-top:5px">Typed once. It rides the crew sync, so Cody\'s phone has it too, and it stays off the public page.</div>'
         +'<div class="lab" style="margin:14px 0 3px">Or read it out</div>'
         +'<div class="hint" style="margin:0 0 5px">Same thing, said aloud. Whoever types it on the other phone lands on this plan.</div>'
         +'<pre class="req" id="liveKey">'+escHTML(S.sync.key)+'</pre>'
@@ -3894,6 +4017,10 @@ function syncSheet(){
       el.querySelectorAll('[data-lsms]').forEach(b=>b.onclick=()=>{ const id=b.dataset.lsms;
         location.href='sms:?&body='+encodeURIComponent((id===S.who?'':CREW[id].short+', ')+'open this on your phone to get on the Ninja-360 run sheet: '+personLink(id))});
       const nw=el.querySelector('#liveNow'); if(nw)nw.onclick=async()=>{closeSheet(); await syncPull(); await syncPush(); syncChipShow(); toast('Synced')};
+      const jn=el.querySelector('#liveJournal'); if(jn)jn.onclick=()=>{closeSheet(); journalSheet()};
+      const ss=el.querySelector('#liveSmsSave'); if(ss)ss.onclick=()=>{
+        S.report=(S.report&&typeof S.report==='object')?S.report:{to:'',cc:'',sent:{}}; S.report.sms=el.querySelector('#liveSmsTo').value.trim(); dirty();
+        toast(S.report.sms?'Saved — sign-outs will text this number':'Cleared')};
       const off=el.querySelector('#liveOff'); if(off)off.onclick=()=>{
         if(!confirm('Take this device off the crew plan? Its own copy stays, and the link still works to put it back.'))return;
         closeSheet(); stopLive()};
@@ -3942,7 +4069,7 @@ function mergeState(j){
     if(!(d.unlocked&&typeof d.unlocked==='object'))d.unlocked=null;   // the last unlock, kept so a merge cannot undo it
     if(!Array.isArray(d.ids))d.ids=[]});
   S.report=(j.report&&typeof j.report==='object'&&!Array.isArray(j.report))
-    ?{to:String(j.report.to||''),cc:String(j.report.cc||''),sent:(j.report.sent&&typeof j.report.sent==='object'&&!Array.isArray(j.report.sent))?j.report.sent:{},seeded:String(j.report.seeded||'')}
+    ?{to:String(j.report.to||''),cc:String(j.report.cc||''),sms:String(j.report.sms||''),sent:(j.report.sent&&typeof j.report.sent==='object'&&!Array.isArray(j.report.sent))?j.report.sent:{},seeded:String(j.report.seeded||'')}
     :{to:'',cc:'',sent:{}};   // who the IDS update goes to, which onsite dates they have already been told, and whether the first-run seed has been laid
   S.unshot=(j.unshot&&typeof j.unshot==='object'&&!Array.isArray(j.unshot))?j.unshot:{};   // un-shot tombstones — {at,by} per stop
   S.published=(j.published&&typeof j.published==='object'&&!Array.isArray(j.published))?j.published:{};   // GO LIVE receipts, per day
@@ -4464,6 +4591,7 @@ function boot(){
   detectWho().then(ok=>{ if(!ok&&!S.who){S.who=linkWho()||'tim'; dirty(); renderWho(); render()} });
   setTimeout(fixGeo,1500);     // after the first paint, quietly place any city-level rows
   adoptLinkKey().then(ok=>{ if(ok&&!SYNCTIMERS)armSync() });
+  setTimeout(flushOutbox,3000); window.addEventListener('online',flushOutbox);   // a sign-out the journal has not confirmed rides out when the phone can reach it
   if(syncOn()){syncChipShow(); syncPull(true).then(()=>syncPush());
     armSync();
   }   // like the Dojo: who are you → the Philosophy → I'm in
