@@ -10,7 +10,10 @@
 <meta property="og:title" content="Generationally Incorrect">
 <meta property="og:description" content="Four generations. One table. Plenty to disagree about.">
 <meta property="og:image" content="https://dojo.ninja360.co/gi/site/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://dojo.ninja360.co/gi/site/assets/og-image.png">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,16 +43,23 @@
   </nav>
 </header>
 
-<section class="date-band">
+<section class="date-band topics-band">
   <div class="wrap center">
-    <div class="kicker">Launching</div>
-    <div class="date-big">December&hellip; 15th ish</div>
-    <div class="date-caveat">(Although, that may be incorrect.)</div>
-    <form class="notify-inline" id="notify-form">
-      <input type="email" id="notify-email" required placeholder="your@email.com" autocomplete="email">
-      <button type="submit" class="btn btn-red">Notify Me</button>
-    </form>
-    <div class="thanks" id="notify-thanks" style="display:none;">You're on the list. Behave until then.</div>
+    <div class="kicker">On Deck</div>
+    <div class="date-big">This Week's Show</div>
+    <div class="date-caveat">Centers around these talking points — ten questions on AI, built to split the room.</div>
+    <div class="topics-carousel" role="list" aria-label="This week's discussion topics">
+      <article class="topic-card" role="listitem"><span class="topic-tag">Technology</span><p class="topic-q">Is it ever okay to let AI write something you sign your name to?</p></article>
+      <article class="topic-card" role="listitem"><span class="topic-tag">Technology</span><p class="topic-q">Would you trust AI to cook or bake for you?</p></article>
+      <article class="topic-card" role="listitem"><span class="topic-tag">Culture, Identity &amp; Social Issues</span><p class="topic-q">Should AI-generated art be allowed to compete against human artists?</p></article>
+      <article class="topic-card" role="listitem"><span class="topic-tag">Technology</span><p class="topic-q">How much can we trust the AI summary at the top of every search?</p></article>
+      <article class="topic-card" role="listitem"><span class="topic-tag">Education</span><p class="topic-q">Is using AI for homework any different from paying someone to write it?</p></article>
+      <article class="topic-card" role="listitem"><span class="topic-tag">Government &amp; Politics</span><p class="topic-q">Should AI help police or the military make life-and-death decisions?</p></article>
+      <article class="topic-card" role="listitem"><span class="topic-tag">Work &amp; Leadership</span><p class="topic-q">Should AI decide who gets a job interview, a loan, or a medical treatment?</p></article>
+      <article class="topic-card" role="listitem"><span class="topic-tag">Technology</span><p class="topic-q">Would you let your kids ride in a driverless car?</p></article>
+      <article class="topic-card" role="listitem"><span class="topic-tag">Free Speech &amp; Censorship</span><p class="topic-q">Should AI be allowed to generate images of real people without their permission?</p></article>
+      <article class="topic-card" role="listitem"><span class="topic-tag">Healthcare, Medicine &amp; Well-Being</span><p class="topic-q">Should AI replace a therapist or doctor for people who can't afford one?</p></article>
+    </div>
   </div>
 </section>
 
