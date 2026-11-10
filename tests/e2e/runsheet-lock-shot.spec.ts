@@ -11,8 +11,10 @@ const LSKEY = 'ninja360-runsheet-v2';
 const ROUTE = '/verizon.html';
 // The three fixture stops follow the book in verizon.html (the DATA line). Topeka, Marysville and Salina,
 // the September fixtures, were shot and invoiced 10/13 — there is nothing left to plan or go back to on them.
-const STOCKTON = '2026-7375';   // Russell 102768 — Stockton, MO (Open, no onsite date, not loaded in IDS Capture)
-const BUFFALO = '2026-6607';    // Russell 102763 — Buffalo, MO (Open, not loaded — the same MO-13 run as Stockton)
+// (Stockton, MO was the first fixture until 11/9, when it was shot and taken off the run sheet with the weekend's stops; Bolivar
+// takes its place — the same MO-13 run, Open, no onsite date.)
+const BOLIVAR = '2026-7587';    // Cellular Sales 108862 — Bolivar, MO (Open, no onsite date, not loaded in IDS Capture)
+const BUFFALO = '2026-6607';    // Russell 102763 — Buffalo, MO (Open, not loaded — the same MO-13 run as Bolivar)
 const PARKCITY = '2026-8317';   // Victra 138836 — Park City, KS (Return Owed: shot 9/20, INV-000083, one item owed — the VDS video)
 
 const iso = (d: Date) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -25,7 +27,7 @@ const yesterday = () => shift(-1);
 const dayLabel = (s: string) => { const d = new Date(s + 'T12:00:00'); return d.toLocaleDateString('en-US', { weekday: 'long' }) + ' ' + (d.getMonth() + 1) + '/' + d.getDate(); };
 
 const day = (over: Record<string, unknown> = {}) => ({
-  id: 'dtest', date: tomorrow(), startKey: 'home', startTime: 8, endKey: 'home', ids: [STOCKTON, BUFFALO],
+  id: 'dtest', date: tomorrow(), startKey: 'home', startTime: 8, endKey: 'home', ids: [BOLIVAR, BUFFALO],
   startCharge: 100, crew: null, pace: 'split', ...over,
 });
 
@@ -119,24 +121,24 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     page.once('dialog', d => { asked = d.message(); d.accept(); });
     await page.locator('#stops [data-shot]').first().click();
     await expect.poll(() => asked).toContain('is planned for');
-    expect(asked).toContain('Russell 102768');   // it names the store, not just the city
+    expect(asked).toContain('Cellular Sales 108862');   // it names the store, not just the city
     await expect(page.locator('#stops .stop.done')).toHaveCount(1);
     await expect(page.locator('#stops .badge.pl')).toHaveCount(1);
     expect(await shotCount(page)).toBe(shotBefore + 1);
     let s = await saved(page);
     expect(Object.keys(s.locks)).toHaveLength(1);
-    expect(s.locks[STOCKTON].d).toBe(today());
+    expect(s.locks[BOLIVAR].d).toBe(today());
     expect(s.days[0].locked).toBeTruthy();
 
     // the IDS tab now has one onsite date to report, and the email says so — under the day it was shot
     await page.locator('#nav button[data-s="app"]').click();
     await expect(page.locator('#s-app')).toBeVisible();
     await noSidewaysScroll(page, 'IDS tab');
-    await expect(page.locator('#s-app .idsrow', { hasText: STOCKTON })).toContainText(mdy(today()));
+    await expect(page.locator('#s-app .idsrow', { hasText: BOLIVAR })).toContainText(mdy(today()));
     const msg = await page.locator('#idsMsg').innerText(), lines = msg.split('\n');
     expect(msg).toContain('COMPLETED — ' + dayLabel(today()).toUpperCase());
-    expect(lines.find(l => l.includes('(Loc ' + STOCKTON + ')'))).toBeTruthy();       // the shot stop is reported…
-    expect(lines.find(l => l.startsWith(STOCKTON))).toBeUndefined();                  // …not asked for
+    expect(lines.find(l => l.includes('(Loc ' + BOLIVAR + ')'))).toBeTruthy();       // the shot stop is reported…
+    expect(lines.find(l => l.startsWith(BOLIVAR))).toBeUndefined();                  // …not asked for
     expect(msg).toContain('PLEASE LOAD IN IDS CAPTURE');
     expect(lines.find(l => l.startsWith(BUFFALO))).toContain('Buffalo');             // the unshot one is asked for, under its day
     expect(msg).toContain('Tim Petet');
@@ -149,7 +151,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await page.locator('.toast button').click();   // Undo the undo: back to shot, dated today — not the planned day
     await expect(page.locator('#stops .stop.done')).toHaveCount(1);
     s = await saved(page);
-    expect(s.locks[STOCKTON].d).toBe(today());
+    expect(s.locks[BOLIVAR].d).toBe(today());
     await page.locator('#stops [data-shot]', { hasText: 'undo' }).click();   // and off again for the rest
 
     // the lock survives a reload; the unlock is kept as a fact
@@ -180,8 +182,8 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     const AT = Date.now() - 60_000;
     // what the old LOCK button did to tomorrow's plan: a lock stamped today for tomorrow's date
     await open(page, state({
-      locks: { [STOCKTON]: { d: tomorrow(), pts: 100, by: 'tim', with: '', at: AT } },
-      status: { [STOCKTON]: 'captured' }, by: { [STOCKTON]: 'tim' },
+      locks: { [BOLIVAR]: { d: tomorrow(), pts: 100, by: 'tim', with: '', at: AT } },
+      status: { [BOLIVAR]: 'captured' }, by: { [BOLIVAR]: 'tim' },
       mig: migBut('planlock0923'),   // everything but planlock0923 — that one must run
     }));
     await expect(page.locator('.toast')).toContainText('now PLANNED');   // first thing after load — the toast is short-lived
@@ -190,9 +192,9 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await expect(page.locator('#stops .badge.pl')).toHaveCount(2);
     await expect(page.locator('#stops [data-shot]', { hasText: 'undo' })).toHaveCount(0);
     const s = await saved(page);
-    expect(s.locks[STOCKTON]).toBeUndefined();
-    expect(s.status[STOCKTON]).toBeUndefined();
-    expect(s.by[STOCKTON]).toBeUndefined();
+    expect(s.locks[BOLIVAR]).toBeUndefined();
+    expect(s.status[BOLIVAR]).toBeUndefined();
+    expect(s.by[BOLIVAR]).toBeUndefined();
     expect(s.days[0].locked).toMatchObject({ at: AT, by: 'tim' });   // the plan lock carries the old lock's stamp
     expect(s.mig.planlock0923).toBe(1);
   });
@@ -200,14 +202,14 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
   test('a real shot from yesterday stays a shot', async ({ page }) => {
     const AT = new Date(yesterday() + 'T15:00:00').getTime();
     await open(page, state({
-      days: [day({ date: yesterday(), ids: [STOCKTON] })], activeDate: yesterday(),
-      locks: { [STOCKTON]: { d: yesterday(), pts: 100, by: 'tim', with: '', at: AT } },
-      status: { [STOCKTON]: 'captured' }, by: { [STOCKTON]: 'tim' },
+      days: [day({ date: yesterday(), ids: [BOLIVAR] })], activeDate: yesterday(),
+      locks: { [BOLIVAR]: { d: yesterday(), pts: 100, by: 'tim', with: '', at: AT } },
+      status: { [BOLIVAR]: 'captured' }, by: { [BOLIVAR]: 'tim' },
     }));
     // yesterday is History's now — off the Plan rail — and the shot is still a shot, not turned into a plan lock
     await expect(page.locator('#s-plan .dchip[data-i]')).toHaveCount(1);   // the fresh day Plan opened on, not yesterday
     const s0 = await saved(page);
-    expect(s0.locks[STOCKTON].d).toBe(yesterday());
+    expect(s0.locks[BOLIVAR].d).toBe(yesterday());
     expect(s0.days.find((d: any) => d.date === yesterday()).locked).toBeFalsy();
     // History costs the day as it was driven, not the (empty) run still ahead
     await page.locator('#nav button[data-s="history"]').click();
@@ -219,38 +221,38 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
   test('↑/↓ move the stop on the row, and Undo of a SHOT puts the stop back where it was', async ({ page }) => {
     const t = today(), AT = Date.now() - 60_000;
     await open(page, state({
-      days: [day({ date: t, ids: [STOCKTON, BUFFALO, PARKCITY] })], activeDate: t,
-      locks: { [STOCKTON]: { d: t, pts: 100, by: 'tim', with: '', at: AT, sd: t } },
-      status: { [STOCKTON]: 'captured' }, by: { [STOCKTON]: 'tim' },
+      days: [day({ date: t, ids: [BOLIVAR, BUFFALO, PARKCITY] })], activeDate: t,
+      locks: { [BOLIVAR]: { d: t, pts: 100, by: 'tim', with: '', at: AT, sd: t } },
+      status: { [BOLIVAR]: 'captured' }, by: { [BOLIVAR]: 'tim' },
     }));
     // a shot stop that is NOT at the bottom of the list (a stop added after it, a list cleared…)
-    await page.evaluate(ids => { const w = window as any; w.eval('S.days[0].ids=' + JSON.stringify(ids)); w.render(); }, [STOCKTON, BUFFALO, PARKCITY]);
+    await page.evaluate(ids => { const w = window as any; w.eval('S.days[0].ids=' + JSON.stringify(ids)); w.render(); }, [BOLIVAR, BUFFALO, PARKCITY]);
     await page.locator('#stops [data-dn="' + BUFFALO + '"]').click();
-    expect((await saved(page)).days[0].ids).toEqual([PARKCITY, BUFFALO, STOCKTON]);
+    expect((await saved(page)).days[0].ids).toEqual([PARKCITY, BUFFALO, BOLIVAR]);
     await page.locator('#stops [data-up="' + BUFFALO + '"]').click();
-    expect((await saved(page)).days[0].ids).toEqual([BUFFALO, PARKCITY, STOCKTON]);
+    expect((await saved(page)).days[0].ids).toEqual([BUFFALO, PARKCITY, BOLIVAR]);
     // the shot row cannot be moved up into the live ones, and the last live row cannot be moved under it
-    await expect(page.locator('#stops [data-up="' + STOCKTON + '"]')).toBeDisabled();
+    await expect(page.locator('#stops [data-up="' + BOLIVAR + '"]')).toBeDisabled();
     await expect(page.locator('#stops [data-dn="' + PARKCITY + '"]')).toBeDisabled();
     // SHOT sinks Buffalo under the live stops; Undo brings it back to the top, not to "after Park City"
     await page.locator('#stops [data-shot="' + BUFFALO + '"]').click();
-    expect((await saved(page)).days[0].ids).toEqual([PARKCITY, BUFFALO, STOCKTON]);
+    expect((await saved(page)).days[0].ids).toEqual([PARKCITY, BUFFALO, BOLIVAR]);
     await page.locator('.toast button').click();
-    expect((await saved(page)).days[0].ids).toEqual([BUFFALO, PARKCITY, STOCKTON]);
+    expect((await saved(page)).days[0].ids).toEqual([BUFFALO, PARKCITY, BOLIVAR]);
     expect((await saved(page)).locks[BUFFALO]).toBeUndefined();
   });
 
   test('a locked plan cannot be edited through the back doors', async ({ page }) => {
     const B = shift(2);
     await open(page, state({
-      days: [day({ id: 'dA', date: tomorrow(), ids: [STOCKTON] }), day({ id: 'dB', date: B, ids: [BUFFALO], locked: { at: 1, by: 'tim' } })],
+      days: [day({ id: 'dA', date: tomorrow(), ids: [BOLIVAR] }), day({ id: 'dB', date: B, ids: [BUFFALO], locked: { at: 1, by: 'tim' } })],
     }));
-    await page.locator('#stops [data-mv]').first().click();        // move Stockton onto the locked day
+    await page.locator('#stops [data-mv]').first().click();        // move Bolivar onto the locked day
     await page.locator('.sheet [data-day="1"]').click();
     await expect(page.locator('.toast')).toContainText('locked');
     const s = await saved(page);
     expect(s.days.find((d: any) => d.date === B).ids).toEqual([BUFFALO]);
-    expect(s.days.find((d: any) => d.date === tomorrow()).ids).toEqual([STOCKTON]);
+    expect(s.days.find((d: any) => d.date === tomorrow()).ids).toEqual([BOLIVAR]);
   });
 
   test('a go-back is shot only when its list is clear, and the revisit is dated', async ({ page }) => {
@@ -286,16 +288,16 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
   test('IDS tab: dates to report shrink when sent, come back on undo, and survive a merge', async ({ page }) => {
     const y = yesterday(), AT = new Date(y + 'T15:00:00').getTime();
     await open(page, state({
-      days: [day({ date: y, ids: [STOCKTON] })], activeDate: y,
-      locks: { [STOCKTON]: { d: y, pts: 100, by: 'tim', with: '', at: AT } },
-      status: { [STOCKTON]: 'captured' }, by: { [STOCKTON]: 'tim' },
+      days: [day({ date: y, ids: [BOLIVAR] })], activeDate: y,
+      locks: { [BOLIVAR]: { d: y, pts: 100, by: 'tim', with: '', at: AT } },
+      status: { [BOLIVAR]: 'captured' }, by: { [BOLIVAR]: 'tim' },
       nav: 'app', mig: migBut('sheetdates1003'),   // the 10/3 sheet-dates fix runs on top of the seed, as on a fresh device
     }), '#s-app');
     await noSidewaysScroll(page, 'IDS tab');
-    const row = page.locator('#s-app .idsrow', { hasText: STOCKTON });
+    const row = page.locator('#s-app .idsrow', { hasText: BOLIVAR });
     await expect(row).toContainText(mdy(y));
     // the first-run seed: everything on the sheet at the 9/24 read is "sent" — date AND invoice, stamped before
-    // any real send — and what it is missing or has wrong is not, so that is what the list opens at, plus Stockton
+    // any real send — and what it is missing or has wrong is not, so that is what the list opens at, plus Bolivar
     let s = await saved(page);
     expect(s.report.seeded).toBe('0928');
     expect(s.report.sent['2026-0000']).toMatchObject({ d: '2026-09-10', seed: 1, at: 0 });   // Target 1821 Manhattan: the sheet's 9/10, over the book's 9/9
@@ -304,7 +306,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(s.report.sent['2026-1388']).toMatchObject({ d: '2026-08-21', seed: 1 });   // seeded with the sheet's wrong date, so it lists as a fix
     expect(s.report.sent['2026-3142']).toBeUndefined();                               // Gap 1211 is on neither tab
     expect(s.report.sent['2026-7106']).toBeUndefined();
-    // Stockton (shot yesterday) + Gap 1211 + the dates the sheet has wrong + the undated Master rows + every stop shot since the 9/24 read
+    // Bolivar (shot yesterday) + Gap 1211 + the dates the sheet has wrong + the undated Master rows + every stop shot since the 9/24 read
     const n = await page.evaluate(() => (window as any).datesToReport().length);
     expect(n).toBeGreaterThanOrEqual(12);
     await expect(page.locator('#s-app .badge', { hasText: 'invoice # new' })).toHaveCount(0);
@@ -318,19 +320,19 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await page.locator('#datesSent').click();
     await expect(row).toHaveCount(0);
     s = await saved(page);
-    expect(s.report.sent[STOCKTON]).toMatchObject({ d: y });
+    expect(s.report.sent[BOLIVAR]).toMatchObject({ d: y });
 
     await page.locator('.toast button').click();   // Undo
     await expect(row).toContainText(mdy(y));
     s = await saved(page);
-    expect(s.report.sent[STOCKTON].d).toBe('');       // a tombstone, not a deletion — a crew merge cannot resurrect the old entry
+    expect(s.report.sent[BOLIVAR].d).toBe('');       // a tombstone, not a deletion — a crew merge cannot resurrect the old entry
 
     // a reload keeps the seed flag, so the seed does not run again and the tombstone stands
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(page.locator('#s-app')).toBeVisible();
     s = await saved(page);
     expect(s.report.seeded).toBe('0928');
-    expect(s.report.sent[STOCKTON].d).toBe('');
+    expect(s.report.sent[BOLIVAR].d).toBe('');
     expect(await page.evaluate(() => (window as any).datesToReport().length)).toBe(n);
   });
 
@@ -366,7 +368,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
       G.mergeShared({ days: [clone()], locks: {}, status: {}, unshot: { [stop]: { at: 600, by: 'gabe' } } });
       out.f = isShot();
       return out;
-    }, [tomorrow(), STOCKTON, today()] as const);
+    }, [tomorrow(), BOLIVAR, today()] as const);
     expect(r.a).toBe(true);
     expect(r.b).toBe(false);
     expect(r.c).toEqual({ lockGone: true, planLocked: true });
@@ -378,21 +380,21 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
   test('un-shot on one phone survives a pull on the other', async ({ page }) => {
     const t = today(), AT = Date.now() - 60_000;   // stamped a minute ago — "09:00 today" is in the future on an early CI run
     await open(page, state({
-      days: [day({ date: t, ids: [STOCKTON] })], activeDate: t,
-      locks: { [STOCKTON]: { d: t, pts: 100, by: 'tim', with: '', at: AT, sd: t } },
-      status: { [STOCKTON]: 'captured' }, by: { [STOCKTON]: 'tim' },
+      days: [day({ date: t, ids: [BOLIVAR] })], activeDate: t,
+      locks: { [BOLIVAR]: { d: t, pts: 100, by: 'tim', with: '', at: AT, sd: t } },
+      status: { [BOLIVAR]: 'captured' }, by: { [BOLIVAR]: 'tim' },
     }));
     // this phone un-shoots: a tombstone is written, and it rides the crew sync
-    await page.locator('#stops [data-shot="' + STOCKTON + '"]').click();
+    await page.locator('#stops [data-shot="' + BOLIVAR + '"]').click();
     const s = await saved(page);
-    expect(s.locks[STOCKTON]).toBeUndefined();
-    expect(s.unshot[STOCKTON].at).toBeGreaterThan(AT);
+    expect(s.locks[BOLIVAR]).toBeUndefined();
+    expect(s.unshot[BOLIVAR].at).toBeGreaterThan(AT);
     // the crew copy still holds the lock (pushed before the un-shot) → the pull does NOT bring it back
     const back = await page.evaluate(([id, at, d]) => {
       const G: any = window;
       G.mergeShared({ locks: { [id]: { d, pts: 100, by: 'tim', with: '', at, sd: d } }, status: { [id]: 'captured' }, by: { [id]: 'tim' }, unshot: {} });
       return { lock: !!G.eval('S.locks["' + id + '"]'), shot: G.eval('shot("' + id + '")') };
-    }, [STOCKTON, AT, t] as const);
+    }, [BOLIVAR, AT, t] as const);
     expect(back).toEqual({ lock: false, shot: false });
   });
 
@@ -414,7 +416,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
 
   test('Score: the Verizon running total adds up, and moves when a stop is shot', async ({ page }) => {
     const y = yesterday();
-    await open(page, state({ days: [day({ date: y, ids: [STOCKTON] })], activeDate: y, nav: 'board' }), '#s-board');
+    await open(page, state({ days: [day({ date: y, ids: [BOLIVAR] })], activeDate: y, nav: 'board' }), '#s-board');
     await noSidewaysScroll(page, 'Score tab');
     await expect(page.locator('#vzTotal')).toBeVisible();
     const read = async () => ({
@@ -430,7 +432,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(before.all).toBeGreaterThan(100);
     expect(before.done + before.left + before.hold).toBe(before.all);   // the three always add up
     // shooting one Verizon stop moves exactly one from left to done
-    await page.evaluate(id => { const w = window as any; w.markShot(id, true); w.render(); }, STOCKTON);
+    await page.evaluate(id => { const w = window as any; w.markShot(id, true); w.render(); }, BOLIVAR);
     const after = await read();
     expect(after.all).toBe(before.all);
     expect(after.done).toBe(before.done + 1);
@@ -444,7 +446,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
 
   test('Plan starts from today: past days, finished trips and stale route names are gone, and a stop left on a past day is back in the pool', async ({ page }) => {
     await open(page, state({
-      days: [day({ id: 'dPast', date: yesterday(), ids: [STOCKTON] }), day({ id: 'dNow', date: today(), ids: [BUFFALO] })],
+      days: [day({ id: 'dPast', date: yesterday(), ids: [BOLIVAR] }), day({ id: 'dNow', date: today(), ids: [BUFFALO] })],
       active: 1, activeDate: today(),
       binds: [{ id: '2026-09-25:06:00:W/Cody', date: '2026-09-25', ids: [BUFFALO], stops: 1, shot: 0, pay: 100, net: 100, at: 1 }],
     }));
@@ -457,17 +459,17 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
         pool: G.eval('unscheduled().map(j=>j.id)').includes(tp),
         planned: G.eval('PLANNED("' + tp + '")'),
         map: G.eval('(()=>{const v=mapVisible(day()); return [BY["' + tp + '"],BY["' + ms + '"],BY["2026-4522"]].map(v)})()'),
-      }; }, [STOCKTON, BUFFALO] as const);
-    expect(r.pool).toBe(true);                    // Stockton was never shot yesterday — it is back to be picked
+      }; }, [BOLIVAR, BUFFALO] as const);
+    expect(r.pool).toBe(true);                    // Bolivar was never shot yesterday — it is back to be picked
     expect(r.planned).toBe(false);
-    expect(r.map).toEqual([true, true, false]);   // Stockton to pick, Buffalo on the day, Osage City shot 9/24 — not on the map
+    expect(r.map).toEqual([true, true, false]);   // Bolivar to pick, Buffalo on the day, Osage City shot 9/24 — not on the map
   });
 
   test('Now: the clock, this device, and the stop in hand — the GPS says you are there, start, stop, complete, on to the next', async ({ page }) => {
     const t = today();
     await page.context().grantPermissions(['geolocation']);
-    await page.context().setGeolocation({ latitude: 37.68803, longitude: -93.79939 });   // standing at Russell 102768, Stockton (the book's lat/lon)
-    await open(page, state({ days: [day({ date: t, ids: [STOCKTON, BUFFALO], locked: { at: 1, by: 'tim' } })], activeDate: t, nav: 'today' }), '#s-today');
+    await page.context().setGeolocation({ latitude: 37.6054, longitude: -93.40684 });   // standing at Cellular Sales 108862, Bolivar (the book's lat/lon)
+    await open(page, state({ days: [day({ date: t, ids: [BOLIVAR, BUFFALO], locked: { at: 1, by: 'tim' } })], activeDate: t, nav: 'today' }), '#s-today');
     const card = page.locator('#s-today .nowcard');
     await expect(card.locator('[data-clock]')).toHaveText(/\d{1,2}:\d{2}/);
     const dev = await page.evaluate(() => JSON.parse(localStorage.getItem('ninja360-device') || '{}'));
@@ -475,12 +477,12 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await expect(page.locator('#devChip')).toContainText(dev.name);
     await expect(card).toContainText('At the stop');          // the GPS put him there — nothing to tap, nothing typed
     await expect(card).toContainText('You are here');
-    await expect(card).toContainText('Stockton');
+    await expect(card).toContainText('Bolivar');
     await page.locator('#nowStart').click();
     await expect(card).toContainText('Shooting');
     let s = await saved(page);
-    expect(s.timers[STOCKTON].startedAt).toBeTruthy();
-    expect(s.checkin[STOCKTON].dev).toBe(dev.id);
+    expect(s.timers[BOLIVAR].startedAt).toBeTruthy();
+    expect(s.checkin[BOLIVAR].dev).toBe(dev.id);
     await page.locator('#nowStop').click();
     await expect(card).toContainText('Shot — confirm');
     await page.locator('#nowDone').click();
@@ -489,8 +491,8 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await expect(card).toContainText('Buffalo');
     await expect(card).toContainText('mi away');
     s = await saved(page);
-    expect(s.locks[STOCKTON]).toMatchObject({ d: t, dev: dev.id });
-    expect(s.timers[STOCKTON].startedAt).toBeUndefined();
+    expect(s.locks[BOLIVAR]).toMatchObject({ d: t, dev: dev.id });
+    expect(s.timers[BOLIVAR].startedAt).toBeUndefined();
     expect(s.devices[dev.id]).toMatchObject({ name: dev.name });
     // one tap names the device, and it stays named
     await page.locator('#devChip').click();
@@ -505,12 +507,12 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
       ? r.fulfill({ status: 200, headers: { date: new Date(Date.now() - 10 * 60_000).toUTCString() }, body: '' })
       : r.continue());
     const t = today();
-    await open(page, state({ days: [day({ date: t, ids: [STOCKTON] })], activeDate: t, nav: 'today' }), '#s-today');
+    await open(page, state({ days: [day({ date: t, ids: [BOLIVAR] })], activeDate: t, nav: 'today' }), '#s-today');
     await expect(page.locator('#s-today .nowcard')).toContainText('10 min fast');
   });
 
   test('GO LIVE waits for a date: an undated day says so instead of offering to publish', async ({ page }) => {
-    await open(page, state({ days: [day({ date: '', ids: [STOCKTON] })], activeDate: '', nav: 'today' }), '#s-today');
+    await open(page, state({ days: [day({ date: '', ids: [BOLIVAR] })], activeDate: '', nav: 'today' }), '#s-today');
     await expect(page.locator('#tGoLive')).toHaveCount(0);
     await expect(page.locator('#s-today .golivecard')).toContainText('no date yet');
   });
@@ -525,8 +527,8 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await page.route('**/api/journal', r => { posted.push(JSON.parse(r.request().postData() || '{}'));
       r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, id: 'x' + posted.length, at: Date.now() }) }); });
     await open(page, state({
-      days: [day({ date: t, ids: [STOCKTON, BUFFALO], locked: { at: 1, by: 'tim' } })], activeDate: t,
-      locks: { [STOCKTON]: { d: t, pts: 100, by: 'tim', with: '', at: AT, sd: t } }, status: { [STOCKTON]: 'captured' }, by: { [STOCKTON]: 'tim' },
+      days: [day({ date: t, ids: [BOLIVAR, BUFFALO], locked: { at: 1, by: 'tim' } })], activeDate: t,
+      locks: { [BOLIVAR]: { d: t, pts: 100, by: 'tim', with: '', at: AT, sd: t } }, status: { [BOLIVAR]: 'captured' }, by: { [BOLIVAR]: 'tim' },
       sync: { key: 'test-crew-key-0925', v: 0, at: 0 },
       nav: 'now',                                            // an old build's tab lands on Today
     }), '#s-today');
@@ -537,7 +539,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await expect(page.locator('#s-today .runrow').first()).toContainText('Buffalo');   // the live stop leads, the shot one sinks
     await expect(page.locator('#s-today [data-shot="' + BUFFALO + '"]')).toBeVisible();
     await expect(page.locator('#crewChip')).toContainText('Crew ✓');
-    // GO LIVE: Stockton shot, Buffalo carried — the journal gets the day, the email is confirmed, the date is marked sent
+    // GO LIVE: Bolivar shot, Buffalo carried — the journal gets the day, the email is confirmed, the date is marked sent
     await page.locator('#tGoLive').click();
     await expect(page.locator('.sheet #glGo')).toBeVisible();
     await expect(page.locator('.sheet input[name="gl-' + BUFFALO + '"][value="carry"]')).toBeChecked();
@@ -546,11 +548,11 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await expect(page.locator('#s-today .golivecard')).toContainText('email ✓ sent');
     expect(posted).toHaveLength(1);
     expect(posted[0]).toMatchObject({ date: t, carried: [BUFFALO], skipped: [] });
-    expect(posted[0].shot.map((x: any) => x.id)).toEqual([STOCKTON]);
+    expect(posted[0].shot.map((x: any) => x.id)).toEqual([BOLIVAR]);
     let s = await saved(page);
     expect(s.nav).toBe('today');
-    expect(s.published[t]).toMatchObject({ shot: [STOCKTON], carried: [BUFFALO], email: 'sent', entry: 'x1' });
-    expect(s.report.sent[STOCKTON]).toMatchObject({ d: t });
+    expect(s.published[t]).toMatchObject({ shot: [BOLIVAR], carried: [BUFFALO], email: 'sent', entry: 'x1' });
+    expect(s.report.sent[BOLIVAR]).toMatchObject({ d: t });
     // the server refuses → nothing re-published, the first receipt stands, nothing else marked sent
     await page.unroute('**/api/journal');
     await page.route('**/api/journal', r => r.fulfill({ status: 503, contentType: 'application/json', body: '{"error":"no-store"}' }));
@@ -614,8 +616,8 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     who: 'cody', oath: { who: 'cody', at: 1 }, nav: 'today', activeDate: t,
     sync: { key: 'test-crew-key-0925', v: 0, at: 0 },
     report: { to: '', cc: '', sms: '+1 (555) 010-2030', sent: {} },
-    days: [day({ date: t, ids: [STOCKTON, BUFFALO], driver: 'cody', vehicle: 'own', locked: { at: 1, by: 'tim' } })],
-    locks: { [STOCKTON]: { d: t, pts: 100, by: 'cody', with: '', at: AT, sd: t } }, status: { [STOCKTON]: 'captured' }, by: { [STOCKTON]: 'cody' },
+    days: [day({ date: t, ids: [BOLIVAR, BUFFALO], driver: 'cody', vehicle: 'own', locked: { at: 1, by: 'tim' } })],
+    locks: { [BOLIVAR]: { d: t, pts: 100, by: 'cody', with: '', at: AT, sd: t } }, status: { [BOLIVAR]: 'captured' }, by: { [BOLIVAR]: 'cody' },
   });
   const stubCrewCopy = (page: Page) => page.route('**/api/state', r => r.request().method() === 'GET'
     ? r.fulfill({ contentType: 'application/json', body: JSON.stringify({ v: 0, updatedAt: 0, state: null }) })
@@ -643,7 +645,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(posted[0]).toMatchObject({ kind: 'signout', by: 'cody', date: t, milesSrc: 'est',
       loc: { place: 'El Dorado, KS' }, room: { type: 'hotel', cost: 90, place: 'El Dorado, KS' }, carried: [], skipped: [] });
     expect(posted[0].loc.lat).toBeCloseTo(37.8175, 3);
-    expect(posted[0].shot.map((x: any) => x.id)).toEqual([STOCKTON]);
+    expect(posted[0].shot.map((x: any) => x.id)).toEqual([BOLIVAR]);
     expect(posted[0].cid).toMatch(/^so-[a-z0-9]+$/);
     // the second channel: a text to the saved number, already written
     const href = await page.locator('.sheet #soText').getAttribute('href');
@@ -694,9 +696,9 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     const t = today(), now = Date.now();
     await stubCrewCopy(page);
     await page.route('**/api/journal', r => r.fulfill({ contentType: 'application/json', body: JSON.stringify({ n: 2, entries: [
-      { kind: 'signout', by: 'cody', date: t, at: now - 60_000, miles: 312, milesSrc: 'est', shot: [{ id: STOCKTON, at: 1, d: t }],
+      { kind: 'signout', by: 'cody', date: t, at: now - 60_000, miles: 312, milesSrc: 'est', shot: [{ id: BOLIVAR, at: 1, d: t }],
         loc: { lat: 37.8175, lon: -96.8829, acc: 30, place: 'El Dorado, KS' }, room: { type: 'hotel', cost: 90, place: 'El Dorado, KS' } },
-      { kind: 'golive', by: 'tim', date: t, at: now - 3600_000, miles: 120, shot: [{ id: STOCKTON, at: 1, d: t }, { id: BUFFALO, at: 1, d: t }] },
+      { kind: 'golive', by: 'tim', date: t, at: now - 3600_000, miles: 120, shot: [{ id: BOLIVAR, at: 1, d: t }, { id: BUFFALO, at: 1, d: t }] },
     ] }) }));
     await open(page, state({ sync: { key: 'test-crew-key-0925', v: 0, at: 0 }, nav: 'now' }), '#s-today');
     await page.locator('#crewChip').click();
@@ -754,7 +756,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
   });
 
   test('Cody’s Friday 11/6 overnight pays 150 and carries the receipt note; every other day stays at 125', async ({ page }) => {
-    const fri = day({ id: 'dfri', date: '2026-11-06', driver: 'cody', vehicle: 'own', ids: [STOCKTON], note: 'Kansas run.' });
+    const fri = day({ id: 'dfri', date: '2026-11-06', driver: 'cody', vehicle: 'own', ids: [BOLIVAR], note: 'Kansas run.' });
     const thu = day({ id: 'dthu', date: '2026-11-05', driver: 'cody', vehicle: 'own', ids: [BUFFALO], note: 'Topeka.' });
     const timFri = day({ id: 'dtim', date: '2026-11-06', ids: [PARKCITY] });
     await open(page, state({ days: [thu, fri, timFri], mig: migBut('ovn1106') }));
@@ -777,5 +779,263 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await open(page, state({ days: [day({ id: 'dwed', date: '2026-11-04', driver: 'cody', vehicle: 'own', ids: [BUFFALO] })], mig: migBut('ovn1106') }));
     expect(await ev(page, '!!S.mig.ovn1106')).toBe(false);
     expect(await ev(page, 'dayCosts(S.days.find(x=>x.id==="dwed")).crew')).toBe(125);
+  });
+
+  // ── phone widths (Tim, 11/7: "check mobile responsiveness") ────────────────────────────────────────────────────
+  // A phone that is handed a page wider than itself grows its layout viewport to fit, so clientWidth follows the overflow and
+  // noSidewaysScroll() cannot see it: these compare the page against the width the phone really is.
+  const TABS = ['today', 'plan', 'clusters', 'app', 'board', 'history', 'oct'];
+  const showTab = (page: Page, tab: string) => page.evaluate(t => (document.querySelector('#nav button[data-s="' + t + '"]') as HTMLElement).click(), tab);
+
+  test('phone widths: no tab scrolls sideways at 320, 360 or 390 px', async ({ page }) => {
+    await open(page, state());
+    for (const width of [320, 360, 390]) {
+      await page.setViewportSize({ width, height: 800 });
+      for (const tab of TABS) {
+        await showTab(page, tab);
+        await page.waitForTimeout(200);
+        const sw = await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth));
+        expect(sw, tab + ' tab at ' + width + ' px must fit the screen').toBeLessThanOrEqual(width);
+      }
+    }
+  });
+
+  test('phone widths: the header keeps its title and its buttons apart, and stays readable in the light theme', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'light' });
+    await open(page, state());
+    for (const width of [320, 360, 390, 412]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.waitForTimeout(100);
+      const g = await page.evaluate(() => {
+        const rect = (e: Element) => { const r = e.getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top, b: r.bottom }; };
+        const text = (sel: string) => { const rg = document.createRange(); rg.selectNodeContents(document.querySelector(sel)!); return rect(rg as unknown as Element); };
+        const rgb = (getComputedStyle(document.querySelector('header .hrow')!).backgroundColor.match(/\d+/g) || ['255', '255', '255']).map(Number);
+        return { words: [text('.hbrand h1'), text('.hbrand .sub')], btns: [...document.querySelectorAll('.hbtns button')].map(rect),
+          lum: (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255 };
+      });
+      const hit = g.btns.some(b => g.words.some(w => b.l < w.r && b.r > w.l && b.t < w.b && b.b > w.t));
+      expect(hit, 'title or tagline under a button at ' + width + ' px').toBe(false);
+      expect(g.lum, 'a dark box behind the header\'s light text at ' + width + ' px').toBeLessThan(0.3);
+    }
+  });
+
+  test('phone sheets: fields are 16 px so the page does not zoom, the number field is styled, and the journal map link is a real target', async ({ page }) => {
+    const t = today();
+    await stubCrewCopy(page);
+    await page.route('**/api/journal', r => r.fulfill({ contentType: 'application/json', body: JSON.stringify({ n: 1, entries: [
+      { kind: 'signout', by: 'cody', date: t, at: Date.now() - 60_000, miles: 312, milesSrc: 'est', shot: [],
+        loc: { lat: 37.8175, lon: -96.8829, acc: 30, place: 'El Dorado, KS' }, room: { type: 'hotel', cost: 90, place: 'El Dorado, KS' } }] }) }));
+    await open(page, state({ who: 'cody', oath: { who: 'cody', at: 1 }, sync: { key: 'test-crew-key-0925', v: 0, at: 0 }, nav: 'now' }), '#s-today');
+    await page.setViewportSize({ width: 360, height: 740 });
+    const metrics = (sel: string) => page.locator(sel).evaluate((e: Element) => ({ font: parseFloat(getComputedStyle(e).fontSize), h: e.getBoundingClientRect().height, w: e.getBoundingClientRect().width, border: getComputedStyle(e).borderTopWidth }));
+    await page.locator('#tSignOut').click();
+    for (const id of ['#soPlace', '#soMiles']) {
+      const m = await metrics('.sheet ' + id);
+      expect(m.font, id + ' font size').toBeGreaterThanOrEqual(16);
+      expect(m.h, id + ' height').toBeGreaterThanOrEqual(36);
+    }
+    await page.evaluate(() => (window as any).closeSheet());
+    await page.locator('#crewChip').click();
+    const sms = await metrics('.sheet #liveSmsTo');
+    expect(sms.font, 'number field font size').toBeGreaterThanOrEqual(16);
+    expect(sms.h, 'number field height').toBeGreaterThanOrEqual(36);
+    expect(sms.border, 'number field is styled like the others, not the browser default').toBe('1px');
+    await page.locator('.sheet #liveJournal').click();
+    const link = await metrics('.sheet #jrList a');
+    expect(link.w, 'map link width').toBeGreaterThanOrEqual(36);
+    expect(link.h, 'map link height').toBeGreaterThanOrEqual(30);
+  });
+
+  // ── 11/9: the weekend's stops come off the run sheet ─────────────────────────────────────────────────────────────
+  // Tim: remove the ten stops shot this weekend; keep Lawrence TCC 74630 and Newton Victra 118416 in an "Open follow-up" section;
+  // log what came off and when; touch nothing else. The IDS Master Sheet is not touched (this is the run sheet only).
+  const WEEKEND = ['2026-0747', '2026-1224', '2026-7983', '2026-1376', '2026-5976', '2026-7106', '2026-7375', '2026-4909', '2026-5726', '2026-1339'];
+  const LAWRENCE_132065 = '2026-5092';   // TCC 132065 — Lawrence, KS: a different store, an outstanding go-back, stays
+  const TOPEKA_RUSSELL = '2026-4049';    // Russell 131502 — Topeka, KS: same city as Verizon 74651, different retailer, stays
+
+  test('weekend removal: the ten stops are off the book and the counts, nothing else moved, and the log is on the Plan', async ({ page }) => {
+    await open(page, state());
+    expect(await ev(page, 'J.length')).toBe(181);                                 // 191 in the book before
+    expect(await ev(page, 'RETIRED_ROWS.length')).toBe(10);
+    for (const id of WEEKEND) expect(await ev(page, 'J.some(j=>j.id==="' + id + '")'), id + ' is off the book').toBe(false);
+    expect(await ev(page, 'J.some(j=>j.id==="' + LAWRENCE_132065 + '")'), 'TCC 132065 Lawrence stays').toBe(true);
+    expect(await ev(page, 'J.some(j=>j.id==="' + TOPEKA_RUSSELL + '")'), 'Russell 131502 Topeka stays').toBe(true);
+    await expect(page.locator('#counters')).toContainText(/LEFT TO SHOOT\s*6,000 pts\s*60 stops/i);   // 68 stops, 6,800 pts before
+    // the follow-up section: the two that still need work, in Tim's words
+    const fu = page.locator('#followUp');
+    await expect(fu).toBeVisible();
+    await expect(fu.locator('.furow')).toHaveCount(2);
+    await expect(fu).toContainText('TCC 74630 - Lawrence, KS');
+    await expect(fu).toContainText('Lawrence may need a go-back');
+    await expect(fu).toContainText('Victra 118416 - Newton, KS');
+    await expect(fu).toContainText('Images incomplete');
+    // the log: what came off, with the date
+    await fu.locator('.rmlog summary').click();
+    await expect(fu.locator('.rmlog .idsrow')).toHaveCount(10);
+    for (const id of WEEKEND) await expect(fu.locator('.rmlog')).toContainText(id);
+    await expect(fu.locator('.rmlog .idsrow').first()).toContainText('11/9');
+  });
+
+  test('weekend removal: a saved plan that still names a removed stop comes back without it, and a SHOT tap on one still counts', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', e => errors.push(e.message));
+    const t = today(), AT = new Date(yesterday() + 'T15:00:00').getTime();
+    await open(page, state({
+      days: [day({ date: t, ids: ['2026-7375', BOLIVAR, '2026-5976', BUFFALO, '2026-0747'] })], activeDate: t,
+      locks: { '2026-7375': { d: yesterday(), pts: 100, by: 'cody', with: '', at: AT, sd: yesterday() } },
+      notes: { '2026-5976': 'Gate code 4411' },
+    }));
+    expect(await ev(page, 'S.days[0].ids.join()')).toBe([BOLIVAR, BUFFALO].join());                  // order kept, the three taken out
+    expect(await ev(page, 'S.days[0].retired.join()')).toBe(['2026-7375', '2026-5976', '2026-0747'].join());   // and remembered on the day
+    expect(await ev(page, 'S.locks["2026-7375"].by'), 'the SHOT tap is kept').toBe('cody');
+    expect(await ev(page, 'allLocks().some(l=>l.id==="2026-7375")'), 'and still counted').toBe(true);
+    expect(await ev(page, 'S.notes["2026-5976"]'), 'notes stay in the saved state').toBe('Gate code 4411');
+    for (const tab of TABS) { await showTab(page, tab); await page.waitForTimeout(150); }   // every screen still draws
+    await page.reload();
+    expect(await ev(page, 'S.days[0].retired.length'), 'a second boot does not add them twice').toBe(3);
+    expect(errors, 'no page errors with removed stops in the saved state').toEqual([]);
+  });
+
+  // ── 11/9: the Go Backs page ──────────────────────────────────────────────────────────────────────────────────────
+  // The IDS Master Sheet's "Verizon Feedback" tab on a page of its own: off until the purple button on the Plan opens it, Outstanding
+  // only until the filter says otherwise, read-only, and the known data problems on the page rather than behind it.
+  const gpCards = (page: Page) => page.locator('#gpList .gpcard');
+
+  test('Go Backs: off by default, a purple button on the Plan opens its own page, and a reload does not keep it open', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'light' });
+    await open(page, state());
+    await expect(page.locator('#s-gobacks')).toBeHidden();
+    await expect(page.locator('#s-plan')).toBeVisible();
+    expect(await page.locator('#nav button').count(), 'it is not a tab').toBe(7);
+    const btn = page.getByRole('button', { name: 'Go Backs' });
+    await expect(btn).toBeVisible();
+    await expect(btn).toHaveCSS('background-color', 'rgb(139, 47, 201)');
+    await expect(page.locator('#s-plan [data-gp]')).toHaveCount(0);             // not a list on the main plan
+    await btn.click();
+    await expect(page.locator('#s-gobacks')).toBeVisible();
+    await expect(page.locator('#s-plan')).toBeHidden();
+    await expect(page.locator('#s-gobacks h2')).toHaveText('Go Backs');
+    await page.reload();
+    await expect(page.locator('#s-plan')).toBeVisible();
+    await expect(page.locator('#s-gobacks')).toBeHidden();
+    await page.getByRole('button', { name: 'Go Backs' }).click();
+    await page.locator('#gpBack').click();
+    await expect(page.locator('#s-plan')).toBeVisible();
+    await expect(page.locator('#s-gobacks')).toBeHidden();
+  });
+
+  test('Go Backs: Outstanding only by default, and the filter shows Resolved, No status and All', async ({ page }) => {
+    await open(page, state());
+    await page.getByRole('button', { name: 'Go Backs' }).click();
+    const chip = (k: string) => page.locator('#s-gobacks [data-gpf="' + k + '"]');
+    await expect(chip('out')).toHaveAttribute('aria-pressed', 'true');
+    await expect(gpCards(page)).toHaveCount(14);
+    await expect(page.locator('#gpList .gppill.out')).toHaveCount(14);
+    const lawrence = page.locator('.gpcard[data-gp="' + LAWRENCE_132065 + '"]');
+    await expect(lawrence).toContainText('TCC 132065 - Lawrence, KS');
+    await expect(lawrence).toContainText('Missed the Sidewalk sign');
+    await expect(lawrence).toContainText('Outstanding');
+    await expect(lawrence).toContainText('No return visit scheduled');
+    await chip('res').click();
+    await expect(gpCards(page)).toHaveCount(1);
+    await expect(gpCards(page).first()).toContainText('Victra 109861 - Salina, KS');
+    await expect(gpCards(page).first()).toContainText('Resolved');
+    await chip('none').click();
+    await expect(gpCards(page)).toHaveCount(3);
+    await chip('all').click();
+    await expect(gpCards(page)).toHaveCount(18);
+    await chip('out').click();
+    await expect(gpCards(page)).toHaveCount(14);
+    // closing and opening again lands back on Outstanding
+    await chip('all').click();
+    await page.locator('#gpBack').click();
+    await page.getByRole('button', { name: 'Go Backs' }).click();
+    await expect(chip('out')).toHaveAttribute('aria-pressed', 'true');
+    await expect(gpCards(page)).toHaveCount(14);
+  });
+
+  test('Go Backs: a return visit shows as scheduled only when the stop itself is on a plan day that has not passed', async ({ page }) => {
+    const PARK = '2026-8317', MARSHALL = '2026-5264';
+    await open(page, state({
+      days: [day({ id: 'dnext', date: tomorrow(), ids: [PARK, BUFFALO], locked: { at: 1, by: 'tim' } }),
+             day({ id: 'dold', date: yesterday(), ids: [MARSHALL] }),
+             // TCC 74630 Lawrence is off the run sheet: its plan day cannot make TCC 132065 Lawrence look scheduled
+             day({ id: 'dlaw', date: shift(2), ids: ['2026-0747'] })],
+    }));
+    await page.getByRole('button', { name: 'Go Backs' }).click();
+    const niceShort = (s: string) => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }); };
+    await expect(page.locator('.gpcard[data-gp="' + PARK + '"] .gpvisit')).toContainText('Scheduled · ' + niceShort(tomorrow()));
+    await expect(page.locator('.gpcard[data-gp="' + PARK + '"] .gpvisit')).toContainText('plan locked');
+    await expect(page.locator('.gpcard[data-gp="' + MARSHALL + '"] .gpvisit')).toContainText('No return visit scheduled');   // a day that has gone by plans nothing
+    await expect(page.locator('.gpcard[data-gp="' + LAWRENCE_132065 + '"] .gpvisit')).toContainText('No return visit scheduled');
+    expect(await ev(page, 'S.days.find(d=>d.id==="dlaw").ids.length')).toBe(0);
+  });
+
+  test('Go Backs: the known data problems are on the page, not hidden', async ({ page }) => {
+    await open(page, state());
+    await page.getByRole('button', { name: 'Go Backs' }).click();
+    const issues = page.locator('#gpIssues');
+    await expect(issues).toBeVisible();                                           // visible even though Salina is Resolved and filtered out
+    await expect(issues).toContainText('Victra 109861 - Salina, KS');
+    await expect(issues).toContainText('Marked Resolved here, but the Completed tab still says');
+    await expect(issues).toContainText('return trip needed');
+    await expect(issues).toContainText('TCC 132065 - Lawrence, KS');
+    await expect(issues).toContainText('A different store from TCC 74630 - Lawrence, KS');
+    await expect(issues).toContainText('TCC 133817 - Moberly, MO');                // Outstanding here, the run sheet has no go-back for it
+    await expect(issues).toContainText('The run sheet shows no go-back owed here');
+    await expect(issues).toContainText('Wireless Zone 125062 - Granite City, IL');
+    await expect(issues).toContainText('No return trip needed');
+    await expect(issues).toContainText('TCC 118085 - Collinsville, IL');
+    await expect(issues).toContainText('TCC 138618 - Shiloh, IL');
+    // and on the rows themselves
+    await expect(page.locator('.gpcard[data-gp="' + LAWRENCE_132065 + '"] .gpflag')).toContainText('different store from TCC 74630');
+    await page.locator('#s-gobacks [data-gpf="res"]').click();
+    await expect(page.locator('.gpcard[data-gp="2026-8093"] .gpflag').first()).toContainText('Completed tab still says');
+    await page.locator('#s-gobacks [data-gpf="none"]').click();
+    await expect(page.locator('#gpList .gpflag', { hasText: 'No status on the tab' })).toHaveCount(3);
+    // the run sheet's own list sits behind the row, with what is still owed
+    await page.locator('#s-gobacks [data-gpf="out"]').click();
+    await page.locator('.gpcard[data-gp="' + LAWRENCE_132065 + '"] .gpown summary').click();
+    await expect(page.locator('.gpcard[data-gp="' + LAWRENCE_132065 + '"] .gpown')).toContainText('Sidewalk sign');
+  });
+
+  test('Go Backs: read-only — opening it, filtering and leaving it sends nothing anywhere', async ({ page }) => {
+    const sent: string[] = [];
+    await stubCrewCopy(page);
+    await open(page, state({ sync: { key: 'test-crew-key-0925', v: 0, at: 0 } }));
+    await page.waitForTimeout(2600);   // the boot's own save goes out 1.2 s after load: let it, so what follows is only this page
+    page.on('request', r => { const u = r.url(); if (r.method() !== 'GET' || /sheets\.googleapis|docs\.google|drive\.google/.test(u)) sent.push(r.method() + ' ' + u); });   // a crew-copy pull is a read; a push or the sheet is not
+    await page.getByRole('button', { name: 'Go Backs' }).click();
+    for (const k of ['res', 'none', 'all', 'out']) await page.locator('#s-gobacks [data-gpf="' + k + '"]').click();
+    await page.locator('#gpBack').click();
+    await page.waitForTimeout(1800);   // longer than the save delay, so a push this page caused would show
+    expect(sent, 'nothing is written or fetched from the sheet or the crew copy').toEqual([]);
+  });
+
+  test('Go Backs: a link made for the page opens it, and an ordinary link does not', async ({ page }) => {
+    await open(page, state(), '#s-gobacks', ROUTE + '?page=gobacks');
+    await expect(page.locator('#s-gobacks h2')).toHaveText('Go Backs');
+    await expect(gpCards(page)).toHaveCount(14);
+    const p2 = await page.context().newPage();
+    await p2.goto(ROUTE, { waitUntil: 'domcontentloaded' });
+    await expect(p2.locator('#s-plan')).toBeVisible();
+    await expect(p2.locator('#s-gobacks')).toBeHidden();
+  });
+
+  test('phone widths: Go Backs and the Plan with its follow-up card fit 320, 360 and 390 px', async ({ page }) => {
+    await open(page, state());
+    for (const width of [320, 360, 390]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.waitForTimeout(100);
+      expect(await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth)), 'Plan at ' + width).toBeLessThanOrEqual(width);
+      await page.getByRole('button', { name: 'Go Backs' }).click();
+      for (const k of ['out', 'all']) {
+        await page.locator('#s-gobacks [data-gpf="' + k + '"]').click();
+        expect(await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth)), 'Go Backs (' + k + ') at ' + width).toBeLessThanOrEqual(width);
+        const tiny = await page.evaluate(() => [...document.querySelectorAll('#s-gobacks button, #s-gobacks summary')].filter(e => (e as HTMLElement).offsetParent && e.getBoundingClientRect().height < 40).map(e => e.textContent!.trim().slice(0, 20)));
+        expect(tiny, 'every control on the page is a thumb-sized target at ' + width).toEqual([]);
+      }
+      await page.locator('#gpBack').click();
+    }
   });
 });
