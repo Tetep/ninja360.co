@@ -38,7 +38,7 @@ const MIG = {
   cameron0915: 1, lincoln0925: 1, notshot98172: 1, shoot98172: 1, notsun98172: 1, notshot4049: 1,
   plan1007: 1, vehicle1007: 1, run1008: 1, run1013: 1, run1016: 1, run1020: 1,
   pastruns0926: 12, logmi0926: 1, logmi1006: 1, manhattan0910: 1, manhattan0909: 1, planlock0923: 1, sheetdates1003: 1, sync1021: 1, stl1027: 1, stl1029: 2,
-  newton1107: 1, ovn1106: 1,
+  newton1107: 1, ovn1106: 1, ovn1110: 1, qb1110: 1,
 };
 const migBut = (...skip: string[]) => Object.fromEntries(Object.entries(MIG).filter(([k]) => !skip.includes(k)));
 
@@ -426,8 +426,8 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
       hold: (await page.locator('#vzHold').count()) ? +(await page.locator('#vzHold').innerText()) : 0,
     });
     const before = await read();
-    // every Verizon-channel stop on the board, counted from the app's own data
-    const total = await page.evaluate(() => (window as any).eval("J.filter(j=>!j.wp&&j.ch==='Verizon'&&j.st!=='Removed').length"));
+    // every Verizon-channel stop on the board, counted from the app's own data — a stop taken off the run sheet that is banked still counts
+    const total = await page.evaluate(() => (window as any).eval("ledgerRows().filter(j=>!j.wp&&j.ch==='Verizon'&&j.st!=='Removed').length"));
     expect(before.all).toBe(total);
     expect(before.all).toBeGreaterThan(100);
     expect(before.done + before.left + before.hold).toBe(before.all);   // the three always add up
@@ -441,7 +441,11 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     // the pie is the ninja under a fog: the "left" cover is there while stops remain, with the red count on it
     await expect(page.locator('#vzTotal .vzpie image')).toHaveCount(1);
     await expect(page.locator('#vzTotal .vzpie [data-cover="left"]')).toHaveCount(1);
-    await expect(page.locator('#vzTotal .vzpie text')).toContainText(String(after.left));
+    // the red count sits on the fog while a quarter or more of the ninja is still covered; below that (34 of 175 after the 11/10 sync) the
+    // numbers under the pie carry it and the pie has no label
+    if (after.left / after.all >= 0.25) await expect(page.locator('#vzTotal .vzpie text')).toContainText(String(after.left));
+    else await expect(page.locator('#vzTotal .vzpie text')).toHaveCount(0);
+    await expect(page.locator('#vzLeft')).toHaveText(String(after.left));
   });
 
   test('Plan starts from today: past days, finished trips and stale route names are gone, and a stop left on a past day is back in the pool', async ({ page }) => {
@@ -755,29 +759,45 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(n.startsWith('Gate code 4411 · Need to discuss with Tim')).toBe(true);
   });
 
-  test('Cody’s Friday 11/6 overnight pays 150 and carries the receipt note; every other day stays at 125', async ({ page }) => {
+  // Tim, 11/7: Cody's Kansas day pays 150, not 125 — it was an overnight, and the motel receipt is covered. Tim, 11/10: the room in
+  // El Dorado was THURSDAY night (11/5). The 150 follows the room: Cody's Thursday if the phone has one, else the Friday route day.
+  test('Cody’s overnight: the room was Thursday night 11/5, so Thursday pays 150 and carries the receipt note; Friday and every other day stay at 125', async ({ page }) => {
     const fri = day({ id: 'dfri', date: '2026-11-06', driver: 'cody', vehicle: 'own', ids: [BOLIVAR], note: 'Kansas run.' });
     const thu = day({ id: 'dthu', date: '2026-11-05', driver: 'cody', vehicle: 'own', ids: [BUFFALO], note: 'Topeka.' });
-    const timFri = day({ id: 'dtim', date: '2026-11-06', ids: [PARKCITY] });
-    await open(page, state({ days: [thu, fri, timFri], mig: migBut('ovn1106') }));
+    const timThu = day({ id: 'dtim', date: '2026-11-05', ids: [PARKCITY] });
+    await open(page, state({ days: [thu, fri, timThu], mig: migBut('ovn1110') }));
     const d = (id: string) => 'S.days.find(x=>x.id==="' + id + '")';
-    // the numbers: a table of Tim's rulings, so they hold with or without the day's note
-    expect(JSON.parse(await ev(page, 'JSON.stringify([dayCosts(' + d('dfri') + ').crew, dayCosts(' + d('dthu') + ').crew, dayCosts(' + d('dtim') + ').crew])')))
+    // the numbers: a table of Tim's rulings, so they hold with or without the day's note — and only one day gets the 150
+    expect(JSON.parse(await ev(page, 'JSON.stringify([dayCosts(' + d('dthu') + ').crew, dayCosts(' + d('dfri') + ').crew, dayCosts(' + d('dtim') + ').crew])')))
       .toEqual([150, 125, 0]);
-    // the words: Friday's day carries the ruling and the receipt, once; Thursday's note is untouched
-    const note = () => ev(page, d('dfri') + '.note') as Promise<string>;
-    expect((await note()).startsWith('Kansas run. · Overnight in El Dorado: the day pays 150 pts, not 125 (Tim, 11/7).')).toBe(true);
+    // the words: Thursday's day carries the ruling and the receipt, once; Friday's note is untouched
+    const note = () => ev(page, d('dthu') + '.note') as Promise<string>;
+    expect((await note()).startsWith('Topeka. · Overnight in El Dorado: the room was Thursday night 11/5 (Tim, 11/10), so this day pays 150 pts, not 125.')).toBe(true);
     expect(await note()).toContain('Motel receipt covered');
     expect(await note()).toContain('photo still owed');
-    expect(await ev(page, d('dthu') + '.note')).toBe('Topeka.');
-    expect(await ev(page, 'S.mig.ovn1106')).toBe(1);
+    expect(await ev(page, d('dfri') + '.note')).toBe('Kansas run.');
+    expect(await ev(page, 'S.mig.ovn1110')).toBe(1);
     await page.reload();
     expect(((await note()).match(/Overnight in El Dorado/g) || []).length).toBe(1);
   });
 
-  test('Cody’s overnight note waits for the day: no Friday on the phone sets no flag, and the 125 stands elsewhere', async ({ page }) => {
-    await open(page, state({ days: [day({ id: 'dwed', date: '2026-11-04', driver: 'cody', vehicle: 'own', ids: [BUFFALO] })], mig: migBut('ovn1106') }));
-    expect(await ev(page, '!!S.mig.ovn1106')).toBe(false);
+  test('Cody’s overnight: with no Thursday on the phone the Friday route day carries the 150, and the 11/7 note that named Friday night is replaced', async ({ page }) => {
+    const old = 'Overnight in El Dorado: the day pays 150 pts, not 125 (Tim, 11/7). Motel receipt covered — Cody says 90 pts; booked at what the receipt says, photo still owed.';
+    const fri = day({ id: 'dfri', date: '2026-11-06', driver: 'cody', vehicle: 'own', ids: [BOLIVAR], note: 'Kansas run. · ' + old });
+    await open(page, state({ days: [fri], mig: migBut('ovn1110') }));
+    expect(await ev(page, 'dayCosts(S.days.find(x=>x.id==="dfri")).crew')).toBe(150);
+    const note = (await ev(page, 'S.days.find(x=>x.id==="dfri").note')) as string;
+    expect(note.startsWith('Kansas run. · Overnight in El Dorado: the room was Thursday night 11/5')).toBe(true);
+    expect(note).not.toContain('(Tim, 11/7)');
+    expect((note.match(/Overnight in El Dorado/g) || []).length).toBe(1);
+    // and the moment the phone gets a Cody Thursday the 150 moves to it — never both
+    await page.evaluate(() => { const G = window as any; G.eval('S.days.push(Object.assign(blankDay("2026-11-05"),{id:"dlate",driver:"cody",vehicle:"own"}))'); });
+    expect(JSON.parse(await ev(page, 'JSON.stringify([dayCosts(S.days.find(x=>x.id==="dlate")).crew, dayCosts(S.days.find(x=>x.id==="dfri")).crew])'))).toEqual([150, 125]);
+  });
+
+  test('Cody’s overnight note waits for the day: no Thursday or Friday on the phone sets no flag, and the 125 stands elsewhere', async ({ page }) => {
+    await open(page, state({ days: [day({ id: 'dwed', date: '2026-11-04', driver: 'cody', vehicle: 'own', ids: [BUFFALO] })], mig: migBut('ovn1110') }));
+    expect(await ev(page, '!!S.mig.ovn1110')).toBe(false);
     expect(await ev(page, 'dayCosts(S.days.find(x=>x.id==="dwed")).crew')).toBe(125);
   });
 
@@ -860,7 +880,8 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     for (const id of WEEKEND) expect(await ev(page, 'J.some(j=>j.id==="' + id + '")'), id + ' is off the book').toBe(false);
     expect(await ev(page, 'J.some(j=>j.id==="' + LAWRENCE_132065 + '")'), 'TCC 132065 Lawrence stays').toBe(true);
     expect(await ev(page, 'J.some(j=>j.id==="' + TOPEKA_RUSSELL + '")'), 'Russell 131502 Topeka stays').toBe(true);
-    await expect(page.locator('#counters')).toContainText(/LEFT TO SHOOT\s*6,000 pts\s*60 stops/i);   // 68 stops, 6,800 pts before
+    // 34 stops, 3,400 pts: the book carries the STL run and the weekend banked since the 11/10 sync (the fixture has no field locks, so it read 60 before)
+    await expect(page.locator('#counters')).toContainText(/LEFT TO SHOOT\s*3,400 pts\s*34 stops/i);
     // the follow-up section: the two that still need work, in Tim's words
     const fu = page.locator('#followUp');
     await expect(fu).toBeVisible();
@@ -894,6 +915,99 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await page.reload();
     expect(await ev(page, 'S.days[0].retired.length'), 'a second boot does not add them twice').toBe(3);
     expect(errors, 'no page errors with removed stops in the saved state').toEqual([]);
+  });
+
+  // ── 11/10: the book is synced to the IDS Completed tab and to QuickBooks ─────────────────────────────────────────────
+  // Tim: "OK, sync". The baked book had last been read from the sheet on 10/22. Missing or on field locks only: the STL run (10/27-29), the
+  // weekend's eight. Stale: three 10/20 stops still named INV-000143 to 145, which QuickBooks voided and replaced with INV-000146.
+  const STL_1029 = ['2026-6662', '2026-8213', '2026-6046', '2026-7464', '2026-6238', '2026-1430'];   // Arnold, Saint Louis ×3, Washington, Kirkwood
+  const WEEKEND_BANKED: Record<string, string> = {                                                    // the eight on the Completed tab, with the sheet's onsite dates
+    '2026-1339': '2026-11-04', '2026-7375': '2026-11-07', '2026-4909': '2026-11-07', '2026-5726': '2026-11-07',
+    '2026-1224': '2026-11-08', '2026-7983': '2026-11-08', '2026-1376': '2026-11-08', '2026-7106': '2026-11-08' };
+
+  test('sync 11/10: the book carries the Completed tab — the 10/29 six, the weekend’s eight, INV-000146 on the three 10/20 stops, INV-000150 on the weekend', async ({ page }) => {
+    await open(page, state());
+    for (const id of STL_1029)
+      expect(await ev(page, 'JSON.stringify([BY["' + id + '"].st,BY["' + id + '"].dt,BY["' + id + '"].inv])'), id).toBe('["Invoiced","2026-10-29","INV-000146"]');
+    for (const [id, dt] of Object.entries(WEEKEND_BANKED)) {
+      expect(await ev(page, 'JSON.stringify([BY["' + id + '"].st,BY["' + id + '"].dt,BY["' + id + '"].inv])'), id).toBe('["Invoiced","' + dt + '","INV-000150"]');
+      expect(await ev(page, 'J.some(j=>j.id==="' + id + '")'), id + ' is still off the run sheet').toBe(false);
+      expect(await ev(page, 'LOCKED("' + id + '")&&ledgerRows().some(j=>j.id==="' + id + '")'), id + ' is banked and counted').toBe(true);
+    }
+    for (const id of ['2026-6557', '2026-8597', '2026-6398']) expect(await ev(page, 'BY["' + id + '"].inv'), id).toBe('INV-000146');
+    expect(await ev(page, 'BY["2026-8597"].hs.includes("INV-000144")'), 'the note on the stop no longer names the voided invoice').toBe(false);
+    // Lawrence and Newton are not on the Completed tab: still open, still off the run sheet, not banked, not "left to shoot"
+    for (const id of ['2026-0747', '2026-5976']) {
+      expect(await ev(page, 'LOCKED("' + id + '")'), id + ' is not banked').toBe(false);
+      expect(await ev(page, 'ledgerRows().some(j=>j.id==="' + id + '")||counters().openJobs.some(j=>j.id==="' + id + '")'), id + ' is in neither count').toBe(false);
+    }
+    // the ledger: Banked (Plan counters), History's points and Score all say the same thing
+    expect(await ev(page, 'JSON.stringify([counters().bankedJobs.length,counters().bankedPay,allLocks().length,allLocks().reduce((t,l)=>t+l.pts,0),counters().openJobs.length])'))
+      .toBe('[148,24900,148,24900,34]');
+  });
+
+  test('sync 11/10: Score reads 137 done, 34 left, 4 on hold of 175 — the weekend’s eight are done, and Kirkwood is no longer on hold', async ({ page }) => {
+    await open(page, state({ nav: 'board' }), '#s-board');
+    await expect(page.locator('#vzDone')).toHaveText('137');
+    await expect(page.locator('#vzLeft')).toHaveText('34');
+    await expect(page.locator('#vzHold')).toHaveText('4');
+    await expect(page.locator('#vzAll')).toHaveText('175');
+    expect(await ev(page, 'HOLD(BY["2026-1430"])||counters().heldJobs.some(j=>j.id==="2026-1430")'), 'Kirkwood TCC 74639 was shot 10/29, so it is not on hold').toBe(false);
+    // History shows the days the book had missed
+    expect(await ev(page, 'JSON.stringify(historyDays().filter(d=>d.d>="2026-10-29").map(d=>[d.d,d.n,d.pts]))'))
+      .toBe('[["2026-11-08",4,400],["2026-11-07",3,300],["2026-11-04",1,100],["2026-10-29",6,600]]');
+  });
+
+  // QuickBooks is Tim's car only — Cody's miles are the count Cody gives, typed in (Tim, 11/10). Where QuickBooks has Tim's day it wins over
+  // a number typed or baked earlier ("qb": 9/17 is 610 not 810, 9/30 is 29.5 not 205). A day it has no trips for stays the map's estimate.
+  test('QuickBooks miles: qb1110 puts the log on Tim’s days, 9/17 and 9/30 take QuickBooks over the old number, and Cody’s day on the same date is untouched', async ({ page }) => {
+    const t = (id: string, date: string, extra: Record<string, unknown> = {}) => day({ id, date, ids: [], ...extra });
+    await open(page, state({ days: [
+      t('d917', '2026-09-17', { logMi: 810 }), t('d930', '2026-09-30', { logMi: 205 }),
+      t('dcody', '2026-10-13', { driver: 'cody', vehicle: 'own' }), t('dtim', '2026-10-13'), t('d1020', '2026-10-20'),
+    ], mig: migBut('qb1110') }));
+    const mi = (id: string) => ev(page, 'S.days.find(x=>x.id==="' + id + '").logMi');
+    expect(await mi('d917')).toBe(610);
+    expect(await mi('d930')).toBe(29.5);
+    expect(await mi('dtim')).toBe(45.1);
+    expect(await mi('dcody'), 'Cody’s miles are never QuickBooks’').toBeFalsy();
+    expect(await mi('d1020'), '10/20: QuickBooks tracked nothing, so the estimate stands').toBeFalsy();
+    expect(await ev(page, 'S.mig.qb1110')).toBe(1);
+    await page.reload();
+    expect(await mi('d917'), 'a second boot does not run it again').toBe(610);
+  });
+
+  test('QuickBooks miles on the Score: Tim’s days read the log, the drive down and back are their own lines, the weekend’s drivers are not guessed', async ({ page }) => {
+    await open(page, state());
+    const rec = async (date: string) => JSON.parse(await ev(page, 'JSON.stringify(drivenDays().filter(d=>d.date==="' + date + '").map(d=>({who:d.driver,mi:d.miles,logged:d.logged,stops:d.ids.length})))'));
+    expect(await rec('2026-10-28')).toEqual([{ who: 'tim', mi: 183.8, logged: true, stops: 13 }]);       // no plan day on this phone: read from the table
+    expect(await rec('2026-10-29')).toEqual([{ who: 'tim', mi: 305.4, logged: true, stops: 6 }]);
+    expect(await rec('2026-11-07')).toEqual([{ who: 'tim', mi: 365.2, logged: true, stops: 3 }]);         // Stockton, Branson West, Ava
+    expect(await rec('2026-10-12')).toEqual([{ who: 'tim', mi: 184, logged: true, stops: 0 }]);           // the drive down to Springfield
+    expect(await rec('2026-10-18')).toEqual([{ who: 'tim', mi: 203.1, logged: true, stops: 0 }]);         // and the drive back
+    const kansas = await rec('2026-11-08');
+    expect(kansas).toHaveLength(1);
+    expect(kansas[0]).toMatchObject({ who: 'cody', logged: false, stops: 4 });                           // the Kansas four ride Cody’s route; his count is typed in
+    expect(await rec('2026-11-04'), 'Topeka: nobody has said who drove, so no miles for anyone').toEqual([]);
+    expect(await rec('2026-10-20')).toMatchObject([{ who: 'tim', logged: false }]);                       // QuickBooks has nothing for 10/20: still the estimate
+  });
+
+  test('QuickBooks import lands on Tim’s day, never on Cody’s plan for the same date', async ({ page }) => {
+    const cody = day({ id: 'dcody', date: '2026-10-14', driver: 'cody', vehicle: 'own', ids: [BUFFALO] });   // Cody’s plan comes FIRST in the list
+    const tim = day({ id: 'dtim', date: '2026-10-14', ids: [BOLIVAR] });
+    await open(page, state({ days: [cody, tim] }));
+    const r = JSON.parse(await ev(page, 'JSON.stringify(qbMileage("Date,Type,Trip Purpose,Distance\\n2026-10-14,BUSINESS,x,50.04\\n2026-10-14,UNREVIEWED,y,10\\n2026-10-14,PERSONAL,z,9\\n",true))'));
+    expect(r.days).toBe(1);
+    expect(await ev(page, 'S.days.find(x=>x.id==="dtim").logMi')).toBe(60);
+    expect(await ev(page, 'S.days.find(x=>x.id==="dcody").logMi'), 'Cody’s plan keeps no QuickBooks number').toBeFalsy();
+  });
+
+  test('the Logged miles box says whose number it is: QuickBooks for Tim, Cody’s count for Cody', async ({ page }) => {
+    const cody = day({ id: 'dcody', date: tomorrow(), driver: 'cody', vehicle: 'own', ids: [BUFFALO] });
+    await open(page, state({ days: [cody, day({ id: 'dtim', date: shift(2) })], active: 0, activeDate: tomorrow() }));
+    await expect(page.locator('#fLogMi')).toHaveAttribute('placeholder', 'Cody’s count');
+    await page.evaluate(() => (window as any).eval('setDay(1);render()'));
+    await expect(page.locator('#fLogMi')).toHaveAttribute('placeholder', 'from QuickBooks');
   });
 
   // ── 11/9: the Go Backs page ──────────────────────────────────────────────────────────────────────────────────────
