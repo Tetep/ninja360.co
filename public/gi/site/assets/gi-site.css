@@ -119,6 +119,28 @@ small,.small{font-size:.8rem}
 .date-band .notify-inline .btn-red{border-color:var(--gi-panel)}
 .date-band .thanks{color:var(--gi-panel);font-family:var(--gi-font-type);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px;margin-top:18px}
 
+/* ---------- this week's topics (scrolling carousel) ---------- */
+.topics-band .date-caveat{max-width:560px;margin-left:auto;margin-right:auto}
+.topics-carousel{
+  display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+  padding:28px 4px 10px;margin-top:4px;justify-content:flex-start;
+}
+.topics-carousel::-webkit-scrollbar{height:8px}
+.topics-carousel::-webkit-scrollbar-track{background:rgba(255,245,236,.12);border-radius:4px}
+.topics-carousel::-webkit-scrollbar-thumb{background:var(--gi-red);border-radius:4px}
+.topic-card{
+  flex:0 0 260px;scroll-snap-align:center;scroll-snap-stop:always;text-align:left;
+  background:var(--gi-panel);border:2px solid var(--gi-ink);border-radius:var(--gi-radius);
+  padding:18px 18px 20px;box-shadow:3px 3px 0 var(--gi-ink);
+}
+.topic-tag{
+  display:inline-block;font-family:var(--gi-font-type);font-size:10.5px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--gi-panel);background:var(--gi-red);
+  border-radius:20px;padding:4px 10px;margin-bottom:10px;
+}
+.topic-q{font-family:var(--gi-font-body);font-weight:600;font-size:15px;line-height:1.4;color:var(--gi-ink);margin:0}
+@media(max-width:640px){.topic-card{flex-basis:78vw;max-width:280px}}
+
 /* ---------- hosts (photo↔logo hover-swap trio) ---------- */
 .hosts-label{
   font-family:var(--gi-font-type);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
