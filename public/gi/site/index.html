@@ -215,20 +215,6 @@
     });
   })();
 
-  // Topics carousel — continuous CSS marquee (see gi-site.css); this just
-  // pauses it briefly on touch so a tap-and-hold reader isn't fighting
-  // the motion (desktop already pauses on :hover via CSS).
-  (function () {
-    var wrap = document.querySelector('.topics-carousel');
-    if (!wrap) return;
-    var resumeTimer = null;
-    wrap.addEventListener('pointerdown', function () {
-      wrap.classList.add('is-paused');
-      clearTimeout(resumeTimer);
-      resumeTimer = setTimeout(function () { wrap.classList.remove('is-paused'); }, 3000);
-    });
-  })();
-
   // Host photo/logo swap — CSS :hover covers desktop; touch devices get no
   // real hover, so tapping toggles a class that does the same thing.
   document.querySelectorAll('.host-photo').forEach(function (el) {
