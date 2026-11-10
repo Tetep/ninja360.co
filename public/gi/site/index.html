@@ -202,6 +202,35 @@
     });
   })();
 
+  // Topics carousel — auto-rotates through the cards (roughly 3 at a time
+  // on desktop) so the "This Week's Show" band keeps moving without
+  // requiring a swipe. Pauses while someone is actually scrolling it.
+  (function () {
+    var track = document.querySelector('.topics-carousel');
+    if (!track) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var paused = false;
+    var resumeTimer = null;
+
+    function pause() {
+      paused = true;
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(function () { paused = false; }, 4000);
+    }
+
+    track.addEventListener('pointerdown', pause);
+    track.addEventListener('wheel', pause, { passive: true });
+
+    setInterval(function () {
+      if (paused) return;
+      var card = track.querySelector('.topic-card');
+      var step = (card ? card.getBoundingClientRect().width : 260) + 16;
+      var atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+      track.scrollTo({ left: atEnd ? 0 : track.scrollLeft + step, behavior: 'smooth' });
+    }, 2500);
+  })();
+
   // Host photo/logo swap — CSS :hover covers desktop; touch devices get no
   // real hover, so tapping toggles a class that does the same thing.
   document.querySelectorAll('.host-photo').forEach(function (el) {
