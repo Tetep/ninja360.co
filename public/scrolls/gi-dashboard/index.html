@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GI Dashboard · Generationally Incorrect · Ninja-360</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Kalam:wght@400;700&family=Permanent+Marker&family=Special+Elite&display=swap" rel="stylesheet">
+<meta name="description" content="GI Dashboard — command center for Generationally Incorrect: episode pipeline, asset engine, social calendar, creative approvals, funnel and list, topic bank.">
+<style>
+  :root{
+    --paper:#d9c9a3; --card:#efe4cd; --card2:#f6eeda; --ink:#17140f; --ink2:#3a3121;
+    --muted:#6b5f48; --rust:#a06614; --red:#b4231f; --teal:#1f6b74; --green:#3e7d4e;
+    --line2:#d8c9a6; --line3:#cdbc97; --tan:#8a7a58; --sidebar-w:220px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink2);font-family:'Helvetica Neue',Arial,system-ui,sans-serif;font-size:14px}
+  a{color:var(--teal)} a:hover{color:var(--rust)}
+  ::selection{background:var(--red);color:var(--card2)}
+  @keyframes giPulse{0%,100%{opacity:1}50%{opacity:.3}}
+  @keyframes giShim{0%{opacity:.35}50%{opacity:.75}100%{opacity:.35}}
+  @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms !important}}
+
+  .se{font-family:'Special Elite'} .an{font-family:Anton} .km{font-family:Kalam}
+  .uc{text-transform:uppercase}
+
+  .app{display:flex;min-height:100vh}
+  .sidebar{width:var(--sidebar-w);flex-shrink:0;border-right:1px solid var(--ink);display:flex;flex-direction:column;background:var(--card);position:sticky;top:0;align-self:flex-start;height:100vh;z-index:20}
+  .sb-brand{padding:20px 16px 16px;border-bottom:1px solid var(--ink)}
+  .sb-g{font-family:Anton;font-size:15px;color:var(--ink);letter-spacing:.02em}
+  .sb-i{font-family:'Permanent Marker';font-size:16px;color:var(--red);letter-spacing:.04em;margin-top:1px;transform:rotate(-2deg)}
+  .sb-p{font-family:'Special Elite';font-weight:600;font-size:7.5px;letter-spacing:.42em;color:var(--muted);margin-top:3px}
+  .sb-nav{padding:12px 0;display:flex;flex-direction:column;overflow-y:auto}
+  .navitem{font-family:'Special Elite';font-weight:500;text-transform:uppercase;letter-spacing:.12em;font-size:12px;padding:9px 16px;border-left:3px solid transparent;color:var(--muted);background:transparent;cursor:pointer;border-top:none;border-right:none;border-bottom:none;text-align:left;width:100%;display:block}
+  .navitem.active{border-left-color:var(--red);color:var(--ink);background:var(--card2)}
+  .navitem[disabled]{opacity:.45;cursor:not-allowed}
+  .navitem[disabled]::after{content:" — soon";font-size:9px;opacity:.7}
+  .sb-foot{margin-top:auto;padding:14px 16px;border-top:1px solid var(--ink);font-family:'Special Elite';font-size:10px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .view{display:none;flex-direction:column;flex:1;min-height:0}
+  .view.active{display:flex}
+  .hdr{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 24px;border-bottom:1px solid var(--ink);flex-shrink:0;flex-wrap:wrap}
+  .hdr .kick{font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.18em;color:var(--rust);text-transform:uppercase}
+  .hdr h1{font-family:Anton;font-size:28px;color:var(--ink);text-transform:uppercase;margin:0}
+  .body{flex:1;padding:18px 24px;overflow:auto}
+  .btn{font-family:'Special Elite';font-weight:600;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);background:var(--card2);border:1px solid var(--ink);border-radius:8px;padding:9px 16px;cursor:pointer;display:inline-block}
+  .btn-primary{background:var(--red);color:var(--card2);border-color:var(--red)}
+  .btn-primary:hover{filter:brightness(1.08)}
+  .pill-filter{font-family:'Special Elite';font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);background:var(--card2);border:1px solid var(--ink);border-radius:20px;padding:6px 14px}
+  .card{background:var(--card2);border:1px solid var(--ink);border-radius:12px;padding:16px 20px}
+  .card-h{font-family:Anton;font-size:15px;color:var(--ink);text-transform:uppercase;border-left:5px solid var(--red);padding-left:14px;margin-bottom:12px}
+  .hint{font-family:'Special Elite';font-size:10.5px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+
+  /* avatars */
+  .av-stack{display:flex;margin-left:auto}
+  .av{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink2);overflow:hidden;margin-left:-8px;flex-shrink:0}
+  .av:first-child{margin-left:0}
+  .av img{width:100%;height:100%;object-fit:cover;display:block}
+  .av.me{border-color:var(--rust)}
+  .chip-av{width:22px;height:22px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid var(--muted)}
+  .chip-av img{width:100%;height:100%;object-fit:cover;display:block}
+  .chip-av.a{border-color:var(--green)} .chip-av.r{border-color:var(--red)} .chip-av.p{border-color:var(--muted);animation:giPulse 1.6s ease-in-out infinite} .chip-av.c{border-color:var(--rust)}
+
+  /* kpis */
+  .kpis{display:flex;gap:14px;flex-wrap:wrap}
+  .kpi{flex:1;min-width:160px;background:var(--card2);border:1px solid var(--ink);border-radius:12px;padding:16px 20px}
+  .kpi .l{font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.18em;color:var(--rust);text-transform:uppercase}
+  .kpi .f{font-family:Anton;font-size:38px;line-height:1.1;color:var(--ink);margin-top:6px}
+  .kpi .d{font-size:11px;margin-top:2px}
+
+  /* votes */
+  .vote{background:var(--card);border:1px solid var(--ink);border-radius:8px;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+  .vote-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .vote-badge{font-family:'Special Elite';font-weight:700;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px;color:var(--teal);border:1px solid var(--teal);display:inline-flex;align-items:center;gap:5px}
+  .vote-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:giPulse 1.6s ease-in-out infinite}
+  .vote-title{font-family:'Special Elite';font-weight:600;font-size:14px;color:var(--ink)}
+  .vote-chips{display:flex;gap:6px;margin-left:auto}
+  .vote-dl{font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+  .bar-bg{height:4px;border-radius:2px;background:var(--line2);overflow:hidden}
+  .bar-fg{height:100%}
+
+  /* this week */
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+  .week .d{background:var(--card);border:1px solid var(--ink);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+  .week .dname{font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+  .chip{font-family:'Special Elite';font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid}
+  .chip-lf{background:transparent;color:var(--red);border-color:var(--red)}
+  .chip-sh{background:var(--rust);color:var(--card2);border-color:var(--rust)}
+  .chip-qc{background:transparent;color:var(--ink2);border-color:var(--tan)}
+  .chip-au{background:transparent;color:var(--teal);border-color:var(--teal)}
+  .chip-em{background:transparent;color:var(--muted);border-color:var(--tan)}
+
+  /* stages strip */
+  .stages{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .stage{background:var(--card);border:1px solid var(--ink);border-radius:6px;padding:8px 6px;text-align:center}
+  .stage .c{font-family:Anton;font-size:20px;color:var(--ink)}
+  .stage .n{font-family:'Special Elite';font-size:8.5px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-top:2px}
+
+  /* kanban (pipeline + approvals) */
+  .kanban{display:flex;gap:10px;overflow-x:auto}
+  .kcol{flex:1;min-width:200px;display:flex;flex-direction:column;gap:8px}
+  .kcol-h{border-bottom:2px solid var(--ink);padding-bottom:8px}
+  .kcol-h .top{display:flex;align-items:center;justify-content:space-between}
+  .kcol-h .name{font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.12em;color:var(--ink);text-transform:uppercase}
+  .kcol-h .count{font-family:'Special Elite';font-size:10px;color:var(--muted)}
+  .kcol-h .hint{font-family:'Special Elite';font-size:8.5px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-top:3px;min-height:11px}
+  .kcard{background:var(--card2);border:1px solid var(--line2);border-radius:8px;padding:10px}
+  .kcard:hover{background:var(--card)}
+  .kcard-top{display:flex;align-items:center;justify-content:space-between;gap:4px}
+  .ep-no{font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.16em;color:var(--rust);text-transform:uppercase}
+  .sens-badge{font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:20px;background:var(--red);color:var(--card2)}
+  .kcard-q{font-family:Anton;font-size:13.5px;line-height:1.2;color:var(--ink);text-transform:uppercase;margin:6px 0}
+  .pillar-pill{font-family:'Special Elite';font-weight:700;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:transparent;color:var(--rust);border:1px solid var(--rust)}
+  .pillar-pill.sens{background:var(--red);color:var(--card2);border-color:var(--red)}
+  .seats-row{display:flex;align-items:center;margin-top:8px;min-height:16px}
+  .seat-dot{width:16px;height:16px;border-radius:50%;background:var(--card);border:2px solid;margin-right:-5px}
+  .seat-note{font-size:9.5px;color:var(--muted);margin-left:10px}
+  .block-note{font-family:'Special Elite';font-weight:600;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;background:var(--red);color:var(--card2);border-radius:5px;padding:4px 7px;margin-top:8px}
+  .kcard-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px;border-top:1px solid var(--ink);padding-top:7px}
+  .kcard-foot .meta{font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+  .kcard-foot .assets{font-family:'Special Elite';font-weight:600;font-size:10px}
+  .kcard-prog{height:3px;border-radius:2px;background:var(--line2);margin-top:5px;overflow:hidden}
+
+  /* asset engine */
+  .ag-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .ag-type{font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.16em;color:var(--ink);text-transform:uppercase}
+  .ag-frac{font-family:'Special Elite';font-size:10px;color:var(--muted)}
+  .ag-bar{flex:1;max-width:180px;height:4px;border-radius:2px;background:var(--line2);overflow:hidden}
+  .arow{display:flex;align-items:center;gap:14px;background:var(--card2);border:1px solid var(--ink);border-radius:6px;padding:6px 12px;margin-bottom:4px;flex-wrap:wrap}
+  .arow:hover{background:var(--card)}
+  .arow .thumb{width:44px;height:26px;border-radius:4px;background:var(--card);border:1px solid var(--ink);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:8px;color:var(--muted);letter-spacing:.08em}
+  .arow .title{font-size:12.5px;color:var(--ink);flex:1;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .arow .tc{font-family:'Special Elite';font-size:10px;color:var(--muted);width:50px}
+  .arow .dest{font-family:'Special Elite';font-size:9px;letter-spacing:.08em;color:var(--ink2);text-transform:uppercase;width:160px}
+  .status-pill{font-family:'Special Elite';font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:2px 9px;border-radius:20px;width:76px;text-align:center}
+  .status-done{background:var(--green);color:var(--card2);border:1px solid var(--green)}
+  .status-prog{background:var(--rust);color:var(--card2);border:1px solid var(--rust)}
+  .status-idle{background:transparent;color:var(--tan);border:1px solid var(--tan)}
+  .arow .date{font-family:'Special Elite';font-size:10px;color:var(--muted);width:46px;text-align:right}
+  .skel{display:flex;align-items:center;gap:14px;background:var(--card2);border:1px solid var(--ink);border-radius:6px;padding:6px 12px;margin-bottom:4px;animation:giShim 1.4s ease-in-out infinite}
+  .skel div{background:var(--line2);border-radius:5px}
+
+  /* calendar */
+  .cal-grid{display:grid;grid-template-columns:110px repeat(7,1fr);min-width:760px}
+  .cal-day-h{font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.16em;color:var(--ink);text-transform:uppercase;padding:0 8px 8px;border-bottom:2px solid var(--ink)}
+  .cal-row{display:contents}
+  .cal-platform{font-family:'Special Elite';font-weight:600;font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;padding:10px 8px 10px 0;border-bottom:1px solid var(--ink)}
+  .cal-cell{padding:7px 6px;border-left:1px solid var(--line3);border-bottom:1px solid var(--ink);min-height:60px;display:flex;flex-direction:column;gap:4px;min-width:0}
+  .cal-legend{display:flex;gap:10px;flex-wrap:wrap;font-family:'Special Elite';font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .cal-legend span.sw{display:inline-block;width:8px;height:8px;border-radius:2px;vertical-align:middle;margin-right:4px}
+  .n360-tw{overflow-x:auto}
+
+  /* approvals right rail */
+  .ap-layout{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .ap-kanban{flex:3;min-width:280px}
+  .ap-rail{flex:2;min-width:300px;display:flex;flex-direction:column;gap:12px}
+  .vote-featured{background:var(--card2);border:1px solid var(--red);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
+  .vf-top{display:flex;align-items:center;justify-content:space-between}
+  .ring{width:34px;height:34px;border-radius:50%;background:conic-gradient(var(--rust) 0 81%,var(--line2) 81% 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ring-in{width:24px;height:24px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-family:'Special Elite';font-size:8px;color:var(--ink)}
+  .vf-title{font-family:'Special Elite';font-weight:600;font-size:15px;color:var(--ink)}
+  .vf-img{background:var(--card);border:1px solid var(--ink);border-radius:8px;overflow:hidden;text-align:center}
+  .vf-img img{width:100%;max-height:200px;object-fit:cover;display:block}
+  .vf-actions{display:flex;gap:8px}
+  .vf-btn{flex:1;font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;text-align:center;border-radius:6px;padding:10px 4px;cursor:pointer;border:1px solid}
+  .vf-btn.approve{background:var(--green);color:var(--card2);border-color:var(--green)}
+  .vf-btn.changes{flex:1.3;background:transparent;color:var(--rust);border-color:var(--rust)}
+  .vf-btn.reject{background:transparent;color:var(--red);border-color:var(--red)}
+  .vf-comment{background:var(--card);border:1px solid var(--ink);border-radius:6px;padding:9px 12px;font-size:12px;color:var(--muted)}
+  .declog{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line3);padding-bottom:8px;margin-bottom:8px}
+  .declog .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  .declog .t{font-size:12px;color:var(--ink);flex:1}
+  .declog .m{font-family:'Special Elite';font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+
+  /* funnel */
+  .fn-grid{display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:14px}
+  .fn-grid>.span2{grid-column:1 / 3}
+  .qotw-item{background:#e7dabc;border:1px solid var(--ink);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+  .donut{width:130px;height:130px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .donut-in{width:84px;height:84px;border-radius:50%;background:var(--card2);display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .legend-row{display:flex;align-items:center;gap:8px;font-size:12px}
+  .legend-sw{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+  .src-row .lbl{display:flex;justify-content:space-between;font-family:'Special Elite';font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+  .src-bar{height:10px;border-radius:2px;background:var(--line2);overflow:hidden}
+
+  /* topic bank */
+  .tb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .tb-col-h{font-family:'Special Elite';font-weight:600;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:8px}
+  .tb-card{background:var(--card2);border:1px solid var(--ink);border-radius:8px;padding:12px;margin-bottom:8px}
+  .tb-card:hover{background:var(--card)}
+  .tb-q{font-family:Anton;font-size:15px;line-height:1.2;color:var(--ink);text-transform:uppercase;flex:1}
+  .tb-heat-row{display:flex;align-items:center;gap:10px;margin-top:10px}
+  .tb-heat-lbl{font-family:'Special Elite';font-size:9px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+  .tb-heat-bar{flex:1;height:5px;border-radius:2px;background:var(--line2);overflow:hidden}
+  .tb-schedule{font-family:'Special Elite';font-weight:600;font-size:9.5px;letter-spacing:.1em;color:var(--teal);text-transform:uppercase;border:1px solid var(--teal);border-radius:5px;padding:3px 9px}
+  .tb-empty{border:1px dashed var(--tan);border-radius:8px;padding:18px 14px;text-align:center}
+
+  .stub{display:flex;align-items:center;justify-content:center;flex:1;flex-direction:column;gap:10px;padding:40px}
+  .stub .t{font-family:Anton;font-size:22px;color:var(--ink);text-transform:uppercase}
+  .stub .d{color:var(--muted);max-width:420px;text-align:center}
+
+  /* mobile */
+  .sb-toggle{display:none}
+  @media(max-width:900px){
+    .sidebar{position:fixed;left:-240px;top:0;transition:left .2s ease;box-shadow:0 0 0 0 transparent}
+    .sidebar.open{left:0;box-shadow:0 0 40px rgba(0,0,0,.35)}
+    .sb-toggle{display:flex;align-items:center;gap:8px;font-family:'Special Elite';font-weight:600;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);background:var(--card2);border:1px solid var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer;margin-right:8px}
+    .hdr{padding:14px 16px}
+    .body{padding:14px 16px}
+    .kpis{flex-direction:column}
+    .kpi{min-width:0}
+    .kanban{flex-direction:column}
+    .kcol{min-width:0}
+    .ap-layout{flex-direction:column}
+    .fn-grid{grid-template-columns:1fr}
+    .fn-grid>.span2{grid-column:auto}
+    .tb-grid{grid-template-columns:1fr}
+    .week{grid-template-columns:repeat(2,1fr)}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-g">GENERATIONALLY</div>
+      <div class="sb-i">Incorrect</div>
+      <div class="sb-p uc">— Dashboard —</div>
+      <a href="/gi/" class="se uc" style="display:inline-block;margin-top:10px;font-size:10px;letter-spacing:.1em;color:var(--muted)">← GI Show Room</a>
+    </div>
+    <nav class="sb-nav" id="sbNav"></nav>
+    <div class="sb-foot">Phase 1 · Build the hub</div>
+  </aside>
+
+  <div class="main">
+
+    <!-- ============ COMMAND ============ -->
+    <section class="view active" data-view="command">
+      <div class="hdr">
+        <button class="sb-toggle" id="toggle1" aria-label="Menu">☰ Menu</button>
+        <div class="se uc" style="font-size:12px;letter-spacing:.22em;color:var(--rust)">Command</div>
+        <div class="av-stack" style="margin:0 0 0 auto">
+          <div class="av" title="Erik Juergensen — Lucky 13"><img src="/assets/gi/dashboard/avatar-erik.png" alt="Erik"></div>
+          <div class="av" title="Gabe Miller — Lucid Cinematics"><img src="/assets/gi/dashboard/avatar-gabe.png" alt="Gabe"></div>
+          <div class="av me" title="Tim Petet — Ninja 360"><img src="/assets/gi/dashboard/avatar-tim.png" alt="Tim"></div>
+        </div>
+        <button class="btn btn-primary">+ New Episode</button>
+      </div>
+      <div class="se uc" style="padding:8px 24px;border-bottom:1px solid var(--ink);font-weight:600;font-size:11.5px;letter-spacing:.3em;color:var(--rust);background:var(--card2)">68 days to public launch · week of Nov 2–6, 2026</div>
+      <div class="body" style="display:flex;flex-direction:column;gap:16px">
+        <div class="kpis">
+          <div class="kpi"><div class="l">Episodes in the can</div><div class="f">6</div><div class="d" style="color:var(--green)">+1 this week</div></div>
+          <div class="kpi"><div class="l">List size</div><div class="f">1,284</div><div class="d" style="color:var(--green)">+137 this week</div></div>
+          <div class="kpi"><div class="l">Assets scheduled this week</div><div class="f">12</div><div class="d" style="color:var(--muted)">of 14 planned</div></div>
+          <div class="kpi"><div class="l">Votes awaiting you</div><div class="f" style="color:var(--red)">3</div><div class="d" style="color:var(--red)">oldest closes in 6h</div></div>
+        </div>
+        <div class="card">
+          <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+            <div class="card-h" style="margin-bottom:0">Needs a decision</div>
+            <div class="hint">2-of-3 vote · nothing brand-facing ships without it</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px" id="votesCommand"></div>
+        </div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+          <div class="card" style="flex:5;min-width:280px">
+            <div class="card-h">This week's publishing</div>
+            <div class="week" id="weekGrid"></div>
+          </div>
+          <div class="card" style="flex:2;min-width:220px">
+            <div class="card-h">Pipeline snapshot</div>
+            <div class="stages" id="stagesGrid"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PIPELINE ============ -->
+    <section class="view" data-view="pipeline">
+      <div class="hdr">
+        <button class="sb-toggle" id="toggle2" aria-label="Menu">☰ Menu</button>
+        <div>
+          <div class="hint">Production</div>
+          <h1>Episode Pipeline</h1>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div class="pill-filter">Pillar ▾</div>
+          <div class="pill-filter">Partner ▾</div>
+          <div class="pill-filter">Date range ▾</div>
+          <div class="pill-filter" style="color:var(--red);border-color:var(--red)">Third Rail: on</div>
+        </div>
+      </div>
+      <div class="body"><div class="kanban" id="kanbanGrid"></div></div>
+    </section>
+
+    <!-- ============ EPISODE DETAIL ============ -->
+    <section class="view" data-view="detail">
+      <div class="hdr">
+        <button class="sb-toggle" id="toggle3" aria-label="Menu">☰ Menu</button>
+        <div class="se uc" style="font-size:11px;letter-spacing:.18em;color:var(--rust)">Episode 004 · Assets Cut</div>
+      </div>
+      <div class="body" style="display:flex;gap:20px;flex-wrap:wrap">
+        <div style="flex:3;min-width:320px;display:flex;flex-direction:column;gap:12px">
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <span class="pillar-pill">Work</span>
+              <div class="hint" style="margin-left:auto">Third Rail: off</div>
+            </div>
+            <div class="an uc" style="font-size:30px;line-height:1.05;color:var(--ink);margin-top:6px;border-bottom:1px dashed var(--tan);padding-bottom:8px">Should Loyalty to an Employer Still Matter?</div>
+          </div>
+          <div class="card" style="display:flex;gap:12px;align-items:center;padding:10px 14px">
+            <div style="font-size:14px">🔒</div>
+            <div>
+              <div class="se uc" style="font-weight:600;font-size:10px;letter-spacing:.16em;color:var(--rust)">The Opener — locked signature question</div>
+              <div class="km" style="font-size:14px;color:var(--ink);margin-top:2px">"What's one belief your generation holds strongly that the others misunderstand?"</div>
+            </div>
+          </div>
+          <div>
+            <div class="card-h">Sub-questions <span class="hint" style="text-transform:none;letter-spacing:0">· drag to reorder</span></div>
+            <div style="display:flex;flex-direction:column;gap:5px" id="subQs"></div>
+          </div>
+          <div>
+            <div class="card-h">Steel-man round <span class="hint" style="text-transform:none;letter-spacing:0">· argue the other side's best point</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px" id="steelGrid"></div>
+          </div>
+          <div class="card" style="border-left:3px solid var(--red);padding:10px 14px">
+            <div class="se uc" style="font-weight:600;font-size:10px;letter-spacing:.16em;color:var(--rust)">Common Ground closer</div>
+            <div class="km" style="font-size:14px;color:var(--ink);margin-top:2px">"Where did we actually agree?"</div>
+          </div>
+          <div>
+            <div class="card-h">Run of show · 58 min target</div>
+            <div style="display:flex;height:26px;border-radius:5px;overflow:hidden;border:1px solid var(--ink)" id="segBar"></div>
+            <div style="display:flex;gap:14px;margin-top:6px;flex-wrap:wrap" id="segLegend"></div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:280px;display:flex;flex-direction:column;gap:10px">
+          <div class="hint">The panel</div>
+          <div id="seatsList" style="display:flex;flex-direction:column;gap:10px"></div>
+          <div class="card">
+            <div class="se uc" style="font-weight:600;font-size:9.5px;letter-spacing:.14em;color:var(--rust);margin-bottom:5px">Sponsor read</div>
+            <div style="background:var(--card);border:1px solid var(--ink);border-radius:6px;padding:8px 10px;font-size:12.5px;color:var(--ink);display:flex;justify-content:space-between">House: Ninja 360 <span style="color:var(--muted)">▾</span></div>
+            <div style="font-size:10px;color:var(--muted);margin-top:5px;font-style:italic">Never let an owner read their own spot.</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <div class="card" style="flex:1;padding:9px 12px"><div class="hint" style="font-size:8.5px">Recorded</div><div class="se" style="font-weight:600;font-size:13px;color:var(--ink);margin-top:2px">AUG 12 · 58:12</div></div>
+            <div class="card" style="flex:1;padding:9px 12px"><div class="hint" style="font-size:8.5px">Publishes</div><div class="se" style="font-weight:600;font-size:13px;color:var(--ink);margin-top:2px">NOV 5, 2026</div></div>
+          </div>
+          <div class="card" style="display:flex;align-items:center;gap:14px">
+            <div class="ring" style="background:conic-gradient(var(--rust) 0 67.5%,var(--line2) 67.5% 100%);width:58px;height:58px"><div class="ring-in" style="width:44px;height:44px;font-size:11px">27/40</div></div>
+            <div>
+              <div class="se uc" style="font-weight:600;font-size:10px;letter-spacing:.14em;color:var(--rust)">Asset engine</div>
+              <div style="font-size:11.5px;color:var(--ink2);margin-top:2px">13 to cut before Nov 1.<br><a href="#" class="se uc" data-goto="assets" style="font-size:10px;letter-spacing:.1em">Open Asset Engine →</a></div>
+            </div>
+          </div>
+          <div class="card" style="flex:1">
+            <div class="se uc" style="font-weight:600;font-size:9.5px;letter-spacing:.14em;color:var(--rust);margin-bottom:6px">Activity</div>
+            <div style="display:flex;flex-direction:column;gap:7px" id="activityLog"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ASSET ENGINE ============ -->
+    <section class="view" data-view="assets">
+      <div class="hdr">
+        <button class="sb-toggle" id="toggle4" aria-label="Menu">☰ Menu</button>
+        <div>
+          <div class="hint">EP 004 · Should Loyalty to an Employer Still Matter?</div>
+          <div style="display:flex;align-items:baseline;gap:14px"><h1>Asset Engine</h1><div class="an" style="font-size:28px;color:var(--rust)">27 <span style="color:var(--muted);font-size:20px">/ 40</span></div></div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn">Request approval</button>
+          <button class="btn btn-primary">Send to GHL planner</button>
+        </div>
+      </div>
+      <div class="body" id="assetGroups"></div>
+    </section>
+
+    <!-- ============ SOCIAL CALENDAR ============ -->
+    <section class="view" data-view="calendar">
+      <div class="hdr">
+        <button class="sb-toggle" id="toggle5" aria-label="Menu">☰ Menu</button>
+        <div>
+          <div class="hint">Launch week · Nov 2–8, 2026 · EP 004 cycle</div>
+          <h1>Social Calendar</h1>
+        </div>
+        <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+          <div class="cal-legend">
+            <span><span class="sw" style="border:1px solid var(--red)"></span>Long-form</span>
+            <span><span class="sw" style="background:var(--rust)"></span>Short</span>
+            <span><span class="sw" style="border:1px solid var(--tan)"></span>Quote card</span>
+            <span><span class="sw" style="border:1px solid var(--teal)"></span>Audiogram</span>
+            <span><span class="sw" style="border:1px solid var(--tan)"></span>Email / other</span>
+          </div>
+          <button class="btn btn-primary">Load standard week</button>
+        </div>
+      </div>
+      <div class="body">
+        <div class="n360-tw"><div class="cal-grid" id="calGrid"></div></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:12px;font-style:italic">Standard publishing week, armed in the GHL social planner. Chips are drag-to-reschedule; sample data.</div>
+      </div>
+    </section>
+
+    <!-- ============ CREATIVE APPROVALS ============ -->
+    <section class="view" data-view="approvals">
+      <div class="hdr">
+        <button class="sb-toggle" id="toggle6" aria-label="Menu">☰ Menu</button>
+        <div>
+          <div class="hint">The voting machine · 2-of-3 carries · 72h clock</div>
+          <h1>Creative Approvals</h1>
+        </div>
+        <div class="hint" style="text-align:right;line-height:1.7;text-transform:none;letter-spacing:normal;font-size:10px">Approve-with-changes counts if minor · silence past deadline = abstain<br>deadline passed → auto-nudge · +24h → escalate to Tim</div>
+      </div>
+      <div class="body">
+        <div class="ap-layout">
+          <div class="ap-kanban">
+            <div class="kanban" id="apKanban"></div>
+          </div>
+          <div class="ap-rail">
+            <div class="vote-featured">
+              <div class="vf-top">
+                <div class="se uc" style="font-weight:600;font-size:10px;letter-spacing:.16em;color:var(--rust)">Logo vote open · 2 of 3 needed</div>
+                <div class="ring"><div class="ring-in">14H</div></div>
+              </div>
+              <div class="vf-title">Logo — Emergency Broadcast</div>
+              <div class="vf-img"><img src="/assets/gi/dashboard/logo-emergency-broadcast.png" alt="Emergency Broadcast logo"></div>
+              <div style="font-size:12px;line-height:1.55;color:var(--ink2)"><b style="color:var(--ink)">Recommendation:</b> vintage test-pattern grit, red brush-script "Incorrect" carries the attitude. Reads at cover size on every podcast app.</div>
+              <div class="vf-actions">
+                <div class="vf-btn approve" data-vote="logo" data-choice="approve">Approve</div>
+                <div class="vf-btn changes" data-vote="logo" data-choice="changes">With changes</div>
+                <div class="vf-btn reject" data-vote="logo" data-choice="reject">Reject</div>
+              </div>
+              <div class="vf-comment">Add a comment…</div>
+            </div>
+            <div class="card">
+              <div class="card-h">Decision log</div>
+              <div id="decisionLog"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FUNNEL & LIST ============ -->
+    <section class="view" data-view="funnel">
+      <div class="hdr">
+        <button class="sb-toggle" id="toggle7" aria-label="Menu">☰ Menu</button>
+        <div>
+          <div class="hint">The sponsor story · GHL contacts · sample data</div>
+          <h1>Funnel &amp; List</h1>
+        </div>
+        <div class="hint" style="text-transform:none;letter-spacing:normal;font-size:10px">Tags: <span style="color:var(--teal)">src-*</span> · <span style="color:var(--rust)">generation-*</span> · <span style="color:var(--ink2)">topic-*</span></div>
+      </div>
+      <div class="body">
+        <div class="fn-grid">
+          <div class="card span2" style="display:flex;align-items:center;gap:28px;flex-wrap:wrap">
+            <div>
+              <div class="hint">Total contacts</div>
+              <div class="an" style="font-size:52px;line-height:1;color:var(--ink);margin-top:4px">1,284</div>
+              <div style="font-size:12px;color:var(--green);margin-top:4px">+137 this week</div>
+            </div>
+            <svg viewBox="0 0 300 80" style="flex:1;min-width:200px;height:80px">
+              <polyline points="0,72 30,68 60,66 90,60 120,58 150,50 180,46 210,36 240,30 270,18 300,10" fill="none" stroke="#a06614" stroke-width="2.5"></polyline>
+              <polyline points="0,72 30,68 60,66 90,60 120,58 150,50 180,46 210,36 240,30 270,18 300,10 300,80 0,80" fill="rgba(160,102,20,.12)" stroke="none"></polyline>
+            </svg>
+          </div>
+          <div class="card">
+            <div class="card-h">Question of the Week</div>
+            <div class="km" style="font-size:16px;color:var(--ink);line-height:1.5;border-left:3px solid var(--red);padding-left:14px;margin:14px 0 10px">"What's one thing your parents' generation got right that yours refuses to admit?"</div>
+            <div class="hint" style="margin-bottom:10px">213 responses · 6 starred for air</div>
+            <div id="qotwList"></div>
+          </div>
+          <div class="card">
+            <div class="card-h">Signups by generation</div>
+            <div style="display:flex;align-items:center;gap:20px;flex:1;flex-wrap:wrap">
+              <div class="donut" style="background:conic-gradient(#a06614 0 41%,#1f6b74 41% 70%,#6b5f48 70% 91%,#b4231f 91% 98%,#8a7a58 98% 100%)">
+                <div class="donut-in"><div class="an" style="font-size:22px;color:var(--ink)">1,284</div><div class="se" style="font-size:8px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase">opted in</div></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:140px" id="genLegend"></div>
+            </div>
+            <div style="font-size:11px;color:var(--muted);font-style:italic;margin-top:8px">The pitch-deck slide: "your brand in front of 372 opted-in Gen Z."</div>
+          </div>
+          <div class="card">
+            <div class="card-h">Signups by source</div>
+            <div style="display:flex;flex-direction:column;gap:12px;flex:1;justify-content:center" id="sourcesList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TOPIC BANK ============ -->
+    <section class="view" data-view="topics">
+      <div class="hdr">
+        <button class="sb-toggle" id="toggle8" aria-label="Menu">☰ Menu</button>
+        <div>
+          <div class="hint">Where a season gets planned</div>
+          <h1>Topic Bank</h1>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <div class="card2" style="background:var(--card2);border:1px solid var(--ink);border-radius:8px;padding:8px 14px;color:var(--muted);font-size:12.5px;min-width:180px">Search questions…</div>
+          <div class="pill-filter">Pillar ▾</div>
+          <button class="btn btn-primary">+ Add question</button>
+        </div>
+      </div>
+      <div class="body"><div class="tb-grid" id="topicGrid"></div></div>
+    </section>
+
+    <!-- ============ STUBS ============ -->
+    <section class="view" data-view="sponsors">
+      <div class="hdr"><button class="sb-toggle" id="toggle9" aria-label="Menu">☰ Menu</button><h1>Sponsors</h1></div>
+      <div class="stub"><div class="t">Not built yet</div><div class="d">Sponsor pipeline, house-spot inventory and billing status — next after the eight core screens.</div></div>
+    </section>
+    <section class="view" data-view="settings">
+      <div class="hdr"><button class="sb-toggle" id="toggle10" aria-label="Menu">☰ Menu</button><h1>Settings</h1></div>
+      <div class="stub"><div class="t">Not built yet</div><div class="d">Crew access, GHL connection and notification preferences land here once the hub is wired up.</div></div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var gz='#1f6b74', ml='#a06614', gx='#6b5f48', bm='#b4231f', full=[gz,ml,gx,bm];
+  var AV={E:'/assets/gi/dashboard/avatar-erik.png',G:'/assets/gi/dashboard/avatar-gabe.png',T:'/assets/gi/dashboard/avatar-tim.png'};
+  var NAMES={E:'Erik',G:'Gabe',T:'Tim'};
+
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+  function chip(init,state){
+    var m={a:['#3e7d4e','approved'],r:['#b4231f','rejected'],p:['#6b5f48','pending'],c:['#a06614','approve w/ changes']};
+    var v=m[state];
+    return {init:init,cls:state,c:v[0],img:AV[init],tip:NAMES[init]+' — '+v[1]};
+  }
+  function chipHTML(ch){
+    return '<div class="chip-av '+ch.cls+'" title="'+esc(ch.tip)+'"><img src="'+ch.img+'" alt="'+ch.init+'"></div>';
+  }
+
+  var votes=[
+    {title:'Logo — Emergency Broadcast',chips:[chip('E','a'),chip('G','p'),chip('T','p')],dl:'2 more votes needed',dlC:'var(--rust)',pctW:'33%',bar:'var(--rust)'},
+    {title:'Panel format — hybrid (fixed voice + rotating 4th seat)',chips:[chip('E','a'),chip('G','p'),chip('T','p')],dl:'41h left',dlC:'var(--muted)',pctW:'43%',bar:'var(--rust)'},
+    {title:'Cadence — weekly vs bi-weekly',chips:[chip('E','a'),chip('G','r'),chip('T','p')],dl:'6h left · nudge sent',dlC:'var(--red)',pctW:'92%',bar:'var(--red)'}
+  ];
+
+  function voteHTML(v){
+    return '<div class="vote"><div class="vote-top">'
+      +'<span class="vote-badge"><span class="dot"></span>Voting open</span>'
+      +'<div class="vote-title">'+esc(v.title)+'</div>'
+      +'<div class="vote-chips">'+v.chips.map(chipHTML).join('')+'</div>'
+      +'<div class="vote-dl" style="color:'+v.dlC+'">'+esc(v.dl)+'</div>'
+      +'</div><div class="bar-bg"><div class="bar-fg" style="width:'+v.pctW+';background:'+v.bar+'"></div></div></div>';
+  }
+  document.getElementById('votesCommand').innerHTML = votes.map(voteHTML).join('');
+
+  var week=[
+    {day:'Mon',chips:[['Long-form · YT+Spot','lf'],['Email to list','em']]},
+    {day:'Tue',chips:[['Short #1 · hook','sh'],['Story: new ep','qc']]},
+    {day:'Wed',chips:[['Quote card','qc'],['Short #2','sh']]},
+    {day:'Thu',chips:[['Steel-man clip','sh'],['Poll: QOTW','em']]},
+    {day:'Fri',chips:[['Short #3','sh'],['Audiogram','au']]},
+    {day:'Sat',chips:[['Best comment','qc'],['Community repost','em']]},
+    {day:'Sun',chips:[['Teaser: next topic','qc'],['Vote the seat CTA','em']]}
+  ];
+  document.getElementById('weekGrid').innerHTML = week.map(function(d){
+    return '<div class="d"><div class="dname">'+d.day+'</div>'
+      + d.chips.map(function(ch){return '<div class="chip chip-'+ch[1]+'">'+esc(ch[0])+'</div>'}).join('')
+      + '</div>';
+  }).join('');
+
+  var stages=[['Topic Bank',2],['Voted',1],['Booked',1],['Shot',1],['In Edit',1],['Assets Cut',1],['Scheduled',1],['Live',2]];
+  document.getElementById('stagesGrid').innerHTML = stages.map(function(s){
+    return '<div class="stage"><div class="c">'+s[1]+'</div><div class="n">'+esc(s[0])+'</div></div>';
+  }).join('');
+
+  function card(no,q,pillar,pillarSens,seats,seatNote,meta,assets,pct,extra){
+    extra=extra||{};
+    return Object.assign({no:no,q:q,pillar:pillar,pillarSens:!!pillarSens,seats:seats,seatNote:seatNote,meta:meta,assets:assets,
+      pctW:pct+'%',assetC:pct>=100?'var(--green)':(pct>0?'var(--rust)':'var(--tan)'),third:false,blocked:false,blockNote:'',bd:'var(--line2)'},extra);
+  }
+  var kanban=[
+    {name:'Topic Bank',hint:'2-of-3 vote to leave',cards:[
+      card('009','Are Younger People Ready to Lead Sooner?','Leadership',false,[],'seats open','unscheduled','—',0),
+      card('010','Who Actually Benefits From the Way Drug Laws Are Written?','Third Rail',true,[],'seats open','members-only drop','—',0,{third:true})]},
+    {name:'Voted / Locked',hint:'',cards:[card('008','Is Homeownership Realistic or Just a Status Symbol?','Success & $',false,[gz,ml],'2 of 4 booked','rec Oct 15','0/40',0)]},
+    {name:'Panel Booked',hint:'',cards:[card('007','Should AI Be Feared, Embraced, or Regulated?','Tech',false,[gz,ml,gx],'3 of 4 booked','rec Oct 8','0/40',0)]},
+    {name:'Shot',hint:'runtime target 45–70 min',cards:[card('006','What Do Generations Actually Owe Each Other?','Family',false,full,'full panel','rec Aug 21 · 1:02:40','0/40',0)]},
+    {name:'In Edit',hint:'asset minimum gates exit',cards:[card('005','Is Cancel Culture Accountability or Overcorrection?','Culture',false,full,'full panel','due Oct 20','6/40',15,{blocked:true,blockNote:'Blocked — caption vendor 2 days overdue',bd:'var(--red)'})]},
+    {name:'Assets Cut',hint:'',cards:[card('004','Should Loyalty to an Employer Still Matter?','Work',false,full,'full panel','pub Nov 5','27/40',68)]},
+    {name:'Scheduled',hint:'GHL launch workflow armed',cards:[card('003','Is the Definition of Success Outdated?','Success & $',false,full,'full panel','pub Nov 4','40/40',100)]},
+    {name:'Live',hint:'',cards:[
+      card('001','Is Work-Life Balance a Myth?','Work',false,full,'full panel','pub Nov 2','40/40',100),
+      card('002','Are We Connected or More Isolated Than Ever?','Tech',false,full,'full panel','pub Nov 3','38/40',95)]}
+  ];
+  function kcardHTML(c){
+    return '<div class="kcard" style="border-color:'+c.bd+'"><div class="kcard-top"><div class="ep-no">EP '+c.no+'</div>'
+      + (c.third?'<span class="sens-badge">Sensitive</span>':'') + '</div>'
+      + '<div class="kcard-q">'+esc(c.q)+'</div>'
+      + '<span class="pillar-pill'+(c.pillarSens?' sens':'')+'">'+esc(c.pillar)+'</span>'
+      + '<div class="seats-row">' + c.seats.map(function(sc){return '<div class="seat-dot" style="border-color:'+sc+'"></div>'}).join('')
+      + '<div class="seat-note">'+esc(c.seatNote)+'</div></div>'
+      + (c.blocked?'<div class="block-note">'+esc(c.blockNote)+'</div>':'')
+      + '<div class="kcard-foot"><div class="meta">'+esc(c.meta)+'</div><div class="assets" style="color:'+c.assetC+'">'+esc(c.assets)+'</div></div>'
+      + '<div class="kcard-prog"><div class="bar-fg" style="width:'+c.pctW+';background:'+c.assetC+'"></div></div></div>';
+  }
+  document.getElementById('kanbanGrid').innerHTML = kanban.map(function(col){
+    return '<div class="kcol"><div class="kcol-h"><div class="top"><div class="name">'+esc(col.name)+'</div><div class="count">'+col.cards.length+'</div></div>'
+      + '<div class="hint">'+esc(col.hint)+'</div></div>' + col.cards.map(kcardHTML).join('') + '</div>';
+  }).join('');
+
+  // ---- Episode Detail ----
+  var subQs=[
+    {n:'01',t:"Does loyalty mean anything when layoffs are a spreadsheet decision?",time:'8 min'},
+    {n:'02',t:'Is job-hopping ambition or instability?',time:'6 min'},
+    {n:'03',t:'Did pensions buy loyalty, or did people just have fewer options?',time:'6 min'},
+    {n:'04',t:'What does an employer owe you after ten years?',time:'7 min'},
+    {n:'05',t:'Would you take less money to stay somewhere you liked?',time:'5 min'}
+  ];
+  document.getElementById('subQs').innerHTML = subQs.map(function(q){
+    return '<div style="display:flex;align-items:center;gap:12px;background:var(--card2);border:1px solid var(--ink);border-radius:6px;padding:7px 12px">'
+      + '<div style="color:var(--muted);font-size:11px;letter-spacing:2px">⠿</div>'
+      + '<div class="an" style="font-size:13px;color:var(--red);width:22px">'+q.n+'</div>'
+      + '<div style="font-size:13px;color:var(--ink);flex:1">'+esc(q.t)+'</div>'
+      + '<div class="se" style="font-weight:600;font-size:10px;letter-spacing:.12em;color:var(--muted)">'+q.time+'</div></div>';
+  }).join('');
+
+  var steel=[
+    {g:'Gen Z',c:gz,p:'Argue: "Loyalty built everything you’re standing on."'},
+    {g:'Millennial',c:ml,p:'Argue: "Job-hopping is what broke the deal, not the employers."'},
+    {g:'Gen X',c:gx,p:'Argue: "A company can still earn loyalty — some do."'},
+    {g:'Boomer',c:bm,p:'Argue: "No one owes anyone a career anymore — and that’s freedom."'}
+  ];
+  document.getElementById('steelGrid').innerHTML = steel.map(function(r){
+    return '<div style="display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--ink);border-left:3px solid '+r.c+';border-radius:6px;padding:7px 12px">'
+      + '<div class="se" style="font-weight:600;font-size:9.5px;letter-spacing:.12em;color:'+r.c+';text-transform:uppercase;width:74px;flex-shrink:0">'+esc(r.g)+'</div>'
+      + '<div style="font-size:12px;color:var(--ink2)">'+esc(r.p)+'</div></div>';
+  }).join('');
+
+  var segs=[
+    {n:'Cold open',t:'0:45',f:3,c:'var(--red)'},{n:'Opener',t:'5 min',f:9,c:'var(--rust)'},
+    {n:'The Topic',t:'32 min',f:55,c:'var(--tan)'},{n:'Steel-man',t:'7 min',f:12,c:'var(--teal)'},
+    {n:'Common Ground',t:'4 min',f:8,c:'var(--ink2)'},{n:'Outro / CTA',t:'0:30',f:3,c:'var(--line3)'}
+  ];
+  document.getElementById('segBar').innerHTML = segs.map(function(s){return '<div title="'+esc(s.n)+'" style="flex:'+s.f+';background:'+s.c+'"></div>'}).join('');
+  document.getElementById('segLegend').innerHTML = segs.map(function(s){
+    return '<div style="display:flex;align-items:center;gap:5px;font-family:\'Special Elite\';font-size:9px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase"><span style="width:8px;height:8px;border-radius:2px;background:'+s.c+';display:inline-block"></span>'+esc(s.n)+' · '+s.t+'</div>';
+  }).join('');
+
+  var seats=[
+    {g:'Gen Z',c:gz,name:'Maya Torres',age:'24',role:'Home team',init:'MT'},
+    {g:'Millennial',c:ml,name:'Devon Clarke',age:'34',role:'Home team',init:'DC'},
+    {g:'Gen X',c:gx,name:'Sandra Whitfield',age:'51',role:'Rotating guest',init:'SW'},
+    {g:'Boomer',c:bm,name:'Frank Kowalski',age:'67',role:'Home team',init:'FK'}
+  ];
+  document.getElementById('seatsList').innerHTML = seats.map(function(s){
+    return '<div class="card" style="display:flex;align-items:center;gap:12px;padding:9px 12px">'
+      + '<div style="width:38px;height:38px;border-radius:50%;background:var(--card);border:2px solid '+s.c+';display:flex;align-items:center;justify-content:center;font-family:\'Special Elite\';font-size:12px;color:'+s.c+';flex-shrink:0">'+s.init+'</div>'
+      + '<div style="flex:1;min-width:0"><div class="se uc" style="font-weight:600;font-size:9px;letter-spacing:.14em;color:'+s.c+'">'+esc(s.g)+' · '+s.age+'</div>'
+      + '<div style="font-size:13px;font-weight:700;color:var(--ink)">'+esc(s.name)+'</div>'
+      + '<div class="se uc" style="font-size:8.5px;letter-spacing:.12em;color:var(--muted)">'+esc(s.role)+'</div></div>'
+      + '<div class="se uc" style="font-size:9.5px;letter-spacing:.1em;color:var(--teal);border:1px solid var(--teal);border-radius:5px;padding:3px 8px">Swap</div></div>';
+  }).join('');
+
+  var log=[
+    {d:'AUG 25',t:'Tim armed the GHL launch email draft'},
+    {d:'AUG 24',t:'Gabe advanced EP 004 → Assets Cut'},
+    {d:'AUG 22',t:'Vote closed: sponsor read → House: Ninja 360 (2/3)'}
+  ];
+  document.getElementById('activityLog').innerHTML = log.map(function(l){
+    return '<div style="display:flex;gap:8px;font-size:11px;line-height:1.4"><div class="se" style="font-size:9px;letter-spacing:.08em;color:var(--muted);width:48px;flex-shrink:0;padding-top:1px">'+l.d+'</div><div style="color:var(--ink2)">'+esc(l.t)+'</div></div>';
+  }).join('');
+
+  // ---- Asset Engine ----
+  var assetGroups=[
+    {type:'Long-form',frac:'1 / 1',pctW:'100%',pc:'var(--green)',rows:[['16:9','EP 004 — full episode','58:12','YT · Spotify · Apple','done','Nov 5']],skels:0},
+    {type:'Shorts',frac:'8 / 15',pctW:'53%',pc:'var(--rust)',rows:[
+      ['9:16','"Layoffs are a spreadsheet decision"','14:22','TikTok · Reels · Shorts','done','Nov 6'],
+      ['9:16','"Job-hopping: ambition or instability?"','22:05','TikTok · Reels · Shorts','prog','Nov 8'],
+      ['9:16','"What does ten years earn you?"','31:48','TikTok · Reels','prog','Nov 11'],
+      ['9:16','"Would you take less to stay?"','41:03','TikTok · Shorts','idle','—']],skels:2},
+    {type:'Quote cards',frac:'3 / 5',pctW:'60%',pc:'var(--rust)',rows:[
+      ['1:1','"Loyalty became a one-way toll." — Sandra','18:40','IG · FB · X','done','Nov 7'],
+      ['1:1','"Pensions were the deal. The deal left." — Frank','26:11','IG · X','prog','Nov 9']],skels:0},
+    {type:'Audiogram',frac:'0 / 1',pctW:'0%',pc:'var(--tan)',rows:[['WAVE','Common Ground closer — "We all want to matter at work"','52:30','IG · FB','idle','Nov 10']],skels:0},
+    {type:'Email',frac:'1 / 1',pctW:'100%',pc:'var(--green)',rows:[['GHL','Episode note + Question of the Week to the list','—','GHL email','done','Nov 5']],skels:0},
+    {type:'SEO page',frac:'0 / 1',pctW:'0%',pc:'var(--tan)',rows:[['.COM','Transcript + summary — /episodes/loyalty','—','generationallyincorrect.com','idle','—']],skels:0}
+  ];
+  var statusLabel={done:'Done',prog:'In progress',idle:'Not started'};
+  document.getElementById('assetGroups').innerHTML = assetGroups.map(function(g){
+    var rows = g.rows.map(function(r){
+      return '<div class="arow"><div class="thumb">'+r[0]+'</div><div class="title">'+esc(r[1])+'</div><div class="tc">'+r[2]+'</div>'
+        + '<div class="dest">'+esc(r[3])+'</div><span class="status-pill status-'+r[4]+'">'+statusLabel[r[4]]+'</span><div class="date">'+r[5]+'</div></div>';
+    }).join('');
+    var skels='';
+    for(var i=0;i<g.skels;i++) skels += '<div class="skel"><div style="width:44px;height:26px"></div><div style="height:11px;flex:1"></div><div style="height:11px;width:64px"></div><div style="height:11px;width:170px"></div><div style="height:16px;width:76px;border-radius:20px"></div><div style="height:11px;width:46px"></div></div>';
+    return '<div style="margin-bottom:14px"><div class="ag-head"><div class="ag-type">'+esc(g.type)+'</div><div class="ag-frac">'+g.frac+'</div>'
+      + '<div class="ag-bar"><div class="bar-fg" style="width:'+g.pctW+';background:'+g.pc+'"></div></div></div>' + rows + skels + '</div>';
+  }).join('');
+
+  // ---- Social Calendar ----
+  var days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var calRows=[
+    {platform:'YouTube',cells:[[['EP 004 long-form','lf']],[],[],[['Steel-man clip','sh']],[],[],[]]},
+    {platform:'Instagram',cells:[[],[['Story: new ep','qc']],[['Quote card #1','qc']],[],[['Common-ground audiogram','au']],[['Best comment / duet','qc']],[]]},
+    {platform:'TikTok',cells:[[],[['Short #1 — hook','sh']],[['Short #2','sh']],[],[['Short #3','sh']],[],[['Teaser: next topic','qc']]]},
+    {platform:'Facebook',cells:[[],[],[],[],[],[['Community repost','em']],[]]},
+    {platform:'X',cells:[[],[],[],[['Poll: QOTW','em']],[],[],[]]},
+    {platform:'LinkedIn',cells:[[],[],[['Quote card #1','qc']],[],[],[],[]]},
+    {platform:'Email / SMS',cells:[[['Episode note + QOTW','em']],[],[],[],[],[],[['Vote the seat CTA','em']]]}
+  ];
+  var calHTML = '<div></div>' + days.map(function(d){return '<div class="cal-day-h">'+d+'</div>'}).join('');
+  calRows.forEach(function(r){
+    calHTML += '<div class="cal-platform">'+esc(r.platform)+'</div>';
+    r.cells.forEach(function(cell){
+      calHTML += '<div class="cal-cell">' + cell.map(function(ch){return '<div class="chip chip-'+ch[1]+'">'+esc(ch[0])+'</div>'}).join('') + '</div>';
+    });
+  });
+  document.getElementById('calGrid').innerHTML = calHTML;
+
+  // ---- Creative Approvals ----
+  var apCols=[
+    {name:'Proposed',count:1,cards:[{t:'Equity split & roles',m:'Added Aug 24 · needs a recommendation before review'}]},
+    {name:'Under Review',count:1,cards:[{t:'Clip + quote-card template family',m:'Gabe reviewing · review ends Aug 28'}]},
+    {name:'Voting Open',count:3,cards:votes.map(function(v){return {t:v.title,m:'72h clock running',chips:v.chips,dl:v.dl,dlC:v.dlC,pctW:v.pctW,bar:v.bar}})}
+  ];
+  document.getElementById('apKanban').innerHTML = apCols.map(function(col){
+    return '<div class="kcol"><div class="kcol-h"><div class="top"><div class="name">'+esc(col.name)+' <span style="color:var(--muted)">· '+col.count+'</span></div></div></div>'
+      + col.cards.map(function(c){
+        var chips = c.chips ? '<div style="display:flex;gap:5px;margin-top:8px;min-height:22px;align-items:center">'+c.chips.map(chipHTML).join('')
+          + '<div class="se" style="font-weight:600;font-size:9px;letter-spacing:.1em;color:'+(c.dlC||'var(--muted)')+';text-transform:uppercase;margin-left:auto">'+(c.dl||'')+'</div></div>'
+          + '<div class="bar-bg" style="margin-top:6px"><div class="bar-fg" style="width:'+(c.pctW||'0%')+';background:'+(c.bar||'transparent')+'"></div></div>' : '';
+        return '<div class="kcard"><div style="font-family:\'Special Elite\';font-weight:600;font-size:13px;color:var(--ink);line-height:1.35">'+esc(c.t)+'</div>'
+          + '<div style="font-size:10.5px;color:var(--muted);margin-top:4px">'+esc(c.m)+'</div>' + chips + '</div>';
+      }).join('') + '</div>';
+  }).join('');
+
+  var decisions=[
+    {t:'Logo — Emergency Broadcast (v2)',m:'Voting · 1/3 · Aug 29',c:'var(--rust)'},
+    {t:'Name & tagline lockup',m:'Approved 3/3 · Aug 12',c:'var(--green)'},
+    {t:'Opener signature question',m:'Approved 2/3 · Aug 9',c:'var(--green)'},
+    {t:'Intro sting v1',m:'Revise · Aug 18',c:'var(--rust)'}
+  ];
+  document.getElementById('decisionLog').innerHTML = decisions.map(function(d){
+    return '<div class="declog"><div class="dot" style="background:'+d.c+'"></div><div class="t">'+esc(d.t)+'</div><div class="m" style="color:'+d.c+'">'+esc(d.m)+'</div></div>';
+  }).join('');
+
+  document.querySelectorAll('.vf-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var box = btn.closest('.vote-featured');
+      var note = box.querySelector('.vf-note');
+      if(!note){ note=document.createElement('div'); note.className='vf-note'; note.style.cssText='font-family:\'Special Elite\';font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)'; box.appendChild(note); }
+      note.textContent = 'Recorded: Tim — ' + btn.textContent.trim() + ' (demo only, not wired to GHL yet)';
+    });
+  });
+
+  // ---- Funnel & List ----
+  var qotw=[
+    {q:'"They fixed things instead of replacing them."',g:'Gen Z',c:gz,star:'★ Read on air'},
+    {q:'"Showing up in person. We text our way out of everything hard."',g:'Millennial',c:ml,star:'★ Read on air'},
+    {q:'"Sunday dinner was non-negotiable. It kept families talking."',g:'Gen X',c:gx,star:'☆ Shortlist'}
+  ];
+  document.getElementById('qotwList').innerHTML = qotw.map(function(q){
+    return '<div class="qotw-item"><div class="km" style="font-size:13px;color:var(--ink);line-height:1.45">'+esc(q.q)+'</div>'
+      + '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">'
+      + '<div class="se uc" style="font-weight:600;font-size:9px;letter-spacing:.14em;color:'+q.c+'">'+esc(q.g)+'</div>'
+      + '<div class="se" style="font-size:9px;letter-spacing:.1em;color:var(--rust);text-transform:uppercase">'+q.star+'</div></div></div>';
+  }).join('');
+
+  var genLegend=[
+    {g:'Millennial',c:ml,n:'526',p:'41%'},{g:'Gen Z',c:gz,n:'372',p:'29%'},{g:'Gen X',c:gx,n:'270',p:'21%'},{g:'Boomer',c:bm,n:'90',p:'7%'},{g:'Other',c:'var(--tan)',n:'26',p:'2%'}
+  ];
+  document.getElementById('genLegend').innerHTML = genLegend.map(function(g){
+    return '<div class="legend-row"><span class="legend-sw" style="background:'+g.c+'"></span><span class="se uc" style="font-size:10.5px;letter-spacing:.1em;color:var(--ink);flex:1">'+esc(g.g)+'</span><span style="color:var(--ink2)">'+g.n+'</span><span class="se" style="color:var(--muted);width:36px;text-align:right">'+g.p+'</span></div>';
+  }).join('');
+
+  var sources=[{l:'src-tiktok',w:'48%'},{l:'src-youtube',w:'31%'},{l:'src-ig',w:'14%'},{l:'src-web',w:'7%'}];
+  document.getElementById('sourcesList').innerHTML = sources.map(function(s){
+    return '<div class="src-row"><div class="lbl"><span style="color:var(--ink)">'+s.l+'</span><span style="color:var(--muted)">'+s.w+'</span></div>'
+      + '<div class="src-bar"><div class="bar-fg" style="width:'+s.w+';background:var(--teal)"></div></div></div>';
+  }).join('');
+
+  // ---- Topic Bank ----
+  function tq(q,heat,third){return {q:q,heat:heat,third:!!third}}
+  var topicGroups=[
+    {p:'The Big Questions',pc:'var(--rust)',empty:false,cards:[tq('Will AI Turn Against Us?',84),tq('What’s Wrong With Humanity?',58)]},
+    {p:'Culture',pc:'var(--rust)',empty:false,cards:[tq('Too Sensitive or Too Dismissive?',77)]},
+    {p:'Work',pc:'var(--rust)',empty:false,cards:[tq('Is Hustle Culture Inspiring or Harmful?',66)]},
+    {p:'Leadership',pc:'var(--rust)',empty:false,cards:[tq('Are Younger People Ready to Lead Sooner?',62)]},
+    {p:'Third Rail ⚠',pc:'var(--red)',empty:false,cards:[tq('Who Actually Benefits From the Way Drug Laws Are Written?',71,true)]},
+    {p:'Family & Community',pc:'var(--rust)',empty:true,cards:[]}
+  ];
+  document.getElementById('topicGrid').innerHTML = topicGroups.map(function(g){
+    var cards = g.cards.map(function(t){
+      var hc = t.heat>=80 ? 'var(--red)' : 'var(--rust)';
+      return '<div class="tb-card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">'
+        + '<div class="tb-q">'+esc(t.q)+'</div>' + (t.third?'<span class="sens-badge" style="flex-shrink:0">Sensitive</span>':'') + '</div>'
+        + '<div class="tb-heat-row"><div class="tb-heat-lbl">Heat '+t.heat+'</div><div class="tb-heat-bar"><div class="bar-fg" style="width:'+t.heat+'%;background:'+hc+'"></div></div>'
+        + '<div class="tb-schedule">Schedule</div></div>'
+        + (t.third?'<div style="font-size:10px;color:var(--muted);margin-top:7px;font-style:italic">Members / YouTube-first special drop — never main-feed.</div>':'') + '</div>';
+    }).join('');
+    var empty = g.empty ? '<div class="tb-empty"><div class="se uc" style="font-size:10px;letter-spacing:.14em;color:var(--muted)">Nothing banked yet</div><div style="font-size:11.5px;color:var(--muted);margin-top:5px;font-style:italic">Your first question is waiting to be written.</div></div>' : '';
+    return '<div><div class="tb-col-h" style="color:'+g.pc+'">'+esc(g.p)+'</div>' + cards + empty + '</div>';
+  }).join('');
+
+  // ---- Nav + routing ----
+  var VIEWS=['command','pipeline','detail','assets','calendar','approvals','funnel','topics','sponsors','settings'];
+  var NAV_LABELS={command:'Command',pipeline:'Pipeline',detail:'Episode Detail',assets:'Assets',calendar:'Calendar',approvals:'Approvals',funnel:'Funnel',topics:'Topic Bank',sponsors:'Sponsors',settings:'Settings'};
+  var NAV_ORDER=['command','pipeline','assets','calendar','approvals','funnel','topics','sponsors','settings'];
+
+  function buildNav(active){
+    document.getElementById('sbNav').innerHTML = NAV_ORDER.map(function(key){
+      var disabled = (key==='sponsors'||key==='settings');
+      return '<button class="navitem'+(key===active?' active':'')+'" data-nav="'+key+'"'+(disabled?' ':'')+'>'+esc(NAV_LABELS[key])+'</button>';
+    }).join('');
+    document.querySelectorAll('[data-nav]').forEach(function(btn){
+      btn.addEventListener('click', function(){ showView(btn.getAttribute('data-nav')); });
+    });
+  }
+
+  function showView(key){
+    if(VIEWS.indexOf(key)===-1) key='command';
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.toggle('active', v.getAttribute('data-view')===key); });
+    var navKey = key==='detail' ? 'pipeline' : key;
+    document.querySelectorAll('[data-nav]').forEach(function(btn){ btn.classList.toggle('active', btn.getAttribute('data-nav')===navKey); });
+    document.getElementById('sidebar').classList.remove('open');
+    if(history.replaceState) history.replaceState(null,'','#'+key);
+  }
+
+  buildNav('command');
+  document.querySelectorAll('[data-goto]').forEach(function(a){
+    a.addEventListener('click', function(e){ e.preventDefault(); showView(a.getAttribute('data-goto')); });
+  });
+  for(var i=1;i<=10;i++){
+    var t=document.getElementById('toggle'+i);
+    if(t) t.addEventListener('click', function(){ document.getElementById('sidebar').classList.toggle('open'); });
+  }
+  var initial = (location.hash||'').replace('#','');
+  showView(initial||'command');
+})();
+</script>
+
+</body>
+</html>

@@ -28,6 +28,7 @@ const routes = [
   '/scrolls/gi-control-hub',
   '/scrolls/gi-game-plan',
   '/scrolls/gi-otr-funnel',
+  '/scrolls/gi-dashboard',
   '/scrolls/kpi-gameplan',
   '/scrolls/mission-board',
   '/scrolls/operating-rhythm',
