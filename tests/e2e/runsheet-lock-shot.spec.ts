@@ -38,7 +38,7 @@ const MIG = {
   cameron0915: 1, lincoln0925: 1, notshot98172: 1, shoot98172: 1, notsun98172: 1, notshot4049: 1,
   plan1007: 1, vehicle1007: 1, run1008: 1, run1013: 1, run1016: 1, run1020: 1,
   pastruns0926: 12, logmi0926: 1, logmi1006: 1, manhattan0910: 1, manhattan0909: 1, planlock0923: 1, sheetdates1003: 1, sync1021: 1, stl1027: 1, stl1029: 2,
-  newton1107: 1, ovn1106: 1, ovn1110: 1, qb1110: 1,
+  newton1107: 1, ovn1106: 1, ovn1110: 1, qb1110: 1, sheetsync1110: 1,
 };
 const migBut = (...skip: string[]) => Object.fromEntries(Object.entries(MIG).filter(([k]) => !skip.includes(k)));
 
@@ -921,9 +921,10 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
   // Tim: "OK, sync". The baked book had last been read from the sheet on 10/22. Missing or on field locks only: the STL run (10/27-29), the
   // weekend's eight. Stale: three 10/20 stops still named INV-000143 to 145, which QuickBooks voided and replaced with INV-000146.
   const STL_1029 = ['2026-6662', '2026-8213', '2026-6046', '2026-7464', '2026-6238', '2026-1430'];   // Arnold, Saint Louis ×3, Washington, Kirkwood
-  const WEEKEND_BANKED: Record<string, string> = {                                                    // the eight on the Completed tab, with the sheet's onsite dates
+  const WEEKEND_BANKED: Record<string, string> = {                                                    // the eight on the Completed tab, with the book's onsite dates
     '2026-1339': '2026-11-04', '2026-7375': '2026-11-07', '2026-4909': '2026-11-07', '2026-5726': '2026-11-07',
-    '2026-1224': '2026-11-08', '2026-7983': '2026-11-08', '2026-1376': '2026-11-08', '2026-7106': '2026-11-08' };
+    // the Kansas four: Friday 11/6 (Tim, 11/10: "Friday I believe"); the sheet has Sunday 11/08, which the IDS tab lists as a date to correct
+    '2026-1224': '2026-11-06', '2026-7983': '2026-11-06', '2026-1376': '2026-11-06', '2026-7106': '2026-11-06' };
 
   test('sync 11/10: the book carries the Completed tab — the 10/29 six, the weekend’s eight, INV-000146 on the three 10/20 stops, INV-000150 on the weekend', async ({ page }) => {
     await open(page, state());
@@ -955,7 +956,32 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(await ev(page, 'HOLD(BY["2026-1430"])||counters().heldJobs.some(j=>j.id==="2026-1430")'), 'Kirkwood TCC 74639 was shot 10/29, so it is not on hold').toBe(false);
     // History shows the days the book had missed
     expect(await ev(page, 'JSON.stringify(historyDays().filter(d=>d.d>="2026-10-29").map(d=>[d.d,d.n,d.pts]))'))
-      .toBe('[["2026-11-08",4,400],["2026-11-07",3,300],["2026-11-04",1,100],["2026-10-29",6,600]]');
+      .toBe('[["2026-11-07",3,300],["2026-11-06",4,400],["2026-11-04",1,100],["2026-10-29",6,600]]');
+  });
+
+  test('sync 11/10: the IDS tab asks only for what the sheet lacks — INV-000150 on the weekend’s eight, and the Kansas four’s Friday date', async ({ page }) => {
+    await open(page, state({ mig: migBut('sheetsync1110') }));
+    const ids = JSON.parse(await ev(page, 'JSON.stringify(datesToReport().map(l=>l.id))')) as string[];
+    // the STL run and the three 10/20 stops are on the sheet as the book has them: not asked for again
+    for (const id of [...STL_1029, '2026-0853', '2026-8514', '2026-6557', '2026-8597', '2026-6398']) expect(ids, id).not.toContain(id);
+    // the weekend's eight are asked for: the sheet has no invoice number on them yet
+    for (const id of Object.keys(WEEKEND_BANKED)) expect(ids, id).toContain(id);
+    // the Kansas four: onsite Friday 11/6 here, Sunday 11/8 on the sheet — a date to correct
+    for (const id of ['2026-1224', '2026-7983', '2026-1376', '2026-7106'])
+      expect(await ev(page, 'JSON.stringify([onsiteOf("' + id + '"),idsSent()["' + id + '"].d])'), id).toBe('["2026-11-06","2026-11-08"]');
+    // the other four: the date matches the sheet and only the invoice is new
+    for (const id of ['2026-1339', '2026-7375', '2026-4909', '2026-5726'])
+      expect(await ev(page, 'idsSent()["' + id + '"].d===onsiteOf("' + id + '")&&!idsSent()["' + id + '"].inv'), id).toBe(true);
+    expect(await ev(page, 'S.mig.sheetsync1110')).toBe(1);
+  });
+
+  test('sync 11/10: a send Tim made after the sheet was read stands, and an older one that names the voided invoice is replaced', async ({ page }) => {
+    const later = Date.parse('2026-11-10T20:00:00Z'), earlier = Date.parse('2026-10-31T12:00:00Z');
+    await open(page, state({ mig: migBut('sheetsync1110'), report: { to: '', cc: '', sent: {
+      '2026-0853': { d: '2026-10-27', inv: '', at: later },                    // sent after the read
+      '2026-6557': { d: '2026-10-20', inv: 'INV-000143', at: earlier } } } }));  // sent when the book still had the voided number
+    expect(await ev(page, 'JSON.stringify(idsSent()["2026-0853"])')).toBe(JSON.stringify({ d: '2026-10-27', inv: '', at: later }));
+    expect(await ev(page, 'JSON.stringify([idsSent()["2026-6557"].inv,idsSent()["2026-6557"].d])')).toBe('["INV-000146","2026-10-20"]');
   });
 
   // QuickBooks is Tim's car only — Cody's miles are the count Cody gives, typed in (Tim, 11/10). Where QuickBooks has Tim's day it wins over
@@ -977,7 +1003,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(await mi('d917'), 'a second boot does not run it again').toBe(610);
   });
 
-  test('QuickBooks miles on the Score: Tim’s days read the log, the drive down and back are their own lines, the weekend’s drivers are not guessed', async ({ page }) => {
+  test('QuickBooks miles on the Score: Tim’s days read the log, the drive down and back are their own lines, the weekend’s drivers are the ones Tim named', async ({ page }) => {
     await open(page, state());
     const rec = async (date: string) => JSON.parse(await ev(page, 'JSON.stringify(drivenDays().filter(d=>d.date==="' + date + '").map(d=>({who:d.driver,mi:d.miles,logged:d.logged,stops:d.ids.length})))'));
     expect(await rec('2026-10-28')).toEqual([{ who: 'tim', mi: 183.8, logged: true, stops: 13 }]);       // no plan day on this phone: read from the table
@@ -985,10 +1011,11 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(await rec('2026-11-07')).toEqual([{ who: 'tim', mi: 365.2, logged: true, stops: 3 }]);         // Stockton, Branson West, Ava
     expect(await rec('2026-10-12')).toEqual([{ who: 'tim', mi: 184, logged: true, stops: 0 }]);           // the drive down to Springfield
     expect(await rec('2026-10-18')).toEqual([{ who: 'tim', mi: 203.1, logged: true, stops: 0 }]);         // and the drive back
-    const kansas = await rec('2026-11-08');
+    const kansas = await rec('2026-11-06');
     expect(kansas).toHaveLength(1);
-    expect(kansas[0]).toMatchObject({ who: 'cody', logged: false, stops: 4 });                           // the Kansas four ride Cody’s route; his count is typed in
-    expect(await rec('2026-11-04'), 'Topeka: nobody has said who drove, so no miles for anyone').toEqual([]);
+    expect(kansas[0]).toMatchObject({ who: 'cody', logged: false, stops: 4 });                           // the Kansas four, Friday (Tim, 11/10): Cody’s route, Cody’s count is typed in
+    expect(await rec('2026-11-08'), 'the sheet’s Sunday for them is not a drive').toEqual([]);
+    expect(await rec('2026-11-04')).toMatchObject([{ who: 'cody', logged: false, stops: 1 }]);            // Topeka was Cody’s (Tim, 11/10)
     expect(await rec('2026-10-20')).toMatchObject([{ who: 'tim', logged: false }]);                       // QuickBooks has nothing for 10/20: still the estimate
   });
 
