@@ -126,12 +126,8 @@ small,.small{font-size:.8rem}
   mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);
 }
-.topics-track{display:flex;gap:16px;width:max-content;animation:gi-marquee 26s linear infinite}
-.topics-carousel:hover .topics-track,
-.topics-carousel.is-paused .topics-track,
-.topics-carousel:focus-within .topics-track{animation-play-state:paused}
+.topics-track{display:flex;gap:16px;width:max-content;animation:gi-marquee 22s linear infinite}
 @keyframes gi-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@media (prefers-reduced-motion:reduce){.topics-track{animation:none}}
 .topic-card{
   flex:0 0 260px;text-align:left;
   background:var(--gi-panel);border:2px solid var(--gi-ink);border-radius:var(--gi-radius);
