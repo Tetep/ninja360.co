@@ -127,7 +127,7 @@ small,.small{font-size:.8rem}
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);
 }
 .topics-track{display:flex;gap:16px;width:max-content;animation:gi-marquee 22s linear infinite}
-@keyframes gi-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes gi-marquee{from{transform:translateX(0)}to{transform:translateX(-100%)}}
 .topic-card{
   flex:0 0 260px;text-align:left;
   background:var(--gi-panel);border:2px solid var(--gi-ink);border-radius:var(--gi-radius);
@@ -165,7 +165,7 @@ small,.small{font-size:.8rem}
 .hero-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:44px;align-items:center}
 .hero-copy{text-align:left}
 .accent-line{font-family:var(--gi-font-hand);color:var(--gi-red);font-size:clamp(16px,2vw,19px);margin-bottom:10px}
-.hero-copy h1{margin-bottom:18px}
+.hero-copy h1{margin-bottom:22px;font-size:clamp(1.9rem,4.4vw,2.7rem);line-height:1.3;letter-spacing:.025em;text-align:center}
 .hero-copy p{max-width:560px;margin-bottom:26px}
 .hero .cta-row{display:flex;gap:14px;flex-wrap:wrap}
 .hero-art{display:flex;justify-content:center}
@@ -188,23 +188,22 @@ small,.small{font-size:.8rem}
 .know-band h2{margin-bottom:12px}
 .know-band p{margin-bottom:0;max-width:640px}
 
-/* ---------- listen & watch tiles ---------- */
-.listen-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
-.listen-tile{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
-  min-height:120px;padding:20px 12px;text-align:center;text-decoration:none;
-  background:var(--gi-card);border:2px solid var(--gi-ink);box-shadow:3px 3px 0 rgba(24,23,21,.22);
-  transition:transform 150ms ease;
+/* ---------- listen & watch ticker (footer) ---------- */
+.ticker-band{padding:30px 0 10px}
+.ticker-head{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.ticker-badge{display:inline-block;font-family:var(--gi-font-type);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gi-red);border:1.5px solid var(--gi-red);border-radius:20px;padding:3px 11px}
+.listen-ticker{overflow:hidden;width:100%}
+.listen-ticker-track{display:flex;gap:28px;width:max-content;animation:gi-ticker 40s linear infinite}
+@keyframes gi-ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ticker-tile{
+  display:flex;align-items:center;gap:10px;flex:0 0 auto;padding:12px 20px;
+  background:var(--gi-card);border:2px solid var(--gi-ink);box-shadow:2px 2px 0 rgba(24,23,21,.22);
+  color:var(--gi-ink);text-decoration:none;
 }
-a.listen-tile:hover{transform:translateY(-3px)}
-.listen-tile .ic{font-size:26px;color:var(--gi-ink)}
-.listen-tile .lbl{font-family:var(--gi-font-display);text-transform:uppercase;letter-spacing:.5px;font-size:15px;color:var(--gi-ink)}
-.listen-tile.is-soon{opacity:.62;cursor:default}
-.listen-tile .soon{font-family:var(--gi-font-body);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--gi-muted)}
-.listen-tile .socials-inline{display:flex;gap:12px;font-size:19px;color:var(--gi-ink)}
-.listen-tile .socials-inline a{color:var(--gi-ink)}
-.listen-tile .socials-inline a:hover{color:var(--gi-red)}
-@media(max-width:640px){.listen-grid{grid-template-columns:1fr 1fr}}
+.ticker-tile i{font-size:19px}
+.ticker-tile span{font-family:var(--gi-font-display);text-transform:uppercase;letter-spacing:.5px;font-size:13px;white-space:nowrap}
+a.ticker-tile:hover{color:var(--gi-red)}
+@media(prefers-reduced-motion:reduce){.listen-ticker-track{animation:none}}
 
 /* ---------- CTA band (ink) ---------- */
 .cta-band{background:var(--gi-ink);color:var(--gi-paper);text-align:center}
