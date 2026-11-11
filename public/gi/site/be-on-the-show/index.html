@@ -22,7 +22,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/gi-site.css">
 </head>
-<body>
+<body class="bots-page">
 
 <header class="masthead">
   <div class="bar">
@@ -47,37 +47,31 @@
 <section class="cta-band">
   <div class="wrap">
     <h2>Apply to be a guest</h2>
-    <p>Tell us who you are and what you'll argue about.</p>
   </div>
 </section>
 
-<section>
+<section class="form-section">
   <div class="wrap center">
     <!-- Kept deliberately bare (Tim, 11/10/26) — the promo video and the
          Lucky 13 location/map moved out of the way of the form. Both are
          meant to live in the form's own confirmation response instead
          (what-to-expect + location, built in Google Forms directly). -->
-    <p style="margin:0 0 12px"><a href="#" id="watch-promo-link" class="small">▶ Watch the promo</a></p>
-    <div class="signup-panel" style="margin-top:0;max-width:600px">
+    <p class="promo-link-row"><a href="#" id="watch-promo-link" class="small">▶ Watch the promo</a></p>
+    <div class="signup-panel">
       <!-- Swapped to the Google Form (Tim, interim form while GHL is sorted
-           out). Standard Google Forms embed: ?embedded=true, fixed height —
-           Google Forms has no cross-origin auto-resize script the way GHL's
-           form_embed.js did, so a long form shows its own internal scrollbar
-           inside the iframe if it runs past this height. The old ?src=
-           QR-source-tracking passthrough is dropped for now; it depended on
-           GHL's field mapping and doesn't carry over automatically. -->
-      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScvfwAtkcMGAXOii7GNK6kHzBYgyU6exOj1wUhE2TpkPkq_Ew/viewform?embedded=true" style="width:100%;height:1400px;border:0;display:block" title="Contestant signup" loading="lazy">Loading…</iframe>
+           out). Standard Google Forms embed: ?embedded=true, no cross-origin
+           auto-resize script the way GHL's form_embed.js had, so the iframe
+           is sized to fill the page instead (11/11/26, "as much space as
+           possible, full page no scroll") and the form shows its own
+           internal scrollbar if its content runs taller than that. The old
+           ?src= QR-source-tracking passthrough is dropped for now; it
+           depended on GHL's field mapping and doesn't carry over
+           automatically. -->
+      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScvfwAtkcMGAXOii7GNK6kHzBYgyU6exOj1wUhE2TpkPkq_Ew/viewform?embedded=true" title="Contestant signup" loading="lazy">Loading…</iframe>
     </div>
-    <p class="small muted" style="margin-top:16px">Questions? <a href="mailto:hello@generationallyincorrect.com">hello@generationallyincorrect.com</a></p>
+    <p class="questions-line small muted">Questions? <a href="mailto:hello@generationallyincorrect.com">hello@generationallyincorrect.com</a></p>
   </div>
 </section>
-
-<footer class="footer-v2">
-  <div class="wrap">
-    <div class="copy">© 2026 Generationally Incorrect</div>
-    <div class="tag">Every generation gets roasted equally.</div>
-  </div>
-</footer>
 
 <div class="promo-modal" id="promo-modal" hidden>
   <div class="promo-modal-scrim" data-close></div>
