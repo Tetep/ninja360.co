@@ -266,6 +266,24 @@ footer.footer-v2 .tag{font-family:var(--gi-font-body);font-size:13px;color:#f3e2
 
 /* ---------- signup form ---------- */
 .signup-panel{border:2px solid var(--gi-ink);outline:1px solid var(--gi-ink);outline-offset:3px;background:var(--gi-paper-lift);padding:30px 28px;max-width:560px;margin:24px auto 0}
+
+/* Be-on-the-Show: give the form as much of the viewport as possible, no
+   outer page scroll -- the Google Form iframe gets its own internal
+   scrollbar if its content runs taller than the space it's given. */
+.bots-page{height:100vh;height:100dvh;display:flex;flex-direction:column}
+.bots-page .masthead,.bots-page .cta-band{flex:0 0 auto}
+.bots-page .cta-band{padding:14px 0}
+.bots-page .cta-band h2{margin:0;font-size:1.3rem}
+.bots-page .form-section{flex:1 1 auto;min-height:0;padding:10px 0;display:flex}
+.bots-page .form-section .wrap{display:flex;flex-direction:column;width:100%;max-width:1100px}
+.bots-page .promo-link-row{flex:0 0 auto;margin:0 0 8px;text-align:center}
+.bots-page .signup-panel{flex:1 1 auto;min-height:0;width:100%;max-width:none;margin:0;padding:14px;display:flex}
+.bots-page .signup-panel iframe{flex:1 1 auto;width:100%;height:100%}
+.bots-page .questions-line{flex:0 0 auto;margin:8px 0 0;text-align:center}
+@media(max-width:640px){
+  .bots-page .cta-band{padding:10px 0}
+  .bots-page .cta-band h2{font-size:1.1rem}
+}
 .gi-form{display:flex;flex-direction:column;gap:14px;text-align:left}
 .gi-form label{font-family:var(--gi-font-type);font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--gi-ink);display:block;margin-bottom:5px}
 .gi-form input,.gi-form select{width:100%;background:#faf4e6;border:1.5px solid var(--gi-ink);border-radius:2px;color:var(--gi-ink);font-family:var(--gi-font-body);font-size:15px;padding:11px 13px;transition:border-color 150ms ease,box-shadow 150ms ease}
@@ -287,6 +305,24 @@ footer.footer-v2 .tag{font-family:var(--gi-font-body);font-size:13px;color:#f3e2
 .breadcrumbs a:hover{color:var(--gi-red)}
 .video-frame{aspect-ratio:16/9;width:100%;border:2px solid var(--gi-ink);outline:1px solid var(--gi-ink);outline-offset:3px;background:var(--gi-deep);overflow:hidden}
 .video-frame iframe,.video-frame video{width:100%;height:100%;border:0;display:block}
+.promo-embed{aspect-ratio:16/9;width:100%;background:var(--gi-paper-dim)}
+.promo-embed iframe{width:100%;height:100%;border:0;display:block}
+
+/* ---------- promo pop-up modal ---------- */
+.promo-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.promo-modal[hidden]{display:none}
+.promo-modal-scrim{position:absolute;inset:0;background:rgba(24,23,21,.82)}
+.promo-modal-dialog{position:relative;z-index:1;background:var(--gi-panel);border:2px solid var(--gi-ink);box-shadow:6px 6px 0 var(--gi-ink);padding:22px;max-width:720px;width:100%}
+.promo-modal-close{
+  position:absolute;top:-16px;right:-16px;width:44px;height:44px;border-radius:50%;
+  background:var(--gi-red);color:var(--gi-panel);border:2px solid var(--gi-ink);
+  font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.promo-modal-close:focus-visible{outline:3px solid var(--gi-ink);outline-offset:2px}
+.promo-modal-actions{display:flex;align-items:center;justify-content:center;gap:20px;margin-top:18px;flex-wrap:wrap}
+.promo-modal-skip{display:inline-flex;align-items:center;min-height:44px;padding:0 6px;font-family:var(--gi-font-type);font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--gi-muted)}
+.promo-modal-skip:hover{color:var(--gi-red)}
+@media(max-width:640px){.promo-modal-dialog{padding:18px}}
 .transcript{border:2px solid var(--gi-ink);background:var(--gi-paper-lift);margin-top:20px}
 .transcript summary{cursor:pointer;list-style:none;font-family:var(--gi-font-type);letter-spacing:1.5px;text-transform:uppercase;font-size:13px;color:var(--gi-ink);padding:15px 18px;display:flex;justify-content:space-between;align-items:center}
 .transcript summary::after{content:'+';font-size:18px;color:var(--gi-red);font-family:var(--gi-font-hand)}
