@@ -191,18 +191,35 @@ small,.small{font-size:.8rem}
 /* ---------- listen & watch ticker (footer) ---------- */
 .ticker-band{padding:30px 0 10px}
 .ticker-head{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-.ticker-badge{display:inline-block;font-family:var(--gi-font-type);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gi-red);border:1.5px solid var(--gi-red);border-radius:20px;padding:3px 11px}
-.listen-ticker{overflow:hidden;width:100%}
+.listen-ticker{overflow:hidden;width:100%;padding-top:44px;margin-top:-44px}
 .listen-ticker-track{display:flex;gap:28px;width:max-content;animation:gi-ticker 40s linear infinite}
+.listen-ticker:hover .listen-ticker-track{animation-play-state:paused}
 @keyframes gi-ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .ticker-tile{
-  display:flex;align-items:center;gap:10px;flex:0 0 auto;padding:12px 20px;
+  position:relative;display:flex;align-items:center;gap:10px;flex:0 0 auto;padding:12px 20px;
   background:var(--gi-card);border:2px solid var(--gi-ink);box-shadow:2px 2px 0 rgba(24,23,21,.22);
-  color:var(--gi-ink);text-decoration:none;
+  color:var(--gi-ink);text-decoration:none;cursor:pointer;
 }
 .ticker-tile i{font-size:19px}
 .ticker-tile span{font-family:var(--gi-font-display);text-transform:uppercase;letter-spacing:.5px;font-size:13px;white-space:nowrap}
 a.ticker-tile:hover{color:var(--gi-red)}
+.ticker-tile::after{
+  content:attr(data-tooltip);position:absolute;bottom:calc(100% + 9px);left:50%;
+  transform:translateX(-50%) translateY(4px);background:var(--gi-ink);color:var(--gi-panel);
+  font-family:var(--gi-font-type);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  padding:6px 11px;border-radius:4px;white-space:nowrap;opacity:0;pointer-events:none;
+  transition:opacity 150ms ease,transform 150ms ease;z-index:5;
+}
+.ticker-tile::before{
+  content:'';position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:var(--gi-ink);opacity:0;pointer-events:none;
+  transition:opacity 150ms ease;
+}
+.ticker-tile:hover::after,.ticker-tile:hover::before,
+.ticker-tile:focus-visible::after,.ticker-tile:focus-visible::before,
+.ticker-tile.is-tooltip-open::after,.ticker-tile.is-tooltip-open::before{
+  opacity:1;transform:translateX(-50%) translateY(0);
+}
 @media(prefers-reduced-motion:reduce){.listen-ticker-track{animation:none}}
 
 /* ---------- CTA band (ink) ---------- */
