@@ -57,6 +57,7 @@
          Lucky 13 location/map moved out of the way of the form. Both are
          meant to live in the form's own confirmation response instead
          (what-to-expect + location, built in Google Forms directly). -->
+    <p style="margin:0 0 12px"><a href="#" id="watch-promo-link" class="small">▶ Watch the promo</a></p>
     <div class="signup-panel" style="margin-top:0;max-width:600px">
       <!-- Swapped to the Google Form (Tim, interim form while GHL is sorted
            out). Standard Google Forms embed: ?embedded=true, fixed height —
@@ -78,7 +79,89 @@
   </div>
 </footer>
 
+<div class="promo-modal" id="promo-modal" hidden>
+  <div class="promo-modal-scrim" data-close></div>
+  <div class="promo-modal-dialog" role="dialog" aria-modal="true" aria-label="Generationally Incorrect promo">
+    <button type="button" class="promo-modal-close" id="promo-modal-close" aria-label="Close">&times;</button>
+    <div class="promo-embed">
+      <iframe id="promo-modal-frame" data-src="/gi/site/promo/" title="Generationally Incorrect promo"></iframe>
+    </div>
+    <div class="promo-modal-actions">
+      <a href="#" class="btn btn-red" id="promo-modal-signup">Sign me up</a>
+      <a href="#" class="promo-modal-skip" id="promo-modal-skip">Skip</a>
+    </div>
+  </div>
+</div>
+
 <script src="../assets/gi-site.js"></script>
+<script>
+  // Promo pop-up — plays the animated promo once per visit, no audio so no
+  // mute control is needed. Iframe src is only set while the modal is open
+  // (and cleared on close) so the animation always restarts from the top.
+  (function () {
+    var modal = document.getElementById('promo-modal');
+    if (!modal) return;
+    var frame = document.getElementById('promo-modal-frame');
+    var dialog = modal.querySelector('.promo-modal-dialog');
+    var closeBtn = document.getElementById('promo-modal-close');
+    var skipLink = document.getElementById('promo-modal-skip');
+    var signupBtn = document.getElementById('promo-modal-signup');
+    var reopenLink = document.getElementById('watch-promo-link');
+    var lastFocused = null;
+
+    function focusableEls() {
+      return Array.prototype.slice.call(dialog.querySelectorAll('a[href], button:not([disabled])'));
+    }
+
+    function trapKeydown(e) {
+      if (e.key === 'Escape') { close(); return; }
+      if (e.key !== 'Tab') return;
+      var els = focusableEls();
+      if (!els.length) return;
+      var first = els[0], last = els[els.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus();
+      }
+    }
+
+    function open() {
+      lastFocused = document.activeElement;
+      frame.src = frame.dataset.src;
+      modal.hidden = false;
+      document.addEventListener('keydown', trapKeydown);
+      closeBtn.focus();
+    }
+
+    function close() {
+      modal.hidden = true;
+      frame.src = '';
+      document.removeEventListener('keydown', trapKeydown);
+      if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+    }
+
+    closeBtn.addEventListener('click', close);
+    modal.querySelector('[data-close]').addEventListener('click', close);
+    skipLink.addEventListener('click', function (e) { e.preventDefault(); close(); });
+    signupBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      close();
+      var panel = document.querySelector('.signup-panel');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth' });
+    });
+    if (reopenLink) {
+      reopenLink.addEventListener('click', function (e) { e.preventDefault(); open(); });
+    }
+
+    var alreadyShown = false;
+    try { alreadyShown = sessionStorage.getItem('gi_promo_shown') === '1'; } catch (err) {}
+    if (!alreadyShown) {
+      open();
+      try { sessionStorage.setItem('gi_promo_shown', '1'); } catch (err) {}
+    }
+  })();
+</script>
 <a class="egg" href="../dashboard/" aria-label="Design reference"></a>
 </body>
 </html>
