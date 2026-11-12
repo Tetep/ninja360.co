@@ -272,7 +272,7 @@ footer.footer-v2 .tag{font-family:var(--gi-font-body);font-size:13px;color:#f3e2
 #trailer .promo-embed{max-width:min(1400px,calc(82vh * 16 / 9));margin:0 auto}
 
 /* ---------- promo pop-up modal ---------- */
-.promo-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.promo-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
 .promo-modal[hidden]{display:none}
 .promo-modal-scrim{position:absolute;inset:0;background:rgba(24,23,21,.82)}
 .promo-modal-dialog{position:relative;z-index:1;background:var(--gi-panel);border:2px solid var(--gi-ink);box-shadow:6px 6px 0 var(--gi-ink);padding:22px;max-width:720px;width:100%}

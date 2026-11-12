@@ -5,7 +5,7 @@
    inbox so no contact is ever silently dropped. */
 
 var GI_GHL_WEBHOOK = ''; /* ← paste GHL inbound webhook URL here to activate direct capture */
-var GI_CONTACT_EMAIL = 'hello@generationallyincorrect.com';
+var GI_CONTACT_EMAIL = 'info@generationallyincorrect.com';
 
 (function () {
   'use strict';
