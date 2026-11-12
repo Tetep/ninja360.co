@@ -1,0 +1,5 @@
+# Generationally Incorrect isn't public yet -- belt-and-suspenders on top of
+# each page's own <meta name="robots" content="noindex, nofollow">, so a page
+# that misses the meta tag (or a future one) still can't get indexed.
+/gi/site/*
+  X-Robots-Tag: noindex, nofollow
