@@ -52,6 +52,8 @@ const routes = [
   '/gi/site/contact',
   '/gi/site/be-on-the-show',
   '/gi/site/rate-the-topics',
+  '/gi/site/business-plan',
+  '/gi/site/business-plan/youtube-strategy',
   '/gi/site/dashboard',
 ];
 
