@@ -126,7 +126,7 @@ small,.small{font-size:.8rem}
   mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);
 }
-.topics-track{display:flex;gap:16px;width:max-content;animation:gi-marquee 22s linear infinite}
+.topics-track{display:flex;gap:16px;width:max-content;animation:gi-marquee 44s linear infinite}
 @keyframes gi-marquee{from{transform:translateX(0)}to{transform:translateX(-100%)}}
 .topic-card{
   flex:0 0 260px;text-align:left;
