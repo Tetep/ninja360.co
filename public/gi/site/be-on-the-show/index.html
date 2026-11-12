@@ -22,7 +22,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/gi-site.css">
 </head>
-<body class="bots-page">
+<body>
 
 <header class="masthead">
   <div class="bar">
@@ -37,7 +37,7 @@
   <nav class="menu-bar" id="gi-menu" aria-label="Main" hidden>
     <div class="menu-inner">
       <a href="/gi/site/">Home</a>
-      <a href="/gi/site/#listen">Listen</a>
+      <a href="/gi/site/episodes/">Listen</a>
       <a href="/gi/site/rate-the-topics/">Rate the Topics</a>
       <a href="/gi/site/be-on-the-show/">Be on the Show</a>
       <a href="mailto:hello@generationallyincorrect.com">Contact</a>
@@ -58,17 +58,13 @@
          meant to live in the form's own confirmation response instead
          (what-to-expect + location, built in Google Forms directly). -->
     <p class="promo-link-row"><a href="#" id="watch-promo-link" class="small">▶ Watch the promo</a></p>
-    <div class="signup-panel">
-      <!-- Swapped to the Google Form (Tim, interim form while GHL is sorted
-           out). Standard Google Forms embed: ?embedded=true, no cross-origin
-           auto-resize script the way GHL's form_embed.js had, so the iframe
-           is sized to fill the page instead (11/11/26, "as much space as
-           possible, full page no scroll") and the form shows its own
-           internal scrollbar if its content runs taller than that. The old
-           ?src= QR-source-tracking passthrough is dropped for now; it
-           depended on GHL's field mapping and doesn't carry over
-           automatically. -->
-      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScvfwAtkcMGAXOii7GNK6kHzBYgyU6exOj1wUhE2TpkPkq_Ew/viewform?embedded=true" title="Contestant signup" loading="lazy">Loading…</iframe>
+    <div class="signup-panel center">
+      <!-- Google Form, interim form while GHL is sorted out. Linked out
+           instead of embedded (Tim, 11/12/26: the iframe "looks terrible
+           embedded in the page") -- opens in a new tab so the visitor
+           doesn't lose this page. -->
+      <p class="lead">Ready to grab a seat at the table?</p>
+      <a class="btn btn-red" href="https://docs.google.com/forms/d/e/1FAIpQLScvfwAtkcMGAXOii7GNK6kHzBYgyU6exOj1wUhE2TpkPkq_Ew/viewform" target="_blank" rel="noopener">Fill out the sign-up form ↗</a>
     </div>
     <p class="questions-line small muted">Questions? <a href="mailto:hello@generationallyincorrect.com">hello@generationallyincorrect.com</a></p>
   </div>
