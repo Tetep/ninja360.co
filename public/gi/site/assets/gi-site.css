@@ -439,3 +439,16 @@ footer .small b{color:var(--gi-paper)}
 .bp-back{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-family:var(--gi-font-type);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--gi-muted);text-decoration:none}
 .bp-back:hover{color:var(--gi-red)}
 .cta-band .btn-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+
+/* ---------- YouTube Strategy diagram frame ----------
+   Heights are an estimate from reading diagram.html's section/grid structure
+   (header, 10-week calendar, SMART-goal band, 4-card stats grid, economics
+   band, 2-week-cycle strip, a 5-column x 2-poll escalation ladder -- by far
+   the tallest section once it drops to one column on narrow screens --
+   plus a rules/measure/finale grid and footer). The sandbox's proxy blocks
+   unpkg.com, so React never actually rendered here to measure against; if
+   the real heights run short on a live check, bump these numbers up. */
+.yts-frame-band{padding:24px 0 56px}
+.yts-frame{display:block;width:100%;height:3700px;border:2px solid var(--gi-ink);background:#f3efe6}
+@media(max-width:900px){.yts-frame{height:5400px}}
+@media(max-width:640px){.yts-frame{height:8800px}}

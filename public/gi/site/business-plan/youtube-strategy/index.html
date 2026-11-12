@@ -43,16 +43,13 @@
   </div>
 </section>
 
-<section style="padding-top:12px">
+<section class="yts-frame-band">
   <div class="wrap">
-    <!-- The attached diagram (YouTube Polling Strategy.dc.html) didn't come through
-         with this build -- only the business-plan-logo image was attached. Per the
-         brief's own fallback, this is the "coming soon" placeholder until Tim sends
-         the diagram file; it should then be saved as ./diagram.html (unchanged) and
-         swapped in below as a full-width iframe, never pasted inline. -->
-    <div class="form-note" style="max-width:640px">
-      The week-by-week diagram isn't attached yet. Send it over and it'll go right here, full width, in its own frame.
-    </div>
+    <!-- The diagram (YouTube Polling Strategy.dc.html) is its own self-contained
+         artifact export (dc-runtime + React from unpkg) with its own CSS -- it is
+         never pasted inline, only embedded, so its styles can't clash with the
+         site's. -->
+    <iframe class="yts-frame" src="./diagram.html" title="YouTube Strategy diagram" loading="lazy"></iframe>
   </div>
 </section>
 

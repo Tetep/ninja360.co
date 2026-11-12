@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#f3efe6; color:#161412; font-family:'IBM Plex Sans', sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:#c8102e; } a:hover { color:#161412; }
+</style>
+</helmet>
+<div style="max-width:1320px; margin:0 auto; padding:56px 40px 72px; box-sizing:border-box;">
+
+  <header style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:24px; align-items:end; border-bottom:2px solid #161412; padding-bottom:24px;">
+    <div>
+      <img src="https://assets.cdn.filesafe.space/whkhRNZwHhdpUToE7SpN/media/6ab2d85cacb939c6674124ae.png" alt="Generationally Incorrect" style="height:64px; width:auto; display:block; margin-bottom:18px;">
+      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+        <div style="display:inline-block; background:#c8102e; color:#fff; font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; padding:6px 10px;">Proposed Social Media Campaign</div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <svg width="28" height="20" viewBox="0 0 28 20" aria-hidden="true"><rect width="28" height="20" rx="6" fill="#FF0000"></rect><path d="M11 5.5v9l7.5-4.5z" fill="#fff"></path></svg>
+          <span style="font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:15px; letter-spacing:-.02em; color:#161412;">YouTube</span>
+        </div>
+      </div>
+      <h1 style="font-family:'Instrument Serif', serif; font-weight:400; font-size:clamp(36px,4.6vw,60px); line-height:1; margin:16px 0 0; letter-spacing:-.01em;">YouTube Polling &amp; Social Media Strategy</h1>
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:#c8102e; margin-top:12px;">Engagement · Membership · Community growth</div>
+      <p style="margin:14px 0 0; max-width:640px; font-size:16px; line-height:1.5; color:#4a4540; text-wrap:pretty;">Series theme: <em>"Where do you draw the line with AI?"</em> Ten yes/no dilemmas, two per show, rising from kitchen-counter stakes to life-and-death. Every poll drives comments, every Short drives subscribers, every long-form show drives members.</p>
+    </div>
+    <div style="display:flex; gap:28px; font-family:'IBM Plex Mono', monospace; font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:#4a4540;">
+      <div><div style="font-family:'Instrument Serif', serif; font-size:44px; color:#161412; line-height:1;">10</div>polls</div>
+      <div><div style="font-family:'Instrument Serif', serif; font-size:44px; color:#161412; line-height:1;">5</div>shows</div>
+      <div><div style="font-family:'Instrument Serif', serif; font-size:44px; color:#161412; line-height:1;">10</div>weeks</div>
+    </div>
+  </header>
+
+  <section style="margin-top:32px;">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap; margin-bottom:14px;">
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#4a4540;">Campaign calendar · Jan 4 – Mar 14, 2027 · 10 weeks</div>
+      <div style="display:flex; gap:18px; font-family:'IBM Plex Mono', monospace; font-size:11px; color:#4a4540; flex-wrap:wrap;">
+        <span style="display:flex; align-items:center; gap:6px;"><span style="width:12px; height:12px; border-radius:50%; background:#c8102e; display:inline-block;"></span>Poll drop (10)</span>
+        <span style="display:flex; align-items:center; gap:6px;"><span style="width:12px; height:12px; background:#161412; display:inline-block;"></span>Show (5)</span>
+        <span style="display:flex; align-items:center; gap:6px;"><span style="width:12px; height:12px; border:1.5px solid #161412; display:inline-block; box-sizing:border-box;"></span>Short</span>
+      </div>
+    </div>
+    <div style="border:1.5px solid #161412; background:#fbf9f4;">
+      <div style="display:grid; grid-template-columns:88px repeat(10, minmax(0,1fr));">
+        <div style="padding:12px; border-bottom:1.5px solid #161412; border-right:1.5px solid #161412; font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.12em; color:#4a4540; display:flex; align-items:flex-end;">WEEK OF</div>
+        <sc-for list="{{ calendar }}" as="wk" hint-placeholder-count="10">
+        <div style="padding:12px 8px; border-bottom:1.5px solid #161412; text-align:center; background:{{ wk.headBg }};">
+          <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.1em; color:#4a4540;">WK {{ wk.n }}</div>
+          <div style="font-family:'Instrument Serif', serif; font-size:16px; line-height:1.1; margin-top:2px; white-space:nowrap;">{{ wk.monday }}</div>
+        </div>
+        </sc-for>
+
+        <div style="padding:12px 8px; border-right:1.5px solid #161412; border-bottom:1px solid #161412; display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.06em;"><span style="width:10px; height:10px; flex:none; border-radius:50%; background:#c8102e; display:inline-block;"></span>POLL · MON</div>
+        <sc-for list="{{ calendar }}" as="wk" hint-placeholder-count="10">
+        <div style="padding:12px 8px; border-bottom:1px solid #161412; display:flex; align-items:center; justify-content:center; background:{{ wk.headBg }};">
+          <div style="width:30px; height:30px; border-radius:50%; background:#c8102e; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:500;">{{ wk.poll }}</div>
+        </div>
+        </sc-for>
+
+        <div style="padding:12px 8px; border-right:1.5px solid #161412; border-bottom:1px solid #161412; display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.06em;"><span style="width:10px; height:10px; flex:none; border:1.5px solid #161412; display:inline-block; box-sizing:border-box;"></span>SHORT · WED</div>
+        <sc-for list="{{ calendar }}" as="wk" hint-placeholder-count="10">
+        <div style="padding:12px 8px; border-bottom:1px solid #161412; display:flex; align-items:center; justify-content:center; background:{{ wk.headBg }};">
+          <div style="width:30px; height:30px; border:1.5px solid #161412; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono', monospace; font-size:12px; box-sizing:border-box;">{{ wk.poll }}</div>
+        </div>
+        </sc-for>
+
+        <div style="padding:12px 8px; border-right:1.5px solid #161412; display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.06em;"><span style="width:10px; height:10px; flex:none; background:#161412; display:inline-block;"></span>SHOW · FRI</div>
+        <sc-for list="{{ calendar }}" as="wk" hint-placeholder-count="10">
+        <div style="padding:12px 8px; display:flex; align-items:center; justify-content:center; background:{{ wk.headBg }};">
+          <sc-if value="{{ wk.isShow }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#161412; color:#f3efe6; padding:6px 6px; text-align:center; width:100%; box-sizing:border-box;">
+            <div style="font-family:'Instrument Serif', serif; font-size:16px; line-height:1;">{{ wk.showName }}</div>
+            <div style="font-family:'IBM Plex Mono', monospace; font-size:9px; letter-spacing:.04em; color:#f3a0ad; margin-top:3px; white-space:nowrap;">{{ wk.friday }}</div>
+          </div>
+          </sc-if>
+        </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex; gap:24px; margin-top:10px; font-family:'IBM Plex Mono', monospace; font-size:11px; color:#4a4540; flex-wrap:wrap;">
+      <span>Reads left to right. Every week: one poll Monday, one Short Wednesday.</span>
+      <span>Every second Friday: a show covering that cycle's two polls. Week 10's show is the finale.</span>
+    </div>
+  </section>
+
+  <section style="margin-top:32px; background:#7a0a1c; color:#f3efe6; padding:28px 32px; display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,2fr); gap:32px;">
+    <div>
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#f3a0ad;">S.M.A.R.T. Goal · Jan 4 – Mar 14, 2027</div>
+      <div style="font-family:'Instrument Serif', serif; font-size:clamp(26px,2.6vw,34px); line-height:1.15; margin-top:12px; text-wrap:pretty;">Reach 1,000 subscribers and unlock channel memberships in 10 weeks by publishing 5 long-form shows, 10 polls, and 10 result-reveal Shorts.</div>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:16px; align-content:start;">
+      <div><div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#f3a0ad;">SPECIFIC</div><div style="font-size:13px; line-height:1.5; color:#e8e2d6; margin-top:6px;">5 shows, 10 polls, 10 Shorts, 1 finale. Every poll cross-posted to IG, TikTok, X.</div></div>
+      <div><div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#f3a0ad;">MEASURABLE</div><div style="font-size:13px; line-height:1.5; color:#e8e2d6; margin-top:6px;">1,000 subs · 3% of subs voting per poll · ≥15% comment-to-vote · 60 watch hours per show.</div></div>
+      <div><div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#f3a0ad;">ACHIEVABLE</div><div style="font-size:13px; line-height:1.5; color:#e8e2d6; margin-top:6px;">+100 subs per 2-week cycle from 2 Shorts + 1 show — in range for consistent Shorts posting.</div></div>
+      <div><div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#f3a0ad;">RELEVANT</div><div style="font-size:13px; line-height:1.5; color:#e8e2d6; margin-top:6px;">1,000 subs is the gate to monetization and memberships — the channel's first recurring revenue.</div></div>
+      <div><div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#f3a0ad;">TIME-BOUND</div><div style="font-size:13px; line-height:1.5; color:#e8e2d6; margin-top:6px;">First poll Mon Jan 4. Finale show Fri Mar 12. Memberships live by Mar 14; first 10 members by Mar 28.</div></div>
+    </div>
+  </section>
+
+  <section style="margin-top:16px; display:grid; grid-template-columns:repeat(auto-fit, minmax(270px,1fr)); gap:16px;">
+
+    <div style="border:1.5px solid #161412; background:#fbf9f4; padding:18px; display:flex; flex-direction:column; gap:10px;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline; gap:8px;"><div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#c8102e;">SUBSCRIBER PATH</div><div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#4a4540;">+100 / cycle</div></div>
+      <div style="font-family:'Instrument Serif', serif; font-size:30px; line-height:1;">{{ startSubs }} → 1,000</div>
+      <svg viewBox="0 0 300 104" style="width:100%; height:auto; display:block;" aria-label="Subscriber growth toward 1,000">
+        <line x1="10" y1="12" x2="290" y2="12" stroke="#c8102e" stroke-width="1" stroke-dasharray="3 3"></line>
+        <text x="34" y="9" font-family="IBM Plex Mono" font-size="9" fill="#c8102e">GOAL 1,000</text>
+        <line x1="10" y1="96" x2="290" y2="96" stroke="#161412" stroke-width="1"></line>
+        <polyline points="{{ subsArea }}" fill="#c8102e" opacity=".12"></polyline>
+        <polyline points="{{ subsLine }}" fill="none" stroke="#161412" stroke-width="2.2" stroke-linejoin="round"></polyline>
+        <sc-for list="{{ subsPts }}" as="pt" hint-placeholder-count="6">
+          <circle cx="{{ pt.x }}" cy="{{ pt.y }}" r="3.5" fill="#fbf9f4" stroke="#161412" stroke-width="2"></circle>
+        </sc-for>
+      </svg>
+      <div style="display:grid; grid-template-columns:repeat(6,1fr); font-family:'IBM Plex Mono', monospace; font-size:10px; text-align:center; margin-top:-6px;">
+        <sc-for list="{{ subsPts }}" as="pt" hint-placeholder-count="6">
+        <div><div style="color:#161412;">{{ pt.v }}</div><div style="color:#4a4540; margin-top:2px;">{{ pt.lbl }}</div></div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="border:1.5px solid #161412; background:#fbf9f4; padding:18px; display:flex; flex-direction:column; gap:10px;">
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#c8102e;">CONTENT MIX · 26 PIECES</div>
+      <div style="display:grid; grid-template-columns:auto minmax(0,1fr); gap:16px; align-items:center;">
+        <svg viewBox="0 0 120 120" style="width:120px; height:120px;" aria-label="Content mix">
+          <sc-for list="{{ mixArcs }}" as="a" hint-placeholder-count="4">
+            <path d="{{ a.d }}" fill="{{ a.fill }}" stroke="#fbf9f4" stroke-width="2"></path>
+          </sc-for>
+          <circle cx="60" cy="60" r="30" fill="#fbf9f4"></circle>
+          <text x="60" y="57" text-anchor="middle" font-family="Instrument Serif" font-size="26" fill="#161412">26</text>
+          <text x="60" y="72" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#4a4540">10 WEEKS</text>
+        </svg>
+        <div style="display:flex; flex-direction:column; gap:7px; font-size:13px;">
+          <sc-for list="{{ mixArcs }}" as="a" hint-placeholder-count="4">
+          <div style="display:flex; align-items:center; gap:8px;"><span style="width:12px; height:12px; background:{{ a.fill }}; display:inline-block; flex:none;"></span><span style="flex:1;">{{ a.name }}</span><span style="font-family:'IBM Plex Mono', monospace; font-size:12px;">{{ a.n }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="border:1.5px solid #161412; background:#fbf9f4; padding:18px; display:flex; flex-direction:column; gap:12px;">
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#c8102e;">ENGAGEMENT TARGETS</div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+        <sc-for list="{{ gauges }}" as="g" hint-placeholder-count="3">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px; text-align:center;">
+          <div style="position:relative; width:72px; height:72px;">
+            <svg viewBox="0 0 80 80" style="width:72px; height:72px; display:block;" aria-hidden="true">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="#161412" stroke-opacity=".12" stroke-width="8"></circle>
+              <circle cx="40" cy="40" r="32" fill="none" stroke="#c8102e" stroke-width="8" stroke-dasharray="{{ g.dash }}" stroke-linecap="butt" transform="rotate(-90 40 40)"></circle>
+            </svg>
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Instrument Serif', serif; font-size:18px; color:#161412;">{{ g.v }}</div>
+          </div>
+          <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.06em; color:#4a4540; line-height:1.3;">{{ g.lbl }}</div>
+        </div>
+        </sc-for>
+      </div>
+      <div style="font-size:12px; color:#4a4540; line-height:1.45;">At 1,000 subs that's 30 votes per poll and 5 real comments. Ring = share of audience, not score.</div>
+    </div>
+
+    <div style="border:1.5px solid #161412; background:#fbf9f4; padding:18px; display:flex; flex-direction:column; gap:10px;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline; gap:8px;"><div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#c8102e;">WATCH HOURS PER SHOW</div><div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#4a4540;">target 60</div></div>
+      <div style="font-family:'Instrument Serif', serif; font-size:30px; line-height:1;">300 hrs by Mar 12</div>
+      <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px; align-items:end; height:96px; border-bottom:1px solid #161412; padding-bottom:0;">
+        <sc-for list="{{ bars }}" as="b" hint-placeholder-count="5">
+        <div style="display:flex; flex-direction:column; justify-content:flex-end; align-items:center; gap:4px; height:100%;">
+          <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; color:#161412;">{{ b.v }}</div>
+          <div style="width:100%; background:{{ b.fill }}; height:{{ b.h }};"></div>
+        </div>
+        </sc-for>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px; font-family:'IBM Plex Mono', monospace; font-size:10px; color:#4a4540; text-align:center;">
+        <span>Show 1</span><span>Show 2</span><span>Show 3</span><span>Show 4</span><span>Finale</span>
+      </div>
+      <div style="font-size:12px; color:#4a4540; line-height:1.45;">≈ 900 views × 4 min each. Finale targets 120 as the audience compounds.</div>
+    </div>
+  </section>
+
+  <section style="margin-top:16px; border:1.5px solid #161412; background:#fbf9f4;">
+    <div style="padding:18px 22px; border-bottom:1.5px solid #161412; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; background:#fff;">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <svg width="34" height="24" viewBox="0 0 28 20" aria-hidden="true"><rect width="28" height="20" rx="6" fill="#FF0000"></rect><path d="M11 5.5v9l7.5-4.5z" fill="#fff"></path></svg>
+          <span style="font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:18px; letter-spacing:-.02em; color:#161412;">YouTube</span>
+        </div>
+        <div style="width:1px; height:28px; background:#161412; opacity:.25;"></div>
+        <div>
+          <div style="font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#1f6b3a;">How we grow · How we make money · What hitting the goal means</div>
+          <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#4a4540; margin-top:3px;">Small-channel averages · US audience · 2026</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <img src="assets/lucid-cinematics-logo.avif" alt="Lucid Cinematics" style="display:block; height:36px; width:auto; border-radius:3px;">
+        <img src="assets/ninja360-lockup.png" alt="Ninja360 Digital Media" style="display:block; height:32px; width:auto;">
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr));">
+      <div style="padding:20px 22px; border-right:1.5px solid #161412; display:flex; flex-direction:column; gap:14px; background:#e8f3ec;">
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#1f6b3a;">HOW WE MAKE MONEY · YOUTUBE'S GATES</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; justify-content:space-between; gap:12px; border-bottom:1px solid #161412; padding-bottom:8px;"><span style="font-size:13px;">Partner Program (ads)</span><span style="font-family:'IBM Plex Mono', monospace; font-size:12px; text-align:right;">1,000 subs + 4,000 watch hrs<br>or 10M Shorts views / 90 days</span></div>
+          <div style="display:flex; justify-content:space-between; gap:12px; border-bottom:1px solid #161412; padding-bottom:8px;"><span style="font-size:13px;">Memberships, Super Chat, Shopping</span><span style="font-family:'IBM Plex Mono', monospace; font-size:12px; text-align:right;">500 subs + 3 uploads / 90 days<br>+ 3,000 watch hrs or 3M Shorts views</span></div>
+          <div style="display:flex; justify-content:space-between; gap:12px;"><span style="font-size:13px;">Community polls</span><span style="font-family:'IBM Plex Mono', monospace; font-size:12px; text-align:right;">Open to all channels</span></div>
+        </div>
+        <div style="font-size:12px; color:#4a4540; line-height:1.45;">Memberships unlock at 500 subs — earlier than ads. Hit the watch-hour gate and they can go live before the finale.</div>
+      </div>
+      <div style="padding:20px 22px; border-right:1.5px solid #161412; display:flex; flex-direction:column; gap:14px; background:#e8f3ec;">
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#1f6b3a;">HOW WE GROW AUDIENCE · AVERAGES UNDER 1K</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; justify-content:space-between; gap:12px; border-bottom:1px solid #161412; padding-bottom:8px;"><span style="font-size:13px;">Subs / month, consistent Shorts</span><span style="font-family:'IBM Plex Mono', monospace; font-size:12px;">50 – 300</span></div>
+          <div style="display:flex; justify-content:space-between; gap:12px; border-bottom:1px solid #161412; padding-bottom:8px;"><span style="font-size:13px;">Poll votes, % of subs</span><span style="font-family:'IBM Plex Mono', monospace; font-size:12px;">2 – 5%</span></div>
+          <div style="display:flex; justify-content:space-between; gap:12px; border-bottom:1px solid #161412; padding-bottom:8px;"><span style="font-size:13px;">Long-form avg. view duration</span><span style="font-family:'IBM Plex Mono', monospace; font-size:12px;">3 – 5 min</span></div>
+          <div style="display:flex; justify-content:space-between; gap:12px;"><span style="font-size:13px;">Subs → paid members</span><span style="font-family:'IBM Plex Mono', monospace; font-size:12px;">0.5 – 1%</span></div>
+        </div>
+        <div style="font-size:12px; color:#4a4540; line-height:1.45;">Our targets (+100 subs per 2 weeks, 3% voting, 4 min, 1%) sit mid-range — not a stretch, not a coast.</div>
+      </div>
+      <div style="padding:20px 22px; display:flex; flex-direction:column; gap:14px; background:#154d2a; color:#f3f8f4;">
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#9fd8b3;">IF WE HIT THE GOAL · MONTHLY, AT 1,000 SUBS</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; justify-content:space-between; gap:12px; border-bottom:1px solid #3a7d52; padding-bottom:8px;"><span style="font-size:13px;">Ads on 2 shows (≈1,800 views, RPM $3–8)</span><span style="font-family:'IBM Plex Mono', monospace; font-size:12px;">$5 – 15</span></div>
+          <div style="display:flex; justify-content:space-between; gap:12px; border-bottom:1px solid #3a7d52; padding-bottom:8px;"><span style="font-size:13px;">Ads on 4 Shorts (≈40k views)</span><span style="font-family:'IBM Plex Mono', monospace; font-size:12px;">$2 – 4</span></div>
+          <div style="display:flex; justify-content:space-between; gap:12px; border-bottom:1px solid #3a7d52; padding-bottom:8px;"><span style="font-size:13px;">10 members × $4.99 (70% payout)</span><span style="font-family:'IBM Plex Mono', monospace; font-size:12px;">$35</span></div>
+          <div style="display:flex; justify-content:space-between; gap:12px; border-bottom:1px solid #3a7d52; padding-bottom:8px;"><span style="font-size:13px;">1 sponsor read per month</span><span style="font-family:'IBM Plex Mono', monospace; font-size:12px;">$50 – 200</span></div>
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding-top:4px;"><span style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.1em; color:#9fd8b3;">TOTAL / MONTH</span><span style="font-family:'Instrument Serif', serif; font-size:30px; line-height:1;">$90 – 250</span></div>
+        </div>
+        <div style="font-size:12px; color:#c6e3cf; line-height:1.45;">Year one at this pace: $1,100 – 3,000. The real payoff is the unlocked gates — every sub after 1,000 earns on every piece.</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:32px; display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:16px;">
+    <div style="border-left:3px solid #c8102e; padding:4px 0 4px 16px;">
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#c8102e;">GOAL 1 · ENGAGEMENT</div>
+      <div style="font-family:'Instrument Serif', serif; font-size:24px; line-height:1.1; margin-top:6px;">Polls that start arguments</div>
+      <p style="margin:6px 0 0; font-size:13px; line-height:1.5; color:#4a4540;">Two-option Community polls, reposted as Instagram Stories, X polls, and TikTok question stickers. Target: 3% of subscribers voting per poll, comment ratio climbing each cycle.</p>
+    </div>
+    <div style="border-left:3px solid #c8102e; padding:4px 0 4px 16px;">
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#c8102e;">GOAL 2 · MEMBERSHIP</div>
+      <div style="font-family:'Instrument Serif', serif; font-size:24px; line-height:1.1; margin-top:6px;">Members vote first</div>
+      <p style="margin:6px 0 0; font-size:13px; line-height:1.5; color:#4a4540;">Unlock memberships at 1,000 subs. Members then see each poll 24 hours early and pick the next cycle's question. Each show ends on a members-only "my real answer" segment. Target: first 10 members by Mar 28.</p>
+    </div>
+    <div style="border-left:3px solid #c8102e; padding:4px 0 4px 16px;">
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#c8102e;">GOAL 3 · COMMUNITY GROWTH</div>
+      <div style="font-family:'Instrument Serif', serif; font-size:24px; line-height:1.1; margin-top:6px;">Shorts bring the strangers</div>
+      <p style="margin:6px 0 0; font-size:13px; line-height:1.5; color:#4a4540;">Result-reveal Shorts cross-posted to Reels and TikTok with one CTA: "Vote on the next one — link in bio." Best comment of the cycle gets read on air and credited. Target: +100 subs per 2-week cycle.</p>
+    </div>
+  </section>
+
+  <section style="margin-top:48px;">
+    <div style="font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#4a4540; margin-bottom:16px;">01 — The 2-week cycle · two polls, two Shorts, one show</div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); border:1.5px solid #161412; background:#161412; gap:1.5px;">
+      <div style="background:#fbf9f4; padding:20px;">
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#c8102e; letter-spacing:.1em;">WEEK A · MON</div>
+        <div style="font-family:'Instrument Serif', serif; font-size:26px; margin-top:8px; line-height:1.1;">Poll 1 goes live</div>
+        <p style="margin:8px 0 0; font-size:13px; line-height:1.5; color:#4a4540;">Two options only, no hedging. Pin a comment asking "why?" Mirror to IG Story, X, TikTok. Screenshot the split at 48h.</p>
+      </div>
+      <div style="background:#fbf9f4; padding:20px;">
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#c8102e; letter-spacing:.1em;">WEEK A · WED</div>
+        <div style="font-family:'Instrument Serif', serif; font-size:26px; margin-top:8px; line-height:1.1;">Short: reveal 1</div>
+        <p style="margin:8px 0 0; font-size:13px; line-height:1.5; color:#4a4540;">"72% of you said no. Here's the comment that almost changed my mind." Under 45s. Cross-post to Reels and TikTok.</p>
+      </div>
+      <div style="background:#fbf9f4; padding:20px;">
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#c8102e; letter-spacing:.1em;">WEEK B · MON + WED</div>
+        <div style="font-family:'Instrument Serif', serif; font-size:26px; margin-top:8px; line-height:1.1;">Poll 2 + Short 2</div>
+        <p style="margin:8px 0 0; font-size:13px; line-height:1.5; color:#4a4540;">Same rhythm, higher stakes. Short 2 ends with "both answers get argued Friday."</p>
+      </div>
+      <div style="background:#fbf9f4; padding:20px;">
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#c8102e; letter-spacing:.1em;">WEEK B · FRI · THE SHOW</div>
+        <div style="font-family:'Instrument Serif', serif; font-size:26px; margin-top:8px; line-height:1.1;">Argue both polls</div>
+        <p style="margin:8px 0 0; font-size:13px; line-height:1.5; color:#4a4540;">10–15 min long-form. Open on the numbers, read the best comments, close by asking the next cycle's first question aloud. Members-only "my real answer" outro.</p>
+      </div>
+      <div style="background:#161412; color:#f3efe6; padding:20px;">
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#f3a0ad; letter-spacing:.1em;">WEEK B · SUN · LOOP</div>
+        <div style="font-family:'Instrument Serif', serif; font-size:26px; margin-top:8px; line-height:1.1;">Tease next cycle</div>
+        <p style="margin:8px 0 0; font-size:13px; line-height:1.5; color:#c9c2b6;">Community post: "Monday's question is harder." Re-pin this cycle's results as proof people showed up.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:56px;">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap; margin-bottom:16px;">
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#4a4540;">02 — The escalation ladder · five shows, ten polls, rising stakes</div>
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#4a4540;">personal ──────────────▶ societal</div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr)); gap:16px;">
+      <sc-for list="{{ weeks }}" as="w" hint-placeholder-count="5">
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="border-top:3px solid #161412; padding-top:10px;">
+          <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#c8102e;">{{ w.label }}</div>
+          <div style="font-family:'Instrument Serif', serif; font-size:24px; line-height:1.1;">{{ w.title }}</div>
+          <div style="font-size:12px; color:#4a4540; margin-top:4px;">{{ w.note }}</div>
+        </div>
+        <sc-for list="{{ w.polls }}" as="p" hint-placeholder-count="2">
+        <div style="background:#fbf9f4; border:1.5px solid #161412; padding:16px; display:flex; flex-direction:column; gap:10px; flex:1; position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-6px; right:10px; font-family:'Instrument Serif', serif; font-size:96px; line-height:1; color:#161412; opacity:.06; pointer-events:none;">{{ p.n }}</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-family:'IBM Plex Mono', monospace; font-size:11px; color:#4a4540;">
+            <span style="display:flex; align-items:center; gap:8px;"><span style="display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:#c8102e; color:#fff; font-size:11px; font-weight:500;">{{ p.n }}</span>{{ p.cat }}</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#161412" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="{{ p.icon }}"></path></svg>
+          </div>
+          <div style="font-size:15px; line-height:1.4; font-weight:500; text-wrap:pretty;">{{ p.q }}</div>
+          <sc-if value="{{ showOptions }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; gap:6px; font-family:'IBM Plex Mono', monospace; font-size:11px;"><span style="flex:1; border:1px solid #161412; padding:5px 8px; text-align:center;">{{ p.a }}</span><span style="flex:1; border:1px solid #161412; padding:5px 8px; text-align:center;">{{ p.b }}</span></div>
+          </sc-if>
+          <sc-if value="{{ showHooks }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-top:auto; background:#161412; color:#f3efe6; padding:10px 12px; display:flex; flex-direction:column; gap:4px;">
+            <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.14em; color:#f3a0ad;">HOOK</div>
+            <div style="font-family:'Instrument Serif', serif; font-size:17px; line-height:1.25; text-wrap:pretty;">{{ p.hook }}</div>
+          </div>
+          </sc-if>
+        </div>
+        </sc-for>
+      </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="margin-top:56px; border:1.5px solid #161412; background:#fbf9f4; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr); gap:0;">
+    <div style="padding:22px; border-right:1.5px solid #161412;">
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#4a4540;">Whose lane</div>
+      <div style="display:flex; align-items:center; gap:14px; margin-top:12px; flex-wrap:wrap;">
+        <img src="assets/lucid-cinematics-logo.avif" alt="Lucid Cinematics" style="display:block; height:64px; width:auto; border-radius:4px;">
+        <img src="assets/ninja360-lockup.png" alt="Ninja360 Digital Media" style="display:block; height:56px; width:auto;">
+      </div>
+      <div style="font-family:'Instrument Serif', serif; font-size:30px; line-height:1.1; margin-top:10px;">Gabe · Lucid Cinematics × Ninja-360</div>
+      <p style="margin:10px 0 0; font-size:14px; line-height:1.55; color:#4a4540; text-wrap:pretty;">Simple content management. Every poll, Short, show, and tease is pre-loaded into the GHL Social Media Calendar on the Generationally Incorrect sub-account and auto-pushed to each platform on schedule.</p>
+    </div>
+    <div style="padding:22px; display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:18px; align-content:start;">
+      <div><div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#c8102e;">TALENT</div><div style="font-size:13px; line-height:1.5; margin-top:6px;">Records the show and Shorts. Replies to comments in the first hour.</div></div>
+      <div><div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#c8102e;">GABE · LUCID CINEMATICS</div><div style="font-size:13px; line-height:1.5; margin-top:6px;">Edits the show and Shorts, loads the 10-week calendar in GHL, cross-posts, and reports the numbers each cycle.</div></div>
+      <div><div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#c8102e;">TOOL</div><div style="font-size:13px; line-height:1.5; margin-top:6px;">GHL Social Planner — YouTube, Instagram, TikTok, X, Facebook connected to one sub-account.</div></div>
+      <div><div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; color:#c8102e;">HANDOFF</div><div style="font-size:13px; line-height:1.5; margin-top:6px;">Show file due Thursday noon of Week B. Everything else is pre-scheduled before Jan 4.</div></div>
+    </div>
+  </section>
+
+  <section style="margin-top:16px; display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px;">
+    <div style="border:1.5px solid #161412; padding:22px; background:#fbf9f4;">
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#4a4540;">03 — Poll rules</div>
+      <ul style="margin:12px 0 0; padding-left:18px; font-size:14px; line-height:1.6; color:#161412;">
+        <li>Two options. A third option kills the fight.</li>
+        <li>Never add "it depends." That's the comment section's job.</li>
+        <li>Polls post Monday 7am local; shows publish Friday 5pm.</li>
+        <li>Reply to the first 20 comments within the hour.</li>
+        <li>Never reveal your own answer until the Friday video.</li>
+      </ul>
+    </div>
+    <div style="border:1.5px solid #161412; padding:22px; background:#fbf9f4;">
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#4a4540;">04 — What to measure</div>
+      <ul style="margin:12px 0 0; padding-left:18px; font-size:14px; line-height:1.6; color:#161412;">
+        <li>Engagement: % of subs voting (target 3%); comment-to-vote ratio (≥15%).</li>
+        <li>Growth: subs gained per cycle (target +100); Reels/TikTok → YouTube click-through.</li>
+        <li>Watch time: hours per show (target 60); on pace for 4,000/yr.</li>
+        <li>Membership: date unlocked; members by Mar 28 (target 10).</li>
+        <li>Cycle-over-cycle vote count; the ladder should climb.</li>
+      </ul>
+    </div>
+    <div style="border:1.5px solid #161412; padding:22px; background:#161412; color:#f3efe6;">
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#f3a0ad;">05 — Finale · Fri Mar 12</div>
+      <div style="font-family:'Instrument Serif', serif; font-size:28px; line-height:1.1; margin-top:12px;">"You voted. Here's the line you drew."</div>
+      <p style="margin:12px 0 0; font-size:14px; line-height:1.55; color:#c9c2b6;">Show 5 doubles as the finale: rank all ten results from most-trusted to least-trusted AI, then re-run poll 01 and poll 10 to see if ten weeks changed anyone's mind. Announce memberships live.</p>
+    </div>
+  </section>
+
+  <footer style="margin-top:56px; border-top:2px solid #161412; padding-top:24px; display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap;">
+    <img src="assets/ninja360-call-banner.png" alt="Call 844-360-NINJA — We put you on the M.A.P." style="display:block; height:72px; width:auto; max-width:100%;">
+    <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#4a4540; text-align:right;">Prepared by Ninja-360 Digital Media × Lucid Cinematics<br>for Generationally Incorrect · 2027</div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startSubs&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:500,&quot;tsType&quot;:&quot;number&quot;,&quot;min&quot;:0,&quot;max&quot;:1000,&quot;step&quot;:10,&quot;section&quot;:&quot;Goals&quot;},&quot;showOptions&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Poll cards&quot;},&quot;showHooks&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Poll cards&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const showOptions = this.props.showOptions ?? true;
+    const showHooks = this.props.showHooks ?? true;
+    const weeks = [
+      { label:'SHOW 1 · JAN 4–15', title:'Everyday AI', note:'Low stakes. Easy to answer, easy to share.', polls:[
+        { num:'POLL 01', cat:'Technology', q:'Would you trust AI to cook or bake for you?', a:'Sure, why not', b:'Never', hook:'"It followed the recipe perfectly. It just couldn\'t taste it."' },
+        { num:'POLL 02', cat:'Technology', q:'Would you let your kids ride in a driverless car?', a:'Yes', b:'Not a chance', hook:'"You already trust a stranger with an Uber sticker."' } ]},
+      { label:'SHOW 2 · JAN 18–29', title:'Your name on it', note:'Authorship and honesty. Everyone has a confession.', polls:[
+        { num:'POLL 03', cat:'Technology', q:'Is it ever okay to let AI write something you sign your name to?', a:'Yes, sometimes', b:'Never', hook:'"Your boss already did. Last Tuesday."' },
+        { num:'POLL 04', cat:'Education', q:'Is using AI for homework any different from paying someone to write it?', a:"It's different", b:'Same thing', hook:'"One costs $40. The other costs nothing. Which is worse?"' } ]},
+      { label:'SHOW 3 · FEB 1–12', title:'Trust the machine?', note:'From trivial trust to trust that hurts.', polls:[
+        { num:'POLL 05', cat:'Technology', q:'How much can we trust the AI summary at the top of every search?', a:'Mostly', b:'I skip it', hook:'"I asked it something I already knew. It was confidently wrong."' },
+        { num:'POLL 06', cat:'Healthcare', q:"Should AI replace a therapist or doctor for people who can't afford one?", a:'Better than nothing', b:'Too risky', hook:'"The waitlist is six months. The chatbot is right now."' } ]},
+      { label:'SHOW 4 · FEB 15–26', title:'Who owns the image?', note:'Culture and consent. The comment section gets personal.', polls:[
+        { num:'POLL 07', cat:'Culture & Identity', q:'Should AI-generated art be allowed to compete against human artists?', a:'Let it compete', b:'Separate category', hook:'"It won first place. Nobody painted it."' },
+        { num:'POLL 08', cat:'Free Speech', q:'Should AI be allowed to generate images of real people without their permission?', a:'Parody is fine', b:'Never', hook:'"There\'s a photo of you at a protest you never attended."' } ]},
+      { label:'SHOW 5 · MAR 1–12', title:'Life and death', note:'Highest stakes last. This is the finale setup.', polls:[
+        { num:'POLL 09', cat:'Work & Leadership', q:'Should AI decide who gets a job interview, a loan, or a medical treatment?', a:'If it\'s fairer', b:'Humans only', hook:'"The algorithm rejected you in 0.3 seconds. No one can tell you why."' },
+        { num:'POLL 10', cat:'Government & Politics', q:'Should AI help police or the military make life-and-death decisions?', a:'Help, not decide', b:'Absolutely not', hook:'"Faster than a human. Is that the point, or the problem?"' } ]},
+    ];
+    const icons = {
+      'Technology':'M4 6h16v10H4z M8 20h8 M12 16v4',
+      'Education':'M3 9l9-5 9 5-9 5-9-5z M7 11v5c0 1.5 2.5 3 5 3s5-1.5 5-3v-5 M21 9v6',
+      'Healthcare':'M12 21s-8-5-8-11a4 4 0 0 1 8-1 4 4 0 0 1 8 1c0 6-8 11-8 11z M9 11h2l1-2 1 4 1-2h1',
+      'Culture & Identity':'M3 14a9 9 0 1 1 18 0 3 3 0 0 1-3 3h-3a2 2 0 0 0-1 4 M7 12h.01 M11 9h.01 M15 10h.01',
+      'Free Speech':'M4 5h16v10H9l-5 4z M8 9h8 M8 12h5',
+      'Work & Leadership':'M4 8h16v12H4z M9 8V5h6v3 M4 13h16',
+      'Government & Politics':'M3 21h18 M5 21V10 M19 21V10 M3 10l9-6 9 6z M9 21v-7 M15 21v-7',
+    };
+    weeks.forEach(w => w.polls.forEach(p => { p.n = p.num.replace('POLL ',''); p.icon = icons[p.cat] || icons.Technology; }));
+    const mon = ['Jan','Feb','Mar'];
+    const calendar = [];
+    for (let i = 0; i < 10; i++) {
+      const start = new Date(2027, 0, 4 + i * 7);
+      const fri = new Date(start); fri.setDate(start.getDate() + 4);
+      const isShow = i % 2 === 1;
+      calendar.push({ n: i + 1, monday: `${mon[start.getMonth()]} ${start.getDate()}`, poll: String(i + 1).padStart(2,'0'), isShow,
+        showName: i === 9 ? 'Finale' : `Show ${(i + 1) / 2}`, friday: `${mon[fri.getMonth()]} ${fri.getDate()}`,
+        headBg: Math.floor(i / 2) % 2 ? '#f3efe6' : '#fbf9f4' });
+    }
+    const start = Number(this.props.startSubs ?? 500);
+    const goal = 1000, step = (goal - start) / 5;
+    const subsPts = [];
+    for (let i = 0; i <= 5; i++) {
+      const v = Math.round(start + step * i);
+      const x = 25 + i * 50, y = 96 - (v / goal) * 84;
+      subsPts.push({ x, y, v: v.toLocaleString(), lbl: i === 0 ? 'Jan 4' : `C${i}`, ly: y - 9 });
+    }
+    const subsLine = subsPts.map(p => `${p.x},${p.y}`).join(' ');
+    const subsArea = `25,96 ${subsLine} 275,96`;
+    const mix = [{ name:'Polls', n:10, fill:'#c8102e' }, { name:'Shorts', n:10, fill:'#161412' }, { name:'Long-form shows', n:5, fill:'#7a0a1c' }, { name:'Finale', n:1, fill:'#f3a0ad' }];
+    let ang = -Math.PI / 2; const total = 26;
+    const mixArcs = mix.map(m => {
+      const a0 = ang, a1 = ang + (m.n / total) * Math.PI * 2; ang = a1;
+      const x0 = 60 + 56 * Math.cos(a0), y0 = 60 + 56 * Math.sin(a0), x1 = 60 + 56 * Math.cos(a1), y1 = 60 + 56 * Math.sin(a1);
+      return { ...m, d: `M60,60 L${x0.toFixed(2)},${y0.toFixed(2)} A56,56 0 ${a1 - a0 > Math.PI ? 1 : 0},1 ${x1.toFixed(2)},${y1.toFixed(2)} Z` };
+    });
+    const circ = 2 * Math.PI * 32;
+    const gauges = [
+      { v:'3%', pct:3, lbl:'OF SUBS VOTE PER POLL' },
+      { v:'15%', pct:15, lbl:'COMMENT-TO-VOTE RATIO' },
+      { v:'1%', pct:1, lbl:'SUBS → MEMBERS' },
+    ].map(g => ({ ...g, dash: `${(circ * Math.max(g.pct, 2) / 100).toFixed(1)} ${circ.toFixed(1)}` }));
+    const bars = [45, 55, 60, 65, 120].map(v => ({ v, h: `${Math.round((v / 120) * 80)}%`, fill: v >= 60 ? '#c8102e' : '#161412' }));
+    return { weeks, showOptions, showHooks, calendar, startSubs: start.toLocaleString(), subsPts, subsLine, subsArea, mixArcs, gauges, bars };
+  }
+}
+</script>
+</body>
+</html>
