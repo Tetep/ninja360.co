@@ -178,40 +178,6 @@ small,.small{font-size:.8rem}
 .know-band h2{margin-bottom:12px}
 .know-band p{margin-bottom:0;max-width:640px}
 
-/* ---------- listen & watch ticker (footer) ---------- */
-.ticker-band{padding:30px 0 10px}
-.ticker-head{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-.listen-ticker{overflow:hidden;width:100%;padding-top:44px;margin-top:-44px}
-.listen-ticker-track{display:flex;gap:28px;width:max-content;animation:gi-ticker 40s linear infinite}
-.listen-ticker:hover .listen-ticker-track{animation-play-state:paused}
-@keyframes gi-ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.ticker-tile{
-  position:relative;display:flex;align-items:center;gap:10px;flex:0 0 auto;padding:12px 20px;
-  background:var(--gi-card);border:2px solid var(--gi-ink);box-shadow:2px 2px 0 rgba(24,23,21,.22);
-  color:var(--gi-ink);text-decoration:none;cursor:pointer;
-}
-.ticker-tile i{font-size:19px}
-.ticker-tile span{font-family:var(--gi-font-display);text-transform:uppercase;letter-spacing:.5px;font-size:13px;white-space:nowrap}
-a.ticker-tile:hover{color:var(--gi-red)}
-.ticker-tile::after{
-  content:attr(data-tooltip);position:absolute;bottom:calc(100% + 9px);left:50%;
-  transform:translateX(-50%) translateY(4px);background:var(--gi-ink);color:var(--gi-panel);
-  font-family:var(--gi-font-type);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
-  padding:6px 11px;border-radius:4px;white-space:nowrap;opacity:0;pointer-events:none;
-  transition:opacity 150ms ease,transform 150ms ease;z-index:5;
-}
-.ticker-tile::before{
-  content:'';position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
-  border:5px solid transparent;border-top-color:var(--gi-ink);opacity:0;pointer-events:none;
-  transition:opacity 150ms ease;
-}
-.ticker-tile:hover::after,.ticker-tile:hover::before,
-.ticker-tile:focus-visible::after,.ticker-tile:focus-visible::before,
-.ticker-tile.is-tooltip-open::after,.ticker-tile.is-tooltip-open::before{
-  opacity:1;transform:translateX(-50%) translateY(0);
-}
-@media(prefers-reduced-motion:reduce){.listen-ticker-track{animation:none}}
-
 /* ---------- CTA band (ink) ---------- */
 .cta-band{background:var(--gi-ink);color:var(--gi-paper);text-align:center}
 .cta-band h2{color:var(--gi-panel);border-left:none;padding-left:0;display:inline-block}
@@ -272,24 +238,7 @@ footer.footer-v2 .tag{font-family:var(--gi-font-body);font-size:13px;color:#f3e2
 
 /* ---------- signup form ---------- */
 .signup-panel{border:2px solid var(--gi-ink);outline:1px solid var(--gi-ink);outline-offset:3px;background:var(--gi-paper-lift);padding:30px 28px;max-width:560px;margin:24px auto 0}
-
-/* Be-on-the-Show: give the form as much of the viewport as possible, no
-   outer page scroll -- the Google Form iframe gets its own internal
-   scrollbar if its content runs taller than the space it's given. */
-.bots-page{height:100vh;height:100dvh;display:flex;flex-direction:column}
-.bots-page .masthead,.bots-page .cta-band{flex:0 0 auto}
-.bots-page .cta-band{padding:14px 0}
-.bots-page .cta-band h2{margin:0;font-size:1.3rem}
-.bots-page .form-section{flex:1 1 auto;min-height:0;padding:10px 0;display:flex}
-.bots-page .form-section .wrap{display:flex;flex-direction:column;width:100%;max-width:1100px}
-.bots-page .promo-link-row{flex:0 0 auto;margin:0 0 8px;text-align:center}
-.bots-page .signup-panel{flex:1 1 auto;min-height:0;width:100%;max-width:none;margin:0;padding:14px;display:flex}
-.bots-page .signup-panel iframe{flex:1 1 auto;width:100%;height:100%}
-.bots-page .questions-line{flex:0 0 auto;margin:8px 0 0;text-align:center}
-@media(max-width:640px){
-  .bots-page .cta-band{padding:10px 0}
-  .bots-page .cta-band h2{font-size:1.1rem}
-}
+.signup-panel .lead{font-weight:600;margin-bottom:16px}
 .gi-form{display:flex;flex-direction:column;gap:14px;text-align:left}
 .gi-form label{font-family:var(--gi-font-type);font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--gi-ink);display:block;margin-bottom:5px}
 .gi-form input,.gi-form select{width:100%;background:#faf4e6;border:1.5px solid var(--gi-ink);border-radius:2px;color:var(--gi-ink);font-family:var(--gi-font-body);font-size:15px;padding:11px 13px;transition:border-color 150ms ease,box-shadow 150ms ease}
@@ -313,6 +262,14 @@ footer.footer-v2 .tag{font-family:var(--gi-font-body);font-size:13px;color:#f3e2
 .video-frame iframe,.video-frame video{width:100%;height:100%;border:0;display:block}
 .promo-embed{aspect-ratio:16/9;width:100%;background:var(--gi-paper-dim)}
 .promo-embed iframe{width:100%;height:100%;border:0;display:block}
+
+/* home hero video -- as full-screen as the viewport allows: scales up to
+   fill most of the visible height (capped so it never forces page scroll
+   on short viewports), while width:100% + the aspect-ratio keep it from
+   ever outgrowing its column. */
+#trailer{padding:28px 0 40px}
+#trailer .wrap{max-width:1500px}
+#trailer .promo-embed{max-width:min(1400px,calc(82vh * 16 / 9));margin:0 auto}
 
 /* ---------- promo pop-up modal ---------- */
 .promo-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
