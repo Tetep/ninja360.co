@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Rate the Topics — Generationally Incorrect</title>
+<meta name="description" content="Tell us who you are, then rate how into (or not into) our topics you are.">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@500;600;700&family=Permanent+Marker&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: hub of category tiles — one category page = a quick-fire run of topic cards with a gauge — wrap-up that saves to the sheet. Single committed brand look. */
+:root{--paper:#D9CFBA;--card:#C6B49C;--ink:#181715;--rust:#963719;--muted:#5E574B;--cream:#F5EFE2;--ok:#3E6B3A;
+--h1:#A9A08F;--h2:#C29A6B;--h3:#C27A45;--h4:#A84E26;--h5:#963719;
+--display:Anton,Impact,'Arial Narrow',sans-serif;--body:Montserrat,system-ui,sans-serif;--hand:'Permanent Marker','Comic Sans MS',cursive;--mono:'IBM Plex Mono',ui-monospace,monospace;color-scheme:light}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
+.app{max-width:900px;margin:0 auto;padding-block:18px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{display:flex;align-items:center;gap:14px;border-bottom:6px double var(--ink);padding-bottom:12px}
+header img{width:104px;height:auto;flex:none}
+header .ht{min-width:0;flex:1}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0}
+header h1{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(26px,5.4vw,46px);line-height:1;margin:.1em 0 0}
+.homebtn{background:none;border:2px solid var(--ink);border-radius:8px;min-height:40px;padding:0 .8em;font:600 13px var(--body);cursor:pointer;color:var(--ink);white-space:nowrap}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--rust);outline-offset:3px}
+.view[hidden]{display:none!important}
+.view{padding-top:18px;display:flex;flex-direction:column;gap:16px}
+.kick{font-family:var(--hand);color:var(--rust);font-size:clamp(17px,3.4vw,22px);margin:0}
+.lead{margin:0;max-width:60ch;font-weight:500}
+.small{font-size:13px;color:var(--muted);margin:0}
+
+/* hub */
+.who{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;background:var(--card);border:3px solid var(--ink);border-radius:12px;padding:14px}
+.who label{display:flex;flex-direction:column;gap:4px;font:700 12px var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.who input,.who select{min-height:44px;border:2px solid var(--ink);border-radius:8px;background:var(--cream);font:600 16px var(--body);padding:0 10px;color:var(--ink)}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.cat{position:relative;text-align:left;min-height:118px;border:3px solid var(--ink);border-radius:12px;background:var(--cream);padding:14px 14px 12px;cursor:pointer;box-shadow:0 6px 0 var(--ink);display:flex;flex-direction:column;gap:6px;color:var(--ink);transition:transform .08s}
+.cat:active{transform:translateY(5px);box-shadow:0 1px 0 var(--ink)}
+.cat .cn{font-family:var(--display);font-size:26px;line-height:1;text-transform:uppercase}
+.cat .cd{font-size:13px;color:var(--muted);font-weight:500}
+.cat .cc{margin-top:auto;font-family:var(--mono);font-size:12px;letter-spacing:.08em}
+.cat.done{background:var(--ink);color:var(--cream)}.cat.done .cd{color:var(--card)}
+.cat.done::after{content:"RATED";position:absolute;top:10px;right:10px;font-family:var(--display);font-size:13px;letter-spacing:.08em;background:var(--rust);color:var(--cream);padding:.15em .5em;transform:rotate(6deg)}
+
+/* generation step */
+.genh{font-family:var(--display);font-weight:400;font-size:clamp(34px,8vw,64px);line-height:1;text-transform:uppercase;margin:0}
+.poster{width:100%;max-width:100%;height:auto;display:block;border:5px double var(--ink);border-radius:6px}
+.genform{display:flex;flex-direction:column;gap:12px}
+.genform fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.radios{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.radio{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;align-items:center;border:3px solid var(--ink);border-radius:12px;background:var(--cream);padding:12px 14px;cursor:pointer;min-height:64px}
+.radio input{width:22px;height:22px;accent-color:var(--rust);grid-row:1 / 3;margin:0}
+.radio .gn{font-family:var(--display);font-size:22px;line-height:1;text-transform:uppercase}
+.radio .gd{font-size:13px;color:var(--muted);font-weight:500;grid-column:2}
+.radio:has(input:checked){background:var(--ink);color:var(--cream)}
+.radio:has(input:checked) .gd{color:var(--card)}
+.radio:has(input:focus-visible){outline:3px solid var(--rust);outline-offset:3px}
+.who{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;background:var(--card);border:3px solid var(--ink);border-radius:12px;padding:10px 14px;font-weight:600}
+/* run */
+.runhead{display:flex;justify-content:space-between;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--muted)}
+.runhead button{background:none;border:0;font:inherit;color:var(--muted);text-decoration:underline;cursor:pointer;min-height:36px}
+.dots{display:flex;gap:4px;flex-wrap:wrap}
+.dots i{width:14px;height:8px;border-radius:4px;background:var(--cream);border:1.5px solid var(--ink)}
+.dots i.d{background:var(--rust)}.dots i.n{background:var(--ink)}
+.tcard{background:var(--cream);border:3px solid var(--ink);border-radius:16px;box-shadow:0 8px 0 var(--ink);padding:18px 18px 20px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.tcard .lbl{font-family:var(--display);font-size:16px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;text-align:center}
+.tcard .qq{font-family:var(--display);font-weight:400;font-size:clamp(26px,5.6vw,46px);line-height:1.02;text-transform:uppercase;text-align:center;margin:0;text-wrap:balance}
+.tcard .art{aspect-ratio:16/9;max-width:100%;border:4px double var(--ink);overflow:hidden;background:var(--ink)}
+.tcard .art img{width:100%;height:100%;object-fit:cover;display:block}
+.gwrap{position:relative;max-width:440px;width:100%;margin:0 auto}
+.gauge{width:100%;height:auto;display:block;overflow:visible}
+.needle{transform-origin:200px 200px;transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+.pegged .needle{animation:shake .3s .45s 3}
+@keyframes shake{0%,100%{transform:rotate(97deg)}50%{transform:rotate(93deg)}}
+.readout{display:flex;justify-content:center;align-items:baseline;gap:12px;min-height:46px}
+.readout .n{font-family:var(--mono);font-weight:600;font-size:38px;line-height:1}
+.readout .w{font-family:var(--display);font-size:30px;color:var(--rust);text-transform:uppercase}
+.readout.idle .n,.readout.idle .w{color:var(--muted);font-size:20px;font-family:var(--mono)}
+.stamp{position:absolute;right:4%;top:44%;transform:rotate(12deg);border:5px double var(--rust);color:var(--rust);font-family:var(--display);font-size:clamp(18px,3.6vw,30px);line-height:.95;padding:6px 12px;text-align:center;background:rgba(245,239,226,.75);opacity:0;transition:opacity .2s;pointer-events:none}
+.stamp.on{opacity:1}
+.heats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.heat{min-height:60px;border:3px solid var(--ink);border-radius:10px;cursor:pointer;font:700 13px var(--body);line-height:1.1;color:var(--ink);box-shadow:0 5px 0 var(--ink);padding:4px;transition:transform .08s}
+.heat:active,.heat.picked{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.heat[data-v="0"]{background:var(--h1)}.heat[data-v="1"]{background:var(--h2)}.heat[data-v="2"]{background:var(--h3)}
+.heat[data-v="3"]{background:var(--h4);color:var(--cream)}.heat[data-v="4"]{background:var(--h5);color:var(--cream)}
+.heat small{display:block;font-family:var(--mono);font-weight:500;font-size:11px;opacity:.85}
+
+/* wrap-up */
+.hottest{background:var(--ink);color:var(--cream);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:4px}
+.hottest .l{font-family:var(--hand);color:#e39a7b;font-size:17px}
+.hottest .t{font-family:var(--display);font-size:clamp(22px,4.6vw,34px);line-height:1.05;text-transform:uppercase}
+.list{display:flex;flex-direction:column;border-top:4px double var(--ink)}
+.r{display:grid;grid-template-columns:minmax(0,1fr) minmax(80px,30%) 96px;gap:10px;align-items:center;padding:9px 2px;border-bottom:1px solid rgba(24,23,21,.25)}
+.r .t{font-weight:600;font-size:14px;min-width:0}
+.bar{height:12px;border:2px solid var(--ink);border-radius:8px;background:var(--cream);overflow:hidden}
+.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--h1),var(--h3) 55%,var(--h5))}
+.r .v{font-family:var(--mono);font-size:12px;text-align:right;text-transform:uppercase}
+.save{border:3px solid var(--ink);border-radius:12px;padding:12px 14px;background:var(--card);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.save .st{font-weight:700;min-width:0;flex:1 1 240px}
+.save.ok{background:#DCE6D3;border-color:var(--ok)}.save.ok .st{color:var(--ok)}
+.btn{min-height:48px;border:3px solid var(--ink);border-radius:10px;background:var(--cream);color:var(--ink);font:700 15px var(--body);padding:0 1.1em;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.btn.primary{background:var(--rust);color:var(--cream);font-family:var(--display);font-weight:400;font-size:20px;letter-spacing:.03em}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+textarea.copy{width:100%;min-height:90px;font:12px var(--mono);border:2px solid var(--ink);border-radius:8px;background:var(--cream);padding:8px}
+@media (max-width:560px){
+  header img{width:78px}
+  .who{grid-template-columns:minmax(0,1fr)}
+  .heat{font-size:11px;min-height:58px}
+  .r{grid-template-columns:minmax(0,1fr) 86px}.r .bar{grid-column:1 / 3;grid-row:2}
+  header{flex-wrap:wrap}
+  .homebtn{order:3;width:100%}
+}
+@media (prefers-reduced-motion:reduce){.needle{transition:none}.pegged .needle{animation:none}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <img src="../assets/logo-v3b-transparent.png" alt="Generationally Incorrect podcast logo" width="104" height="79">
+    <div class="ht">
+      <p class="eyebrow">Generationally Incorrect · test run</p>
+      <h1>Topic Interest Gauge</h1>
+    </div>
+    <button class="homebtn" id="homeBtn" type="button" hidden>All categories</button>
+  </header>
+
+  <!-- STEP 1: GENERATION -->
+  <section class="view" id="v-gen" hidden>
+    <h2 class="genh">Welcome to Generationally Incorrect</h2>
+    <p class="lead">This is where we gauge interest, and non-interest, in our topics. Take a moment, tell us who you are, and if you're interested, let's go.</p>
+    <p class="kick">Step 1: What's your generation?</p>
+    <img class="poster" src="../assets/topics/poster.jpg" alt="Generationally Incorrect poster showing Gen Z, Millennial, Gen X and Boomer" width="900" height="750">
+    <form id="genForm" class="genform">
+      <fieldset>
+        <legend class="small">Pick the one you were born into.</legend>
+        <div class="radios" id="radios"></div>
+      </fieldset>
+      <p class="small" id="genErr" role="alert"></p>
+      <button class="btn primary" type="submit">Start rating topics</button>
+    </form>
+  </section>
+
+  <!-- HUB -->
+  <section class="view" id="v-hub" hidden>
+    <p class="kick">Pick a category. Rate it fast. Go with your gut.</p>
+    <p class="lead">Step 2. Each category is 10 to 12 topics. Tap how hot each one is for you. A category takes about a minute, and your answers save when you finish it.</p>
+    <div class="who"><span>Rating as <b id="genNow"></b></span><button class="homebtn" type="button" id="changeGen">Change generation</button></div>
+    <div class="cats" id="cats"></div>
+  </section>
+
+  <!-- RUN -->
+  <section class="view" id="v-run" hidden>
+    <div class="runhead"><span id="runCount"></span><div class="dots" id="dots" aria-hidden="true"></div><button type="button" id="skipBtn">Skip</button></div>
+    <article class="tcard" aria-live="polite">
+      <div class="lbl" id="runCat"></div>
+      <div class="art" id="art" hidden></div>
+      <p class="qq" id="qq"></p>
+      <div class="gwrap">
+        <svg class="gauge" id="gauge" viewBox="0 0 400 236" aria-hidden="true"></svg>
+        <div class="stamp" id="stamp">NEEDLE<br>PEGGED</div>
+      </div>
+      <div class="readout idle" id="readout"><span class="n" id="rn">Tap your heat</span><span class="w" id="rw"></span></div>
+      <div class="heats" id="heats"></div>
+    </article>
+  </section>
+
+  <!-- WRAP-UP -->
+  <section class="view" id="v-done" hidden>
+    <p class="kick" id="doneKick"></p>
+    <div class="hottest"><span class="l">Hottest in this category</span><span class="t" id="hot"></span></div>
+    <div class="save" id="save"><span class="st" id="saveSt">Saving to the test spreadsheet…</span><button class="btn" type="button" id="retryBtn" hidden>Try saving again</button></div>
+    <div id="copyBox" hidden>
+      <p class="small">Copy these rows and paste them into the test spreadsheet.</p>
+      <textarea class="copy" id="copyTxt" readonly aria-label="Rows to paste into the spreadsheet"></textarea>
+      <div class="actions"><button class="btn" type="button" id="copyBtn">Copy rows</button></div>
+    </div>
+    <div class="list" id="list"></div>
+    <div class="actions">
+      <button class="btn primary" type="button" id="nextCat">Next category</button>
+      <button class="btn" type="button" id="toHub">All categories</button>
+    </div>
+  </section>
+</div>
+
+
+<script>
+(function(){
+  var IMG={"cubicle": "../assets/topics/work-cubicle.jpg", "jobhop": "../assets/topics/work-jobhop.jpg", "rules": "../assets/topics/work-rules.jpg"};
+  var CATS=[{"id": "work", "name": "Work", "blurb": "Loyalty, burnout, remote vs. office", "topics": [{"id": "work/is-work-life-balance-a-myth-or-just-gene", "q": "Is \"work-life balance\" a myth, or just generational nonsense?"}, {"id": "work/cubicle-9-00-am-vs-remote-flex-hours-has", "q": "Cubicle & 9:00 AM vs. remote & flex hours: has remote work changed what balance should look like?", "img": "cubicle"}, {"id": "work/should-loyalty-to-an-employer-still-matt", "q": "Should loyalty to an employer still matter?"}, {"id": "work/job-hopping-every-2-years-strategic-disl", "q": "Job hopping every 2 years: strategic, disloyal, or simply realistic?", "img": "jobhop"}, {"id": "work/what-does-an-employer-owe-employees-in-r", "q": "What does an employer owe employees in return for loyalty?"}, {"id": "work/do-younger-generations-expect-too-much-f", "q": "Do younger generations expect too much from work, or did older generations accept too little?"}, {"id": "work/which-unwritten-rule-of-work-should-neve", "q": "Which unwritten rule of work should never be a thing again?", "img": "rules"}, {"id": "work/what-skills-are-becoming-obsolete-and-wh", "q": "What skills are becoming obsolete, and which timeless skills still matter?"}, {"id": "work/is-hustle-culture-inspiring-or-harmful", "q": "Is hustle culture inspiring or harmful?"}, {"id": "work/when-does-ambition-become-burnout", "q": "When does ambition become burnout?"}, {"id": "work/can-success-be-achieved-without-constant", "q": "Can success be achieved without constant sacrifice?"}]}, {"id": "tech-ai", "name": "Tech & AI", "blurb": "Phones, algorithms, and the robots", "topics": [{"id": "tech-ai/has-technology-made-us-more-connected-or", "q": "Has technology made us more connected or more isolated?"}, {"id": "tech-ai/are-in-person-relationships-more-valuabl", "q": "Are in-person relationships more valuable now because they are less common?"}, {"id": "tech-ai/are-younger-generations-better-at-adapti", "q": "Are younger generations better at adapting, or just more dependent on tech?"}, {"id": "tech-ai/what-skills-might-be-lost-when-technolog", "q": "What skills might be lost when technology does more for us?"}, {"id": "tech-ai/what-should-the-other-generations-know-a", "q": "What should the other generations know about social media?"}, {"id": "tech-ai/echo-chamber-what-does-your-algorithm-fe", "q": "Echo chamber: what does your algorithm feed you that you think is common knowledge?"}, {"id": "tech-ai/should-ai-be-feared-embraced-or-regulate", "q": "Should AI be feared, embraced, or regulated more aggressively?"}, {"id": "tech-ai/will-a-i-turn-against-us", "q": "Will A.I. turn against us?"}, {"id": "tech-ai/who-should-be-responsible-for-setting-et", "q": "Who should be responsible for setting ethical boundaries around AI?"}, {"id": "tech-ai/can-technology-replace-judgment-empathy-", "q": "Can technology replace judgment, empathy, or wisdom?"}, {"id": "tech-ai/gen-z-wants-millennials-to-stop-using-lo", "q": "Gen Z wants Millennials to stop using LOL"}]}, {"id": "success-money", "name": "Success & Money", "blurb": "Houses, college, and who had it easier", "topics": [{"id": "success-money/is-the-traditional-definition-of-success", "q": "Is the traditional definition of success outdated?"}, {"id": "success-money/did-previous-generations-have-it-easier-", "q": "Did previous generations have it easier financially, or is that an oversimplification?"}, {"id": "success-money/should-people-prioritize-passion-stabili", "q": "Should people prioritize passion, stability, or income?"}, {"id": "success-money/is-follow-your-passion-good-advice-for-e", "q": "Is \"follow your passion\" good advice for everyone?"}, {"id": "success-money/is-homeownership-still-a-realistic-goal-", "q": "Is homeownership still a realistic goal, or an outdated status symbol?"}, {"id": "success-money/should-renting-carry-less-stigma", "q": "Should renting carry less stigma?"}, {"id": "success-money/how-has-the-meaning-of-financial-securit", "q": "How has the meaning of financial security changed?"}, {"id": "success-money/is-a-college-education-worth-the-cost-of", "q": "Is a college education worth the cost of tuition?"}, {"id": "success-money/what-signs-of-success-should-we-stop-val", "q": "What signs of success should we stop valuing so much?"}, {"id": "success-money/taxation", "q": "Taxation"}]}, {"id": "culture-identity", "name": "Culture & Identity", "blurb": "Respect, traditions, and the third rail", "topics": [{"id": "culture-identity/are-younger-generations-too-sensitive-or", "q": "Are younger generations too sensitive, or are older generations too dismissive?"}, {"id": "culture-identity/when-does-directness-become-disrespect", "q": "When does directness become disrespect?"}, {"id": "culture-identity/should-respect-be-earned-given-automatic", "q": "Should respect be earned, given automatically, or both?"}, {"id": "culture-identity/what-traditions-should-be-preserved-and-", "q": "What traditions should be preserved, and which should be retired?"}, {"id": "culture-identity/is-cancel-culture-accountability-or-over", "q": "Is cancel culture accountability, or overcorrection?"}, {"id": "culture-identity/can-people-grow-after-making-public-mist", "q": "Can people grow after making public mistakes?"}, {"id": "culture-identity/how-big-of-a-problem-is-racism", "q": "How big of a problem is racism?"}, {"id": "culture-identity/how-big-of-a-problem-is-misogyny", "q": "How big of a problem is misogyny?"}, {"id": "culture-identity/transgender-children", "q": "Transgender children"}, {"id": "culture-identity/what-is-one-belief-your-generation-holds", "q": "What is one belief your generation holds strongly that other generations misunderstand?"}, {"id": "culture-identity/why-isn-t-our-society-more-focused-on-wi", "q": "Why isn't our society more focused on win/win relationships?"}]}, {"id": "leadership", "name": "Leadership", "blurb": "Seniority, bosses, and who's ready", "topics": [{"id": "leadership/what-does-good-leadership-look-like-now-", "q": "What does good leadership look like now compared with 30 years ago?"}, {"id": "leadership/which-old-school-leadership-habits-still", "q": "Which old-school leadership habits still work?"}, {"id": "leadership/what-leadership-behaviors-no-longer-belo", "q": "What leadership behaviors no longer belong in modern organizations?"}, {"id": "leadership/should-seniority-still-carry-authority", "q": "Should seniority still carry authority?"}, {"id": "leadership/when-can-seniority-become-a-barrier-to-i", "q": "When can seniority become a barrier to innovation?"}, {"id": "leadership/are-younger-people-ready-to-lead-sooner-", "q": "Are younger people ready to lead sooner than previous generations were?"}, {"id": "leadership/what-can-younger-leaders-learn-from-olde", "q": "What can younger leaders learn from older colleagues, and vice versa?"}, {"id": "leadership/what-do-older-leaders-misunderstand-abou", "q": "What do older leaders misunderstand about younger workers, and vice versa?"}, {"id": "leadership/how-can-teams-replace-stereotypes-with-c", "q": "How can teams replace stereotypes with curiosity?"}, {"id": "leadership/what-would-you-want-another-generation-t", "q": "What would you want another generation to understand about your work style?"}]}, {"id": "family-community", "name": "Family & Community", "blurb": "Obligations, expectations, and cutting people off", "topics": [{"id": "family-community/has-individualism-weakened-community-lif", "q": "Has individualism weakened community life?"}, {"id": "family-community/what-new-forms-of-community-have-emerged", "q": "What new forms of community have emerged?"}, {"id": "family-community/are-family-expectations-healthier-or-hea", "q": "Are family expectations healthier or heavier than they used to be?"}, {"id": "family-community/how-are-family-roles-changing-across-gen", "q": "How are family roles changing across generations?"}, {"id": "family-community/what-obligations-do-generations-owe-one-", "q": "What obligations do generations owe one another?"}, {"id": "family-community/what-should-older-generations-pass-down-", "q": "What should older generations pass down besides money or property?"}, {"id": "family-community/canceling-family", "q": "Canceling family"}, {"id": "family-community/have-you-ever-cut-off-a-family-member-ov", "q": "Have you ever cut off a family member over something political?"}, {"id": "family-community/which-problems-require-intergenerational", "q": "Which problems require intergenerational cooperation?"}, {"id": "family-community/what-advice-would-you-give-to-the-other-", "q": "What advice would you give to the other generations?"}]}, {"id": "government-politics", "name": "Government & Politics", "blurb": "The system, the press, and the ballroom", "topics": [{"id": "government-politics/do-you-believe-in-our-political-system", "q": "Do you believe in our political system?"}, {"id": "government-politics/is-there-really-liberty-and-justice-for-", "q": "Is there really \"liberty and justice for all\" in the United States?"}, {"id": "government-politics/is-journalism-biased", "q": "Is journalism biased?"}, {"id": "government-politics/government-corruption", "q": "Government corruption"}, {"id": "government-politics/political-corruption", "q": "Political corruption"}, {"id": "government-politics/is-abortion-about-women-s-rights-or-when", "q": "Is abortion about women's rights, or when human rights begin?"}, {"id": "government-politics/donald-trump-s-ballroom", "q": "Donald Trump's ballroom"}, {"id": "government-politics/do-you-believe-our-society-is-ethical-in", "q": "Do you believe our society is ethical in action?"}, {"id": "government-politics/drugs-legalize-treat-or-punish", "q": "Drugs: legalize, treat, or punish?"}, {"id": "government-politics/medical-care-and-what-it-costs", "q": "Medical care and what it costs"}, {"id": "government-politics/have-you-ever-regretted-your-vote", "q": "Have you ever regretted your vote?"}]}, {"id": "big-questions", "name": "Big Questions", "blurb": "God, existence, and where we're headed", "topics": [{"id": "big-questions/what-s-wrong-with-humanity-and-what-need", "q": "What's wrong with humanity, and what needs to be fixed?"}, {"id": "big-questions/are-we-destined-for-the-stars-or-destruc", "q": "Are we destined for the stars or destruction?"}, {"id": "big-questions/what-is-god", "q": "What is God?"}, {"id": "big-questions/what-is-religion", "q": "What is religion?"}, {"id": "big-questions/what-is-consciousness", "q": "What is consciousness?"}, {"id": "big-questions/what-s-life-s-biggest-challenge", "q": "What's life's biggest challenge?"}, {"id": "big-questions/what-do-you-hope-to-get-out-of-life", "q": "What do you hope to get out of life?"}, {"id": "big-questions/what-has-been-your-biggest-surprise-abou", "q": "What has been your biggest surprise about life?"}, {"id": "big-questions/is-the-world-actually-getting-better", "q": "Is the world actually getting better?"}, {"id": "big-questions/have-you-ever-experienced-something-you-", "q": "Have you ever experienced something you cannot explain?"}]}];
+  var HEATS=[['Snooze',10],['Meh',30],['Into it',55],['Hot',80],['Off the chart',112]];
+  var $=function(id){return document.getElementById(id);};
+  var state={cat:null,i:0,ans:{},busy:false},done={};
+  try{done=JSON.parse(localStorage.getItem('gi-gauge-done')||'{}')||{};}catch(e){done={};}
+  var GENS=[['Gen Z','Born 1997–2012','Phones, side hustles, and first apartments'],
+    ['Millennial','Born 1981–1996','Raising kids and paying mortgages'],
+    ['Gen X','Born 1965–1980','Sandwiched between kids and parents'],
+    ['Boomer','Born 1946–1964','Retiring and grandparenting'],
+    ['Silent Generation','Born 1928–1945','Waste not, want not'],
+    ['Rather not say','','Just let me rate']];
+  var gen='';try{gen=localStorage.getItem('gi-gauge-gen2')||'';}catch(e){}
+  GENS.forEach(function(g,k){var l=document.createElement('label');l.className='radio';l.htmlFor='gen-'+k;
+    l.innerHTML='<input type="radio" name="gen"><span class="gn"></span><span class="gd"></span>';
+    var inp=l.querySelector('input');inp.id='gen-'+k;inp.value=g[0];if(g[0]===gen)inp.checked=true;
+    l.querySelector('.gn').textContent=g[0];l.querySelector('.gd').textContent=(g[1]?g[1]+' · ':'')+g[2];$('radios').appendChild(l);});
+  $('genForm').addEventListener('submit',function(e){e.preventDefault();
+    var c=document.querySelector('input[name="gen"]:checked');
+    if(!c){$('genErr').textContent='Pick a generation to keep going.';return;}
+    gen=c.value;$('genErr').textContent='';try{localStorage.setItem('gi-gauge-gen2',gen);}catch(e){}hub();});
+  $('changeGen').addEventListener('click',function(){view('v-gen');});
+
+  function view(id){['v-gen','v-hub','v-run','v-done'].forEach(function(v){$(v).hidden=v!==id;});$('homeBtn').hidden=id==='v-hub'||id==='v-gen';window.scrollTo(0,0);}
+
+  /* gauge — 0..100 across 180°, centre (200,200); past 100 pins at 97° */
+  var NS='http://www.w3.org/2000/svg',g=$('gauge');
+  function pt(v,r){var a=Math.PI*(1-v/100);return [200+r*Math.cos(a),200-r*Math.sin(a)];}
+  function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);(p||g).appendChild(e);return e;}
+  var ZN=['PASS','MEH','MAYBE','HOT','MUST TAPE'],ZC=['#A9A08F','#C29A6B','#C27A45','#A84E26','#963719'];
+  el('path',{d:'M24 200 A176 176 0 0 1 376 200',fill:'#F5EFE2',stroke:'#181715','stroke-width':3});
+  for(var z=0;z<5;z++){var v0=z*20,v1=v0+20,a=pt(v0,160),b=pt(v1,160),c=pt(v1,118),d=pt(v0,118);
+    el('path',{d:'M'+a+' A160 160 0 0 1 '+b+' L'+c+' A118 118 0 0 0 '+d+' Z',fill:ZC[z],stroke:'#181715','stroke-width':2});
+    var m=v0+10,p=pt(m,139),t=el('text',{x:p[0],y:p[1]+4,'text-anchor':'middle','font-family':'Anton, Impact, sans-serif','font-size':12,'letter-spacing':'.06em',fill:z>=3?'#F5EFE2':'#181715',transform:'rotate('+(m*1.8-90)+' '+p[0]+' '+p[1]+')'});t.textContent=ZN[z];}
+  for(var v=0;v<=100;v+=5){var bg=v%10===0,p1=pt(v,bg?102:108),p2=pt(v,116);el('line',{x1:p1[0],y1:p1[1],x2:p2[0],y2:p2[1],stroke:'#181715','stroke-width':bg?3:1.5});
+    if(v%20===0){var pl=pt(v,88),tx=el('text',{x:pl[0],y:pl[1]+5,'text-anchor':'middle','font-family':'IBM Plex Mono, monospace','font-weight':600,'font-size':13,fill:'#181715'});tx.textContent=v;}}
+  var needle=el('g',{class:'needle'});el('path',{d:'M200 40 L207 200 L193 200 Z',fill:'#181715'},needle);
+  el('circle',{cx:367,cy:222,r:7,fill:'#181715'});
+  el('circle',{cx:200,cy:200,r:16,fill:'#181715'});el('circle',{cx:200,cy:200,r:6,fill:'#963719'});
+  var cap=el('text',{x:200,y:232,'text-anchor':'middle','font-family':'IBM Plex Mono, monospace','font-size':11,'letter-spacing':'.18em',fill:'#5E574B'});cap.textContent='TABLE HEAT';
+  function setNeedle(v){g.classList.toggle('pegged',v>100);needle.style.transform='rotate('+(v>100?97:v*1.8-90)+'deg)';$('stamp').classList.toggle('on',v>100);}
+
+  /* hub */
+  function hub(){
+    $('genNow').textContent=gen;var box=$('cats');box.innerHTML='';
+    CATS.forEach(function(c,k){var b=document.createElement('button');b.type='button';b.className='cat'+(done[c.id]?' done':'');
+      b.innerHTML='<span class="cn"></span><span class="cd"></span><span class="cc"></span>';
+      b.querySelector('.cn').textContent=c.name;b.querySelector('.cd').textContent=c.blurb;
+      b.querySelector('.cc').textContent=c.topics.length+' TOPICS · ~1 MIN';
+      b.addEventListener('click',function(){start(k);});box.appendChild(b);});
+    view('v-hub');
+  }
+  HEATS.forEach(function(h,k){var b=document.createElement('button');b.type='button';b.className='heat';b.dataset.v=k;
+    b.innerHTML='<span></span><small></small>';b.firstChild.textContent=h[0];b.lastChild.textContent=k===4?'100+':String(h[1]);
+    b.addEventListener('click',function(){pick(k,b);});$('heats').appendChild(b);});
+
+  function start(k){if(!gen){view('v-gen');return;}state={cat:k,i:0,ans:{},busy:false};card();view('v-run');}
+  function card(){
+    var c=CATS[state.cat],t=c.topics[state.i];state.busy=false;
+    $('runCat').textContent=c.name+' · Topic under test';$('qq').textContent=t.q;
+    $('runCount').textContent=(state.i+1)+' / '+c.topics.length;
+    var art=$('art');art.innerHTML='';art.hidden=!t.img;if(t.img){var im=document.createElement('img');im.src=IMG[t.img];im.alt='';art.appendChild(im);}
+    var dots=$('dots');dots.innerHTML='';c.topics.forEach(function(_,j){var e=document.createElement('i');if(j<state.i)e.className='d';else if(j===state.i)e.className='n';dots.appendChild(e);});
+    [].forEach.call($('heats').children,function(b){b.classList.remove('picked');});
+    $('readout').className='readout idle';$('rn').textContent='Tap your heat';$('rw').textContent='';setNeedle(0);
+  }
+  function pick(k,b){
+    if(state.busy)return;state.busy=true;b.classList.add('picked');
+    var t=CATS[state.cat].topics[state.i];state.ans[t.id]=k;setNeedle(HEATS[k][1]);
+    $('readout').className='readout';$('rn').textContent=HEATS[k][1];$('rw').textContent=k===4?'Off the chart':HEATS[k][0];
+    setTimeout(next,k===4?1200:700);
+  }
+  function next(){state.i++;if(state.i<CATS[state.cat].topics.length)card();else finish();}
+  $('skipBtn').addEventListener('click',function(){if(!state.busy)next();});
+
+  /* wrap-up + save */
+  var rowsToSave=[];
+  function finish(){
+    var c=CATS[state.cat],now=new Date(),dt=now.toLocaleDateString('en-US',{timeZone:'America/Chicago'}),tm=now.toLocaleTimeString('en-US',{timeZone:'America/Chicago',hour:'numeric',minute:'2-digit',second:'2-digit'});
+    var rated=c.topics.filter(function(t){return state.ans[t.id]!=null;}).sort(function(a,b){return state.ans[b.id]-state.ans[a.id];});
+    var skipped=c.topics.filter(function(t){return state.ans[t.id]==null;});
+    $('doneKick').textContent=c.name+' done. '+rated.length+' rated.';
+    $('hot').textContent=rated.length?rated[0].q:'Nothing rated';
+    var l=$('list');l.innerHTML='';
+    rated.concat(skipped).forEach(function(t){var a=state.ans[t.id],r=document.createElement('div');r.className='r';
+      r.innerHTML='<span class="t"></span><span class="bar"><span></span></span><span class="v"></span>';
+      r.querySelector('.t').textContent=t.q;r.querySelector('.bar span').style.width=(a==null?0:Math.min(100,HEATS[a][1]))+'%';
+      r.querySelector('.v').textContent=a==null?'skipped':HEATS[a][0];l.appendChild(r);});
+    rowsToSave=c.topics.map(function(t){var a=state.ans[t.id];return [dt,tm,gen,c.name,t.q,a==null?'Skipped':HEATS[a][0],a==null?'':HEATS[a][1]];});
+    done[c.id]=true;try{localStorage.setItem('gi-gauge-done',JSON.stringify(done));}catch(e){}
+    $('nextCat').hidden=state.cat>=CATS.length-1;
+    view('v-done');save();
+  }
+  function setSave(msg,kind,retry,copy){
+    $('save').className='save'+(kind==='ok'?' ok':'');$('saveSt').textContent=msg;$('retryBtn').hidden=!retry;
+    $('copyBox').hidden=!copy;if(copy)$('copyTxt').value=rowsToSave.map(function(r){return r.join('\t');}).join('\n');
+  }
+  // TODO(Tim): paste the Apps Script Web app URL from Step 1 here, then redeploy.
+  // Deliberately an unreachable absolute URL (not a bare placeholder string) so that,
+  // until this is replaced, saves fail loudly into the copy-rows fallback instead of
+  // silently reporting "Saved" while hitting this same page under mode:'no-cors'.
+  var WEBAPP_URL='https://paste-web-app-url-here.invalid/exec';
+  function save(){
+    setSave('Saving to the test spreadsheet…','',false,false);
+    fetch(WEBAPP_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({rows:rowsToSave})}).then(function(){
+      setSave('Saved. Thanks!','ok',false,false);
+    },function(){
+      setSave("Couldn't reach the spreadsheet. Copy the rows below instead.",'',true,true);
+    });
+  }
+  $('retryBtn').addEventListener('click',save);
+  $('copyBtn').addEventListener('click',function(){var t=$('copyTxt');
+    var p=navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t.value):Promise.reject();
+    p.then(function(){$('copyBtn').textContent='Copied';},function(){t.focus();t.select();$('copyBtn').textContent='Selected. Press Ctrl+C';});});
+  $('nextCat').addEventListener('click',function(){start(state.cat+1);});
+  $('toHub').addEventListener('click',hub);$('homeBtn').addEventListener('click',hub);
+  if(gen)hub();else view('v-gen');
+})();
+
+</script>
+</body>
+</html>
