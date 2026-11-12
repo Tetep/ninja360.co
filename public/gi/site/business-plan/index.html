@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>The Business Plan — Generationally Incorrect</title>
+<meta name="description" content="How Generationally Incorrect builds a community, and how it pays for itself.">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/gi-site.css">
+</head>
+<body id="top">
+
+<header class="masthead">
+  <div class="bar">
+    <a class="brand" href="/gi/site/">
+      <img class="mark" src="../assets/logo-v3b-transparent.png" alt="Generationally Incorrect" width="75" height="57">
+    </a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="gi-menu">
+      <span class="menu-icon"><span></span><span></span><span></span></span>
+      <span class="menu-label">Menu</span>
+    </button>
+  </div>
+  <nav class="menu-bar" id="gi-menu" aria-label="Main" hidden>
+    <div class="menu-inner">
+      <a href="/gi/site/">Home</a>
+      <a href="/gi/site/episodes/">Listen</a>
+      <a href="/gi/site/rate-the-topics/">Rate the Topics</a>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLScvfwAtkcMGAXOii7GNK6kHzBYgyU6exOj1wUhE2TpkPkq_Ew/viewform" target="_blank" rel="noopener">Be on the Show</a>
+      <a href="mailto:info@generationallyincorrect.com">Contact</a>
+    </div>
+  </nav>
+</header>
+
+<nav class="bp-bar" aria-label="Business plan sections">
+  <div class="bp-bar-inner">
+    <button class="bp-bar-toggle" type="button" id="bpBarToggle" aria-expanded="false" aria-controls="bpBarList">
+      Sections
+    </button>
+    <ul class="bp-bar-list" id="bpBarList"></ul>
+  </div>
+</nav>
+
+<section class="hero" style="padding:48px 0 40px">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div class="accent-line">Every generation has something to say.</div>
+      <h1>The Business Plan</h1>
+      <p>How Generationally Incorrect builds a community, and how it pays for itself.</p>
+    </div>
+  </div>
+</section>
+
+<section class="alt" style="padding:0 0 52px">
+  <div class="wrap">
+    <div class="bp-tiles" id="bpTiles"></div>
+  </div>
+</section>
+
+<div id="bpSections"></div>
+
+<section class="cta-band">
+  <div class="wrap">
+    <h2>Want in?</h2>
+    <p>Sponsor a segment, join as a member, or take a seat at the table.</p>
+    <div class="btn-row">
+      <a class="btn btn-red" href="https://docs.google.com/forms/d/e/1FAIpQLScvfwAtkcMGAXOii7GNK6kHzBYgyU6exOj1wUhE2TpkPkq_Ew/viewform" target="_blank" rel="noopener">Be on the Show</a>
+      <a class="btn btn-ghost" href="mailto:info@generationallyincorrect.com" style="border-color:var(--gi-panel);color:var(--gi-panel)">Talk to us</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <div class="fh">Generationally Incorrect</div>
+        <p style="max-width:340px">Four generations. One question. Common ground or bust. A video-first debate show — first episodes are in production now.</p>
+        <p class="small">Follow on YouTube <a href="https://www.youtube.com/@GenerationallyIncorrect" target="_blank" rel="noopener"><b>@GenerationallyIncorrect</b></a> (launching with Episode 001)</p>
+      </div>
+      <div>
+        <div class="fh">The Show</div>
+        <ul>
+          <li><a href="../episodes/">Episodes</a></li>
+          <li><a href="../about/">About</a></li>
+          <li><a href="../membership/">Membership</a></li>
+          <li><a href="../contact/">Contact &amp; Sponsors</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="fh">Get the Question</div>
+        <ul>
+          <li><a href="../question-of-the-week/">Weekly opt-in</a></li>
+          <li><a href="mailto:info@generationallyincorrect.com">info@generationallyincorrect.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>© 2026 Generationally Incorrect · A Lucky 13 × Lucid Cinematics × Ninja 360 production</span>
+      <span>We only email you the question. Unsubscribe anytime.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/gi-site.js"></script>
+<script type="module">
+  import { SECTIONS } from './content.js';
+
+  var $ = function (sel, ctx) { return (ctx || document).querySelector(sel); };
+  var esc = function (s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  };
+  // The only markup allowed in copy is **bold** -- escape everything else, then
+  // turn **...** into <b>...</b> so content.js never needs raw HTML.
+  var inline = function (s) {
+    return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  };
+
+  var anchored = SECTIONS.filter(function (s) { return !!s.id; });
+
+  // ---- tile grid ----
+  var tiles = $('#bpTiles');
+  SECTIONS.forEach(function (s) {
+    var a = document.createElement('a');
+    a.className = 'bp-tile';
+    a.href = s.id ? '#' + s.id : s.href;
+    a.innerHTML =
+      '<span class="bp-tile-num">' + String(s.num).padStart(2, '0') + '</span>' +
+      '<span class="bp-tile-title">' + esc(s.title) + '</span>' +
+      '<p class="bp-tile-blurb">' + esc(s.blurb) + '</p>' +
+      '<span class="bp-tile-arrow" aria-hidden="true">→</span>';
+    tiles.appendChild(a);
+  });
+
+  // ---- sticky / mobile section bar ----
+  var barList = $('#bpBarList');
+  SECTIONS.forEach(function (s) {
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    a.href = s.id ? '#' + s.id : s.href;
+    a.textContent = s.title;
+    if (s.id) a.dataset.id = s.id;
+    li.appendChild(a);
+    barList.appendChild(li);
+  });
+
+  // Keep the section bar stuck directly under the masthead, and give every
+  // anchored section enough scroll-margin to clear both sticky bars -- else
+  // jumping to #id (by tile, bar link or browser back/forward) lands the
+  // section's own heading hidden underneath them.
+  function syncStickyOffsets() {
+    var mh = $('.masthead');
+    var bar = $('.bp-bar');
+    if (!mh || !bar) return;
+    var mhHeight = mh.offsetHeight;
+    bar.style.top = mhHeight + 'px';
+    var total = mhHeight + bar.offsetHeight + 16;
+    sectionEls.forEach(function (el) { if (el) el.style.scrollMarginTop = total + 'px'; });
+  }
+
+  var barToggle = $('#bpBarToggle');
+  barToggle.addEventListener('click', function () {
+    var open = barList.classList.toggle('is-open');
+    barToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  barList.addEventListener('click', function (e) {
+    if (e.target.closest('a')) {
+      barList.classList.remove('is-open');
+      barToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // ---- block renderers ----
+  var renderers = {
+    bullets: function (b) {
+      var html = b.title ? '<div class="bp-block-title">' + esc(b.title) + '</div>' : '';
+      html += '<ul class="bp-bullets">' + b.items.map(function (i) { return '<li>' + inline(i) + '</li>'; }).join('') + '</ul>';
+      return html;
+    },
+    steps: function (b) {
+      var html = b.title ? '<div class="bp-block-title">' + esc(b.title) + '</div>' : '';
+      html += '<ol class="bp-steps">' + b.items.map(function (i) { return '<li>' + inline(i) + '</li>'; }).join('') + '</ol>';
+      return html;
+    },
+    table: function (b) {
+      var html = b.title ? '<div class="bp-block-title">' + esc(b.title) + '</div>' : '';
+      html += '<table class="bp-table"><thead><tr>' +
+        b.headers.map(function (h) { return '<th>' + esc(h) + '</th>'; }).join('') +
+        '</tr></thead><tbody>' +
+        b.rows.map(function (r) {
+          return '<tr>' + r.map(function (cell, i) {
+            return '<td data-label="' + esc(b.headers[i]) + '">' + inline(cell) + '</td>';
+          }).join('') + '</tr>';
+        }).join('') +
+        '</tbody></table>';
+      return html;
+    },
+    'stat-row': function (b) {
+      return '<div class="bp-stats">' + b.items.map(function (i) {
+        return '<div class="bp-stat"><div class="v">' + esc(i.value) + '</div><div class="l">' + esc(i.label) + '</div></div>';
+      }).join('') + '</div>';
+    },
+    note: function (b) {
+      return '<p class="form-note">' + inline(b.text) + '</p>';
+    },
+    button: function (b) {
+      var attrs = b.external ? ' target="_blank" rel="noopener"' : '';
+      return '<a class="btn btn-red" href="' + esc(b.href) + '"' + attrs + '>' + esc(b.text) + '</a>';
+    },
+  };
+
+  // ---- sections ----
+  var mount = $('#bpSections');
+  anchored.forEach(function (s, idx) {
+    var section = document.createElement('section');
+    section.className = 'bp-section' + (idx % 2 === 1 ? ' bp-card-bg' : '');
+    section.id = s.id;
+    section.innerHTML =
+      '<div class="wrap">' +
+      '<!-- image: ' + s.id + ' -->' +
+      '<div class="bp-section-num">' + String(s.num).padStart(2, '0') + ' / ' + String(SECTIONS.length).padStart(2, '0') + '</div>' +
+      '<h2>' + esc(s.title) + '</h2>' +
+      '<p class="bp-lead">' + inline(s.lead) + '</p>' +
+      s.blocks.map(function (b) {
+        return '<div class="bp-block">' + (renderers[b.type] ? renderers[b.type](b) : '') + '</div>';
+      }).join('') +
+      '<a class="bp-back" href="#top">↑ Back to top</a>' +
+      '</div>';
+    mount.appendChild(section);
+  });
+
+  // ---- current-section highlighting ----
+  var sectionEls = anchored.map(function (s) { return document.getElementById(s.id); });
+  var barLinks = Array.prototype.slice.call(barList.querySelectorAll('a[data-id]'));
+  function setCurrent(id) {
+    barLinks.forEach(function (a) {
+      a.setAttribute('aria-current', a.dataset.id === id ? 'true' : 'false');
+    });
+  }
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) setCurrent(entry.target.id);
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+    sectionEls.forEach(function (el) { io.observe(el); });
+  }
+
+  syncStickyOffsets();
+  window.addEventListener('resize', syncStickyOffsets);
+</script>
+</body>
+</html>
