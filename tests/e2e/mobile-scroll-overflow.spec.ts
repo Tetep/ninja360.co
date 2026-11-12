@@ -51,6 +51,7 @@ const routes = [
   '/gi/site/membership',
   '/gi/site/contact',
   '/gi/site/be-on-the-show',
+  '/gi/site/rate-the-topics',
   '/gi/site/dashboard',
 ];
 
