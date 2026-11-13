@@ -243,3 +243,15 @@
 /* second picker (fonts) stacks under the colors: one rule, two rows */
 .theme-switch + .theme-switch{margin-top:8px;padding-top:0;border-top:0}
 .theme-switch-bar .theme-switch + .theme-switch{margin:8px auto 0}
+
+/* ---------- logo background (third picker: data-logo a|b|c, default c) ----------
+   The V3b logo has black lettering. A = the cream plate (how it looked), B = a
+   grey plate, C = no background at all: on the dark schemes the lettering is
+   swapped for a white-lettered copy of the logo; on Paper the original is
+   already readable, so C there is simply the logo with nothing behind it. */
+:root[data-logo="a"]{--gi-logo-plate:#FFF5EC;--gi-logo-pad:4px 10px}
+:root[data-logo="b"]{--gi-logo-plate:#AFAFAF;--gi-logo-pad:4px 10px}
+:root[data-logo="c"]{--gi-logo-plate:transparent;--gi-logo-pad:0}
+:root .mark.mark-light{display:none}
+:root[data-logo="c"]:not([data-theme="c"]) .mark.mark-light{display:block}
+:root[data-logo="c"]:not([data-theme="c"]) .mark:not(.mark-light){display:none}
