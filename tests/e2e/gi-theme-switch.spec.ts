@@ -139,4 +139,17 @@ test.describe('GI color-scheme selector', () => {
     const glow = await mark.evaluate((el) => getComputedStyle(el).filter);
     expect((glow.match(/drop-shadow/g) || []).length).toBe(1);
   });
+
+  test('/call: six steps, pickers inline, links open in a new tab', async ({ page }) => {
+    await open(page, '/gi/site/call');
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,nofollow');
+    await expect(page.locator('.call-step')).toHaveCount(6);
+    await expect(page.locator('.call-pickers .theme-switch')).toHaveCount(3);
+    const links = page.locator('.call-step a.btn');
+    const n = await links.count();
+    for (let i = 0; i < n; i++) await expect(links.nth(i)).toHaveAttribute('target', '_blank');
+    await page.locator('#callChecks input[data-k="colors"]').check();
+    await page.reload({ waitUntil: 'load' });
+    await expect(page.locator('#callChecks input[data-k="colors"]')).toBeChecked();
+  });
 });
