@@ -1,0 +1,241 @@
+/* Generationally Incorrect — color schemes.
+   Every color the site uses is a variable defined here. The scheme is picked by
+   data-theme="a|b|c" on <html> (gi-theme.js sets it before first paint and
+   remembers the visitor's choice). With no attribute the site is Scheme B.
+
+   A  Original (dark spec)        bg #111318 · text #F2EDE1 · accent #E23B2E · rule accent #963719
+   B  Tim & Gabe's pick (DEFAULT) bg #0B0B0B · accent #CC0A0F · text #FFFFFF · cards white / black text / red double border
+   C  Paper (older option)        bg #D9CFBA · cards #C6B49C · text #181715 · accent #963719 (button text #F5EFE2) · muted #6B6355
+
+   Values marked "derived" are not in the brief; they are the neutral
+   in-between shades the schemes needed (recessed bands, hairlines, A's card
+   surface, ...). Change them here and every page follows.
+
+   Naming: --gi-ink / --gi-soft / --gi-muted are text ON THE PAGE. Anything that
+   sits on a card or panel (see the context list in gi-site.css) swaps them to
+   the --gi-card-* values, so one rule reads correctly on both. */
+
+:root,
+:root[data-theme="b"]{
+  color-scheme:dark;
+  /* page */
+  --gi-bg:#0B0B0B;
+  --gi-alt:#121212;            /* recessed band (derived) */
+  --gi-alt2:#1A1A1A;           /* second band tone (derived) */
+  --gi-ink:#FFFFFF;            /* headings, strong text */
+  --gi-soft:#FFFFFF;           /* body text */
+  --gi-muted:#B5B5B5;          /* de-emphasized (derived) */
+  --gi-line:#333333;           /* hairlines (derived) */
+  --gi-rule:#FFFFFF;           /* borders on the page */
+  /* accent */
+  --gi-accent:#CC0A0F;         /* buttons, large text, accents */
+  --gi-rule-accent:#CC0A0F;    /* rules, bars, footer */
+  --gi-on-accent:#FFFFFF;      /* text on accent */
+  --gi-link:#FFFFFF;           /* red on black is for large text only */
+  --gi-accent-small:#FFFFFF;   /* small accent text: kickers, handwriting */
+  --gi-shadow:#CC0A0F;
+  --gi-shadow-soft:rgba(204,10,15,.35);
+  /* cards */
+  --gi-card:#FFFFFF;
+  --gi-panel:#FFFFFF;
+  --gi-card-ink:#0B0B0B;
+  --gi-card-muted:#5A5A5A;     /* derived */
+  --gi-card-rule:#CC0A0F;
+  --gi-card-accent:#CC0A0F;
+  --gi-card-line:3px double;
+  --gi-card-head:#0B0B0B;      /* header band of a generation card */
+  --gi-card-head-ink:#FFFFFF;
+  /* inverse band (CTA, date band, footer) */
+  --gi-band:#000000;
+  --gi-band-ink:#FFFFFF;
+  --gi-band-soft:#CFCFCF;
+  --gi-band-line:rgba(255,255,255,.25);
+  --gi-band-rule:#CC0A0F;
+  --gi-band-accent:#FFFFFF;    /* small accent text on a band */
+  --gi-band-muted:#BDBDBD;
+  --gi-band-link:#E6E6E6;
+  --gi-band-link-hover:#FFFFFF;
+  /* extras */
+  --gi-card-soft:#0B0B0B;      /* body text on a card */
+  --gi-card-accent-small:#CC0A0F;
+  --gi-card-green:#1E7A3A;     /* green text on a white card (derived) */
+  --gi-card-hair:#D9D9D9;      /* hairlines on a card (derived) */
+  --gi-masthead-rule:#CC0A0F;
+  --gi-logo-pad:4px 10px;
+  --gi-badge:#CC0A0F;          /* numbered step circles */
+  --gi-badge-ink:#FFFFFF;
+  /* misc */
+  --gi-field:#FFFFFF;
+  --gi-field-ink:#0B0B0B;
+  --gi-masthead:rgba(11,11,11,.96);
+  --gi-logo-plate:#FFF5EC;     /* the V3b logo has black lettering: it sits on its own cream ground */
+  --gi-deep:#000000;
+  --gi-scrim:rgba(0,0,0,.85);
+  --gi-green:#4CC16F;
+  --gi-green-bg:rgba(76,193,111,.12);
+  --gi-grain:0;
+}
+
+:root[data-theme="a"]{
+  color-scheme:dark;
+  --gi-bg:#111318;
+  --gi-alt:#161920;
+  --gi-alt2:#1B1E26;
+  --gi-ink:#F2EDE1;
+  --gi-soft:#F2EDE1;
+  --gi-muted:#A8A294;
+  --gi-line:#2C303A;
+  --gi-rule:#F2EDE1;
+  --gi-accent:#E23B2E;
+  --gi-rule-accent:#963719;
+  --gi-on-accent:#FFFFFF;
+  --gi-link:#F0594D;           /* small text: a lighter tint of #E23B2E so it clears 4.5:1 (derived) */
+  --gi-accent-small:#F0594D;
+  --gi-shadow:#963719;
+  --gi-shadow-soft:rgba(150,55,25,.45);
+  --gi-card:#1C1F27;
+  --gi-panel:#20242D;
+  --gi-card-ink:#F2EDE1;
+  --gi-card-muted:#A8A294;
+  --gi-card-rule:#963719;
+  --gi-card-accent:#E23B2E;
+  --gi-card-line:2px solid;
+  --gi-card-head:#0B0C10;
+  --gi-card-head-ink:#F2EDE1;
+  --gi-band:#0B0C10;
+  --gi-band-ink:#F2EDE1;
+  --gi-band-soft:#B9B3A5;
+  --gi-band-line:rgba(242,237,225,.22);
+  --gi-band-rule:#963719;
+  --gi-band-accent:#E23B2E;
+  --gi-band-muted:#A9A394;
+  --gi-band-link:#D6D0C2;
+  --gi-band-link-hover:#F2EDE1;
+  --gi-card-soft:#F2EDE1;
+  --gi-card-accent-small:#F0594D;
+  --gi-card-green:#5FBF7A;
+  --gi-card-hair:#343944;
+  --gi-masthead-rule:#963719;
+  --gi-logo-pad:4px 10px;
+  --gi-badge:#963719;
+  --gi-badge-ink:#FFFFFF;
+  --gi-field:#0B0C10;
+  --gi-field-ink:#F2EDE1;
+  --gi-masthead:rgba(17,19,24,.96);
+  --gi-logo-plate:#FFF5EC;
+  --gi-deep:#000000;
+  --gi-scrim:rgba(0,0,0,.8);
+  --gi-green:#5FBF7A;
+  --gi-green-bg:rgba(95,191,122,.12);
+  --gi-grain:0;
+}
+
+:root[data-theme="c"]{
+  color-scheme:light;
+  --gi-bg:#D9CFBA;
+  --gi-alt:#CEC3AC;
+  --gi-alt2:#C6B49C;
+  --gi-ink:#181715;
+  --gi-soft:#2B2724;
+  --gi-muted:#6B6355;
+  --gi-line:#B3A68E;
+  --gi-rule:#181715;
+  --gi-accent:#963719;
+  --gi-rule-accent:#963719;
+  --gi-on-accent:#F5EFE2;
+  --gi-link:#963719;
+  --gi-accent-small:#963719;
+  --gi-shadow:#181715;
+  --gi-shadow-soft:rgba(23,20,15,.18);
+  --gi-card:#C6B49C;
+  --gi-panel:#FFF5EC;
+  --gi-card-ink:#181715;
+  --gi-card-muted:#6B6355;
+  --gi-card-rule:#181715;
+  --gi-card-accent:#963719;
+  --gi-card-line:2px solid;
+  --gi-card-head:#181715;
+  --gi-card-head-ink:#F5EFE2;
+  --gi-band:#181715;
+  --gi-band-ink:#FFF5EC;
+  --gi-band-soft:#CABFA9;
+  --gi-band-line:rgba(239,228,205,.25);
+  --gi-band-rule:#181715;
+  --gi-band-accent:#963719;
+  --gi-band-muted:#B9AB8B;
+  --gi-band-link:#D8CAA9;
+  --gi-band-link-hover:#D9CFBA;
+  --gi-card-soft:#2B2724;
+  --gi-card-accent-small:#963719;
+  --gi-card-green:#2e6b3f;
+  --gi-card-hair:#B3A68E;
+  --gi-masthead-rule:#181715;
+  --gi-logo-pad:0;
+  --gi-badge:#181715;
+  --gi-badge-ink:#FFF5EC;
+  --gi-field:#FAF4E6;
+  --gi-field-ink:#181715;
+  --gi-masthead:rgba(217,207,186,.96);
+  --gi-logo-plate:transparent;
+  --gi-deep:#0d0906;
+  --gi-scrim:rgba(24,23,21,.82);
+  --gi-green:#2e6b3f;
+  --gi-green-bg:rgba(46,107,63,.08);
+  --gi-grain:.5;
+}
+
+/* ---------- type (same in every scheme) ----------
+   Anton for headlines and buttons, Kalam for body and handwriting,
+   Special Elite for labels. */
+:root{
+  --gi-font-display:'Anton',Impact,'Arial Narrow Bold',sans-serif;
+  --gi-font-body:'Kalam','Segoe Print','Bradley Hand','Comic Sans MS',cursive;
+  --gi-font-type:'Special Elite','Courier New',Courier,monospace;
+  --gi-font-hand:'Kalam','Segoe Print','Bradley Hand',cursive;
+}
+
+/* ---------- the scheme selector ----------
+   Injected by gi-theme.js into the footer (or a [data-theme-switch-mount]).
+   Quiet by design: outlined buttons in the footer's own text color, the active
+   one inverted. Real <button>s, 44px tall. */
+.theme-switch{
+  --ts-fg:var(--gi-band-soft);
+  --ts-strong:var(--gi-band-ink);
+  --ts-line:var(--gi-band-line);
+  --ts-active-bg:var(--gi-band-ink);
+  --ts-active-fg:var(--gi-band);
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  margin-top:20px;padding-top:16px;border-top:1px solid var(--ts-line);
+  text-align:left;
+}
+.footer-v2 .theme-switch{
+  --ts-fg:var(--gi-on-accent);
+  --ts-strong:var(--gi-on-accent);
+  --ts-line:color-mix(in srgb,var(--gi-on-accent) 45%,transparent);
+  --ts-active-bg:var(--gi-on-accent);
+  --ts-active-fg:var(--gi-rule-accent);
+  justify-content:center;
+}
+.theme-switch-label{
+  font-family:var(--gi-font-type);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ts-fg);margin-right:4px;
+}
+.theme-switch button{
+  min-height:44px;padding:0 14px;cursor:pointer;
+  font-family:var(--gi-font-type);font-size:12.5px;letter-spacing:.04em;line-height:1;
+  color:var(--ts-fg);background:transparent;border:1px solid var(--ts-line);border-radius:3px;
+}
+.theme-switch button:hover{color:var(--ts-strong);border-color:var(--ts-strong)}
+.theme-switch button:focus-visible{outline:3px solid var(--ts-strong);outline-offset:2px}
+.theme-switch button[aria-pressed="true"]{
+  background:var(--ts-active-bg);color:var(--ts-active-fg);border-color:var(--ts-active-bg);font-weight:700;
+}
+@media(max-width:640px){
+  .theme-switch{gap:8px 6px}
+  .theme-switch-label{flex-basis:100%;margin-right:0}
+  .theme-switch button{padding:0 11px}
+  .footer-v2 .theme-switch{justify-content:center}
+}
+.theme-switch-bar{background:var(--gi-band);border-top:4px double var(--gi-band-rule);padding:20px 24px 28px}
+.theme-switch-bar .theme-switch{max-width:920px;margin:0 auto;padding-top:0;border-top:0}
+@media(max-width:640px){.theme-switch-bar{padding:18px 16px 24px}}
