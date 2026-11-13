@@ -1,0 +1,30 @@
+/* Generationally Incorrect — font-set picker (vote only).
+   data-font="a|b|c" on <html>, set by gi-theme.js before first paint, same as data-theme.
+   A = what the site uses today (no change). B and C swap only the four font variables
+   declared in gi-theme.css, so every component picks them up with no other edits.
+   Load AFTER gi-theme.css.
+
+   Families needed for B and C (one extra <link> in <head>, after the existing Google Fonts link):
+   https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&family=Courier+Prime:wght@400;700&family=Oswald:wght@700&family=Patrick+Hand&family=IBM+Plex+Mono:wght@500&display=swap
+   Oswald is loaded at 700 only and IBM Plex Mono at 500 only on purpose: whatever weight
+   the site asks for, the browser uses the one loaded, so headlines stay heavy like Anton. */
+
+/* A · On the site now — Anton / Kalam / Special Elite (the defaults in gi-theme.css) */
+:root[data-font="a"]{}
+
+/* B · Louder — Bebas Neue / Permanent Marker / Courier Prime.
+   Body copy stays Kalam: Permanent Marker is for short handwritten lines, not paragraphs. */
+:root[data-font="b"]{
+  --gi-font-display:'Bebas Neue',Impact,'Arial Narrow Bold',sans-serif;
+  --gi-font-hand:'Permanent Marker','Segoe Print','Bradley Hand',cursive;
+  --gi-font-body:'Kalam','Segoe Print','Bradley Hand','Comic Sans MS',cursive;
+  --gi-font-type:'Courier Prime','Courier New',Courier,monospace;
+}
+
+/* C · Cleaner — Oswald / Patrick Hand / IBM Plex Mono */
+:root[data-font="c"]{
+  --gi-font-display:'Oswald',Impact,'Arial Narrow Bold',sans-serif;
+  --gi-font-hand:'Patrick Hand','Segoe Print','Bradley Hand',cursive;
+  --gi-font-body:'Patrick Hand','Segoe Print','Bradley Hand','Comic Sans MS',cursive;
+  --gi-font-type:'IBM Plex Mono','Courier New',Courier,monospace;
+}
