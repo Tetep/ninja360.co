@@ -101,22 +101,42 @@ test.describe('GI color-scheme selector', () => {
     await expect(page.locator('.deck-card a[download]')).toHaveCount(2);
   });
 
-  test('logo-background picker: third group, default Clear, plate changes without reload', async ({ page }) => {
+  test('logo-background picker: four options, default D · On Air, A/B/C unchanged', async ({ page }) => {
     await open(page, '/gi/site');
     const group = page.locator('.theme-switch[aria-label="Logo background"]');
-    await expect(group.locator('button')).toHaveText(['A · White', 'B · Grey', 'C · Clear']);
-    await expect(page.locator('html')).toHaveAttribute('data-logo', 'c');
+    await expect(group.locator('button')).toHaveText(['A · White', 'B · Grey', 'C · Clear', 'D · On Air']);
+    await expect(page.locator('html')).toHaveAttribute('data-logo', 'd');
     const mark = page.locator('.brand .mark:not(.mark-light)');
     const light = page.locator('.brand .mark-light');
-    // Clear on a dark scheme: the white-lettered logo, no plate
+    // On Air on a dark scheme: white-lettered logo, no plate, layered red glow
     await expect(light).toBeVisible();
     await expect(mark).toBeHidden();
+    await expect(light).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    const glow = await light.evaluate((el) => getComputedStyle(el).filter);
+    expect((glow.match(/drop-shadow/g) || []).length).toBe(3);
+    // host circles carry the lighter bloom (on the circle itself, so it is not cropped)
+    const hostFilter = await page.locator('.host-photo').first().evaluate((el) => getComputedStyle(el).filter);
+    expect((hostFilter.match(/drop-shadow/g) || []).length).toBe(3);
+    // A, B and C are exactly as before: no filter at all
+    await group.locator('button[data-logo-set="c"]').click();
+    await expect(light).toBeVisible();
+    expect(await light.evaluate((el) => getComputedStyle(el).filter)).toBe('none');
     await group.locator('button[data-logo-set="b"]').click();
     await expect(mark).toBeVisible();
     await expect(mark).toHaveCSS('background-color', 'rgb(175, 175, 175)');
+    expect(await mark.evaluate((el) => getComputedStyle(el).filter)).toBe('none');
     await group.locator('button[data-logo-set="a"]').click();
     await expect(mark).toHaveCSS('background-color', 'rgb(255, 245, 236)');
     await page.reload({ waitUntil: 'load' });
     await expect(page.locator('html')).toHaveAttribute('data-logo', 'a');
+  });
+
+  test('On Air on Paper: the original logo with one tight shadow, not a glow', async ({ page }) => {
+    await open(page, '/gi/site');
+    await page.locator('.theme-switch button[data-theme-set="c"]').click();
+    const mark = page.locator('.brand .mark:not(.mark-light)');
+    await expect(mark).toBeVisible();
+    const glow = await mark.evaluate((el) => getComputedStyle(el).filter);
+    expect((glow.match(/drop-shadow/g) || []).length).toBe(1);
   });
 });

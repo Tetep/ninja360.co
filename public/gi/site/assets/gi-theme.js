@@ -4,7 +4,7 @@
    in localStorage. Switching only changes that one attribute.
      colors: data-theme a|b|c, default b   (gi-theme.css)
      fonts:  data-font  a|b|c, default a   (gi-fonts.css)
-     logo:   data-logo  a|b|c, default c   (gi-theme.css) */
+     logo:   data-logo  a|b|c|d, default d (gi-theme.css) */
 (function () {
   'use strict';
 
@@ -26,22 +26,26 @@
       ]
     },
     {
-      key: 'gi-logo', attr: 'data-logo', btnAttr: 'data-logo-set', def: 'c', label: 'Logo background',
+      key: 'gi-logo', attr: 'data-logo', btnAttr: 'data-logo-set', def: 'd', label: 'Logo background',
       items: [
         { id: 'a', label: 'A · White' },
         { id: 'b', label: 'B · Grey' },
-        { id: 'c', label: 'C · Clear' }
+        { id: 'c', label: 'C · Clear' },
+        { id: 'd', label: 'D · On Air' }
       ]
     }
   ];
   var root = document.documentElement;
 
-  function valid(v) { return v === 'a' || v === 'b' || v === 'c'; }
+  function valid(p, v) {
+    for (var i = 0; i < p.items.length; i++) if (p.items[i].id === v) return true;
+    return false;
+  }
 
   function read(p) {
     try {
       var v = localStorage.getItem(p.key);
-      return valid(v) ? v : p.def;
+      return valid(p, v) ? v : p.def;
     } catch (e) { return p.def; }
   }
 
@@ -116,7 +120,7 @@
   /* another tab changed a choice */
   window.addEventListener('storage', function (e) {
     PICKERS.forEach(function (p) {
-      if (e.key === p.key && valid(e.newValue)) apply(p, e.newValue);
+      if (e.key === p.key && valid(p, e.newValue)) apply(p, e.newValue);
     });
   });
 })();
