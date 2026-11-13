@@ -257,7 +257,7 @@ footer.footer-v2 .tag{font-family:var(--gi-font-body);font-size:14px;color:var(-
 .breadcrumbs a:hover{color:var(--gi-accent-small)}
 .video-frame{aspect-ratio:16/9;width:100%;border:2px solid var(--gi-rule);outline:1px solid var(--gi-rule);outline-offset:3px;background:var(--gi-deep);overflow:hidden}
 .video-frame iframe,.video-frame video{width:100%;height:100%;border:0;display:block}
-.promo-embed{aspect-ratio:16/9;width:100%;background:var(--gi-alt)}
+.promo-embed{aspect-ratio:16/9;width:100%;background:var(--gi-deep) url(be-on-the-show-poster.png) center/cover no-repeat}
 .promo-embed iframe{width:100%;height:100%;border:0;display:block}
 
 /* home hero video -- as full-screen as the viewport allows: scales up to
