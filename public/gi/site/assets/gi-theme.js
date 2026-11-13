@@ -3,7 +3,8 @@
    first paint: no flash of the wrong scheme or fonts. Each choice is remembered
    in localStorage. Switching only changes that one attribute.
      colors: data-theme a|b|c, default b   (gi-theme.css)
-     fonts:  data-font  a|b|c, default a   (gi-fonts.css) */
+     fonts:  data-font  a|b|c, default a   (gi-fonts.css)
+     logo:   data-logo  a|b|c, default c   (gi-theme.css) */
 (function () {
   'use strict';
 
@@ -22,6 +23,14 @@
         { id: 'a', label: 'A · Current' },
         { id: 'b', label: 'B · Louder' },
         { id: 'c', label: 'C · Cleaner' }
+      ]
+    },
+    {
+      key: 'gi-logo', attr: 'data-logo', btnAttr: 'data-logo-set', def: 'c', label: 'Logo background',
+      items: [
+        { id: 'a', label: 'A · White' },
+        { id: 'b', label: 'B · Grey' },
+        { id: 'c', label: 'C · Clear' }
       ]
     }
   ];

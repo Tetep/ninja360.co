@@ -100,4 +100,23 @@ test.describe('GI color-scheme selector', () => {
     await expect(page.locator('.deck-card a[target="_blank"]')).toHaveCount(2);
     await expect(page.locator('.deck-card a[download]')).toHaveCount(2);
   });
+
+  test('logo-background picker: third group, default Clear, plate changes without reload', async ({ page }) => {
+    await open(page, '/gi/site');
+    const group = page.locator('.theme-switch[aria-label="Logo background"]');
+    await expect(group.locator('button')).toHaveText(['A · White', 'B · Grey', 'C · Clear']);
+    await expect(page.locator('html')).toHaveAttribute('data-logo', 'c');
+    const mark = page.locator('.brand .mark:not(.mark-light)');
+    const light = page.locator('.brand .mark-light');
+    // Clear on a dark scheme: the white-lettered logo, no plate
+    await expect(light).toBeVisible();
+    await expect(mark).toBeHidden();
+    await group.locator('button[data-logo-set="b"]').click();
+    await expect(mark).toBeVisible();
+    await expect(mark).toHaveCSS('background-color', 'rgb(175, 175, 175)');
+    await group.locator('button[data-logo-set="a"]').click();
+    await expect(mark).toHaveCSS('background-color', 'rgb(255, 245, 236)');
+    await page.reload({ waitUntil: 'load' });
+    await expect(page.locator('html')).toHaveAttribute('data-logo', 'a');
+  });
 });

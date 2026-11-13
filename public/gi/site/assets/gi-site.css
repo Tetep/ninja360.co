@@ -146,7 +146,7 @@ small,.small{font-size:.9rem}
 .host{display:flex;flex-direction:column;align-items:center;gap:8px}
 .host-photo{
   position:relative;width:96px;height:96px;border-radius:999px;overflow:hidden;
-  border:2px solid var(--gi-rule);background:var(--gi-card);cursor:pointer;
+  border:2px solid var(--gi-rule);background:var(--gi-deep);cursor:pointer;
   box-shadow:3px 3px 0 var(--gi-shadow-soft);
 }
 .host-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .2s ease}
