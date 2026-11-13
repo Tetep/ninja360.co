@@ -20,8 +20,10 @@
 <link rel="icon" type="image/png" href="../assets/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Kalam:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/gi-theme.css">
 <link rel="stylesheet" href="../assets/gi-site.css">
+<script src="../assets/gi-theme.js"></script>
 </head>
 <body>
 
@@ -67,19 +69,102 @@
   </div>
 </section>
 
-<section>
+<section class="gen-section">
   <div class="wrap">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="mic-streaming" viewBox="0 0 48 48"><rect x="19" y="3" width="12" height="20" rx="6"/><path d="M21 9h8M21 13h8M21 17h8"/><path d="M15 15v2a10 10 0 0 0 20 0v-2"/><path d="M25 27v5"/><path d="M25 32 12 39 9 44"/><path d="M4 44h11"/></symbol><symbol id="mic-earbud" viewBox="0 0 48 48"><circle cx="13" cy="8" r="4"/><circle cx="35" cy="8" r="4"/><path d="M13 12c0 10 8 12 11 16"/><path d="M35 12c0 10-8 12-11 16"/><rect x="21" y="27" width="6" height="9" rx="2"/><path d="M24 36v5"/><rect x="22" y="41" width="4" height="5" rx="1"/></symbol><symbol id="mic-headset" viewBox="0 0 48 48"><path d="M9 27a15 15 0 0 1 30 0"/><rect x="5" y="24" width="8" height="13" rx="3"/><rect x="35" y="24" width="8" height="13" rx="3"/><path d="M9 37c0 6 6 8 13 8"/><circle cx="25" cy="44" r="2.5"/></symbol><symbol id="mic-stage" viewBox="0 0 48 48"><circle cx="17" cy="13" r="9"/><path d="M10 10h14M9 14h16M11 18h12"/><path d="M22 20 35 39l-4 3-14-19"/><path d="M33 41c2 4 8 4 11 0"/></symbol><symbol id="mic-crooner" viewBox="0 0 48 48"><rect x="12" y="4" width="24" height="23" rx="10"/><path d="M18 7v17M24 5v21M30 7v17"/><path d="M24 27v6"/><path d="M18 33h12"/><path d="M24 33v10M15 44h18"/></symbol><symbol id="mic-broadcast" viewBox="0 0 48 48"><circle cx="24" cy="17" r="13"/><circle cx="24" cy="17" r="6"/><path d="M24 4v7M24 23v7M11 17h7M30 17h7"/><path d="M24 30v10M15 44h18"/></symbol></svg>
     <div class="kicker">The Panel</div>
-    <h2>The Four Seats</h2>
-    <div class="seats">
-      <div class="seat"><div class="gen">Gen Z</div><div class="age">approx. 18–27</div><div class="role">Grew up online. Fluent in everything new — allergic to “because that's how it's done.”</div></div>
-      <div class="seat"><div class="gen">Millennial</div><div class="age">approx. 28–43</div><div class="role">Raised analog, lives digital. Caught between every promise and every punchline.</div></div>
-      <div class="seat"><div class="gen">Gen X</div><div class="age">approx. 44–59</div><div class="role">The latchkey skeptics. Saw both worlds — trusts neither.</div></div>
-      <div class="seat"><div class="gen">Boomer</div><div class="age">approx. 60+</div><div class="role">Built the rules everyone else is arguing about. Not done defending them.</div></div>
+    <h2>Six Generations. Four Seats.</h2>
+    <ul class="gen-cards">
+      <li class="gen-card">
+        <div class="gen-card-head"><svg role="img" aria-label="Streaming mic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6"><use href="#mic-streaming"/></svg></div>
+        <div class="gen-card-body">
+          <h3 class="gen-name">Gen Z</h3>
+          <dl class="gen-fields">
+            <div><dt>Name</dt><dd class="gen-blank">Your name here</dd></div>
+            <div><dt>Job</dt><dd class="gen-blank">Your job here</dd></div>
+            <div class="gen-pair"><dt>Age</dt><dd>14–29</dd><dt>Born</dt><dd>1997–2012</dd></div>
+            <div><dt>Status</dt><dd class="gen-status">Starting careers &amp; first apartments</dd></div>
+          </dl>
+        </div>
+      </li>
+      <li class="gen-card">
+        <div class="gen-card-head"><svg role="img" aria-label="Earbud mic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6"><use href="#mic-earbud"/></svg></div>
+        <div class="gen-card-body">
+          <h3 class="gen-name">Millennial</h3>
+          <dl class="gen-fields">
+            <div><dt>Name</dt><dd class="gen-blank">Your name here</dd></div>
+            <div><dt>Job</dt><dd class="gen-blank">Your job here</dd></div>
+            <div class="gen-pair"><dt>Age</dt><dd>30–45</dd><dt>Born</dt><dd>1981–1996</dd></div>
+            <div><dt>Status</dt><dd class="gen-status">Raising kids &amp; paying mortgages</dd></div>
+          </dl>
+        </div>
+      </li>
+      <li class="gen-card">
+        <div class="gen-card-head"><svg role="img" aria-label="Headset mic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6"><use href="#mic-headset"/></svg></div>
+        <div class="gen-card-body">
+          <h3 class="gen-name">Gen X</h3>
+          <dl class="gen-fields">
+            <div><dt>Name</dt><dd class="gen-blank">Your name here</dd></div>
+            <div><dt>Job</dt><dd class="gen-blank">Your job here</dd></div>
+            <div class="gen-pair"><dt>Age</dt><dd>46–61</dd><dt>Born</dt><dd>1965–1980</dd></div>
+            <div><dt>Status</dt><dd class="gen-status">Sandwiched between kids &amp; parents</dd></div>
+          </dl>
+        </div>
+      </li>
+      <li class="gen-card">
+        <div class="gen-card-head"><svg role="img" aria-label="Stage mic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6"><use href="#mic-stage"/></svg></div>
+        <div class="gen-card-body">
+          <h3 class="gen-name">Boomer</h3>
+          <dl class="gen-fields">
+            <div><dt>Name</dt><dd class="gen-blank">Your name here</dd></div>
+            <div><dt>Job</dt><dd class="gen-blank">Your job here</dd></div>
+            <div class="gen-pair"><dt>Age</dt><dd>62–80</dd><dt>Born</dt><dd>1946–1964</dd></div>
+            <div><dt>Status</dt><dd class="gen-status">Retiring &amp; grandparenting</dd></div>
+          </dl>
+        </div>
+      </li>
+      <li class="gen-card">
+        <div class="gen-card-head"><svg role="img" aria-label="Crooner mic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6"><use href="#mic-crooner"/></svg></div>
+        <div class="gen-card-body">
+          <h3 class="gen-name is-long">Silent<br>Generation</h3>
+          <dl class="gen-fields">
+            <div><dt>Name</dt><dd class="gen-blank">Your name here</dd></div>
+            <div><dt>Job</dt><dd class="gen-blank">Your job here</dd></div>
+            <div class="gen-pair"><dt>Age</dt><dd>81–98</dd><dt>Born</dt><dd>1928–1945</dd></div>
+            <div><dt>Status</dt><dd class="gen-status">Retired &amp; full of stories</dd></div>
+          </dl>
+        </div>
+      </li>
+      <li class="gen-card">
+        <div class="gen-card-head"><svg role="img" aria-label="Broadcast mic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6"><use href="#mic-broadcast"/></svg></div>
+        <div class="gen-card-body">
+          <h3 class="gen-name is-long">Greatest<br>Generation</h3>
+          <dl class="gen-fields">
+            <div><dt>Name</dt><dd class="gen-blank">Your name here</dd></div>
+            <div><dt>Job</dt><dd class="gen-blank">Your job here</dd></div>
+            <div class="gen-pair"><dt>Age</dt><dd>99+</dd><dt>Born</dt><dd>1901–1927</dd></div>
+            <div><dt>Status</dt><dd class="gen-status">Living history</dd></div>
+          </dl>
+        </div>
+      </li>
+    </ul>
+    <div class="tech-legend">
+      <div class="tech-legend-top">
+        <p class="tech-title"><span class="tech-word">TECH</span> — the mic each generation grew up with</p>
+        <p class="tech-count">6 Generations <b>·</b> 4 Seats</p>
+      </div>
+      <ul class="tech-list">
+      <li><svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8"><use href="#mic-streaming"/></svg><span>Streaming mic<small>2010s</small></span></li>
+      <li><svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8"><use href="#mic-earbud"/></svg><span>Earbud mic<small>2000s</small></span></li>
+      <li><svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8"><use href="#mic-headset"/></svg><span>Headset mic<small>1980s</small></span></li>
+      <li><svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8"><use href="#mic-stage"/></svg><span>Stage mic<small>1960s</small></span></li>
+      <li><svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8"><use href="#mic-crooner"/></svg><span>Crooner mic<small>1950s</small></span></li>
+      <li><svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8"><use href="#mic-broadcast"/></svg><span>Broadcast mic<small>1930s</small></span></li>
+      </ul>
     </div>
     <!-- Panel structure is decision D2 — OPEN (content export §7, conflict C-E). Do not state the
          fixed-core / rotating-fourth hybrid as settled until the 2-of-3 vote is logged. -->
-    <p class="small muted" style="margin-top:14px">Every generation stays a voice, not a caricature — the seats are cast so each cohort argues for itself.</p>
+    <p class="small muted" style="margin-top:22px">Every generation stays a voice, not a caricature — the seats are cast so each cohort argues for itself.</p>
   </div>
 </section>
 

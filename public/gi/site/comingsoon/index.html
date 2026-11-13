@@ -17,74 +17,83 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/gi-theme.css">
+<script src="../assets/gi-theme.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Kalam:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
+  /* Colors come from gi-theme.css (schemes A/B/C on <html data-theme>, B default);
+     this page only maps its own names onto those tokens. The hero logo card keeps
+     a literal #FFF5EC: it is the V3b art's own baked-in cream ground, so the image
+     edge stays invisible in every scheme. */
   :root{
-    --paper:#F3E4D3;
-    --card:#C6B49C;
-    --ink:#151412;
-    --rust:#C41E1D;
+    --paper:var(--gi-bg);
+    --card:var(--gi-card);
+    --ink:var(--gi-ink);
+    --rust:var(--gi-accent);
+    --edge:var(--gi-rule);
+    --lift:var(--gi-shadow);
   }
   * { box-sizing: border-box; }
   html,body{ margin:0; padding:0; background:var(--paper); }
   body{
     min-height:100vh;
-    font-family:'Montserrat',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+    font-family:var(--gi-font-body);
+    font-size:17px;
     color:var(--ink);
     display:flex;
+    flex-direction:column;
     align-items:center;
-    justify-content:center;
-    padding:48px 20px;
+    padding:48px 20px 0;
     position:relative;
     overflow-x:hidden;
   }
   body::before{
     content:"";
     position:fixed; inset:0;
-    background-image:radial-gradient(circle at 1px 1px, rgba(21,20,18,0.06) 1px, transparent 1px);
+    background-image:radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ink) 6%, transparent) 1px, transparent 1px);
     background-size:10px 10px;
     mix-blend-mode:overlay;
     pointer-events:none;
   }
   .wrap{
     position:relative; z-index:2;
-    width:100%; max-width:760px;
+    width:100%; max-width:760px; margin:auto;
     display:flex; flex-direction:column; align-items:center; gap:26px;
   }
   /* Hero logo card — panel is #FFF5EC to match the V3b art's baked cream
      ground, so the image edge is invisible. */
   .logo-wrap{
     position:relative; display:inline-flex; margin:8px 0 0; padding:16px 20px;
-    background:#FFF5EC; border:2px solid var(--ink); box-shadow:6px 6px 0 var(--ink);
+    background:#FFF5EC; border:var(--gi-card-line) var(--gi-card-rule); box-shadow:6px 6px 0 var(--lift);
   }
   .logo{ max-width:min(420px, 82vw); height:auto; display:block; }
   .kicker{
-    font-size:12px; letter-spacing:0.2em; color:var(--paper);
-    background:var(--rust); padding:8px 18px;
-    border:2px solid var(--ink); box-shadow:4px 4px 0 var(--ink);
+    font-size:13px; letter-spacing:0.2em; color:var(--gi-on-accent);
+    background:var(--gi-rule-accent); padding:8px 18px;
+    border:2px solid var(--edge); box-shadow:4px 4px 0 var(--edge);
     text-transform:uppercase; font-weight:700; text-align:center;
   }
 
   .tagline{
-    font-size:15px; max-width:520px; text-align:center; line-height:1.6; opacity:0.88;
+    font-size:17px; max-width:520px; text-align:center; line-height:1.55; opacity:0.88;
   }
   .cta{
-    padding:14px 26px; border:2px solid var(--ink); background:var(--rust); color:var(--paper);
-    font-family:'Anton',sans-serif; font-weight:400; letter-spacing:0.08em; text-transform:uppercase;
-    font-size:13px; border-radius:999px; cursor:pointer; box-shadow:4px 4px 0 var(--ink);
+    padding:14px 26px; border:2px solid var(--edge); background:var(--rust); color:var(--gi-on-accent);
+    font-family:var(--gi-font-display); font-weight:400; letter-spacing:0.08em; text-transform:uppercase;
+    font-size:13px; border-radius:999px; cursor:pointer; box-shadow:4px 4px 0 var(--edge);
     text-decoration:none; display:inline-block;
   }
   .hosts-label{
-    font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; font-weight:700;
-    opacity:0.6; text-align:center;
+    font-size:12px; letter-spacing:0.14em; text-transform:uppercase; font-weight:700;
+    opacity:0.7; text-align:center;
   }
   .hosts{ display:flex; gap:20px; justify-content:center; flex-wrap:wrap; }
   .host{ display:flex; flex-direction:column; align-items:center; gap:8px; }
   .host-photo{
     position:relative; width:96px; height:96px; border-radius:999px; overflow:hidden;
-    border:2px solid var(--ink); background:var(--card); cursor:pointer;
+    border:2px solid var(--gi-card-rule); background:var(--card); cursor:pointer;
   }
   .host-photo img{
     position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
@@ -93,47 +102,49 @@
   .host-photo .host-face{ opacity:0; }
   .host-photo:hover .host-logo, .host-photo.flipped .host-logo{ opacity:0; }
   .host-photo:hover .host-face, .host-photo.flipped .host-face{ opacity:1; }
-  .host span{ font-size:11px; font-weight:700; text-align:center; }
-  .host .host-company{ font-size:9.5px; font-weight:600; opacity:0.65; text-transform:uppercase; letter-spacing:0.04em; }
+  .host span{ font-size:14px; font-weight:700; text-align:center; }
+  .host .host-company{ font-size:11px; font-weight:700; opacity:0.75; text-transform:uppercase; letter-spacing:0.04em; }
   .countdown{
     display:flex; gap:12px; flex-wrap:wrap; justify-content:center;
-    background:var(--card); border:2px solid var(--ink); padding:18px 22px;
-    box-shadow:6px 6px 0 var(--ink);
+    background:var(--card); color:var(--gi-card-ink); border:var(--gi-card-line) var(--gi-card-rule); padding:18px 22px;
+    box-shadow:6px 6px 0 var(--lift);
   }
   .unit{ display:flex; flex-direction:column; align-items:center; gap:6px; }
   .unit .tile{
-    position:relative; width:64px; height:76px; background:var(--ink);
-    border-radius:6px; overflow:hidden; box-shadow:inset 0 0 0 1px var(--ink);
+    position:relative; width:64px; height:76px; background:var(--gi-card-head);
+    border-radius:6px; overflow:hidden; box-shadow:inset 0 0 0 1px var(--gi-card-head);
     display:flex; align-items:center; justify-content:center;
   }
   .unit .tile span{
-    font-family:'Anton', sans-serif; font-size:36px; color:var(--paper);
-    text-shadow:0 0 12px rgba(196,30,29,0.4);
+    font-family:var(--gi-font-display); font-size:36px; color:var(--gi-card-head-ink);
+    text-shadow:0 0 12px color-mix(in srgb, var(--gi-accent) 40%, transparent);
   }
   .unit .tile::after{
     content:""; position:absolute; left:0; right:0; top:50%; height:2px;
-    background:var(--rust); transform:translateY(-1px);
+    background:var(--gi-card-accent); transform:translateY(-1px);
   }
-  .unit label{ font-size:11px; letter-spacing:0.15em; text-transform:uppercase; font-weight:700; }
+  .unit label{ font-size:12px; letter-spacing:0.15em; text-transform:uppercase; font-weight:700; }
   form.notify{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; width:100%; max-width:440px; }
   form.notify input[type=email]{
-    flex:1; min-width:200px; padding:14px 16px; border:2px solid var(--ink);
-    background:var(--card); color:var(--ink); font-family:'Montserrat',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
-    font-size:14px; border-radius:999px; outline:none;
+    flex:1; min-width:200px; padding:14px 16px; border:2px solid var(--gi-card-rule);
+    background:var(--card); color:var(--gi-card-ink); font-family:var(--gi-font-body);
+    font-size:16px; border-radius:999px; outline:none;
   }
+  form.notify input[type=email]::placeholder{ color:var(--gi-card-muted); opacity:1; }
+  form.notify input[type=email]:focus-visible{ outline:3px solid var(--gi-accent); outline-offset:2px; }
   form.notify button{
-    padding:14px 26px; border:2px solid var(--ink); background:var(--rust); color:var(--paper);
-    font-family:'Anton',sans-serif; font-weight:400; letter-spacing:0.08em; text-transform:uppercase;
-    font-size:13px; border-radius:999px; cursor:pointer; box-shadow:4px 4px 0 var(--ink);
+    padding:14px 26px; border:2px solid var(--edge); background:var(--rust); color:var(--gi-on-accent);
+    font-family:var(--gi-font-display); font-weight:400; letter-spacing:0.08em; text-transform:uppercase;
+    font-size:13px; border-radius:999px; cursor:pointer; box-shadow:4px 4px 0 var(--edge);
   }
-  .thanks{ color:var(--rust); font-weight:700; letter-spacing:0.08em; text-transform:uppercase; font-size:14px; text-align:center; }
+  .thanks{ color:var(--gi-accent-small); font-weight:700; letter-spacing:0.08em; text-transform:uppercase; font-size:15px; text-align:center; }
   .socials{ display:flex; gap:10px; }
   .socials a{
     width:38px; height:38px; display:flex; align-items:center; justify-content:center;
-    font-size:16px; border:2px solid var(--ink); color:var(--paper); background:var(--rust);
+    font-size:16px; border:2px solid var(--edge); color:var(--gi-on-accent); background:var(--rust);
     text-decoration:none; border-radius:4px;
   }
-  .foot{ font-size:11px; opacity:0.5; letter-spacing:0.1em; text-transform:uppercase; text-align:center; }
+  .foot{ font-size:12px; opacity:0.75; letter-spacing:0.1em; text-transform:uppercase; text-align:center; }
   #ghl-notify-frame{ display:none; }
   /* easter egg — small, glowing, not linked from nav */
   .egg-link{ display:block; margin-top:4px; }
@@ -148,6 +159,14 @@
     0%,100%{ filter:drop-shadow(0 0 6px rgba(255,140,0,.85)) drop-shadow(0 0 14px rgba(255,140,0,.5)); }
     50%{ filter:drop-shadow(0 0 10px rgba(255,140,0,1)) drop-shadow(0 0 22px rgba(255,140,0,.75)); }
   }
+  /* color-scheme picker strip (gi-theme.js builds the A/B/C buttons into the mount) */
+  .themebar{
+    position:relative; z-index:2; align-self:stretch; margin:48px -20px 0;
+    background:var(--gi-band); color:var(--gi-band-soft); border-top:4px double var(--gi-band-rule);
+    padding:14px 24px 22px;
+  }
+  .themebar-in{ max-width:760px; margin:0 auto; }
+  .themebar .theme-switch{ margin-top:0; padding-top:0; border-top:0; }
 </style>
 </head>
 <body>
@@ -219,6 +238,8 @@
 
   <a class="egg-link" href="../dashboard/" aria-label="Design reference"><img class="egg" src="../assets/head-ninja-tim.png" alt=""></a>
 </div>
+
+<div class="themebar"><div class="themebar-in" data-theme-switch-mount></div></div>
 
 <!--
   NOTIFY-ME SUBMISSION — WIRING NEEDED
