@@ -55,6 +55,7 @@ const routes = [
   '/gi/site/business-plan',
   '/gi/site/business-plan/youtube-strategy',
   '/gi/site/strategy',
+  '/gi/site/call',
   '/gi/site/dashboard',
 ];
 
