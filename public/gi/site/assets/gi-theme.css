@@ -239,3 +239,7 @@
 .theme-switch-bar{background:var(--gi-band);border-top:4px double var(--gi-band-rule);padding:20px 24px 28px}
 .theme-switch-bar .theme-switch{max-width:920px;margin:0 auto;padding-top:0;border-top:0}
 @media(max-width:640px){.theme-switch-bar{padding:18px 16px 24px}}
+
+/* second picker (fonts) stacks under the colors: one rule, two rows */
+.theme-switch + .theme-switch{margin-top:8px;padding-top:0;border-top:0}
+.theme-switch-bar .theme-switch + .theme-switch{margin:8px auto 0}

@@ -32,7 +32,7 @@ test.describe('GI color-scheme selector', () => {
       await expect(page.locator('html')).toHaveAttribute('data-theme', 'b');
       await expect(page.locator('body')).toHaveCSS('background-color', BG.b);
 
-      const buttons = page.locator('.theme-switch button');
+      const buttons = page.locator('.theme-switch[aria-label="Color scheme"] button');
       await expect(buttons).toHaveText(['A · Original', 'B · Our Pick', 'C · Paper']);
       for (let i = 0; i < 3; i++) {
         const box = await buttons.nth(i).boundingBox();
@@ -76,5 +76,28 @@ test.describe('GI color-scheme selector', () => {
     await expect(page.locator('.tech-list li')).toHaveCount(6);
     await expect(page.locator('.tech-count')).toContainText('6 Generations');
     await expect(page.locator('.tech-count')).toContainText('4 Seats');
+  });
+
+  test('font picker: second group, default A, switches data-font only, persists', async ({ page }) => {
+    await open(page, '/gi/site');
+    const group = page.locator('.theme-switch[aria-label="Font set"]');
+    await expect(group).toHaveCount(1);
+    await expect(group.locator('button')).toHaveText(['A · Current', 'B · Louder', 'C · Cleaner']);
+    await expect(page.locator('html')).toHaveAttribute('data-font', 'a');
+    await expect(group.locator('button').nth(0)).toHaveAttribute('aria-pressed', 'true');
+    await group.locator('button[data-font-set="b"]').click();
+    await expect(page.locator('html')).toHaveAttribute('data-font', 'b');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'b'); // colors untouched
+    await expect(page.locator('h1').first()).toHaveCSS('font-family', /Bebas Neue/);
+    await page.reload({ waitUntil: 'load' });
+    await expect(page.locator('html')).toHaveAttribute('data-font', 'b');
+  });
+
+  test('/strategy: both decks have View (new tab) and Download buttons', async ({ page }) => {
+    await open(page, '/gi/site/strategy');
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,nofollow');
+    await expect(page.locator('.deck-card')).toHaveCount(2);
+    await expect(page.locator('.deck-card a[target="_blank"]')).toHaveCount(2);
+    await expect(page.locator('.deck-card a[download]')).toHaveCount(2);
   });
 });
