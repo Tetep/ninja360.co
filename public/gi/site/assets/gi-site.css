@@ -353,6 +353,10 @@ footer .small b{color:var(--gi-band-link-hover)}
 .bizplan-door img{width:160px;height:auto;display:block}
 .bizplan-door:focus-visible{outline:3px solid var(--gi-accent);outline-offset:4px;border-radius:4px}
 @media(max-width:640px){.bizplan-door img{width:120px}}
+/* the same image used as the big "open the full plan" button on the Business Plan page */
+.bizplan-full{padding:36px 0 8px}
+.bizplan-full .bizplan-door img{width:min(380px,78vw);transition:transform 150ms ease}
+.bizplan-full .bizplan-door:hover img{transform:translateY(-2px)}
 
 /* ---------- business plan splash page ---------- */
 .bp-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}

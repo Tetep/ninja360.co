@@ -139,4 +139,11 @@ test.describe('GI color-scheme selector', () => {
     const glow = await mark.evaluate((el) => getComputedStyle(el).filter);
     expect((glow.match(/drop-shadow/g) || []).length).toBe(1);
   });
+
+  test('Business Plan page: the image button opens The Plan (strategy decks)', async ({ page }) => {
+    await open(page, '/gi/site/business-plan');
+    const door = page.locator('.bizplan-full a.bizplan-door');
+    await expect(door).toHaveAttribute('href', '/gi/site/strategy/');
+    await expect(door.locator('img')).toBeVisible();
+  });
 });
