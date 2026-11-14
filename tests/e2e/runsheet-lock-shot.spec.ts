@@ -1180,3 +1180,256 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------------------------------------------------
+// POTENTIAL stores — 41 Verizon-agent stores from Tim's email of Fri 11/13 (southern Illinois, southwest Indiana). They are a
+// teal-blue map layer and nothing else: not in the book, so no points, no route, no invoice, no count. The rows below are the
+// email's own text; the app's table has to match them exactly, in order.
+// ---------------------------------------------------------------------------------------------------------------------
+const EMAIL_ROWS = `TCC|80617|3373 S Us Highway 41|Terre Haute|IN
+Verizon|74614|2902 1/2 W Deyoung St|Marion|IL
+TCC|75214|2001 N Green River Rd|Evansville|IN
+Verizon|74613|1230 E Main St Space 25|Carbondale|IL
+TCC|120420|402 N Commercial St|Harrisburg|IL
+Wireless Zone|130544|1125 State St|Lawrenceville|IL
+Victra|77393|1501 Willow St|Vincennes|IN
+TCC|76777|2339 S State Road 46|Terre Haute|IN
+TCC|94127|1017 Commerce Dr|Fairfield|IL
+Wireless Zone|130823|935 N Route 49|Casey|IL
+TCC|75160|34 Southtowne Shopping Center|Du Quoin|IL
+Russell Cellular|125748|808 Lehman Dr|Chester|IL
+Russell Cellular|125746|1418 Sparta Centre Dr|Sparta|IL
+BeMobile|94037|2128 N Main St|Princeton|IL
+TCC|76778|5000 W Lloyd Expy|Evansville|IN
+TCC|120419|1340 Il Highway 1 Ste G|Carmi|IL
+Gee Papa Ent, Inc DBA Team Wireless|130494|541 N West St|Olney|IL
+TCC|81341|2709 W Broadway St Ste B|Princeton|IN
+TCC|75159|109 N Central St|Benton|IL
+Gee Papa Ent, Inc DBA Team Wireless|130496|812 E Main St|Robinson|IL
+Russell Cellular|130937|110 S Henrietta St|Effingham|IL
+TCC|76772|2603 Hart Street|Vincennes|IN
+Wireless Zone|76244|900 E Fayette Ave.|Effingham|IL
+Victra|109238|125 Leigh Ste A|Anna|IL
+TCC|75164|1445B West Whittaker|Salem|IL
+TCC|142228|4201 Broadway St Ste B|Mount Vernon|IL
+Wireless Zone|91609|1304 Thelma Keller Ave.|Effingham|IL
+TCC|75166|1144 W Mccord St|Centralia|IL
+Cellular Sales of Knoxville|130459|1452 Fort Harrison Rd|Terre Haute|IN
+TCC|130377|1323 E Hackberry St Unit 101|Salem|IN
+Wireless Zone|129473|1201 E. 5Th St|Metropolis|IL
+Russell Cellular|110134|301 Mattes Ave. Ste 307|Vandalia|IL
+Russell Cellular|125745|252 South Mill St|Nashville|IL
+TCC|81319|1230 N. Baldwin Avenue|Marion|IN
+TCC|110361|939 N Burkhardt Rd Ste C|Evansville|IN
+TCC|75158|230 E 9Th St|Mount Carmel|IL
+Gee Papa Ent, Inc DBA Team Wireless|130488|1304 N Michigan Ave|Marshall|IL
+TCC|75162|1190 Franklin St|Carlyle|IL
+TCC|95393|8300 Bell Oaks Drive Ste C|Newburgh|IN
+Wireless Zone|127937|118 W Washington St|Newton|IL
+Wireless Zone|127338|1480 N Worthey St|Flora|IL`.split('\n');
+
+const NEW_HOME = '3205 NE 70th Terrace, Gladstone, MO 64119';
+const TEAL = 'rgb(10, 157, 181)';   // #0A9DB5 — the POTENTIAL pins
+// Leaflet comes from its CDN. A machine that cannot reach the CDN points LEAFLET_JS at a local copy of leaflet.js (npm pack leaflet@1.9.4).
+const LEAFLET_JS = process.env.LEAFLET_JS || '';
+async function openMap(page: Page, seed: Record<string, unknown>) {
+  if (LEAFLET_JS) await page.route(/leaflet(\.min)?\.js/, r => r.fulfill({ path: LEAFLET_JS, contentType: 'application/javascript' }));
+  await open(page, seed);
+  const hasL = await page.evaluate(() => typeof (window as any).L !== 'undefined' && !!(window as any).L.map);
+  test.skip(!hasL, 'Leaflet did not load (no CDN and no LEAFLET_JS) — there is no map to draw pins on');
+  await page.locator('#lmap').scrollIntoViewIfNeeded();
+  await expect(page.locator('#lmap .leaflet-tile-pane')).toHaveCount(1);
+}
+const ev = (page: Page, code: string) => page.evaluate(c => (window as any).eval(c), code);
+// the container pixel of a POTENTIAL store on the map, as page coordinates — what a thumb would touch
+const potPoint = (page: Page, id: string, above = 20) => page.evaluate(([i, a]) => {
+  const G: any = window, p = G.eval('PBY[' + JSON.stringify(i) + ']'), q = G.eval('LMAP').latLngToContainerPoint(p.ll), b = document.querySelector('#lmap')!.getBoundingClientRect();
+  return { x: b.left + q.x, y: b.top + q.y - (a as number) };
+}, [id, above] as const);
+
+test.describe('run sheet — POTENTIAL stores: teal pins on the map, apart from the book', () => {
+  test('the 41 stores are exactly the email, none is a job, and nothing counts them', async ({ page }) => {
+    await open(page, state());
+    expect(await ev(page, "POTENTIAL.map(p=>[p.cl,p.site,p.a,p.c,p.s].join('|'))")).toEqual(EMAIL_ROWS);
+    expect(await ev(page, 'new Set(POTENTIAL.map(p=>p.id)).size')).toBe(41);
+    expect(await ev(page, "POTENTIAL.reduce((m,p)=>(m[p.s]=(m[p.s]||0)+1,m),{})")).toEqual({ IL: 29, IN: 12 });
+    // the dealer reads short on the pin and the sheet; the legal name rides along
+    expect(await ev(page, "POTENTIAL.filter(p=>p.dl==='Team Wireless').map(p=>p.cl)")).toEqual(Array(3).fill('Gee Papa Ent, Inc DBA Team Wireless'));
+    // not a job: not in the book, not in J / BY, and no store number or address of theirs is in it either
+    expect(await ev(page, 'POTENTIAL.filter(p=>BY[p.id]||J.some(j=>String(j.site)===p.site)||DATA.jobs.some(j=>String(j.site)===p.site)).length')).toBe(0);
+    expect(await ev(page, 'J.length===DATA.jobs.filter(j=>!RETIRED[j.id]).length')).toBe(true);
+    // every one starts at its town's centre, inside the two states, until the app places the address
+    expect(await ev(page, 'POTENTIAL.every(p=>p.geo===0&&p.ll[0]>36.9&&p.ll[0]<41.8&&p.ll[1]>-91.6&&p.ll[1]<-85.0)')).toBe(true);
+    // hiding or showing the layer moves no number on the sheet
+    const before = await page.locator('#counters').innerText();
+    await page.locator('#potTog').click();
+    await page.locator('#potTog').click();
+    expect(await page.locator('#counters').innerText()).toBe(before);
+  });
+
+  test('the legend names POTENTIAL, the list opens to 41 rows, and a row opens the store', async ({ page }) => {
+    await open(page, state());
+    const leg = page.locator('#potLeg');
+    await expect(leg).toContainText('POTENTIAL');
+    await expect(leg).toContainText('not on the run sheet');
+    await expect(leg).toContainText('41 stores');
+    await expect(leg.locator('i')).toHaveCSS('background-color', TEAL);
+    await expect(page.locator('#potTog')).toHaveText('Hide');
+    await expect(page.locator('#potFit')).toBeEnabled();
+    await expect(page.locator('#potList summary')).toContainText('The 41 POTENTIAL stores');
+    await expect(page.locator('#potList summary')).toContainText('29 IL · 12 IN');
+    await expect(page.locator('#potList')).not.toHaveAttribute('open', '');
+    await page.locator('#potList summary').click();
+    await expect(page.locator('#potList [data-pot]')).toHaveCount(41);
+    await expect(page.locator('#potList [data-pot]').first()).toContainText('Victra 109238');   // Illinois first, then by town: Anna
+    await expect(page.locator('#potList [data-pot]').first()).toContainText('Anna, IL');
+    for (const width of [320, 360, 390]) {
+      await page.setViewportSize({ width, height: 800 });
+      await noSidewaysScroll(page, 'Plan tab with the POTENTIAL list open at ' + width);
+    }
+    await page.locator('#potList [data-pot]').first().click();
+    const sheet = page.locator('.sheet');
+    await expect(sheet).toContainText('POTENTIAL · Victra 109238');
+    await expect(sheet).toContainText('125 Leigh Ste A, Anna, IL');
+    await expect(sheet).toContainText('not on the run sheet yet');
+    await expect(sheet).toContainText('No points, no route and no invoice');
+    await expect(sheet.locator('a.pdir')).toHaveAttribute('href', /destination=125%20Leigh%20Ste%20A%2C%20Anna%2C%20IL$/);
+    // the sheet sits on top of the page and the page still fits
+    await noSidewaysScroll(page, 'the POTENTIAL sheet');
+  });
+
+  test('teal pins, one per place, with a count where a town has several; the map still opens on the route', async ({ page }) => {
+    await openMap(page, state());
+    // the opening frame is today's route (Bolivar and Buffalo, MO) — the potential stores do not pull it east
+    expect(await ev(page, 'LMAP.getBounds().contains(BASE)')).toBe(true);
+    expect(await ev(page, "LMAP.getBounds().contains(PBY['pot:80617'].ll)")).toBe(false);
+    await page.locator('#potFit').click();
+    expect(await ev(page, "[...POTENTIAL.map(p=>p.ll)].every(ll=>LMAP.getBounds().contains(ll))&&LMAP.getBounds().contains(BASE)")).toBe(true);
+    // 41 stores in 34 towns: 34 pins, all teal
+    const pins = page.locator('#lmap .leaflet-marker-icon.pot');
+    await expect(pins).toHaveCount(34);
+    const colours = await pins.evaluateAll(els => els.map(e => { const d = e.querySelector('.ndot, .npin .head') as HTMLElement; return getComputedStyle(d).backgroundImage; }));
+    expect(colours.every(c => c.includes('rgb(10, 157, 181)'))).toBe(true);
+    // zoom to Effingham (three stores) — a teardrop with a 3 on it, teal head and tail
+    await ev(page, "LMAP.setView(PBY['pot:76244'].ll,12,{animate:false})");
+    const eff = page.locator('#lmap .leaflet-marker-icon.pot:has(.nbadge .pn)').filter({ hasText: '3' });
+    await expect(eff.locator('.npin .head')).toHaveCount(3);   // Effingham, Evansville and Terre Haute all hold three
+    expect(await eff.first().locator('.npin .head').evaluate(e => getComputedStyle(e).backgroundImage)).toContain(TEAL);
+    expect(await eff.first().locator('.npin .tail').evaluate(e => getComputedStyle(e).backgroundImage)).toContain(TEAL);
+    // the book's own pins are unchanged: still brand colours, never teal
+    const jobs = page.locator('#lmap .leaflet-marker-icon.npx:not(.pot)');
+    expect(await jobs.count()).toBeGreaterThan(0);
+    expect(await jobs.evaluateAll(els => els.some(e => { const d = e.querySelector('.head, .ndot') as HTMLElement | null; return !!d && getComputedStyle(d).backgroundImage.includes('rgb(10, 157, 181)'); }))).toBe(false);
+  });
+
+  test('tapping a pin opens the store; a town with three stores opens all three', async ({ page }) => {
+    await openMap(page, state());
+    await page.locator('#potFit').click();
+    await ev(page, "LMAP.setView(PBY['pot:76244'].ll,12,{animate:false})");
+    await page.locator('#lmap').scrollIntoViewIfNeeded();
+    const pt = await potPoint(page, 'pot:76244');
+    await page.mouse.click(pt.x, pt.y);
+    const sheet = page.locator('.sheet');
+    await expect(sheet).toContainText('POTENTIAL · Effingham, IL');
+    await expect(sheet).toContainText('3 stores here');
+    for (const t of ['Russell Cellular 130937', 'Wireless Zone 76244', 'Wireless Zone 91609', '110 S Henrietta St, Effingham, IL', '900 E Fayette Ave., Effingham, IL', '1304 Thelma Keller Ave., Effingham, IL'])
+      await expect(sheet).toContainText(t);
+    // "Show on map" closes the sheet and centres that store
+    await sheet.getByRole('button', { name: 'Show on map' }).first().click();
+    await expect(page.locator('.sheet')).toHaveCount(0);
+    expect(await ev(page, "(()=>{const c=LMAP.getCenter(),p=PBY['pot:130937'].ll; return Math.abs(c.lat-p[0])<1e-3&&Math.abs(c.lng-p[1])<1e-3})()")).toBe(true);
+    expect(await ev(page, 'LMAP.getZoom()')).toBe(12);   // the address has not been placed yet, so it stops at the town, not the door
+  });
+
+  test('Hide takes the layer off the map, Show brings it back, and the choice stays on this device', async ({ page }) => {
+    await openMap(page, state());
+    await page.locator('#potFit').click();
+    await expect(page.locator('#lmap .leaflet-marker-icon.pot')).toHaveCount(34);
+    await page.locator('#potTog').click();
+    await expect(page.locator('#potTog')).toHaveText('Show');
+    await expect(page.locator('#potFit')).toBeDisabled();
+    await expect(page.locator('#lmap .leaflet-marker-icon.pot')).toHaveCount(0);
+    expect(await page.evaluate(() => localStorage.getItem('ninja360-potential-view'))).toBe('off');
+    expect(JSON.stringify(await saved(page))).not.toContain('ninja360-potential-view');   // a view setting: not in the synced state
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#potTog')).toHaveText('Show');
+    await expect(page.locator('#lmap .leaflet-marker-icon.pot')).toHaveCount(0);
+    await page.locator('#potTog').click();
+    await expect(page.locator('#potTog')).toHaveText('Hide');
+    await page.locator('#potFit').click();
+    await expect(page.locator('#lmap .leaflet-marker-icon.pot')).toHaveCount(34);
+  });
+
+  test('the app places each store at its street address, once, and drops an answer from the wrong place', async ({ page }) => {
+    await open(page, state());
+    const pot = await ev(page, 'POTENTIAL.map(p=>p.id)') as string[];
+    const jobsToPlace = await ev(page, 'J.filter(j=>j.geo===0).map(j=>j.id)') as string[];
+    const asked: string[] = [];
+    await page.route(/nominatim\.openstreetmap\.org/, r => {
+      const q = decodeURIComponent(new URL(r.request().url()).searchParams.get('q') || ''); asked.push(q);
+      const hit = (lat: number, lon: number) => r.fulfill({ json: [{ lat: String(lat), lon: String(lon), place_rank: 30 }] });
+      if (/^935 N Route 49, Casey, IL/.test(q)) return hit(39.3005, -87.9911);
+      if (q === '1340 Il Highway 1 Ste G, Carmi, IL') return r.fulfill({ json: [] });          // the suite defeats the geocoder…
+      if (q === '1340 Il Highway 1, Carmi, IL') return hit(38.085, -88.17);                    // …so it is asked again without it
+      if (/^118 W Washington St, Newton, IL/.test(q)) return hit(30.84, -93.75);              // a Newton, Texas — 800 miles off
+      return r.fulfill({ json: [] });
+    });
+    // the book's rows, the house and every store but three are already placed, so only those three are looked up
+    const leave = new Set(['pot:130823', 'pot:120419', 'pot:127937']);
+    const geo: Record<string, unknown> = { home: [39.2201, -94.5199], homeFor: NEW_HOME, 'place:crane': [36.9, -93.57] };
+    jobsToPlace.forEach(id => { geo[id] = [38.9, -92.3]; });
+    pot.filter(id => !leave.has(id)).forEach(id => { geo[id] = [38.5, -89.0]; });
+    await page.evaluate(([k, v]) => localStorage.setItem(k as string, JSON.stringify(v)), [LSKEY, state({ geo })] as const);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect.poll(async () => { const g = (await saved(page)).geo || {}; return ['pot:130823', 'pot:120419'].every(k => g[k]); }, { timeout: 20_000 }).toBe(true);
+    const g = (await saved(page)).geo;
+    expect(g['pot:130823']).toEqual([39.3005, -87.9911]);
+    expect(g['pot:120419']).toEqual([38.085, -88.17]);
+    expect(g['pot:127937'], 'the Texas answer is dropped, so Newton stays at its town centre to be tried again').toBeUndefined();
+    expect(await ev(page, "PBY['pot:130823'].geo")).toBe(1);
+    expect(await ev(page, "PBY['pot:127937'].geo")).toBe(0);
+    expect(await ev(page, "PBY['pot:80617'].ll")).toEqual([38.5, -89.0]);                    // a placed one comes back from the saved state
+    expect(asked.filter(q => /Carmi/.test(q))).toEqual(['1340 Il Highway 1 Ste G, Carmi, IL', '1340 Il Highway 1, Carmi, IL']);
+    expect(asked.filter(q => /Casey/.test(q))).toHaveLength(1);
+  });
+
+  test('the house: the address Tim gave, looked up again once, and only street-level answers replace a saved fix', async ({ page }) => {
+    await open(page, state());
+    expect(await ev(page, 'HOME_ADDR')).toBe(NEW_HOME);
+    const asked: string[] = [];
+    let rank = 30;
+    await page.route(/nominatim\.openstreetmap\.org/, r => {
+      const q = decodeURIComponent(new URL(r.request().url()).searchParams.get('q') || ''); asked.push(q);
+      return r.fulfill({ json: q.startsWith('3205 NE 70th Terrace') ? [{ lat: '39.2201', lon: '-94.5199', place_rank: rank }] : [] });
+    });
+    // a fix saved under the old spelling — Kansas City, no ZIP — is looked up once more with the new address…
+    await page.evaluate(([k, v]) => localStorage.setItem(k as string, JSON.stringify(v)), [LSKEY, state({ geo: { home: [39.185, -94.546] } })] as const);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect.poll(async () => (await saved(page)).geo?.homeFor, { timeout: 15_000 }).toBe(NEW_HOME);
+    expect((await saved(page)).geo.home).toEqual([39.2201, -94.5199]);
+    expect(await ev(page, 'BASE')).toEqual([39.2201, -94.5199]);
+    expect(asked[0]).toBe(NEW_HOME);
+    // …and not again on the next load
+    const n = asked.filter(q => q.startsWith('3205')).length;
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(2_500);
+    expect(asked.filter(q => q.startsWith('3205')).length).toBe(n);
+  });
+
+  test('the house: a town-level answer never replaces the saved fix', async ({ page }) => {
+    await open(page, state());
+    const asked: string[] = [];
+    await page.route(/nominatim\.openstreetmap\.org/, r => {
+      const q = decodeURIComponent(new URL(r.request().url()).searchParams.get('q') || ''); asked.push(q);
+      return r.fulfill({ json: q.startsWith('3205 NE 70th Terrace') ? [{ lat: '39.2039', lon: '-94.5547', place_rank: 16 }] : [] });   // just "Gladstone"
+    });
+    await page.evaluate(([k, v]) => localStorage.setItem(k as string, JSON.stringify(v)), [LSKEY, state({ geo: { home: [39.2201, -94.5199], homeFor: 'an older spelling' } })] as const);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect.poll(() => asked.filter(q => q.startsWith('3205 NE 70th Terrace')).length, { timeout: 15_000 }).toBe(2);   // as written, then under its post-office city
+    expect(asked[1]).toBe('3205 NE 70th Terrace, Kansas City, MO 64119');
+    const g = (await saved(page)).geo;
+    expect(g.home).toEqual([39.2201, -94.5199]);
+    expect(g.homeFor).toBe('an older spelling');
+    expect(await ev(page, 'BASE')).toEqual([39.2201, -94.5199]);
+  });
+});
