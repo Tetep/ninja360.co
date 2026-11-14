@@ -7,13 +7,13 @@ import path from 'node:path';
 // preview 404s that URL, and without the slash the assets resolve one level
 // too high and never load. So: request the real trailing-slash URL and answer
 // it with the built file, exactly as production would.
-async function open(page: Page, route: string) {
+async function open(page: Page, route: string, query = '') {
   const url = route + '/';
   const file = path.join(process.cwd(), 'dist', route, 'index.html');
-  await page.route('**' + url, async (r) => {
+  await page.route((u) => u.pathname === url, async (r) => {
     await r.fulfill({ status: 200, contentType: 'text/html', body: await readFile(file, 'utf8') });
   });
-  await page.goto(url, { waitUntil: 'load' });
+  await page.goto(url + query, { waitUntil: 'load' });
 }
 
 const pages = ['/gi/site', '/gi/site/about', '/gi/site/contact'];
@@ -158,5 +158,32 @@ test.describe('GI color-scheme selector', () => {
     await page.locator('#callChecks input[data-k="colors"]').check();
     await page.reload({ waitUntil: 'load' });
     await expect(page.locator('#callChecks input[data-k="colors"]')).toBeChecked();
+  });
+
+  test('GHL forms live behind the scenes only: never on a page the home page or menu reaches', async () => {
+    const pub = ['', 'episodes', 'rate-the-topics', 'about', 'contact', 'membership', 'question-of-the-week'];
+    for (const r of pub) {
+      const html = await readFile(path.join(process.cwd(), 'dist/gi/site', r, 'index.html'), 'utf8');
+      expect(html, `/gi/site/${r} has no GHL form`).not.toContain('links.ninja360.net');
+    }
+  });
+
+  test('Be on the Show (behind the scenes): the real GHL form, with the QR ?src= tag passed through', async ({ page }) => {
+    const ghl = 'https://links.ninja360.net/widget/form/OSSMxHOfrwmxYsYrYiIY';
+    await page.route('https://links.ninja360.net/**', (r) => r.abort()); // never load GHL in a test
+    await open(page, '/gi/site/be-on-the-show');
+    const btn = page.locator('#gi-ghl-signup');
+    await expect(btn).toHaveAttribute('href', ghl);
+    await expect(btn).toHaveAttribute('target', '_blank');
+    await expect(page.locator('.signup-panel a[href*="docs.google.com/forms"]')).toHaveCount(0);
+    await open(page, '/gi/site/be-on-the-show', '?src=chamber');
+    await expect(btn).toHaveAttribute('href', ghl + '?src=chamber');
+  });
+
+  test('Business Plan and Partner Call send Be on the Show to the GHL page, not the Google Form', async ({ page }) => {
+    await open(page, '/gi/site/business-plan');
+    await expect(page.locator('.cta-band a', { hasText: 'Be on the Show' })).toHaveAttribute('href', '/gi/site/be-on-the-show/');
+    await open(page, '/gi/site/call');
+    await expect(page.locator('#s5 a', { hasText: 'Be on the Show' })).toHaveAttribute('href', '/gi/site/be-on-the-show/');
   });
 });
