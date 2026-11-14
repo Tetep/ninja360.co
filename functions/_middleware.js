@@ -9,22 +9,27 @@
 //
 // Everything this project serves is behind the password EXCEPT two things that are public on purpose:
 //   - ninja360.org (and www): the crew's run sheet, used in the field, behind its own crew key (/api/state)
-//   - /gi/site/...: the public Generationally Incorrect site — the audition form, and the campaign
-//     links (?src=northland, chamber, aca, realtor, social, card) all land there
-// To open another path later, add it to OPEN_PATH. To drop the gate, take dojoGate out of the
-// onRequest list at the bottom of this file; nothing else to undo.
+//   - the Generationally Incorrect pages on the site's menu (below)
+// To drop the gate, take dojoGate out of the onRequest list at the bottom of this file; nothing
+// else to undo.
 //
-// GI_LOCKED carves the behind-the-scenes GI pages back out of the open site (Tim, 11/14/26): the
-// public side is Home and what the menu reaches (Listen, Rate the Topics, the guest signup at
-// be-on-the-show / apply / audition, the promo the home page embeds). Everything else asks for the
-// same Dojo login: the Business Plan (the Ninja logo on Listen) and all under it, The Plan and its
-// PDF decks, the Partner Call, the Dashboard, and the footer pages (About, Membership, Contact &
-// Sponsors, the Weekly opt-in form). The footer links stay; they ask for the login. To make one
-// public again, take it out of GI_LOCKED.
+// GI (Tim, 11/14/26): "I don't want them to be able to access any page that is not on the menu."
+// So the GI site is an allow-list. Open with no login:
+//   - the menu's pages: Home, Listen (/episodes/), Rate the Topics. The menu's other two items are
+//     not pages here: Be on the Show is the Google Form, Contact is an email link.
+//   - the promo, because Home plays it in a frame
+//   - /gi/site/assets/: the shared styles, scripts, images and video those pages load, except
+//     /assets/docs/ (the PDF decks)
+// Every other GI page asks for the same Dojo login: the Business Plan (the Ninja logo on Listen)
+// and all under it, The Plan and its decks, the Partner Call, the Dashboard, the footer pages
+// (About, Membership, Contact & Sponsors, the Weekly opt-in), Be on the Show (and /apply,
+// /audition), Coming Soon, and any page added later. The footer links stay; they ask for the
+// login. To make a page public, add it to GI_PUBLIC_PAGE.
 
 const OPEN_HOST = /(^|\.)ninja360\.org$/i;
-const OPEN_PATH = /^\/gi\/site(\/|$)/;
-const GI_LOCKED = /^\/gi\/site\/(business-plan|strategy|call|dashboard|about|membership|contact|question-of-the-week|assets\/docs)(?![\w-])/i;
+const GI_PUBLIC_PAGE = /^\/gi\/site(\/(episodes|rate-the-topics|promo))?(\/(index\.html)?)?$/i;
+const GI_PUBLIC_FILE = /^\/gi\/site\/assets\/(?!docs(\/|$))[^/]/i;
+const DOT_SEGMENT = /(^|\/)\.\.?(\/|$)/;
 const ENCODED_SEPARATOR = /%2f|%5c/i;   // an encoded slash never gets to talk its way into an open path
 
 // Is this request on the open part of the site? Checked on the path as the static server will read
@@ -39,7 +44,8 @@ function isOpenPath(pathname) {
     return false;
   }
   path = path.replace(/\/{2,}/g, '/');
-  return OPEN_PATH.test(path) && !GI_LOCKED.test(path);
+  if (DOT_SEGMENT.test(path)) return false;
+  return GI_PUBLIC_PAGE.test(path) || GI_PUBLIC_FILE.test(path);
 }
 
 const unauthorized = () =>

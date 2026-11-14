@@ -59,13 +59,13 @@ test.describe('production smoke checks', () => {
     expect(res.status, 'Dojo should be password-gated').toBe(401);
   });
 
-  // GI: the public side opens with no login; the Business Plan and the pages behind it ask for one.
-  test('GI public pages open without the login, the Business Plan does not', async ({ baseURL }) => {
-    for (const path of ['/gi/site/', '/gi/site/episodes/', '/gi/site/rate-the-topics/', '/gi/site/be-on-the-show/']) {
+  // GI: only the menu's pages (and the promo Home plays) open with no login; every other page asks for it.
+  test('GI: the menu pages open without the login, nothing else does', async ({ baseURL }) => {
+    for (const path of ['/gi/site/', '/gi/site/episodes/', '/gi/site/rate-the-topics/', '/gi/site/promo/']) {
       const res = await fetch(new URL(path, baseURL), { redirect: 'manual' });
       expect(res.status, path + ' should be public').toBe(200);
     }
-    for (const path of ['/gi/site/business-plan/', '/gi/site/strategy/', '/gi/site/about/', '/gi/site/question-of-the-week/']) {
+    for (const path of ['/gi/site/business-plan/', '/gi/site/strategy/', '/gi/site/about/', '/gi/site/question-of-the-week/', '/gi/site/be-on-the-show/']) {
       const res = await fetch(new URL(path, baseURL), { redirect: 'manual' });
       expect(res.status, path + ' should ask for the login').toBe(401);
     }
