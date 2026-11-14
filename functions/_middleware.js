@@ -20,11 +20,25 @@
 //   - the promo, because Home plays it in a frame
 //   - /gi/site/assets/: the shared styles, scripts, images and video those pages load, except
 //     /assets/docs/ (the PDF decks)
-// Every other GI page asks for the same Dojo login: the Business Plan (the Ninja logo on Listen)
-// and all under it, The Plan and its decks, the Partner Call, the Dashboard, the footer pages
-// (About, Membership, Contact & Sponsors, the Weekly opt-in), Be on the Show (and /apply,
-// /audition), Coming Soon, and any page added later. The footer links stay; they ask for the
-// login. To make a page public, add it to GI_PUBLIC_PAGE.
+// Every other GI page asks for a login: the Business Plan (the Ninja logo on Listen) and all
+// under it, The Plan and its decks, the Partner Call, the Dashboard, the footer pages (About,
+// Membership, Contact & Sponsors, the Weekly opt-in), Be on the Show (and /apply, /audition),
+// Coming Soon, and any page added later. The footer links stay; they ask for the login. To make a
+// page public, add it to GI_PUBLIC_PAGE.
+//
+// Who can sign in to those GI pages:
+//   - the Dojo login (DOJO_USER / DOJO_PASS), which opens everything, GI included
+//   - a named GI login per person, from the Pages secret GI_LOGINS: one person per line (or ';'),
+//     written  FirstName:password  e.g.  Erik:xxxx; Gabriel:xxxx . A named login opens the GI site
+//     only (/gi/site/...), never the rest of the Dojo. Name and password are matched ignoring case
+//     and stray spaces, so a phone's automatic capital letter can't lock anyone out.
+//
+// The sheet (Tim, 11/14/26): with GI_LOG_URL set (the web-app URL of Tim's private Google Sheet,
+// "GI — Who Looked"), every GI page a named login opens adds a row there: when, who, which page,
+// what device. Pages opened in a frame inside another page (the deck previews on The Plan, the
+// diagram in YouTube Strategy) are not counted, so a row means that person opened it. The Dojo
+// login is not logged (Tim's own visits, and the daily smoke test). The URL is used here on the
+// server only and never reaches a browser; a slow or broken sheet never delays or blocks a page.
 
 const OPEN_HOST = /(^|\.)ninja360\.org$/i;
 const GI_PUBLIC_PAGE = /^\/gi\/site(\/(episodes|rate-the-topics|promo))?(\/(index\.html)?)?$/i;
@@ -32,21 +46,24 @@ const GI_PUBLIC_FILE = /^\/gi\/site\/assets\/(?!docs(\/|$))[^/]/i;
 const DOT_SEGMENT = /(^|\/)\.\.?(\/|$)/;
 const ENCODED_SEPARATOR = /%2f|%5c/i;   // an encoded slash never gets to talk its way into an open path
 
-// Is this request on the open part of the site? Checked on the path as the static server will read
-// it (percent-escapes decoded, doubled slashes folded) so %62usiness-plan or //business-plan can't
-// slip a locked page out through the open door. A path that won't decode stays locked.
-function isOpenPath(pathname) {
-  if (ENCODED_SEPARATOR.test(pathname)) return false;
+// The path as the static server will read it: percent-escapes decoded, doubled slashes folded, so
+// %62usiness-plan or //business-plan can't slip a locked page out through the open door. null (and
+// so never open, and never inside the GI area for a named login) when it won't decode, carries an
+// encoded slash, or still has a dot segment.
+function servedPath(pathname) {
+  if (ENCODED_SEPARATOR.test(pathname)) return null;
   let path;
   try {
     path = decodeURIComponent(pathname);
   } catch {
-    return false;
+    return null;
   }
   path = path.replace(/\/{2,}/g, '/');
-  if (DOT_SEGMENT.test(path)) return false;
-  return GI_PUBLIC_PAGE.test(path) || GI_PUBLIC_FILE.test(path);
+  return DOT_SEGMENT.test(path) ? null : path;
 }
+
+const isOpenPath = (path) => path !== null && (GI_PUBLIC_PAGE.test(path) || GI_PUBLIC_FILE.test(path));
+const GI_AREA = /^\/gi\/site(\/|$)/i;
 
 const unauthorized = () =>
   new Response('Unauthorized', {
@@ -69,36 +86,115 @@ const safeEqual = (a, b) => {
   return diff === 0;
 };
 
-async function dojoGate({ request, env, next }) {
-  const url = new URL(request.url);
-  if (OPEN_HOST.test(url.hostname)) return next();
-  if (isOpenPath(url.pathname)) return next();
-
-  const user = env.DOJO_USER;
-  const pass = env.DOJO_PASS;
-
-  // Fail closed: if the secrets aren't configured, nobody gets in.
-  if (!user || !pass) return unauthorized();
-
+// The name and password from a Basic login header, or null.
+function basicLogin(request) {
   const header = request.headers.get('Authorization') || '';
-  if (!header.startsWith('Basic ')) return unauthorized();
-
+  if (!header.startsWith('Basic ')) return null;
   let decoded = '';
   try {
     decoded = atob(header.slice(6));
   } catch {
-    return unauthorized();
+    return null;
   }
-
   const idx = decoded.indexOf(':');
-  if (idx < 0) return unauthorized();
+  if (idx < 0) return null;
+  return { user: decoded.slice(0, idx), pass: decoded.slice(idx + 1) };
+}
 
-  const givenUser = decoded.slice(0, idx);
-  const givenPass = decoded.slice(idx + 1);
+// The person a named GI login belongs to (as written in GI_LOGINS), or null.
+function giPerson(list, user, pass) {
+  const u = user.trim().toLowerCase();
+  const p = pass.trim().toLowerCase();
+  let who = null;
+  for (const entry of String(list || '').split(/[;\n]/)) {
+    const idx = entry.indexOf(':');
+    if (idx < 0) continue;
+    const name = entry.slice(0, idx).trim();
+    const word = entry.slice(idx + 1).trim();
+    if (!name || !word) continue;
+    if (safeEqual(u, name.toLowerCase()) && safeEqual(p, word.toLowerCase())) who = name;
+  }
+  return who;
+}
 
-  if (!safeEqual(givenUser, user) || !safeEqual(givenPass, pass)) return unauthorized();
+// ── The sheet ──
+const PAGE_NAMES = [
+  [/^\/gi\/site\/business-plan\/youtube-strategy\/diagram\.html$/i, 'YouTube Strategy (diagram on its own)'],
+  [/^\/gi\/site\/business-plan\/youtube-strategy\/?(index\.html)?$/i, 'YouTube Strategy'],
+  [/^\/gi\/site\/business-plan\/?(index\.html)?$/i, 'Business Plan'],
+  [/^\/gi\/site\/strategy\/?(index\.html)?$/i, 'The Plan (decks page)'],
+  [/^\/gi\/site\/assets\/docs\/GI-YouTube-Strategy\.pdf$/i, 'Deck: YouTube Strategy (PDF)'],
+  [/^\/gi\/site\/assets\/docs\/GI-Man-on-the-Street-Strategy\.pdf$/i, 'Deck: Man on the Street (PDF)'],
+  [/^\/gi\/site\/call\/?(index\.html)?$/i, 'Partner Call'],
+  [/^\/gi\/site\/dashboard\/?(index\.html)?$/i, 'Dashboard'],
+  [/^\/gi\/site\/about\/?(index\.html)?$/i, 'About'],
+  [/^\/gi\/site\/membership\/?(index\.html)?$/i, 'Membership'],
+  [/^\/gi\/site\/contact\/?(index\.html)?$/i, 'Contact & Sponsors'],
+  [/^\/gi\/site\/question-of-the-week\/?(index\.html)?$/i, 'Weekly opt-in'],
+  [/^\/gi\/site\/be-on-the-show\/?(index\.html)?$/i, 'Be on the Show'],
+  [/^\/gi\/site\/comingsoon\/?(index\.html)?$/i, 'Coming Soon'],
+];
+const pageName = (path) => (PAGE_NAMES.find(([re]) => re.test(path)) || [null, path])[1];
+
+function deviceName(ua) {
+  if (/iPhone/i.test(ua)) return 'iPhone';
+  if (/iPad/i.test(ua)) return 'iPad';
+  if (/Android/i.test(ua)) return /Mobile/i.test(ua) ? 'Android phone' : 'Android tablet';
+  if (/Macintosh|Mac OS X/i.test(ua)) return 'Mac';
+  if (/Windows/i.test(ua)) return 'Windows PC';
+  if (/CrOS/i.test(ua)) return 'Chromebook';
+  if (/Linux/i.test(ua)) return 'Linux PC';
+  return 'Other';
+}
+
+// A page the person opened: a GET that loaded (or came from cache) as the page itself, not a frame
+// inside another page, a prefetch, a style or script, or a redirect on the way to the page.
+function isPageView(request, path, response) {
+  if (request.method !== 'GET') return false;
+  const dest = request.headers.get('Sec-Fetch-Dest');
+  if (dest && dest !== 'document') return false;
+  if (/prefetch|prerender/i.test(request.headers.get('Sec-Purpose') || request.headers.get('Purpose') || '')) return false;
+  if (response.status !== 200 && response.status !== 304) return false;
+  const last = path.slice(path.lastIndexOf('/') + 1);
+  return last === '' || !last.includes('.') || /\.(html|pdf)$/i.test(last);
+}
+
+function logView(ctx, who, path) {
+  const target = ctx.env.GI_LOG_URL;
+  if (!target) return;
+  const row = {
+    when: new Date().toISOString(),
+    who,
+    page: pageName(path),
+    device: deviceName(ctx.request.headers.get('User-Agent') || ''),
+  };
+  const sent = fetch(target, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(row),
+  }).catch(() => {});
+  if (typeof ctx.waitUntil === 'function') ctx.waitUntil(sent);
+}
+
+async function dojoGate(ctx) {
+  const { request, env, next } = ctx;
+  const url = new URL(request.url);
+  if (OPEN_HOST.test(url.hostname)) return next();
+  const path = servedPath(url.pathname);
+  if (isOpenPath(path)) return next();
+
+  const login = basicLogin(request);
+  if (!login) return unauthorized();
+
+  // The Dojo login opens everything. Fail closed: if its secrets aren't configured, it opens nothing.
+  const dojo =
+    !!env.DOJO_USER && !!env.DOJO_PASS && safeEqual(login.user, env.DOJO_USER) && safeEqual(login.pass, env.DOJO_PASS);
+  // A named GI login opens the GI site and nothing else.
+  const person = !dojo && path !== null && GI_AREA.test(path) ? giPerson(env.GI_LOGINS, login.user, login.pass) : null;
+  if (!dojo && !person) return unauthorized();
 
   const response = await next();
+  if (person && isPageView(request, path, response)) logView(ctx, person, path);
   // Belt and braces: keep the Dojo out of search even when authenticated.
   const out = new Response(response.body, response);
   out.headers.set('X-Robots-Tag', 'noindex, nofollow');

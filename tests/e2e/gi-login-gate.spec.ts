@@ -4,14 +4,42 @@ import { test, expect } from '@playwright/test';
 import { onRequest } from '../../functions/_middleware.js';
 
 const gate = onRequest[0] as (ctx: unknown) => Promise<Response>;
-const env = { DOJO_USER: 'ninja', DOJO_PASS: 'test-pass' };
+const env = { DOJO_USER: 'ninja', DOJO_PASS: 'test-pass', GI_LOGINS: 'Erik:redcup; Gabriel:bluechair' };
 const login = 'Basic ' + btoa('ninja:test-pass');
+const as = (user: string, pass: string) => 'Basic ' + btoa(user + ':' + pass);
 
-async function status(path: string, auth?: string) {
+async function status(path: string, auth?: string, extraEnv: Record<string, string> = {}) {
   const headers = new Headers(auth ? { Authorization: auth } : {});
   const request = new Request('https://dojo.ninja360.co' + path, { headers });
-  const res = await gate({ request, env, next: async () => new Response('page', { status: 200 }) });
+  const res = await gate({ request, env: { ...env, ...extraEnv }, next: async () => new Response('page', { status: 200 }) });
   return res.status;
+}
+
+// One visit, with the sheet stubbed: returns the rows the gate sent.
+async function rowsFor(path: string, auth: string, headers: Record<string, string> = {}, opts: { url?: string; status?: number } = {}) {
+  const sent: any[] = [];
+  const waits: Promise<unknown>[] = [];
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = (async (target: string, init: RequestInit) => {
+    sent.push({ target, row: JSON.parse(String(init.body)) });
+    return new Response('ok');
+  }) as typeof fetch;
+  try {
+    const request = new Request('https://dojo.ninja360.co' + path, {
+      headers: { Authorization: auth, 'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)', ...headers },
+    });
+    const logEnv = 'url' in opts ? (opts.url ? { GI_LOG_URL: opts.url } : {}) : { GI_LOG_URL: 'https://script.example/exec' };
+    await gate({
+      request,
+      env: { ...env, ...logEnv },
+      next: async () => new Response('page', { status: opts.status ?? 200 }),
+      waitUntil: (p: Promise<unknown>) => waits.push(p),
+    });
+    await Promise.all(waits);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+  return sent;
 }
 
 // Only the menu's pages are open (Home, Listen, Rate the Topics), plus the promo Home plays in a
@@ -64,5 +92,79 @@ test.describe('GI login: only the menu pages are open, everything else asks for 
     expect(await status('/scrolls/')).toBe(401);
     expect(await status('/gi/')).toBe(401);
     expect(await status('/gi/site-x/')).toBe(401);
+  });
+});
+
+test.describe('GI named logins: first name + a word per person, GI pages only', () => {
+  test('each person gets in with their own first name and word, any capitals, stray spaces', async () => {
+    for (const a of [as('Erik', 'redcup'), as('erik', 'RedCup'), as(' Erik ', 'redcup '), as('Gabriel', 'bluechair')]) {
+      expect(await status('/gi/site/business-plan/', a)).toBe(200);
+      expect(await status('/gi/site/assets/docs/GI-YouTube-Strategy.pdf', a)).toBe(200);
+    }
+  });
+
+  test('wrong word, someone else\'s word, or a nickname does not get in', async () => {
+    for (const a of [as('Erik', 'bluechair'), as('Gabe', 'bluechair'), as('Erik', ''), as('', 'redcup'), as('Erik:redcup', 'x')]) {
+      expect(await status('/gi/site/business-plan/', a)).toBe(401);
+    }
+  });
+
+  test('a named login opens the GI site only, never the rest of the Dojo', async () => {
+    const erik = as('Erik', 'redcup');
+    for (const p of ['/', '/scrolls/', '/gi/', '/money', '/gi/site-x/', '/gi/site/%E0%A4%A/']) expect(await status(p, erik), p).toBe(401);
+  });
+
+  test('no GI_LOGINS set: only the Dojo login works', async () => {
+    expect(await status('/gi/site/call/', as('Erik', 'redcup'), { GI_LOGINS: '' })).toBe(401);
+    expect(await status('/gi/site/call/', login, { GI_LOGINS: '' })).toBe(200);
+  });
+});
+
+test.describe('the sheet: one row per page a named login opens', () => {
+  test('opening a page sends when, who, page and device', async () => {
+    const sent = await rowsFor('/gi/site/business-plan/', as('erik', 'redcup'), { 'Sec-Fetch-Dest': 'document' });
+    expect(sent).toHaveLength(1);
+    expect(sent[0].target).toBe('https://script.example/exec');
+    expect(sent[0].row).toMatchObject({ who: 'Erik', page: 'Business Plan', device: 'iPhone' });
+    expect(Date.now() - Date.parse(sent[0].row.when)).toBeLessThan(60_000);
+  });
+
+  test('opening a deck counts; the deck preview framed inside The Plan does not', async () => {
+    const pdf = '/gi/site/assets/docs/GI-Man-on-the-Street-Strategy.pdf';
+    const opened = await rowsFor(pdf, as('Gabriel', 'bluechair'), { 'Sec-Fetch-Dest': 'document' });
+    expect(opened.map((x) => x.row.page)).toEqual(['Deck: Man on the Street (PDF)']);
+    expect(await rowsFor(pdf, as('Gabriel', 'bluechair'), { 'Sec-Fetch-Dest': 'iframe' })).toHaveLength(0);
+    expect(await rowsFor('/gi/site/business-plan/youtube-strategy/diagram.html', as('Erik', 'redcup'), { 'Sec-Fetch-Dest': 'iframe' })).toHaveLength(0);
+  });
+
+  test('files, prefetches, redirects and refused logins add no rows', async () => {
+    const erik = as('Erik', 'redcup');
+    expect(await rowsFor('/gi/site/business-plan/content.js', erik, { 'Sec-Fetch-Dest': 'script' })).toHaveLength(0);
+    expect(await rowsFor('/gi/site/business-plan/content.js', erik)).toHaveLength(0);
+    expect(await rowsFor('/gi/site/call/', erik, { 'Sec-Purpose': 'prefetch' })).toHaveLength(0);
+    expect(await rowsFor('/gi/site/call', erik, {}, { status: 308 })).toHaveLength(0);
+    expect(await rowsFor('/gi/site/call/', as('Erik', 'nope'))).toHaveLength(0);
+  });
+
+  test('the Dojo login (Tim, the daily smoke test) is never logged; no sheet URL, no rows', async () => {
+    expect(await rowsFor('/gi/site/business-plan/', login, { 'Sec-Fetch-Dest': 'document' })).toHaveLength(0);
+    expect(await rowsFor('/gi/site/business-plan/', as('Erik', 'redcup'), {}, { url: '' })).toHaveLength(0);
+  });
+
+  test('a page with no friendly name still shows its address', async () => {
+    const sent = await rowsFor('/gi/site/a-page-added-later/', as('Erik', 'redcup'));
+    expect(sent[0].row.page).toBe('/gi/site/a-page-added-later/');
+  });
+
+  test('a sheet that is down never breaks the page', async () => {
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = (async () => { throw new Error('sheet down'); }) as typeof fetch;
+    try {
+      const request = new Request('https://dojo.ninja360.co/gi/site/call/', { headers: { Authorization: as('Erik', 'redcup') } });
+      const res = await gate({ request, env: { ...env, GI_LOG_URL: 'https://script.example/exec' }, next: async () => new Response('page'), waitUntil: () => {} });
+      expect(res.status).toBe(200);
+    } finally {
+      globalThis.fetch = realFetch;
+    }
   });
 });
