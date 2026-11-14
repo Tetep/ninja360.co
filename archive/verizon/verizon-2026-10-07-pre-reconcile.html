@@ -655,7 +655,7 @@ const unbilled=()=>J.filter(UNBILLED).sort((a,b)=>b.p-a.p);
 const goBacks=()=>J.filter(j=>!j.wp&&GOBACK(j.id))
   .sort((a,b)=>mi(BASE,LL(a))-mi(BASE,LL(b)));
 const gbItems=id=>punchList(id).map((t,i)=>({t,i,done:punchDone(id,i)}));
-const HOME_ADDR='3205 NE 70th Terrace, Kansas City, MO';   // Tim's home base — every day starts and ends here unless he says otherwise
+const HOME_ADDR='Gladstone, MO';   /* street removed 2026-11-14 (Option B) */   // Tim's home base — every day starts and ends here unless he says otherwise
 const CRANE_ADDR='137 Rocky Mountain Rd, Crane, MO';
 const PLACES={home:{name:'🥷 Home base — Kansas City MO',ll:BASE,addr:HOME_ADDR},liberty:{name:'Liberty MO',ll:[39.2460,-94.4190]},
   columbia:{name:'Columbia MO — dorm',ll:COL},
