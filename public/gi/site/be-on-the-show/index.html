@@ -64,12 +64,15 @@
          (what-to-expect + location, built in Google Forms directly). -->
     <p class="promo-link-row"><a href="#" id="watch-promo-link" class="small">▶ Watch the promo</a></p>
     <div class="signup-panel center">
-      <!-- Google Form, interim form while GHL is sorted out. Linked out
-           instead of embedded (Tim, 11/12/26: the iframe "looks terrible
-           embedded in the page") -- opens in a new tab so the visitor
-           doesn't lose this page. -->
+      <!-- The real GHL guest signup (Tim, 11/14/26): this page is behind the
+           scenes (only /apply, /audition, the Business Plan and the Partner
+           Call link here), so it carries the true GoHighLevel form. Public
+           pages and the menu keep the Google Form. Form OSSMxHOfrwmxYsYrYiIY
+           is the permanent GI sub-account podcast form (Tim, 9/22/26).
+           Linked out, not embedded (Tim, 11/12/26: embedded forms "look
+           terrible"), new tab so the visitor keeps this page. -->
       <p class="lead">Ready to grab a seat at the table?</p>
-      <a class="btn btn-red" href="https://docs.google.com/forms/d/e/1FAIpQLScvfwAtkcMGAXOii7GNK6kHzBYgyU6exOj1wUhE2TpkPkq_Ew/viewform" target="_blank" rel="noopener">Fill out the sign-up form ↗</a>
+      <a class="btn btn-red" id="gi-ghl-signup" data-ghl-form="OSSMxHOfrwmxYsYrYiIY" href="https://links.ninja360.net/widget/form/OSSMxHOfrwmxYsYrYiIY" target="_blank" rel="noopener">Fill out the sign-up form ↗</a>
     </div>
     <p class="questions-line small muted">Questions? <a href="mailto:info@generationallyincorrect.com">info@generationallyincorrect.com</a></p>
   </div>
@@ -90,6 +93,17 @@
 </div>
 
 <script src="../assets/gi-site.js"></script>
+<script>
+  // QR source tracking: /apply?src=chamber (or this page with ?src=) hands the
+  // slug to the GHL form, so the GHL workflow can tag where the signup came
+  // from (northland / chamber / aca / realtor / social / card).
+  (function () {
+    var a = document.getElementById('gi-ghl-signup');
+    if (!a) return;
+    var src = new URLSearchParams(window.location.search).get('src');
+    if (src) a.href = 'https://links.ninja360.net/widget/form/' + a.getAttribute('data-ghl-form') + '?src=' + encodeURIComponent(src);
+  })();
+</script>
 <script>
   // Promo pop-up — plays the animated promo once per visit, no audio so no
   // mute control is needed. Iframe src is only set while the modal is open
