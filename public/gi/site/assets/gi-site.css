@@ -221,6 +221,17 @@ footer.footer-v2 .tag{font-family:var(--gi-font-body);font-size:14px;color:var(-
 .ep-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
 .ep-title{font-family:var(--gi-font-display);font-size:19px;color:var(--gi-ink);text-transform:uppercase;line-height:1.15}
 .ep-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13.5px;color:var(--gi-muted)}
+/* Listen page lineup: Episode 001 runs full width, the examples share a row; short status strip,
+   and each card lists its questions. */
+h3.ep-title{margin:0;letter-spacing:.01em}
+.ep-feature{grid-column:1/-1}
+.ep-body .pill{align-self:flex-start}
+.ep-body > .ep-meta:last-child{margin-top:auto;padding-top:4px}
+.ep-thumb-slim{aspect-ratio:auto;padding:16px 14px}
+.ep-qs{margin:2px 0 0;padding-left:22px;color:var(--gi-soft);font-size:15px;line-height:1.45}
+.ep-qs li{margin:0 0 6px;break-inside:avoid}
+.ep-feature .ep-qs{columns:2;column-gap:32px}
+@media(max-width:760px){.ep-feature .ep-qs{columns:1}}
 
 /* ---------- producer trio ---------- */
 .producers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
