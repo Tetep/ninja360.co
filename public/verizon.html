@@ -316,6 +316,17 @@ svg{width:100%;height:auto;display:block}
 .leg .ci.ts{box-shadow:0 0 0 1.5px #FF8D2D}
 .leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11px;color:var(--ink2);margin-top:6px;align-items:center}
 .leg i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:-1px}
+/* POTENTIAL stores: a teal-blue pin family, a legend line with its own buttons, a collapsed list */
+.nbadge .pn{background:#055A68;padding:6px 9px;color:#fff}
+.potleg{margin:4px 0 8px}
+.potleg>span{flex-basis:100%}
+.potleg .potbtn{min-height:34px;padding:5px 11px;font-size:12px}
+.potleg .potbtn[aria-pressed="true"]{border-color:#0A9DB5}
+.potleg .potbtn:disabled{opacity:.45}
+.potlist{margin:0 0 10px;border:1px solid var(--line);border-radius:10px;background:var(--surf);padding:0 10px}
+.potlist>summary{cursor:pointer;padding:10px 0;font-size:13px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.potlist .shlist{margin:0 0 10px}
+.pdir{display:inline-flex;align-items:center;text-decoration:none;color:inherit}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--surf);border-top:1px solid var(--line);
   display:grid;grid-template-columns:repeat(7,1fr);z-index:1100;padding-bottom:env(safe-area-inset-bottom)}
 nav button{padding:8px 2px 9px;font-size:10.5px;font-weight:600;color:var(--ink3);
@@ -743,7 +754,7 @@ const unbilled=()=>J.filter(UNBILLED).sort((a,b)=>b.p-a.p);
 const goBacks=()=>J.filter(j=>!j.wp&&GOBACK(j.id))
   .sort((a,b)=>mi(BASE,LL(a))-mi(BASE,LL(b)));
 const gbItems=id=>punchList(id).map((t,i)=>({t,i,done:punchDone(id,i)}));
-const HOME_ADDR='3205 NE 70th Terrace, Kansas City, MO';   // Tim's home base — every day starts and ends here unless he says otherwise
+const HOME_ADDR='3205 NE 70th Terrace, Gladstone, MO 64119';   // Tim's house and home base — every day starts and ends here unless he says otherwise
 const CRANE_ADDR='137 Rocky Mountain Rd, Crane, MO';
 const PLACES={home:{name:'🥷 Home base — Kansas City MO',ll:BASE,addr:HOME_ADDR},liberty:{name:'Liberty MO',ll:[39.2460,-94.4190]},
   columbia:{name:'🛏️ Columbia MO — Tatem’s dorm (0 pts lodging)',ll:COL},
@@ -752,6 +763,64 @@ const PLACES={home:{name:'🥷 Home base — Kansas City MO',ll:BASE,addr:HOME_A
   crane:{name:'🛏️ Crane MO — friend\'s place',addr:CRANE_ADDR,ll:[36.9047,-93.5716],geo:0},
   kevin:{name:'🛏️ Kevin’s — Springfield MO',ll:[37.2090,-93.2923]},
   stlhotel:{name:'🛏️ Holiday Inn Express & Suites St. Louis Airport (STLLF)',addr:'10000 Natural Bridge Rd, St. Louis, MO 63134',ll:[38.7327,-90.3524]}};
+
+/* ---------- POTENTIAL stores — a map layer, not stops ----------
+   Dealer stores Tim was sent by email on Fri 11/13 (Verizon agents across southern Illinois and southwest Indiana) that are
+   not on the run sheet. They are NOT in the book: not in DATA.jobs, J or BY, so they carry no points, no route and no
+   invoice and count in no total. A stop is PLANNED until it is shot (Rule 42) and these are not stops yet. They show only on
+   the Plan map, in teal-blue, with a legend line, a Hide / Zoom pair of buttons and a list. Each is baked at its town's
+   centre (geo:0); the first online run resolves it to its own street address, one a second, and saves it in
+   S.geo['pot:<store>'] — the same pattern the book's city-level rows use. A store that earns a place on a run is added to the
+   book as a real job; until then it is only a pin. */
+const POT={ini:'P',base:'#0A9DB5',dark:'#055A68',light:'#8FE3EF',acc:'#ffffff'};   // teal-blue: apart from the brand reds, banked green and go-back purple
+const POT_KEY='ninja360-potential-view';   // this device's choice to hide the layer — a view setting, so it stays out of the synced state
+let POT_ON=true, POT_LIST_OPEN=false;
+try{ POT_ON=localStorage.getItem(POT_KEY)!=='off' }catch(e){}
+const POTENTIAL=[
+  // dealer as shown · dealer as sent · store · address · city · ST · town-centre lat · lon
+  ['TCC','TCC','80617','3373 S Us Highway 41','Terre Haute','IN',39.4667,-87.4139],
+  ['Verizon','Verizon','74614','2902 1/2 W Deyoung St','Marion','IL',37.7306,-88.9331],
+  ['TCC','TCC','75214','2001 N Green River Rd','Evansville','IN',37.9716,-87.5711],
+  ['Verizon','Verizon','74613','1230 E Main St Space 25','Carbondale','IL',37.7273,-89.2168],
+  ['TCC','TCC','120420','402 N Commercial St','Harrisburg','IL',37.7384,-88.5406],
+  ['Wireless Zone','Wireless Zone','130544','1125 State St','Lawrenceville','IL',38.7295,-87.6803],
+  ['Victra','Victra','77393','1501 Willow St','Vincennes','IN',38.6773,-87.5286],
+  ['TCC','TCC','76777','2339 S State Road 46','Terre Haute','IN',39.4667,-87.4139],
+  ['TCC','TCC','94127','1017 Commerce Dr','Fairfield','IL',38.3784,-88.3600],
+  ['Wireless Zone','Wireless Zone','130823','935 N Route 49','Casey','IL',39.2989,-87.9928],
+  ['TCC','TCC','75160','34 Southtowne Shopping Center','Du Quoin','IL',38.0112,-89.2362],
+  ['Russell Cellular','Russell Cellular','125748','808 Lehman Dr','Chester','IL',37.9142,-89.8221],
+  ['Russell Cellular','Russell Cellular','125746','1418 Sparta Centre Dr','Sparta','IL',38.1231,-89.7021],
+  ['BeMobile','BeMobile','94037','2128 N Main St','Princeton','IL',41.3684,-89.4651],
+  ['TCC','TCC','76778','5000 W Lloyd Expy','Evansville','IN',37.9716,-87.5711],
+  ['TCC','TCC','120419','1340 Il Highway 1 Ste G','Carmi','IL',38.0906,-88.1584],
+  ['Team Wireless','Gee Papa Ent, Inc DBA Team Wireless','130494','541 N West St','Olney','IL',38.7298,-88.0853],
+  ['TCC','TCC','81341','2709 W Broadway St Ste B','Princeton','IN',38.3553,-87.5675],
+  ['TCC','TCC','75159','109 N Central St','Benton','IL',37.9967,-88.9200],
+  ['Team Wireless','Gee Papa Ent, Inc DBA Team Wireless','130496','812 E Main St','Robinson','IL',39.0059,-87.7364],
+  ['Russell Cellular','Russell Cellular','130937','110 S Henrietta St','Effingham','IL',39.1200,-88.5434],
+  ['TCC','TCC','76772','2603 Hart Street','Vincennes','IN',38.6773,-87.5286],
+  ['Wireless Zone','Wireless Zone','76244','900 E Fayette Ave.','Effingham','IL',39.1200,-88.5434],
+  ['Victra','Victra','109238','125 Leigh Ste A','Anna','IL',37.4603,-89.2468],
+  ['TCC','TCC','75164','1445B West Whittaker','Salem','IL',38.6270,-88.9456],
+  ['TCC','TCC','142228','4201 Broadway St Ste B','Mount Vernon','IL',38.3173,-88.9031],
+  ['Wireless Zone','Wireless Zone','91609','1304 Thelma Keller Ave.','Effingham','IL',39.1200,-88.5434],
+  ['TCC','TCC','75166','1144 W Mccord St','Centralia','IL',38.5250,-89.1334],
+  ['Cellular Sales of Knoxville','Cellular Sales of Knoxville','130459','1452 Fort Harrison Rd','Terre Haute','IN',39.4667,-87.4139],
+  ['TCC','TCC','130377','1323 E Hackberry St Unit 101','Salem','IN',38.6056,-86.1011],
+  ['Wireless Zone','Wireless Zone','129473','1201 E. 5Th St','Metropolis','IL',37.1512,-88.7320],
+  ['Russell Cellular','Russell Cellular','110134','301 Mattes Ave. Ste 307','Vandalia','IL',38.9606,-89.0939],
+  ['Russell Cellular','Russell Cellular','125745','252 South Mill St','Nashville','IL',38.3445,-89.3826],
+  ['TCC','TCC','81319','1230 N. Baldwin Avenue','Marion','IN',40.5584,-85.6591],
+  ['TCC','TCC','110361','939 N Burkhardt Rd Ste C','Evansville','IN',37.9716,-87.5711],
+  ['TCC','TCC','75158','230 E 9Th St','Mount Carmel','IL',38.4109,-87.7614],
+  ['Team Wireless','Gee Papa Ent, Inc DBA Team Wireless','130488','1304 N Michigan Ave','Marshall','IL',39.3912,-87.6933],
+  ['TCC','TCC','75162','1190 Franklin St','Carlyle','IL',38.6106,-89.3726],
+  ['TCC','TCC','95393','8300 Bell Oaks Drive Ste C','Newburgh','IN',37.9445,-87.4047],
+  ['Wireless Zone','Wireless Zone','127937','118 W Washington St','Newton','IL',38.9809,-88.1637],
+  ['Wireless Zone','Wireless Zone','127338','1480 N Worthey St','Flora','IL',38.6692,-88.4853],
+].map(([dl,cl,site,a,c,s,lat,lon])=>({id:'pot:'+site,dl,cl,site,a,c,s,ll:[lat,lon],geo:0}));
+const PBY=Object.fromEntries(POTENTIAL.map(p=>[p.id,p]));
 
 // Verified against the IDS field app (Phygii) with its Verizon filter on, 2026-09-11, from Tim's
 // own screen. 49 Verizon-channel locations matched the board by site number, every one of them.
@@ -2336,6 +2405,7 @@ function renderPlan(){
     <div class="lab" style="margin:8px 0 5px">Runs</div><div class="runs">${RUNS.filter(r=>r.days.some(rd=>rd.date>=todayISO())).map(r=>`<button class="runbtn${runLoaded(r)?' on':''}" data-run="${r.id}"><b>${escHTML(r.name)}</b><small>${escHTML(r.sub)}${runLoaded(r)?' · loaded':''}</small></button>`).join('')}</div>
     <div class="lab" style="margin:8px 0 5px">Days</div><div class="rail">${rail}</div>
     <div class="mapbox" style="margin:8px 0 4px"><div id="lmap" role="region" aria-label="Job map"></div><svg id="map" viewBox="0 0 720 470" role="img" aria-label="Job map (offline)"></svg></div>
+    ${potLegend()}
     <div class="hint" style="margin:0 0 10px">Tap a pin for details. Pins wear the brand's colour until the stop is shot, then they turn green; a stop that owes a go-back turns red. Big pins are today's stops — initials until the shot's done, then the Ninja mark. Badge: ✓ done · left. ⚡ chips are DC fast chargers only (50kW+) — on the road and near your stops; chips wear the network’s colors (Love’s red, EVgo navy) an orange halo means a truck stop at an interstate exit, and the teal chip with the orange ring and gold ★ is IONNA — your network. Tap one for plugs, power, and directions.</div>
     <div class="leg" style="margin:-6px 0 10px">
       <span><i style="background:#EE0000"></i>still to shoot (brand colour)</span>
@@ -2343,6 +2413,7 @@ function renderPlan(){
       <span><i style="background:#8B2FC9"></i>go-back owed — priority</span>
       <span><i style="background:var(--line2)"></i>on hold</span></div>
     <div class="leg" id="chgLeg" hidden></div>
+    ${potListHTML()}
     <div class="strip">
       <div class="mcell"><div class="lab">Stops</div><div class="v">${d.ids.length}</div></div>
       <div class="mcell"><div class="lab">Payout</div><div class="v g">${fmt(s.pay)}</div></div>
@@ -2473,7 +2544,7 @@ function renderPlan(){
     if(r.err){const m=$('#stMsg'); if(m){m.textContent=r.err;m.style.color='var(--warn)'} stAdd.disabled=false}
     else {ST_OPEN=false; render(); toast('Added to this day — drag it into order, or Auto-order')}
   };
-  renderFilters(); renderPool(); renderMap(); wireStops();
+  renderFilters(); renderPool(); renderMap(); wireStops(); wirePot();
 }
 function renderFilters(){
   const states=[...new Set(J.map(j=>j.s))].sort(), cls=[...new Set(J.map(j=>j.cl))].sort();
@@ -2666,6 +2737,7 @@ function drawPins(){
     m.bindTooltip(names,{direction:'top',offset:[0,sel?-(SZ[1]-7):close?-40:mid?-10:-6]});
     m.on('click',()=>jobSheet(lead.id));
   });
+  drawPotential(band);
   // route line + start / end / home
   const s0=placeLL(d.startKey), e0=placeLL(d.endKey);
   if(d.ids.length){
@@ -2684,6 +2756,64 @@ function drawPins(){
   if(S.here&&S.here.key==='gps'&&Array.isArray(S.here.ll))
     L.marker(S.here.ll,{icon:L.divIcon({className:'npx',html:'<div class="carpin">'+CAR+'</div>',iconSize:[30,30],iconAnchor:[15,15]}),keyboard:false,zIndexOffset:1200})
       .bindTooltip('You are here',{direction:'top',offset:[0,-16]}).addTo(LLAYER);
+}
+/* ---------- POTENTIAL layer: teal-blue pins on the Plan map ----------
+   One pin per location (a town with three stores gets one pin with a 3 on it), drawn under the book's pins, never part of what
+   the map frames — the map still opens on today's route. Tap a pin for the store(s); Hide / Zoom to them / the list sit under the map. */
+function drawPotential(band){
+  if(!POT_ON||!LLAYER)return;
+  const close=band===2, mid=band>=1, groups=new Map();
+  POTENTIAL.forEach(p=>{const k=p.ll[0].toFixed(4)+','+p.ll[1].toFixed(4); if(!groups.has(k))groups.set(k,[]); groups.get(k).push(p)});
+  groups.forEach(list=>{
+    const n=list.length, p0=list[0], badge=n>1?'<div class="nbadge"><span class="pn">'+n+'</span></div>':'';
+    const icon=close
+      ?L.divIcon({className:'npx pot',html:pinHTML(POT,false,false,badge,false,'',null,false),iconSize:[26,43],iconAnchor:[13,43]})
+      :L.divIcon({className:'npx pot',html:'<div class="ndot'+(mid?'':' sm')+'" style="'+pinVars(POT)+'">'+(mid?badge:'')+'</div>',
+                  iconSize:mid?[22,22]:[12,12],iconAnchor:mid?[11,11]:[6,6]});
+    const m=L.marker(p0.ll,{icon,keyboard:false,zIndexOffset:-20}).addTo(LLAYER);
+    const tip='<b>POTENTIAL</b> · '+(n===1?escHTML(p0.dl)+' '+escHTML(p0.site)+'<br>'+escHTML(p0.c)+', '+escHTML(p0.s)
+      :escHTML(p0.c)+', '+escHTML(p0.s)+list.slice(0,4).map(p=>'<br>'+escHTML(p.dl)+' '+escHTML(p.site)).join('')+(n>4?'<br>+'+(n-4)+' more':''));
+    m.bindTooltip(tip,{direction:'top',offset:[0,close?-40:mid?-10:-6]});
+    m.on('click',()=>potSheet(list));
+  });
+}
+function potSheet(list){
+  const one=list.length===1, p0=list[0];
+  const rows=list.map(p=>{
+    const addr=p.a+', '+p.c+', '+p.s;
+    const who=one?(p.cl!==p.dl?'<div class="mono">'+escHTML(p.cl)+'</div>':''):'<b>'+escHTML(p.dl)+' '+escHTML(p.site)+'</b>'+(p.cl!==p.dl?' <span class="mono">('+escHTML(p.cl)+')</span>':'');
+    return '<div class="note">'+who
+      +'<div>'+escHTML(addr)+'</div>'
+      +(p.geo===0?'<div class="mono" style="color:var(--ink3);font-size:11.5px">The pin sits at the town centre until the app is online and places the address.</div>':'')
+      +'<div class="row" style="margin-top:7px"><a class="ghost pdir" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(addr)+'">Directions</a>'
+      +'<button class="ghost" data-potgo="'+escHTML(p.id)+'">Show on map</button></div></div>'}).join('');
+  sheet('POTENTIAL · '+(one?escHTML(p0.dl)+' '+escHTML(p0.site):escHTML(p0.c)+', '+escHTML(p0.s)),
+    one?escHTML(p0.c)+', '+escHTML(p0.s):list.length+' stores here',
+    '<div class="shlist">'+rows+'</div><div class="hint">POTENTIAL — not on the run sheet yet. No points, no route and no invoice until it becomes a stop.</div>',
+    el=>el.querySelectorAll('[data-potgo]').forEach(b=>b.onclick=()=>{const p=PBY[b.dataset.potgo]; closeSheet(); if(LMAP&&p)LMAP.setView(p.ll,p.geo?15:12,{animate:false})}));
+}
+// the legend row with its Hide / Zoom buttons (right under the map) and the list (with the other legends)
+function potLegend(){
+  return `<div class="leg potleg" id="potLeg"><span><i style="background:${POT.base}"></i><b>POTENTIAL</b> — not on the run sheet · ${POTENTIAL.length} stores</span>
+      <button class="ghost potbtn" id="potTog" aria-pressed="${POT_ON}">${POT_ON?'Hide':'Show'}</button>
+      <button class="ghost potbtn" id="potFit"${POT_ON?'':' disabled'}>Zoom to them</button></div>`;
+}
+function potListHTML(){
+  const n=POTENTIAL.length, il=POTENTIAL.filter(p=>p.s==='IL').length, inn=POTENTIAL.filter(p=>p.s==='IN').length;
+  const order=[...POTENTIAL].sort((a,b)=>a.s.localeCompare(b.s)||a.c.localeCompare(b.c)||a.site.localeCompare(b.site,undefined,{numeric:true}));
+  return `<details class="potlist" id="potList"${POT_LIST_OPEN?' open':''}><summary>The ${n} POTENTIAL stores <span class="mono">${il} IL · ${inn} IN</span></summary>
+      <div class="shlist">${order.map(p=>`<button class="shbtn" data-pot="${escHTML(p.id)}"><span><b>${escHTML(p.dl)}</b> <span class="mono">${escHTML(p.site)}</span></span><small>${escHTML(p.c)}, ${escHTML(p.s)}</small></button>`).join('')}</div></details>`;
+}
+// frame every POTENTIAL pin and the house, so the distance from home reads at a glance
+function potFrame(){
+  if(!LMAP||typeof L==='undefined'){toast('The online map is not loaded — nothing to zoom'); return}
+  LMAP.fitBounds(L.latLngBounds(POTENTIAL.map(p=>p.ll).concat([BASE])),{padding:[28,28],animate:false});   // a jump, not a 300-mile glide over tiles
+}
+function wirePot(){
+  const tg=$('#potTog'); if(tg)tg.onclick=()=>{POT_ON=!POT_ON; try{localStorage.setItem(POT_KEY,POT_ON?'on':'off')}catch(e){} render()};
+  const ft=$('#potFit'); if(ft)ft.onclick=potFrame;
+  const dt=$('#potList'); if(dt)dt.addEventListener('toggle',()=>{POT_LIST_OPEN=dt.open});
+  $$('[data-pot]').forEach(b=>b.onclick=()=>{const p=PBY[b.dataset.pot]; if(p)potSheet([p])});
 }
 // Real DC fast chargers from Open Charge Map — Level 2 is filtered out, it doesn't help
 // in the field. Two sources, one layer: every stop on today's route (6 mi) plus samples
@@ -4648,6 +4778,32 @@ async function geocode(a,c,s){
   }catch(e){}
   return null;
 }
+// the house: the address as written, then the same house under its post-office city — street level or better, or nothing
+async function geocodeHome(){
+  const qs=[HOME_ADDR, HOME_ADDR.replace(', Gladstone, ',', Kansas City, ')];
+  for(let i=0;i<qs.length;i++){
+    try{
+      const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q='+encodeURIComponent(qs[i]),{headers:{Accept:'application/json'}});
+      const j=await r.json(); if(j&&j[0]&&+j[0].place_rank>=26)return [+j[0].lat,+j[0].lon];
+    }catch(e){}
+    if(i<qs.length-1)await new Promise(r=>setTimeout(r,1100));
+  }
+  return null;
+}
+// the POTENTIAL stores, once each: the address as sent, then without the suite / space / unit that confuses a geocoder. An answer more than
+// 35 miles from the store's town is a different place of the same name — it is dropped, and the pin stays at the town centre
+async function fixPotentialGeo(){
+  const todo=POTENTIAL.filter(p=>p.geo===0&&!(S.geo&&S.geo[p.id])); if(!todo.length)return; let n=0;
+  for(const p of todo){
+    const bare=p.a.replace(/\s+\d\/\d(?=\s)/,'').replace(/\s+(?:ste|suite|unit|space|apt|#)\.?\s*\S+$/i,'');
+    let ll=await geocode(p.a,p.c,p.s);
+    if(ll&&mi(ll,p.ll)>35)ll=null;
+    if(!ll&&bare!==p.a){await new Promise(r=>setTimeout(r,1100)); ll=await geocode(bare,p.c,p.s); if(ll&&mi(ll,p.ll)>35)ll=null}
+    if(ll){S.geo[p.id]=ll; p.ll=ll; p.geo=1; n++; if(LMAP)drawPins()}
+    await new Promise(r=>setTimeout(r,1100));   // Nominatim: one request a second
+  }
+  if(n){dirty(); toast('Placed '+n+' POTENTIAL store'+(n===1?'':'s')+' at its real address')}
+}
 function applyCustom(){ (S.custom||[]).forEach(j=>{ if(!BY[j.id]){J.push(j);BY[j.id]=j} }); }
 /* ---------- rows that shipped without real coordinates ----------
    A job carrying geo:0 was added from the Master Sheet with its city's coordinates,
@@ -4659,12 +4815,15 @@ function applyGeo(){
   Object.entries(S.geo||{}).forEach(([k,ll])=>{ if(!k.startsWith('place:'))return;
     const p=PLACES[k.slice(6)]; if(p&&Array.isArray(ll)&&isFinite(ll[0])){p.ll=[ll[0],ll[1]]; p.geo=1} });
   Object.entries(S.geo||{}).forEach(([id,ll])=>{const j=BY[id];
-  if(j&&Array.isArray(ll)&&isFinite(ll[0])&&isFinite(ll[1])){j.lat=ll[0];j.lon=ll[1];j.geo=1;j.hs=String(j.hs||'').replace(/ · coords ≈ city[^·]*/,'')} }); }
+  if(j&&Array.isArray(ll)&&isFinite(ll[0])&&isFinite(ll[1])){j.lat=ll[0];j.lon=ll[1];j.geo=1;j.hs=String(j.hs||'').replace(/ · coords ≈ city[^·]*/,'')} });
+  POTENTIAL.forEach(p=>{const ll=S.geo&&S.geo[p.id]; if(Array.isArray(ll)&&isFinite(ll[0])&&isFinite(ll[1])){p.ll=[+ll[0],+ll[1]];p.geo=1}}); }
 async function fixGeo(){
   // home base first — every leg of every day is measured from it
-  if(!(S.geo&&S.geo.home)){
-    const p=HOME_ADDR.split(', '); const ll=await geocode(p[0],p[1],p[2]);
-    if(ll){S.geo.home=ll; BASE[0]=ll[0]; BASE[1]=ll[1]; dirty(); render()}
+  // …from the address as it reads now: a fix saved under an older spelling of it is looked up once more, and replaced only by a
+  // street- or house-level answer — a town-centre one would drag every day's start and finish off the driveway
+  if(!(S.geo&&S.geo.home)||S.geo.homeFor!==HOME_ADDR){
+    const ll=await geocodeHome();
+    if(ll){S.geo.home=ll; S.geo.homeFor=HOME_ADDR; BASE[0]=ll[0]; BASE[1]=ll[1]; dirty(); render()}
     await new Promise(r=>setTimeout(r,1100));
   }
   // a baked place that shipped with a town-centre guess — put it on its own driveway
@@ -4675,13 +4834,14 @@ async function fixGeo(){
     await new Promise(r=>setTimeout(r,1100));
   }
   const todo=J.filter(j=>j.geo===0&&!(S.geo&&S.geo[j.id]));
-  if(!todo.length)return; let n=0;
+  if(!todo.length){await fixPotentialGeo(); return} let n=0;
   for(const j of todo){
     const ll=await geocode(j.a,j.c,j.s);
     if(ll){S.geo[j.id]=ll; j.lat=ll[0]; j.lon=ll[1]; j.geo=1; j.hs=String(j.hs||'').replace(/ · coords ≈ city[^·]*/,''); n++}
     await new Promise(r=>setTimeout(r,1100));   // Nominatim: one request a second
   }
   if(n){dirty(); render(); toast('Placed '+n+' location'+(n===1?'':'s')+' at its real address')}
+  await fixPotentialGeo();
 }
 function uniqueId(base){ let id=base,n=2; while(BY[id])id=base+'-'+(n++); return id; }
 async function addCustomJobs(text,pay,svMin){
