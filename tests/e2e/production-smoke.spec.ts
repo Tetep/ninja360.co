@@ -40,6 +40,10 @@ const routes = [
   '/gi/site/membership/',
   '/gi/site/contact/',
   '/gi/site/be-on-the-show/',
+  // Behind the GI login (the Dojo login): logged in, they load like any other page.
+  '/gi/site/business-plan/',
+  '/gi/site/strategy/',
+  '/gi/site/call/',
   // Cloudflare Pages _redirects rules — only real once deployed, hence checked
   // here (daily cron against production) rather than in the local build suite.
   '/gi/site/apply',
@@ -53,6 +57,18 @@ test.describe('production smoke checks', () => {
     // Plain fetch: Playwright's request contexts inherit the config's httpCredentials.
     const res = await fetch(new URL('/', baseURL), { redirect: 'manual' });
     expect(res.status, 'Dojo should be password-gated').toBe(401);
+  });
+
+  // GI: only the menu's pages (and the promo Home plays) open with no login; every other page asks for it.
+  test('GI: the menu pages open without the login, nothing else does', async ({ baseURL }) => {
+    for (const path of ['/gi/site/', '/gi/site/episodes/', '/gi/site/rate-the-topics/', '/gi/site/promo/']) {
+      const res = await fetch(new URL(path, baseURL), { redirect: 'manual' });
+      expect(res.status, path + ' should be public').toBe(200);
+    }
+    for (const path of ['/gi/site/business-plan/', '/gi/site/strategy/', '/gi/site/about/', '/gi/site/question-of-the-week/', '/gi/site/be-on-the-show/']) {
+      const res = await fetch(new URL(path, baseURL), { redirect: 'manual' });
+      expect(res.status, path + ' should ask for the login').toBe(401);
+    }
   });
 
   for (const route of routes) {
