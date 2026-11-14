@@ -13,10 +13,34 @@
 //     links (?src=northland, chamber, aca, realtor, social, card) all land there
 // To open another path later, add it to OPEN_PATH. To drop the gate, take dojoGate out of the
 // onRequest list at the bottom of this file; nothing else to undo.
+//
+// GI_LOCKED carves the behind-the-scenes GI pages back out of the open site (Tim, 11/14/26): the
+// public side is Home and what the menu reaches (Listen, Rate the Topics, the guest signup at
+// be-on-the-show / apply / audition, the promo the home page embeds). Everything else asks for the
+// same Dojo login: the Business Plan (the Ninja logo on Listen) and all under it, The Plan and its
+// PDF decks, the Partner Call, the Dashboard, and the footer pages (About, Membership, Contact &
+// Sponsors, the Weekly opt-in form). The footer links stay; they ask for the login. To make one
+// public again, take it out of GI_LOCKED.
 
 const OPEN_HOST = /(^|\.)ninja360\.org$/i;
 const OPEN_PATH = /^\/gi\/site(\/|$)/;
+const GI_LOCKED = /^\/gi\/site\/(business-plan|strategy|call|dashboard|about|membership|contact|question-of-the-week|assets\/docs)(?![\w-])/i;
 const ENCODED_SEPARATOR = /%2f|%5c/i;   // an encoded slash never gets to talk its way into an open path
+
+// Is this request on the open part of the site? Checked on the path as the static server will read
+// it (percent-escapes decoded, doubled slashes folded) so %62usiness-plan or //business-plan can't
+// slip a locked page out through the open door. A path that won't decode stays locked.
+function isOpenPath(pathname) {
+  if (ENCODED_SEPARATOR.test(pathname)) return false;
+  let path;
+  try {
+    path = decodeURIComponent(pathname);
+  } catch {
+    return false;
+  }
+  path = path.replace(/\/{2,}/g, '/');
+  return OPEN_PATH.test(path) && !GI_LOCKED.test(path);
+}
 
 const unauthorized = () =>
   new Response('Unauthorized', {
@@ -42,7 +66,7 @@ const safeEqual = (a, b) => {
 async function dojoGate({ request, env, next }) {
   const url = new URL(request.url);
   if (OPEN_HOST.test(url.hostname)) return next();
-  if (OPEN_PATH.test(url.pathname) && !ENCODED_SEPARATOR.test(url.pathname)) return next();
+  if (isOpenPath(url.pathname)) return next();
 
   const user = env.DOJO_USER;
   const pass = env.DOJO_PASS;
