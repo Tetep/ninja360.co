@@ -1228,7 +1228,8 @@ TCC|95393|8300 Bell Oaks Drive Ste C|Newburgh|IN
 Wireless Zone|127937|118 W Washington St|Newton|IL
 Wireless Zone|127338|1480 N Worthey St|Flora|IL`.split('\n');
 
-const NEW_HOME = '3205 NE 70th Terrace, Gladstone, MO 64119';
+const HOME_CITY = 'Gladstone, MO';                 // Option B: no street on the public page
+const GLADSTONE = [39.2039, -94.5547];            // the neutral route origin (Gladstone centroid)
 const TEAL = 'rgb(10, 157, 181)';   // #0A9DB5 — the POTENTIAL pins
 // Leaflet comes from its CDN. A machine that cannot reach the CDN points LEAFLET_JS at a local copy of leaflet.js (npm pack leaflet@1.9.4).
 const LEAFLET_JS = process.env.LEAFLET_JS || '';
@@ -1376,7 +1377,7 @@ test.describe('run sheet — POTENTIAL stores: teal pins on the map, apart from 
     });
     // the book's rows, the house and every store but three are already placed, so only those three are looked up
     const leave = new Set(['pot:130823', 'pot:120419', 'pot:127937']);
-    const geo: Record<string, unknown> = { home: [39.2201, -94.5199], homeFor: NEW_HOME, 'place:crane': [36.9, -93.57] };
+    const geo: Record<string, unknown> = { 'place:crane': [36.9, -93.57] };
     jobsToPlace.forEach(id => { geo[id] = [38.9, -92.3]; });
     pot.filter(id => !leave.has(id)).forEach(id => { geo[id] = [38.5, -89.0]; });
     await page.evaluate(([k, v]) => localStorage.setItem(k as string, JSON.stringify(v)), [LSKEY, state({ geo })] as const);
@@ -1393,43 +1394,23 @@ test.describe('run sheet — POTENTIAL stores: teal pins on the map, apart from 
     expect(asked.filter(q => /Casey/.test(q))).toHaveLength(1);
   });
 
-  test('the house: the address Tim gave, looked up again once, and only street-level answers replace a saved fix', async ({ page }) => {
+  test('home base: city only, at the Gladstone centroid — never geocoded, and a saved house fix is dropped from the state', async ({ page }) => {
     await open(page, state());
-    expect(await ev(page, 'HOME_ADDR')).toBe(NEW_HOME);
+    expect(await ev(page, 'HOME_ADDR')).toBe(HOME_CITY);
+    expect(await ev(page, 'BASE')).toEqual(GLADSTONE);
+    expect(await ev(page, "PLACES.home.name")).toBe('🥷 Home base — Gladstone MO');
     const asked: string[] = [];
-    let rank = 30;
     await page.route(/nominatim\.openstreetmap\.org/, r => {
       const q = decodeURIComponent(new URL(r.request().url()).searchParams.get('q') || ''); asked.push(q);
-      return r.fulfill({ json: q.startsWith('3205 NE 70th Terrace') ? [{ lat: '39.2201', lon: '-94.5199', place_rank: rank }] : [] });
+      return r.fulfill({ json: [{ lat: '39.3', lon: '-94.6', place_rank: 30 }] });
     });
-    // a fix saved under the old spelling — Kansas City, no ZIP — is looked up once more with the new address…
-    await page.evaluate(([k, v]) => localStorage.setItem(k as string, JSON.stringify(v)), [LSKEY, state({ geo: { home: [39.185, -94.546] } })] as const);
+    // a street-level fix saved by an older build: not applied, and scrubbed from the saved state
+    await page.evaluate(([k, v]) => localStorage.setItem(k as string, JSON.stringify(v)), [LSKEY, state({ geo: { home: [39.3, -94.6], homeFor: 'an older address' } })] as const);
     await page.reload({ waitUntil: 'domcontentloaded' });
-    await expect.poll(async () => (await saved(page)).geo?.homeFor, { timeout: 15_000 }).toBe(NEW_HOME);
-    expect((await saved(page)).geo.home).toEqual([39.2201, -94.5199]);
-    expect(await ev(page, 'BASE')).toEqual([39.2201, -94.5199]);
-    expect(asked[0]).toBe(NEW_HOME);
-    // …and not again on the next load
-    const n = asked.filter(q => q.startsWith('3205')).length;
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect.poll(async () => { const g = (await saved(page)).geo || {}; return 'home' in g || 'homeFor' in g; }, { timeout: 15_000 }).toBe(false);
+    expect(await ev(page, 'BASE')).toEqual(GLADSTONE);
     await page.waitForTimeout(2_500);
-    expect(asked.filter(q => q.startsWith('3205')).length).toBe(n);
-  });
-
-  test('the house: a town-level answer never replaces the saved fix', async ({ page }) => {
-    await open(page, state());
-    const asked: string[] = [];
-    await page.route(/nominatim\.openstreetmap\.org/, r => {
-      const q = decodeURIComponent(new URL(r.request().url()).searchParams.get('q') || ''); asked.push(q);
-      return r.fulfill({ json: q.startsWith('3205 NE 70th Terrace') ? [{ lat: '39.2039', lon: '-94.5547', place_rank: 16 }] : [] });   // just "Gladstone"
-    });
-    await page.evaluate(([k, v]) => localStorage.setItem(k as string, JSON.stringify(v)), [LSKEY, state({ geo: { home: [39.2201, -94.5199], homeFor: 'an older spelling' } })] as const);
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await expect.poll(() => asked.filter(q => q.startsWith('3205 NE 70th Terrace')).length, { timeout: 15_000 }).toBe(2);   // as written, then under its post-office city
-    expect(asked[1]).toBe('3205 NE 70th Terrace, Kansas City, MO 64119');
-    const g = (await saved(page)).geo;
-    expect(g.home).toEqual([39.2201, -94.5199]);
-    expect(g.homeFor).toBe('an older spelling');
-    expect(await ev(page, 'BASE')).toEqual([39.2201, -94.5199]);
+    expect(asked.filter(q => q.includes(HOME_CITY) || /Gladstone/.test(q))).toEqual([]);
+    expect(await page.content()).not.toMatch(/\d+\s+NE\s+\d+(st|nd|rd|th)\s+Ter/i);
   });
 });
