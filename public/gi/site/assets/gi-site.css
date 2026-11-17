@@ -153,6 +153,10 @@ small,.small{font-size:.9rem}
 .host-photo .host-face{opacity:0}
 .host-photo:hover .host-logo,.host-photo.flipped .host-logo{opacity:0}
 .host-photo:hover .host-face,.host-photo.flipped .host-face{opacity:1}
+/* Ninja 360 mark is charcoal + white keyline on a transparent ground; it disappears on the
+   dark tile, so that tile is white with the mark fitted inside instead of cropped to the circle. */
+.host-photo--light{background:#fff}
+.host-photo--light .host-logo{object-fit:contain;padding:10px;background:#fff}
 .host span{font-family:var(--gi-font-body);font-size:14px;font-weight:700;color:var(--gi-ink);text-align:center}
 .host .host-company{font-family:var(--gi-font-type);font-size:10px;font-weight:400;color:var(--gi-muted);text-transform:uppercase;letter-spacing:.5px}
 
