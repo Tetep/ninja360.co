@@ -4452,6 +4452,7 @@ function mergeState(j){
    opening the app for the first time takes the seed path, and it needs these too. Each is
    gated on its own S.mig flag, which rides the crew sync, so it happens once per crew copy
    and never argues with a change made in the field afterwards. */
+const RUN_1116=['2026-6638','2026-6830','2026-7727','2026-7860','2026-8402','2026-8633','2026-8981'];   // the 11/16 West KS run, Cody solo
 function migrate(){
   if(!S.mig.cameron0915){ S.mig.cameron0915=1;
     if(!S.days.some(d=>d.date==='2026-09-15'))S.days.push(Object.assign(blankDay('2026-09-15'),{crew:'gabe',pace:'split',startTime:7,ids:['2026-9658'].filter(i=>BY[i])})) }
@@ -4722,6 +4723,12 @@ function migrate(){
     S.report=(S.report&&typeof S.report==='object')?S.report:{to:'',cc:'',sent:{}}; S.report.sent=S.report.sent||{};
     const at=Date.parse('2026-11-10T18:00:00Z');
     SHEET_1110.forEach(([d,inv,ids])=>ids.forEach(id=>{ const cur=S.report.sent[id]; if(!BY[id]||(cur&&(cur.at||0)>at))return; S.report.sent[id]={d,inv,at,seed:1} })) }
+  // 11/16: the West KS run (Pratt, Liberal, Great Bend, Dodge City, Hays x2, Garden City — seven stops, 700 pts) was Cody solo, not
+  // Tim (Tim, 11/17). The 11/16 plan day's driver becomes Cody, and any of the seven stamped as shot by Tim is restamped Cody. Points,
+  // stops, dates and status do not move. The flag is set only once the day is on this device, so a phone that has not synced it yet
+  // still corrects it on a later boot.
+  if(!S.mig.cody1116){ const day=S.days.find(d=>d.date==='2026-11-16'&&(d.ids||[]).some(i=>RUN_1116.includes(i)));
+    if(day){ S.mig.cody1116=1; day.driver='cody'; RUN_1116.forEach(id=>{ if(S.by[id]==='tim')S.by[id]='cody' }) } }
   const before=S.days.length; S.days=S.days.filter(d=>!isGhostDay(d));
   if(S.days.length!==before&&!S.days.length)S.days.push(blankDay(''));
   retireClean();   // stops taken off the run sheet are off every plan day, on every boot
