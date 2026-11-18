@@ -38,7 +38,7 @@ const MIG = {
   cameron0915: 1, lincoln0925: 1, notshot98172: 1, shoot98172: 1, notsun98172: 1, notshot4049: 1,
   plan1007: 1, vehicle1007: 1, run1008: 1, run1013: 1, run1016: 1, run1020: 1,
   pastruns0926: 12, logmi0926: 1, logmi1006: 1, manhattan0910: 1, manhattan0909: 1, planlock0923: 1, sheetdates1003: 1, sync1021: 1, stl1027: 1, stl1029: 2,
-  newton1107: 1, ovn1106: 1, ovn1110: 1, qb1110: 1, sheetsync1110: 1, cody1116: 1,
+  newton1107: 1, ovn1106: 1, ovn1110: 1, qb1110: 1, sheetsync1110: 1, cody1116: 1, cody1116b: 1,
 };
 const migBut = (...skip: string[]) => Object.fromEntries(Object.entries(MIG).filter(([k]) => !skip.includes(k)));
 
@@ -789,7 +789,8 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await open(page, state({ days: [mon, other], by, mig: migBut('cody1116') }));
     const d = (id: string) => 'S.days.find(x=>x.id==="' + id + '")';
     expect(await ev(page, 'driverOf(' + d('d1116') + ')')).toBe('cody');
-    expect(await ev(page, 'JSON.stringify(' + d('d1116') + '.ids)')).toBe(JSON.stringify(RUN));
+    // the same seven stops; Pratt is IDS-banked now (captured 10/13), so it sinks to the bottom of the day like any shot stop
+    expect(await ev(page, 'JSON.stringify(' + d('d1116') + '.ids)')).toBe(JSON.stringify([...RUN.slice(1), RUN[0]]));
     expect(await ev(page, d('d1116') + '.note')).toBe('West KS.');
     expect(await ev(page, 'JSON.stringify(RUN_1116.map(i=>S.by[i]))')).toBe(JSON.stringify(RUN.map(() => 'cody')));
     expect(await ev(page, 'RUN_1116.reduce((t,i)=>t+BY[i].p,0)')).toBe(700);
@@ -801,6 +802,49 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
   test('11/16 West KS run: a phone without the day yet leaves the flag unset, so it still corrects the day later', async ({ page }) => {
     await open(page, state({ mig: migBut('cody1116') }));
     expect(await ev(page, '!!S.mig.cody1116')).toBe(false);
+  });
+
+  test('11/16 West KS: the six IDS does not carry yet are SHOT on 11/16 by Cody, Pratt is IDS’s from 10/13, and nothing else moves', async ({ page }) => {
+    const PRATT = '2026-6638', SIX = ['2026-6830', '2026-7727', '2026-7860', '2026-8402', '2026-8633', '2026-8981'], RUN = [PRATT, ...SIX];
+    const mon = day({ id: 'd1116', date: '2026-11-16', ids: RUN, note: 'West KS.' });
+    const other = day({ id: 'dother', date: '2026-11-17', ids: [BOLIVAR] });
+    await open(page, state({ days: [mon, other], active: 1, activeDate: '2026-11-17', by: Object.fromEntries(RUN.map(id => [id, 'tim'])), mig: migBut('cody1116', 'cody1116b') }));
+    // the red pins of Tim's screenshot: each of the six is a field lock now — 11/16, Cody, 100 pts, not an IDS lock — and owes no visit
+    for (const id of SIX) {
+      expect(await ev(page, 'JSON.stringify((()=>{const l=lockOf("' + id + '");return [l.d,l.by,l.pts,!!l.ids]})())'), id).toBe('["2026-11-16","cody",100,false]');
+      expect(await ev(page, 'NEEDSVISIT(BY["' + id + '"])'), id + ' no longer owes a visit').toBe(false);
+      expect(await ev(page, 'S.by["' + id + '"]'), id + ' shooter').toBe('cody');
+      expect(await ev(page, 'mapVisible(day())(BY["' + id + '"])'), id + ' is off the map on another day').toBe(false);
+    }
+    // Pratt: the book mirrors the IDS Completed tab (captured 10/13, invoiced 11/14), and IDS already has it, so the IDS tab does not ask again
+    expect(await ev(page, 'JSON.stringify((()=>{const l=lockOf("2026-6638");return [l.d,l.by,!!l.ids]})())')).toBe('["2026-10-13","IDS",true]');
+    expect(await ev(page, 'BY["2026-6638"].inv')).toBe('INV-000151');
+    expect(await ev(page, 'datesToReport().some(l=>l.id==="2026-6638")')).toBe(false);
+    // History: 11/16 is six stops and 600 pts — Pratt’s 100 stay on 10/13, where IDS banked them
+    expect(await ev(page, 'JSON.stringify(historyDays().filter(d=>d.d==="2026-11-16").map(d=>[d.d,d.n,d.pts]))')).toBe('[["2026-11-16",6,600]]');
+    expect(await ev(page, 'JSON.stringify(historyDays().filter(d=>d.d==="2026-10-13").map(d=>d.rows.some(r=>r.id==="2026-6638")))')).toBe('[true]');
+    // the six are now what the IDS tab asks Tim to report, under 11/16
+    expect(await ev(page, 'JSON.stringify(datesToReport().filter(l=>l.d==="2026-11-16").map(l=>l.id).sort())')).toBe(JSON.stringify([...SIX].sort()));
+    // nothing else moved: another open stop still owes its visit, the flag is set, the day keeps its stops and its Cody driver
+    expect(await ev(page, 'LOCKED("' + BOLIVAR + '")')).toBe(false);
+    expect(await ev(page, 'S.mig.cody1116b')).toBe(1);
+    expect(await ev(page, 'JSON.stringify(S.days.find(d=>d.id==="d1116").ids)')).toBe(JSON.stringify(RUN));
+    expect(await ev(page, 'driverOf(S.days.find(d=>d.id==="d1116"))')).toBe('cody');
+  });
+
+  test('11/16 West KS: a tap in the field stays (Tim’s tap on Cody’s run becomes Cody’s), an un-shot after that night wins, and another day is left alone', async ({ page }) => {
+    const [A, B, C] = ['2026-6830', '2026-7727', '2026-7860'];
+    const tap = Date.parse('2026-11-17T01:00:00Z'), unshotAt = Date.parse('2026-11-17T12:00:00Z');
+    const locks = { [A]: { d: '2026-11-16', pts: 100, by: 'tim', with: '', at: tap, sd: '2026-11-16' }, [C]: { d: '2026-11-17', pts: 100, by: 'tim', with: '', at: tap, sd: '2026-11-17' } };
+    await open(page, state({ locks, unshot: { [B]: { at: unshotAt, by: 'tim' } }, mig: migBut('cody1116b') }));
+    expect(await ev(page, 'JSON.stringify([S.locks["' + A + '"].d,S.locks["' + A + '"].by,S.locks["' + A + '"].at])')).toBe(JSON.stringify(['2026-11-16', 'cody', tap]));   // re-attributed; its date and time kept
+    expect(await ev(page, 'LOCKED("' + B + '")'), 'un-shot after that night: it stays to shoot').toBe(false);
+    expect(await ev(page, 'JSON.stringify([S.locks["' + C + '"].d,S.locks["' + C + '"].by])'), 'dated another day: not part of the 11/16 run').toBe('["2026-11-17","tim"]');
+  });
+
+  test('11/16 West KS: a device that has already applied it does not lock the six again', async ({ page }) => {
+    await open(page, state());   // every flag applied, cody1116b included
+    for (const id of ['2026-6830', '2026-7727', '2026-7860', '2026-8402', '2026-8633', '2026-8981']) expect(await ev(page, 'NEEDSVISIT(BY["' + id + '"])'), id).toBe(true);
   });
 
   test('Cody’s overnight: with no Thursday on the phone the Friday route day carries the 150, and the 11/7 note that named Friday night is replaced', async ({ page }) => {
@@ -902,8 +946,8 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     for (const id of WEEKEND) expect(await ev(page, 'J.some(j=>j.id==="' + id + '")'), id + ' is off the book').toBe(false);
     expect(await ev(page, 'J.some(j=>j.id==="' + LAWRENCE_132065 + '")'), 'TCC 132065 Lawrence stays').toBe(true);
     expect(await ev(page, 'J.some(j=>j.id==="' + TOPEKA_RUSSELL + '")'), 'Russell 131502 Topeka stays').toBe(true);
-    // 34 stops, 3,400 pts: the book carries the STL run and the weekend banked since the 11/10 sync (the fixture has no field locks, so it read 60 before)
-    await expect(page.locator('#counters')).toContainText(/LEFT TO SHOOT\s*3,400 pts\s*34 stops/i);
+    // 33 stops, 3,300 pts: the book carries the STL run and the weekend banked since the 11/10 sync (the fixture has no field locks, so it read 60 before), and Pratt, which IDS has captured 10/13 (it was the 34th, 3,400 pts)
+    await expect(page.locator('#counters')).toContainText(/LEFT TO SHOOT\s*3,300 pts\s*33 stops/i);
     // the follow-up section: the two that still need work, in Tim's words
     const fu = page.locator('#followUp');
     await expect(fu).toBeVisible();
@@ -966,13 +1010,13 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     }
     // the ledger: Banked (Plan counters), History's points and Score all say the same thing
     expect(await ev(page, 'JSON.stringify([counters().bankedJobs.length,counters().bankedPay,allLocks().length,allLocks().reduce((t,l)=>t+l.pts,0),counters().openJobs.length])'))
-      .toBe('[148,24900,148,24900,34]');
+      .toBe('[149,25000,149,25000,33]');   // 148 / 24,900 / 34 until Pratt: IDS has it captured 10/13 and invoiced 11/14 (INV-000151)
   });
 
-  test('sync 11/10: Score reads 137 done, 34 left, 4 on hold of 175 — the weekend’s eight are done, and Kirkwood is no longer on hold', async ({ page }) => {
+  test('sync 11/10 and Pratt: Score reads 138 done, 33 left, 4 on hold of 175 — the weekend’s eight are done, Pratt is IDS’s from 10/13, and Kirkwood is no longer on hold', async ({ page }) => {
     await open(page, state({ nav: 'board' }), '#s-board');
-    await expect(page.locator('#vzDone')).toHaveText('137');
-    await expect(page.locator('#vzLeft')).toHaveText('34');
+    await expect(page.locator('#vzDone')).toHaveText('138');   // 137 on 11/10, plus Pratt: IDS has it captured 10/13 and invoiced 11/14
+    await expect(page.locator('#vzLeft')).toHaveText('33');
     await expect(page.locator('#vzHold')).toHaveText('4');
     await expect(page.locator('#vzAll')).toHaveText('175');
     expect(await ev(page, 'HOLD(BY["2026-1430"])||counters().heldJobs.some(j=>j.id==="2026-1430")'), 'Kirkwood TCC 74639 was shot 10/29, so it is not on hold').toBe(false);
