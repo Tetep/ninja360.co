@@ -38,7 +38,7 @@ const MIG = {
   cameron0915: 1, lincoln0925: 1, notshot98172: 1, shoot98172: 1, notsun98172: 1, notshot4049: 1,
   plan1007: 1, vehicle1007: 1, run1008: 1, run1013: 1, run1016: 1, run1020: 1,
   pastruns0926: 12, logmi0926: 1, logmi1006: 1, manhattan0910: 1, manhattan0909: 1, planlock0923: 1, sheetdates1003: 1, sync1021: 1, stl1027: 1, stl1029: 2,
-  newton1107: 1, ovn1106: 1, ovn1110: 1, qb1110: 1, sheetsync1110: 1, cody1116: 1, cody1116b: 1, ids1118: 1,
+  newton1107: 1, ovn1106: 1, ovn1110: 1, qb1110: 1, sheetsync1110: 1, cody1116: 1, cody1116b: 1, ids1118: 1, cody1118plan: 1,
 };
 const migBut = (...skip: string[]) => Object.fromEntries(Object.entries(MIG).filter(([k]) => !skip.includes(k)));
 
@@ -967,6 +967,63 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     // IDS’s note does not say Newton’s upload is finished, so the “images incomplete” follow-up stays
     expect(await ev(page, 'LOCKED("2026-5976")')).toBe(true);
     expect(await ev(page, 'followRows().some(j=>j.id==="2026-5976")')).toBe(true);
+  });
+
+  // ---- 11/18: Cody is on the road. Tim: "Sullivan and Rolla" today, "the rest hypothetically tomorrow" ----
+  const SULLIVAN = '2026-6841', ROLLA = '2026-4877', DEXTER = '2026-5804';
+  // Potosi, Desloge, Farmington, Poplar Bluff, West Plains, Mountain Grove, Houston, Saint Robert — the shortest order from Rolla home
+  const REST = ['2026-4622', '2026-6970', '2026-5006', '2026-8820', '2026-8615', '2026-5941', '2026-7036', '2026-4576'];
+  const NINE = [SULLIVAN, '2026-4576', '2026-7036', '2026-5941', '2026-8615', '2026-4622', '2026-6970', '2026-5006', '2026-8820'];   // the one-day plan Tim pasted
+  const noon1118 = (page: Page) => page.clock.setFixedTime(new Date('2026-11-18T12:00:00Z'));
+  const twoDays = 'JSON.stringify(S.days.filter(d=>d.date==="2026-11-18"||d.date==="2026-11-19").map(d=>[d.date,driverOf(d),d.vehicle,!!d.locked,d.startKey,d.endKey,d.ids]))';
+
+  test('Cody’s trip 11/18: Sullivan and Rolla are today’s locked plan, the other eight a draft for tomorrow — and the nine-stop one-day plan is gone', async ({ page }) => {
+    await noon1118(page);
+    const nine = day({ id: 'dnine', date: '2026-11-18', driver: 'cody', vehicle: 'own', ids: NINE, locked: { at: 1, by: 'tim' } });
+    const later = day({ id: 'dlater', date: '2026-11-25', ids: [BOLIVAR] });   // somebody else’s later plan stays as it is
+    await open(page, state({ days: [nine, later], active: 0, activeDate: '2026-11-18', mig: migBut('cody1118plan') }));
+    expect(await ev(page, twoDays)).toBe(JSON.stringify([
+      ['2026-11-18', 'cody', 'own', true, 'home', 'job:2026-4877', [SULLIVAN, ROLLA]],
+      ['2026-11-19', 'cody', 'own', false, 'job:2026-4877', 'home', REST]]));
+    expect(await ev(page, 'S.days.some(d=>d.id==="dnine")'), 'the one-day nine-stop plan comes apart').toBe(false);
+    expect(await ev(page, 'JSON.stringify(S.days.find(d=>d.id==="dlater").ids)')).toBe(JSON.stringify([BOLIVAR]));
+    expect(await ev(page, 'S.days[S.active].date'), 'the app opens on today’s day').toBe('2026-11-18');
+    // today's two are PLANNED and the IDS update names them (and asks IDS to load them); tomorrow's eight are a draft — unplanned, and IDS is not told
+    expect(await ev(page, 'JSON.stringify(' + JSON.stringify([SULLIVAN, ROLLA, ...REST]) + '.map(i=>PLANNED(i)))')).toBe(JSON.stringify([true, true, ...REST.map(() => false)]));
+    expect(await ev(page, 'JSON.stringify(idsPlanDays().map(d=>d.date))')).toBe('["2026-11-18"]');
+    expect(await ev(page, 'JSON.stringify(idsNamedNeeds().filter(i=>' + JSON.stringify([SULLIVAN, ROLLA, ...REST]) + '.includes(i)).sort())')).toBe(JSON.stringify([ROLLA, SULLIVAN].sort()));
+    // the draft says so, and no stop is on two live days
+    expect(await ev(page, 'S.days.find(d=>d.date==="2026-11-19").note')).toMatch(/^HYPOTHETICAL/);
+    expect(await ev(page, 'JSON.stringify(Object.values(assigned()).length)')).toBe(await ev(page, 'JSON.stringify(Object.keys(assigned()).length)'));
+    expect(await ev(page, 'S.mig.cody1118plan')).toBe(1);
+    await page.reload();
+    expect(await ev(page, twoDays), 'a second boot does not run it again').toBe(JSON.stringify([
+      ['2026-11-18', 'cody', 'own', true, 'home', 'job:2026-4877', [SULLIVAN, ROLLA]],
+      ['2026-11-19', 'cody', 'own', false, 'job:2026-4877', 'home', REST]]));
+  });
+
+  test('Cody’s trip 11/18: with nothing on those dates yet the two days are simply made', async ({ page }) => {
+    await noon1118(page);
+    await open(page, state({ days: [day({ id: 'dfar', date: '2026-12-01' })], activeDate: '2026-12-01', mig: migBut('cody1118plan') }));
+    expect(await ev(page, twoDays)).toBe(JSON.stringify([
+      ['2026-11-18', 'cody', 'own', true, 'home', 'job:2026-4877', [SULLIVAN, ROLLA]],
+      ['2026-11-19', 'cody', 'own', false, 'job:2026-4877', 'home', REST]]));
+    expect(await ev(page, 'JSON.stringify(S.days.find(d=>d.id==="dfar").ids)'), 'another day is untouched').toBe(JSON.stringify([BOLIVAR, BUFFALO]));
+  });
+
+  test('Cody’s trip 11/18: a Cody day already on 11/19 that carries another stop keeps its note and the stop, and gains the eight', async ({ page }) => {
+    await noon1118(page);
+    const thu = day({ id: 'dthu', date: '2026-11-19', driver: 'cody', vehicle: 'own', ids: [DEXTER], note: 'Mine.' });
+    await open(page, state({ days: [thu], active: 0, activeDate: '2026-11-19', mig: migBut('cody1118plan') }));
+    expect(await ev(page, 'JSON.stringify(S.days.filter(d=>d.date==="2026-11-19").map(d=>[d.id,d.note,d.ids]))')).toBe(JSON.stringify([['dthu', 'Mine.', [...REST, DEXTER]]]));
+    expect(await ev(page, 'JSON.stringify(S.days.find(d=>d.date==="2026-11-18").ids)')).toBe(JSON.stringify([SULLIVAN, ROLLA]));
+  });
+
+  test('Cody’s trip 11/18: a device that has already applied it leaves the plan as Tim set it', async ({ page }) => {
+    await noon1118(page);
+    const nine = day({ id: 'dnine', date: '2026-11-18', driver: 'cody', vehicle: 'own', ids: NINE });
+    await open(page, state({ days: [nine], active: 0, activeDate: '2026-11-18' }));   // every flag applied
+    expect(await ev(page, 'JSON.stringify(S.days.map(d=>[d.id,d.ids.length]))')).toBe('[["dnine",9]]');
   });
 
   test('Cody’s overnight: with no Thursday on the phone the Friday route day carries the 150, and the 11/7 note that named Friday night is replaced', async ({ page }) => {

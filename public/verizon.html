@@ -4484,6 +4484,16 @@ const CODY_1118=[
    note:'Cody solo, his own car — Hays (two) and Great Bend. Shot Fri 11/13 per the IDS Master tab, confirmed by the Theta card GPS (read 11/18); the order is the card’s frame order. The route and miles are the app’s estimate (overnight at the last stop) until Cody’s own count is typed in.'},
   {date:'2026-11-14',ids:['2026-7860','2026-8981','2026-6830'],start:'job:2026-7727',end:'home',
    note:'Cody solo, his own car — Dodge City, Garden City and Liberal. Shot Sat 11/14 per the IDS Master tab, confirmed by the Theta card GPS (read 11/18); the order is the card’s frame order. The route and miles are the app’s estimate (starts where Friday ended) until Cody’s own count is typed in.'}];
+/* 11/18, Tim: Cody left for Missouri in his own car. "Sullivan and Rolla" are today — he camps in the Mark Twain forest by Rolla tonight — and "the rest hypothetically
+   tomorrow": the other eight stops of the nine-stop plan Tim pasted (which is one nonstop day), in the shortest order from Rolla back to Gladstone (587 mi est.; the paste's
+   own order was 724). Today is a plan Cody is running, so it is LOCKED: PLANNED, and the IDS update names it. Tomorrow is a draft — not locked, so IDS is not told and the stops
+   stay unplanned. Rolla is the Master tab's TCC 122172 (2026-4877). Sullivan 2026-6841 · Rolla 2026-4877 · Potosi 2026-4622 · Desloge 2026-6970 · Farmington 2026-5006 ·
+   Poplar Bluff 2026-8820 · West Plains 2026-8615 · Mountain Grove 2026-5941 · Houston 2026-7036 · Saint Robert 2026-4576. */
+const MO_1118=[
+  {date:'2026-11-18',locked:true,ids:['2026-6841','2026-4877'],start:'home',end:'job:2026-4877',
+   note:'Cody solo, his own car (Tim, 11/18): Sullivan, then Rolla. He camps in the Mark Twain National Forest by Rolla tonight.'},
+  {date:'2026-11-19',locked:false,ids:['2026-4622','2026-6970','2026-5006','2026-8820','2026-8615','2026-5941','2026-7036','2026-4576'],start:'job:2026-4877',end:'home',
+   note:'HYPOTHETICAL (Tim, 11/18): the rest of the nine-stop plan on the way home from Rolla — Potosi, Desloge, Farmington, Poplar Bluff, West Plains, Mountain Grove, Houston, Saint Robert. A draft: not locked, so IDS is not told. The order is the shortest from Rolla; Re-route puts it against store hours.'}];
 /* The Monday 11/16 plan day Tim built for the West KS run. IDS has the run on Fri 11/13 and Sat 11/14 (and Pratt on 10/13), so a locked plan on 11/16 that
    still carries those stops reads as a return drive to seven stops that were shot before it. They come off it, and a day left with nothing on it goes.
    It runs on every boot and every crew merge, so a phone still on the old plan cannot bring it back. */
@@ -4815,6 +4825,19 @@ function migrate(){
       const have=S.days.find(x=>x&&x.date===cd.date&&driverOf(x)==='cody');
       if(have){ ids.forEach(id=>{ if(!have.ids.includes(id))have.ids.push(id) }); return }
       S.days.push(Object.assign(blankDay(cd.date),{startKey:cd.start,endKey:cd.end,ids,driver:'cody',vehicle:'own',note:cd.note,locked:{at:Date.parse(cd.date+'T23:00:00Z'),by:'tim'}})) });
+    sortDays() }
+  // 11/18, Tim: "Sullivan and Rolla" today, "the rest hypothetically tomorrow" (MO_1118). The ten stops leave every live day they are on — the nine-stop one-day plan, wherever it
+  // sits — and a day left with nothing goes. Today is a LOCKED Cody day (PLANNED; the IDS update names it), tomorrow a draft. A live Cody day already on one of the two dates that
+  // still carries other stops takes the stops and keeps itself. Once: Tim reorders, relocks or moves them from the Plan tab, and nothing here argues with that.
+  if(!S.mig.cody1118plan){ S.mig.cody1118plan=1; const cur=S.days[S.active], mine=MO_1118.flatMap(p=>p.ids).filter(id=>BY[id]), emptied=new Set();
+    S.days.forEach(d=>{ if(!d||!Array.isArray(d.ids)||!liveDay(d))return; const n=d.ids.length; d.ids=d.ids.filter(id=>!mine.includes(id)); if(n&&!d.ids.length)emptied.add(d) });
+    S.days=S.days.filter(d=>!emptied.has(d));
+    MO_1118.forEach(p=>{ const ids=p.ids.filter(id=>BY[id]); if(!ids.length)return;
+      const have=S.days.find(x=>x&&x.date===p.date&&driverOf(x)==='cody'&&liveDay(x));
+      if(have){ have.ids=ids.concat(have.ids.filter(id=>!ids.includes(id))); return }
+      S.days.push(Object.assign(blankDay(p.date),{startKey:p.start,endKey:p.end,ids,driver:'cody',vehicle:'own',note:p.note},p.locked?{locked:{at:Date.parse('2026-11-18T18:30:00Z'),by:'tim'}}:{})) });
+    const i=cur?S.days.indexOf(cur):-1, t=S.days.findIndex(d=>d.date===todayISO());
+    S.active=i>=0?i:(t>=0?t:Math.max(0,Math.min(S.active||0,S.days.length-1)));
     sortDays() }
   const before=S.days.length; S.days=S.days.filter(d=>!isGhostDay(d));
   if(S.days.length!==before&&!S.days.length)S.days.push(blankDay(''));
