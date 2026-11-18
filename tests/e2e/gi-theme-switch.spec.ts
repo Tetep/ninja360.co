@@ -140,6 +140,19 @@ test.describe('GI color-scheme selector', () => {
     expect((glow.match(/drop-shadow/g) || []).length).toBe(1);
   });
 
+  test('Man on the Street: the deck as a page, all twelve sections, linked from the Business Plan and The Plan', async ({ page }) => {
+    await open(page, '/gi/site/business-plan/man-on-the-street');
+    await expect(page.locator('h1')).toHaveText('Man on the Street');
+    await expect(page.locator('.bp-section')).toHaveCount(12);
+    await expect(page.locator('.bp-section h2').first()).toHaveText('We take the table to the street');
+    await expect(page.locator('.bp-section h2').last()).toHaveText('Five decisions to hit the road');
+    await expect(page.locator('.mots-actions a').first()).toHaveAttribute('href', '../../assets/docs/GI-Man-on-the-Street-Strategy.pdf');
+    await open(page, '/gi/site/strategy');
+    await expect(page.locator('.deck-card a', { hasText: 'Read it on the site' })).toHaveAttribute('href', '/gi/site/business-plan/man-on-the-street/');
+    const content = await readFile(path.join(process.cwd(), 'dist/gi/site/business-plan/content.js'), 'utf8');
+    expect(content).toContain("href: '/gi/site/business-plan/man-on-the-street/'");
+  });
+
   test('Business Plan page: the image button opens The Plan (strategy decks)', async ({ page }) => {
     await open(page, '/gi/site/business-plan');
     const door = page.locator('.bizplan-full a.bizplan-door');

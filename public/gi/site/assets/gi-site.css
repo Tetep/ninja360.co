@@ -39,7 +39,7 @@ small,.small{font-size:.9rem}
    accents) read correctly on a white card in B, a dark card in A and a tan
    card in C without a single per-scheme override. */
 .know-band .wrap,.step,.seat,.ep-card,.producer,.signup-panel,.form-note,.transcript,.tier,
-.topic-card,.bp-tile,.bp-table,.promo-modal-dialog,.gen-card,.deck-card{
+.topic-card,.bp-tile,.bp-table,.promo-modal-dialog,.gen-card,.deck-card,.mots-card{
   --gi-ink:var(--gi-card-ink);
   --gi-soft:var(--gi-card-soft);
   --gi-muted:var(--gi-card-muted);
@@ -455,6 +455,43 @@ footer .small b{color:var(--gi-band-link-hover)}
 .bp-back{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-family:var(--gi-font-type);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--gi-muted);text-decoration:none}
 .bp-back:hover{color:var(--gi-accent-small)}
 .cta-band .btn-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+
+/* ---------- Man on the Street (business-plan/man-on-the-street) ----------
+   The deck as a page that reads on a phone: cards drop to one column, the
+   table stacks (bp-table), and the red cards and the closing vote band use the
+   band colors so they hold up in every scheme. */
+.mots-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+.hero .mots-actions{justify-content:center}
+.hero .mots-hand{margin-left:auto;margin-right:auto}
+.mots-hand{font-family:var(--gi-font-hand);font-weight:700;font-size:clamp(19px,2.6vw,24px);line-height:1.3;color:var(--gi-ink);margin:22px 0 0;max-width:780px}
+.mots-hero-line{margin-top:10px}
+.mots-hero-line span{color:var(--gi-accent-small)}
+.mots-note{margin:18px 0 0;color:var(--gi-soft);font-size:15.5px;line-height:1.55;max-width:780px}
+.mots-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin-top:22px}
+.mots-stat{border-top:4px solid var(--gi-accent);padding-top:10px}
+.mots-stat .v{font-family:var(--gi-font-display);font-size:clamp(44px,7vw,64px);line-height:1;color:var(--gi-ink)}
+.mots-stat p{margin:8px 0 0;color:var(--gi-soft);font-size:16px;line-height:1.45}
+.mots-cards,.mots-beats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:16px;margin-top:22px}
+.mots-cards.mots-three,.mots-beats.mots-three{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.mots-card{background:var(--gi-card);border:var(--gi-card-line) var(--gi-card-rule);border-radius:var(--gi-radius);padding:18px 18px 20px;box-shadow:3px 3px 0 var(--gi-shadow)}
+.mots-card-hot,.mots-vote{--mots-red:var(--gi-accent)}
+:root[data-theme="a"] .mots-card-hot,:root[data-theme="a"] .mots-vote{--mots-red:#CC0A0F}
+.mots-card-hot{background:var(--mots-red);border-color:var(--mots-red);--gi-ink:var(--gi-on-accent);--gi-soft:var(--gi-on-accent);--gi-accent-small:var(--gi-on-accent);color:var(--gi-on-accent)}
+.mots-tag{font-family:var(--gi-font-type);font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gi-accent-small)}
+h3.mots-card-title{font-family:var(--gi-font-display);font-size:20px;line-height:1.15;letter-spacing:.01em;text-transform:uppercase;color:var(--gi-ink);margin:6px 0}
+.mots-card p,.mots-beat p{margin:0;font-size:15.5px;line-height:1.5;color:var(--gi-soft)}
+.mots-beat{border-left:4px solid var(--gi-accent);padding:2px 0 2px 16px}
+.mots-card p.mots-owner{margin-top:10px;font-family:var(--gi-font-hand);font-weight:700;font-size:16px;color:var(--gi-ink)}
+.mots-table td:first-child{font-weight:700;color:var(--gi-ink)}
+.mots-vote{background:var(--mots-red);color:var(--gi-on-accent);--gi-ink:var(--gi-on-accent);--gi-soft:var(--gi-on-accent);--gi-accent-small:var(--gi-on-accent)}
+.mots-vote h2{color:var(--gi-on-accent);border-left-color:var(--gi-on-accent)}
+.mots-vote .bp-steps li{color:var(--gi-on-accent)}
+.mots-vote .bp-steps li::before{background:var(--gi-on-accent);color:var(--mots-red)}
+@media(max-width:700px){.mots-stats{grid-template-columns:1fr}}
+/* Paper: the label red (#963719) is 3.6:1 on the tan cards and tan sections; small
+   labels there take a deeper red so they pass 4.5:1. */
+:root[data-theme="c"] .mots-card:not(.mots-card-hot) .mots-tag,:root[data-theme="c"] .bp-card-bg .mots-beat .mots-tag,
+:root[data-theme="c"] .bp-card-bg .bp-section-num{color:#78280F}
 
 /* ---------- YouTube Strategy diagram frame ----------
    Heights are an estimate from reading diagram.html's section/grid structure

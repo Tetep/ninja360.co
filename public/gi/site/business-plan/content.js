@@ -163,6 +163,11 @@ export const SECTIONS = [
         type: 'note',
         text: 'The street question matches that week’s poll, so the street and the online vote tell one story.',
       },
+      {
+        type: 'button',
+        text: 'The full Man on the Street plan',
+        href: '/gi/site/business-plan/man-on-the-street/',
+      },
     ],
   },
   {

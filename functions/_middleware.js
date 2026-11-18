@@ -121,6 +121,7 @@ function giPerson(list, user, pass) {
 const PAGE_NAMES = [
   [/^\/gi\/site\/business-plan\/youtube-strategy\/diagram\.html$/i, 'YouTube Strategy (diagram on its own)'],
   [/^\/gi\/site\/business-plan\/youtube-strategy\/?(index\.html)?$/i, 'YouTube Strategy'],
+  [/^\/gi\/site\/business-plan\/man-on-the-street\/?(index\.html)?$/i, 'Man on the Street'],
   [/^\/gi\/site\/business-plan\/?(index\.html)?$/i, 'Business Plan'],
   [/^\/gi\/site\/strategy\/?(index\.html)?$/i, 'The Plan (decks page)'],
   [/^\/gi\/site\/assets\/docs\/GI-YouTube-Strategy\.pdf$/i, 'Deck: YouTube Strategy (PDF)'],
