@@ -38,7 +38,7 @@ const MIG = {
   cameron0915: 1, lincoln0925: 1, notshot98172: 1, shoot98172: 1, notsun98172: 1, notshot4049: 1,
   plan1007: 1, vehicle1007: 1, run1008: 1, run1013: 1, run1016: 1, run1020: 1,
   pastruns0926: 12, logmi0926: 1, logmi1006: 1, manhattan0910: 1, manhattan0909: 1, planlock0923: 1, sheetdates1003: 1, sync1021: 1, stl1027: 1, stl1029: 2,
-  newton1107: 1, ovn1106: 1, ovn1110: 1, qb1110: 1, sheetsync1110: 1, cody1116: 1, cody1116b: 1,
+  newton1107: 1, ovn1106: 1, ovn1110: 1, qb1110: 1, sheetsync1110: 1, cody1116: 1, cody1116b: 1, ids1118: 1,
 };
 const migBut = (...skip: string[]) => Object.fromEntries(Object.entries(MIG).filter(([k]) => !skip.includes(k)));
 
@@ -789,8 +789,9 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     await open(page, state({ days: [mon, other], by, mig: migBut('cody1116') }));
     const d = (id: string) => 'S.days.find(x=>x.id==="' + id + '")';
     expect(await ev(page, 'driverOf(' + d('d1116') + ')')).toBe('cody');
-    // the same seven stops; Pratt is IDS-banked now (captured 10/13), so it sinks to the bottom of the day like any shot stop
-    expect(await ev(page, 'JSON.stringify(' + d('d1116') + '.ids)')).toBe(JSON.stringify([...RUN.slice(1), RUN[0]]));
+    // the six that IDS has not banked stay on the day; Pratt does not — IDS has it captured 10/13, and a plan on 11/16 that still carries a stop
+    // shot before it reads as a return drive (fixRun1116, every boot)
+    expect(await ev(page, 'JSON.stringify(' + d('d1116') + '.ids)')).toBe(JSON.stringify(RUN.slice(1)));
     expect(await ev(page, d('d1116') + '.note')).toBe('West KS.');
     expect(await ev(page, 'JSON.stringify(RUN_1116.map(i=>S.by[i]))')).toBe(JSON.stringify(RUN.map(() => 'cody')));
     expect(await ev(page, 'RUN_1116.reduce((t,i)=>t+BY[i].p,0)')).toBe(700);
@@ -828,7 +829,7 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     // nothing else moved: another open stop still owes its visit, the flag is set, the day keeps its stops and its Cody driver
     expect(await ev(page, 'LOCKED("' + BOLIVAR + '")')).toBe(false);
     expect(await ev(page, 'S.mig.cody1116b')).toBe(1);
-    expect(await ev(page, 'JSON.stringify(S.days.find(d=>d.id==="d1116").ids)')).toBe(JSON.stringify(RUN));
+    expect(await ev(page, 'JSON.stringify(S.days.find(d=>d.id==="d1116").ids)'), 'Pratt comes off the 11/16 plan: IDS has it from 10/13').toBe(JSON.stringify(SIX));
     expect(await ev(page, 'driverOf(S.days.find(d=>d.id==="d1116"))')).toBe('cody');
   });
 
@@ -843,8 +844,129 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
   });
 
   test('11/16 West KS: a device that has already applied it does not lock the six again', async ({ page }) => {
-    await open(page, state());   // every flag applied, cody1116b included
+    await open(page, state());   // every flag applied, cody1116b and ids1118 included
     for (const id of ['2026-6830', '2026-7727', '2026-7860', '2026-8402', '2026-8633', '2026-8981']) expect(await ev(page, 'NEEDSVISIT(BY["' + id + '"])'), id).toBe(true);
+    for (const id of ['2026-7702', '2026-8145']) expect(await ev(page, 'NEEDSVISIT(BY["' + id + '"])'), id + ' (Wellington, Winfield)').toBe(true);
+  });
+
+  // ---- 11/18: the IDS Master tab gives nine of Cody's stops an onsite date, each confirmed by the Theta card's GPS ----
+  const IDS9: [string, string][] = [['2026-5976', '2026-11-06'], ['2026-7702', '2026-11-07'], ['2026-8145', '2026-11-07'],
+    ['2026-8633', '2026-11-13'], ['2026-8402', '2026-11-13'], ['2026-7727', '2026-11-13'], ['2026-7860', '2026-11-14'], ['2026-8981', '2026-11-14'], ['2026-6830', '2026-11-14']];
+  const SIX9 = IDS9.slice(3).map(([id]) => id);
+  const IDS9IDS = IDS9.map(([id]) => id);
+  const at2300 = (d: string) => Date.parse(d + 'T23:00:00Z');
+  const lockRow = (id: string) => 'JSON.stringify((()=>{const l=lockOf("' + id + '");return [l.d,l.by,l.pts,l.sd,l.at,!!l.ids,S.by["' + id + '"],S.status["' + id + '"]]})())';
+
+  test('IDS Master 11/18: the nine Cody stops are SHOT on the days IDS has them — the West KS six leave 11/16, Newton, Wellington and Winfield join, nothing is dated 11/16', async ({ page }) => {
+    const RUN = ['2026-6638', ...SIX9];
+    const mon = day({ id: 'd1116', date: '2026-11-16', driver: 'cody', vehicle: 'own', ids: RUN, note: 'West KS.', locked: { at: 1, by: 'tim' } });
+    const other = day({ id: 'dother', date: tomorrow(), ids: [BOLIVAR] });
+    // a phone that ran cody1116b last night: the six are locks on Monday 11/16
+    const old = Object.fromEntries(SIX9.map(id => [id, { d: '2026-11-16', pts: 100, by: 'cody', with: '', at: at2300('2026-11-16'), sd: '2026-11-16' }]));
+    await open(page, state({ days: [mon, other], active: 1, activeDate: tomorrow(), locks: old,
+      by: Object.fromEntries(SIX9.map(id => [id, 'cody'])), status: Object.fromEntries(SIX9.map(id => [id, 'captured'])), mig: migBut('ids1118') }));
+    // each of the nine: a field lock on IDS's day, Cody, 100 pts, stamped at the end of that day (so a crew merge prefers it to the 11/16 one)
+    for (const [id, date] of IDS9) {
+      expect(await ev(page, lockRow(id)), id).toBe(JSON.stringify([date, 'cody', 100, date, at2300(date), false, 'cody', 'captured']));
+      expect(await ev(page, 'NEEDSVISIT(BY["' + id + '"])'), id + ' owes no visit').toBe(false);
+    }
+    expect(await ev(page, 'S.mig.ids1118')).toBe(1);
+    // History: the days IDS has them on — Newton joins Friday’s Kansas four, Wellington and Winfield join Saturday’s three Ozark stops — and nothing on Monday 11/16
+    expect(await ev(page, 'JSON.stringify(historyDays().filter(d=>d.d>="2026-11-06"&&d.d<="2026-11-16").map(d=>[d.d,d.n,d.pts,d.rows.filter(r=>r.ret).length]))'))
+      .toBe('[["2026-11-14",3,300,0],["2026-11-13",3,300,0],["2026-11-07",5,500,0],["2026-11-06",5,500,0]]');
+    // the Monday plan day is gone and the day you were on stays the active one (it shifted two places in the list)
+    expect(await ev(page, 'S.days.some(d=>d.date==="2026-11-16")')).toBe(false);
+    expect(await ev(page, 'S.days[S.active].id')).toBe('dother');
+    // Cody’s two West KS days are plan days now — a Cody day each, the stops in the Theta card’s frame order
+    expect(await ev(page, 'JSON.stringify(S.days.filter(d=>d.date==="2026-11-13"||d.date==="2026-11-14").map(d=>[d.date,driverOf(d),d.vehicle,!!d.locked,d.startKey,d.endKey,d.ids]))'))
+      .toBe(JSON.stringify([['2026-11-13', 'cody', 'own', true, 'home', 'job:2026-7727', ['2026-8633', '2026-8402', '2026-7727']],
+        ['2026-11-14', 'cody', 'own', true, 'job:2026-7727', 'home', ['2026-7860', '2026-8981', '2026-6830']]]));
+    // IDS already has these dates: the IDS tab does not ask Tim to report them, and says what it was told
+    expect(await ev(page, 'JSON.stringify(datesToReport().map(l=>l.id).filter(i=>' + JSON.stringify(IDS9IDS) + '.includes(i)))')).toBe('[]');
+    for (const [id, date] of IDS9) expect(await ev(page, 'idsSent()["' + id + '"].d'), id + ' sent date').toBe(date);
+    // the book carries IDS’s note on each; Pratt is untouched
+    for (const [id] of IDS9) expect(await ev(page, 'BY["' + id + '"].hs'), id).toMatch(/IDS Master tab \(read 11\/18\): shot \d\d\/\d\d by Cody, confirmed by Theta card GPS 11\/18 \(R00\d+-\d+\)/);
+    expect(await ev(page, 'lockOf("2026-6638").d')).toBe('2026-10-13');
+    // the points: 900 for the nine, on top of whatever else is banked
+    expect(await ev(page, JSON.stringify(IDS9IDS) + '.reduce((t,i)=>t+lockOf(i).pts,0)')).toBe(900);
+  });
+
+  test('IDS Master 11/18: the drive reads Cody solo on 11/13 and 11/14, Cody’s Kansas Friday with Newton, and two runs on Saturday 11/7 — Tim’s three and Cody’s two', async ({ page }) => {
+    await open(page, state({ mig: migBut('ids1118') }));
+    const rec = async (date: string) => JSON.parse(await ev(page, 'JSON.stringify(drivenDays().filter(d=>d.date==="' + date + '").map(d=>({who:d.driver,mi:d.miles,logged:d.logged,stops:d.ids.length})))'));
+    expect(await rec('2026-11-13')).toMatchObject([{ who: 'cody', logged: false, stops: 3 }]);
+    expect(await rec('2026-11-14')).toMatchObject([{ who: 'cody', logged: false, stops: 3 }]);
+    expect(await rec('2026-11-06')).toMatchObject([{ who: 'cody', logged: false, stops: 5 }]);          // the Kansas four and Newton
+    const sat = await rec('2026-11-07');
+    expect(sat.map(r => [r.who, r.stops])).toEqual([['cody', 2], ['tim', 3]]);                          // Wellington, Winfield — and Stockton, Branson West, Ava (the other driver’s run is listed first)
+    expect(sat[1]).toMatchObject({ mi: 365.2, logged: true });                                          // QuickBooks is Tim’s car only
+    expect(sat[0].logged, 'Cody’s count is not in').toBe(false);
+    expect(await rec('2026-11-16'), 'no drive on Monday 11/16').toEqual([]);
+    // the History row for Saturday names the two runs
+    const row = JSON.parse(await ev(page, 'JSON.stringify((()=>{const d=historyDays().find(x=>x.d==="2026-11-07");return [d.n,d.solo,d.runs.map(r=>[r.who,r.n])]})())'));
+    expect(row).toEqual([5, null, [['cody', 2], ['tim', 3]]]);
+    await page.locator('nav button[data-s="history"]').click();
+    await expect(page.locator('#s-history')).toContainText('Cody 2 & Tim 3 on separate runs');
+  });
+
+  test('IDS Master 11/18: with a Tim plan day on Saturday 11/7 the drive still splits Cody’s two from Tim’s three', async ({ page }) => {
+    const sat = day({ id: 'dsat', date: '2026-11-07', ids: ['2026-4909', '2026-5726', '2026-7375'], locked: { at: 1, by: 'tim' } });
+    await open(page, state({ days: [sat], mig: migBut('ids1118') }));
+    const rec = JSON.parse(await ev(page, 'JSON.stringify(drivenDays().filter(d=>d.date==="2026-11-07").map(d=>[d.driver,d.ids.length,d.day.id==="dsat"]))'));
+    expect(rec).toEqual([['cody', 2, false], ['tim', 3, true]]);
+  });
+
+  test('IDS Master 11/18: a device that has run none of the 11/16 corrections ends in the same place — no lock is ever dated 11/16', async ({ page }) => {
+    const mon = day({ id: 'd1116', date: '2026-11-16', ids: ['2026-6638', ...SIX9], note: 'West KS.' });
+    const other = day({ id: 'dother', date: '2026-11-17', ids: [BOLIVAR] });
+    await open(page, state({ days: [mon, other], active: 1, activeDate: '2026-11-17', mig: migBut('cody1116', 'cody1116b', 'ids1118') }));
+    for (const [id, date] of IDS9) expect(await ev(page, 'lockOf("' + id + '").d'), id).toBe(date);
+    expect(await ev(page, 'Object.values(S.locks).some(l=>l.d==="2026-11-16")')).toBe(false);
+    expect(await ev(page, 'S.days.some(d=>d.date==="2026-11-16")')).toBe(false);
+    expect(await ev(page, 'JSON.stringify(historyDays().map(d=>d.d).filter(d=>d>="2026-11-13"))')).toBe('["2026-11-14","2026-11-13"]');
+  });
+
+  test('IDS Master 11/18: a tap on IDS’s day stays (Tim’s tap on Cody’s stop becomes Cody’s), a tap on another day takes IDS’s date, and an un-shot after the shoot day wins', async ({ page }) => {
+    const [HAYS, GB, DODGE, LIB] = ['2026-8402', '2026-7727', '2026-7860', '2026-6830'];
+    const tapOn = Date.parse('2026-11-14T20:00:00Z'), tapLate = Date.parse('2026-11-18T14:00:00Z'), unshotAt = Date.parse('2026-11-15T12:00:00Z');
+    const locks = {
+      [DODGE]: { d: '2026-11-14', pts: 100, by: 'tim', with: '', at: tapOn, sd: '2026-11-14' },     // on the day, by Tim on Cody’s stop
+      [LIB]: { d: '2026-11-18', pts: 100, by: 'cody', with: '', at: tapLate, sd: '2026-11-18' },     // at the desk on the 18th
+    };
+    await open(page, state({ locks, unshot: { [GB]: { at: unshotAt, by: 'tim' } }, mig: migBut('ids1118') }));
+    expect(await ev(page, 'JSON.stringify([S.locks["' + DODGE + '"].d,S.locks["' + DODGE + '"].by,S.locks["' + DODGE + '"].at])')).toBe(JSON.stringify(['2026-11-14', 'cody', tapOn]));   // re-attributed; its day and time kept
+    expect(await ev(page, 'JSON.stringify([S.locks["' + LIB + '"].d,S.locks["' + LIB + '"].sd,S.locks["' + LIB + '"].by,S.locks["' + LIB + '"].at])')).toBe(JSON.stringify(['2026-11-14', '2026-11-14', 'cody', at2300('2026-11-14')]));
+    expect(await ev(page, 'LOCKED("' + GB + '")'), 'un-shot after the shoot day: it stays to shoot').toBe(false);
+    expect(await ev(page, 'lockOf("' + HAYS + '").d')).toBe('2026-11-13');
+    // the Friday plan day carries only what the ledger has on that day
+    expect(await ev(page, 'JSON.stringify(S.days.find(d=>d.date==="2026-11-13").ids)')).toBe(JSON.stringify(['2026-8633', HAYS]));
+  });
+
+  test('IDS Master 11/18: a crew copy from a phone still on 11/16 does not bring the old dates or the Monday plan back', async ({ page }) => {
+    await open(page, state({ mig: migBut('ids1118') }));
+    const remote = {
+      locks: Object.fromEntries(SIX9.map(id => [id, { d: '2026-11-16', pts: 100, by: 'cody', with: '', at: at2300('2026-11-16'), sd: '2026-11-16' }])),
+      days: [day({ id: 'd1116', date: '2026-11-16', driver: 'cody', vehicle: 'own', ids: ['2026-6638', ...SIX9], locked: { at: 1, by: 'tim' } })],
+      mig: migBut('ids1118'), by: Object.fromEntries(SIX9.map(id => [id, 'cody'])), status: Object.fromEntries(SIX9.map(id => [id, 'captured'])),
+    };
+    await ev(page, 'mergeShared(' + JSON.stringify(remote) + '); dirtyLocal()');
+    for (const id of SIX9) expect(await ev(page, 'lockOf("' + id + '").d'), id + ' keeps IDS’s day through the merge').toBe(IDS9.find(([i]) => i === id)![1]);
+    expect(await ev(page, 'S.days.some(d=>d.date==="2026-11-16")'), 'the Monday plan day does not come back').toBe(false);
+    // the merge took the old copy’s days and flags; the next boot puts Cody’s two days back without touching a lock
+    await page.reload();
+    expect(await ev(page, 'S.days.filter(d=>d.date==="2026-11-13"||d.date==="2026-11-14").length')).toBe(2);
+    expect(await ev(page, 'S.days.some(d=>d.date==="2026-11-16")')).toBe(false);
+    for (const [id, date] of IDS9) expect(await ev(page, 'lockOf("' + id + '").d'), id).toBe(date);
+  });
+
+  test('IDS Master 11/18: the Monday 11/16 plan day is cleaned on every boot, keeps what is not part of the run, and Newton’s follow-up stays on its card', async ({ page }) => {
+    const locks = Object.fromEntries(IDS9.map(([id, d]) => [id, { d, pts: 100, by: 'cody', with: '', at: at2300(d), sd: d }]));
+    const mon = day({ id: 'd1116', date: '2026-11-16', driver: 'cody', vehicle: 'own', ids: ['2026-6638', ...SIX9, BOLIVAR], locked: { at: 1, by: 'tim' } });
+    await open(page, state({ days: [mon], locks }));   // every flag applied: this is the every-boot clean-up, not the migration
+    expect(await ev(page, 'JSON.stringify(S.days.find(d=>d.id==="d1116").ids)'), 'only the run comes off').toBe(JSON.stringify([BOLIVAR]));
+    // IDS’s note does not say Newton’s upload is finished, so the “images incomplete” follow-up stays
+    expect(await ev(page, 'LOCKED("2026-5976")')).toBe(true);
+    expect(await ev(page, 'followRows().some(j=>j.id==="2026-5976")')).toBe(true);
   });
 
   test('Cody’s overnight: with no Thursday on the phone the Friday route day carries the 150, and the 11/7 note that named Friday night is replaced', async ({ page }) => {
