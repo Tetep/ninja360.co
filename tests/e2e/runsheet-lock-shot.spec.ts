@@ -38,7 +38,7 @@ const MIG = {
   cameron0915: 1, lincoln0925: 1, notshot98172: 1, shoot98172: 1, notsun98172: 1, notshot4049: 1,
   plan1007: 1, vehicle1007: 1, run1008: 1, run1013: 1, run1016: 1, run1020: 1,
   pastruns0926: 12, logmi0926: 1, logmi1006: 1, manhattan0910: 1, manhattan0909: 1, planlock0923: 1, sheetdates1003: 1, sync1021: 1, stl1027: 1, stl1029: 2,
-  newton1107: 1, ovn1106: 1, ovn1110: 1, qb1110: 1, sheetsync1110: 1,
+  newton1107: 1, ovn1106: 1, ovn1110: 1, qb1110: 1, sheetsync1110: 1, cody1116: 1,
 };
 const migBut = (...skip: string[]) => Object.fromEntries(Object.entries(MIG).filter(([k]) => !skip.includes(k)));
 
@@ -779,6 +779,28 @@ test.describe('run sheet — lock the plan, then shoot the stop', () => {
     expect(await ev(page, 'S.mig.ovn1110')).toBe(1);
     await page.reload();
     expect(((await note()).match(/Overnight in El Dorado/g) || []).length).toBe(1);
+  });
+
+  test('11/16 West KS run: Cody solo, not Tim — the day’s driver and each stop’s shooter become Cody, and nothing else moves', async ({ page }) => {
+    const RUN = ['2026-6638', '2026-6830', '2026-7727', '2026-7860', '2026-8402', '2026-8633', '2026-8981'];
+    const mon = day({ id: 'd1116', date: '2026-11-16', ids: RUN, note: 'West KS.' });
+    const other = day({ id: 'dother', date: '2026-11-17', ids: [BOLIVAR] });
+    const by = Object.fromEntries([...RUN.map(id => [id, 'tim']), [BOLIVAR, 'tim']]);
+    await open(page, state({ days: [mon, other], by, mig: migBut('cody1116') }));
+    const d = (id: string) => 'S.days.find(x=>x.id==="' + id + '")';
+    expect(await ev(page, 'driverOf(' + d('d1116') + ')')).toBe('cody');
+    expect(await ev(page, 'JSON.stringify(' + d('d1116') + '.ids)')).toBe(JSON.stringify(RUN));
+    expect(await ev(page, d('d1116') + '.note')).toBe('West KS.');
+    expect(await ev(page, 'JSON.stringify(RUN_1116.map(i=>S.by[i]))')).toBe(JSON.stringify(RUN.map(() => 'cody')));
+    expect(await ev(page, 'RUN_1116.reduce((t,i)=>t+BY[i].p,0)')).toBe(700);
+    expect(await ev(page, 'driverOf(' + d('dother') + ')')).toBe('tim');
+    expect(await ev(page, 'S.by["' + BOLIVAR + '"]')).toBe('tim');
+    expect(await ev(page, 'S.mig.cody1116')).toBe(1);
+  });
+
+  test('11/16 West KS run: a phone without the day yet leaves the flag unset, so it still corrects the day later', async ({ page }) => {
+    await open(page, state({ mig: migBut('cody1116') }));
+    expect(await ev(page, '!!S.mig.cody1116')).toBe(false);
   });
 
   test('Cody’s overnight: with no Thursday on the phone the Friday route day carries the 150, and the 11/7 note that named Friday night is replaced', async ({ page }) => {
