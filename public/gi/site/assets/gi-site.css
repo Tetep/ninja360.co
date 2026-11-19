@@ -39,7 +39,7 @@ small,.small{font-size:.9rem}
    accents) read correctly on a white card in B, a dark card in A and a tan
    card in C without a single per-scheme override. */
 .know-band .wrap,.step,.seat,.ep-card,.producer,.signup-panel,.form-note,.transcript,.tier,
-.topic-card,.bp-tile,.bp-table,.promo-modal-dialog,.gen-card,.deck-card,.mots-card{
+.ep-tease,.bp-tile,.bp-table,.promo-modal-dialog,.gen-card,.deck-card,.mots-card{
   --gi-ink:var(--gi-card-ink);
   --gi-soft:var(--gi-card-soft);
   --gi-muted:var(--gi-card-muted);
@@ -115,27 +115,31 @@ small,.small{font-size:.9rem}
 .date-band .notify-inline .btn-red{border-color:var(--gi-band-ink)}
 .date-band .thanks{color:var(--gi-band-ink);font-family:var(--gi-font-type);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px;margin-top:18px}
 
-/* ---------- this week's topics (fast-moving marquee) ---------- */
-.topics-band .date-caveat{max-width:560px;margin-left:auto;margin-right:auto}
-.topics-carousel{
-  overflow:hidden;width:100%;padding:28px 0 10px;margin-top:4px;
-  mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);
+/* ---------- home: Upcoming Episodes (replaced the marquee, Nov 19: the partners wanted to click) ----------
+   One card per taping from assets/gi-slate.js. Nothing moves; each card opens its episode on Listen. */
+.topics-band .date-caveat{max-width:560px;margin-left:auto;margin-right:auto;text-wrap:balance}
+.ep-teasers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:26px 0 4px;text-align:left}
+@media(max-width:900px){.ep-teasers{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.ep-teasers{grid-template-columns:1fr}}
+.ep-tease{
+  display:flex;flex-direction:column;gap:6px;text-decoration:none;color:var(--gi-ink);
+  background:var(--gi-card);border:var(--gi-card-line) var(--gi-card-rule);border-radius:var(--gi-radius);
+  padding:16px 16px 14px;box-shadow:3px 3px 0 var(--gi-shadow);transition:transform 150ms ease,border-color 150ms ease;
 }
-.topics-track{display:flex;gap:16px;width:max-content;animation:gi-marquee 44s linear infinite}
-@keyframes gi-marquee{from{transform:translateX(0)}to{transform:translateX(-100%)}}
-.topic-card{
-  flex:0 0 260px;text-align:left;
-  background:var(--gi-panel);border:var(--gi-card-line) var(--gi-card-rule);border-radius:var(--gi-radius);
-  padding:18px 18px 20px;box-shadow:3px 3px 0 var(--gi-shadow);
-}
-.topic-tag{
-  display:inline-block;font-family:var(--gi-font-type);font-size:10.5px;font-weight:700;
-  letter-spacing:.08em;text-transform:uppercase;color:var(--gi-on-accent);background:var(--gi-accent);
-  border-radius:20px;padding:4px 10px;margin-bottom:10px;
-}
-.topic-q{font-family:var(--gi-font-body);font-weight:700;font-size:16px;line-height:1.4;color:var(--gi-ink);margin:0}
-@media(max-width:640px){.topic-card{flex-basis:78vw;max-width:280px}}
+.ep-tease:hover,.ep-tease:focus-visible{transform:translateY(-2px);border-color:var(--gi-card-accent)}
+.ep-tease:focus-visible{outline:3px solid var(--gi-card-accent);outline-offset:2px}
+.ep-tease-when{font-family:var(--gi-font-type);font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gi-accent-small)}
+.ep-tease-num{font-family:var(--gi-font-type);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gi-soft)}
+.ep-tease-title{font-family:var(--gi-font-display);font-size:19px;line-height:1.15;text-transform:uppercase;color:var(--gi-ink)}
+.ep-tease-go{margin-top:auto;padding-top:6px;font-family:var(--gi-font-type);font-size:12px;font-weight:700;color:var(--gi-accent-small)}
+.ep-teasers-actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:22px}
+/* Paper: the label red is 3.6:1 on the tan cards, and the band's own red too faint for the small
+   kicker, so those take a deeper red / the band ink there. */
+:root[data-theme="c"] .ep-tease .ep-tease-when,:root[data-theme="c"] .ep-tease .ep-tease-go{color:#78280F}
+:root[data-theme="c"] .topics-band .kicker{color:var(--gi-band-ink)}
+/* Listen: the card a home-page tap lands on clears the sticky masthead and is outlined. */
+.ep-card{scroll-margin-top:110px}
+.ep-card:target{outline:3px solid var(--gi-accent);outline-offset:4px}
 
 /* ---------- hosts (photo↔logo hover-swap trio) ---------- */
 .hosts-label{

@@ -206,6 +206,22 @@ test.describe('GI color-scheme selector', () => {
     await expect(page.locator('#ytsSlateTitle')).toContainText('as of');
   });
 
+  test('home: Upcoming Episodes are still cards that open each episode on Listen (no marquee)', async ({ page }) => {
+    await open(page, '/gi/site');
+    await expect(page.locator('.topics-track')).toHaveCount(0);
+    const cards = page.locator('.ep-tease');
+    await expect(cards).toHaveCount(4);
+    for (const [i, n] of ['001', '002', '003', '004'].entries()) {
+      await expect(cards.nth(i)).toHaveAttribute('href', `/gi/site/episodes/#ep-${n}`);
+    }
+    await expect(cards.nth(1)).toContainText('Home Schooling vs. Public School');
+    await expect(cards.nth(1)).toContainText('Sat Dec 12 · 10:00 AM');
+    const anim = await cards.first().evaluate((el) => getComputedStyle(el.parentElement!).animationName);
+    expect(anim).toBe('none');
+    await open(page, '/gi/site/episodes');
+    for (const id of ['ep-001', 'ep-002', 'ep-003', 'ep-004', 'ep-2027']) await expect(page.locator(`#${id}.ep-card`)).toHaveCount(1);
+  });
+
   test('GHL forms live behind the scenes only: never on a page the home page or menu reaches', async () => {
     const pub = ['', 'episodes', 'rate-the-topics', 'about', 'contact', 'membership', 'question-of-the-week'];
     for (const r of pub) {
