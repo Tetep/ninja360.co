@@ -152,6 +152,20 @@ test.describe('GI color-scheme selector', () => {
     await expect(page.locator('.gi-close')).toHaveCount(1);
   });
 
+  test('link preview (texts, social): the clean logo on white, 1200x630, on every open page', async ({ page }) => {
+    const img = 'https://dojo.ninja360.co/gi/site/assets/og-logo-white.png';
+    for (const route of ['/gi/site', '/gi/site/episodes', '/gi/site/rate-the-topics']) {
+      await open(page, route);
+      await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', img);
+      await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute('content', img);
+      await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1200');
+      await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '630');
+    }
+    const png = await readFile(path.join(process.cwd(), 'dist', 'gi', 'site', 'assets', 'og-logo-white.png'));
+    expect(png.readUInt32BE(16)).toBe(1200); // PNG header width
+    expect(png.readUInt32BE(20)).toBe(630); // PNG header height
+  });
+
   test('/strategy: both decks have View (new tab) and Download buttons', async ({ page }) => {
     await open(page, '/gi/site/strategy');
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,nofollow');

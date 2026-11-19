@@ -53,6 +53,7 @@ const OPEN = [
   '/gi/site/assets/gi-site.css', '/gi/site/assets/gi-theme.js', '/gi/site/assets/gi-intro.mp4',
   '/gi/site/assets/logo-v3b-light.png', '/gi/site/assets/topics/poster.jpg',
   '/gi/site/assets/business-plan-logo.png', // the Ninja logo on Listen is the door itself
+  '/gi/site/assets/og-logo-white.png', // the link preview a text message fetches, with no login
 ];
 
 // Everything not on the menu.
@@ -84,6 +85,19 @@ test.describe('GI login: only the menu pages are open, everything else asks for 
     for (const p of ['/gi/site/business-plan/', '/gi/site/about/', '/gi/site/be-on-the-show/', '/gi/site/assets/docs/x.pdf']) {
       expect(await status(p, login), p).toBe(200);
     }
+  });
+
+  test("Tim's rule: nothing on an open page asks for a login except the Ninja 360 button on Listen", async () => {
+    const asked: string[] = [];
+    for (const [route, file] of [['/gi/site/', ''], ['/gi/site/episodes/', 'episodes'], ['/gi/site/rate-the-topics/', 'rate-the-topics']]) {
+      const html = await readFile(path.join(process.cwd(), 'dist/gi/site', file, 'index.html'), 'utf8');
+      for (const [, href] of html.matchAll(/<a\b[^>]*\bhref="([^"#]+)/g)) {
+        const url = new URL(href, 'https://dojo.ninja360.co' + route);
+        if (url.host !== 'dojo.ninja360.co') continue; // the form, YouTube, mailto
+        if ((await status(url.pathname)) === 401) asked.push(`${route} -> ${url.pathname}`);
+      }
+    }
+    expect(asked).toEqual(['/gi/site/episodes/ -> /gi/site/business-plan/']);
   });
 
   test('a wrong password does not open a locked page', async () => {
