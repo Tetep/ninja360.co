@@ -78,19 +78,78 @@ test.describe('GI color-scheme selector', () => {
     await expect(page.locator('.tech-count')).toContainText('4 Seats');
   });
 
-  test('font picker: second group, default A, switches data-font only, persists', async ({ page }) => {
+  test('font picker: second group, default C · Cleaner, switches data-font only, persists', async ({ page }) => {
     await open(page, '/gi/site');
     const group = page.locator('.theme-switch[aria-label="Font set"]');
     await expect(group).toHaveCount(1);
     await expect(group.locator('button')).toHaveText(['A · Current', 'B · Louder', 'C · Cleaner']);
-    await expect(page.locator('html')).toHaveAttribute('data-font', 'a');
-    await expect(group.locator('button').nth(0)).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('html')).toHaveAttribute('data-font', 'c');
+    await expect(group.locator('button').nth(2)).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('h1').first()).toHaveCSS('font-family', /Oswald/);
     await group.locator('button[data-font-set="b"]').click();
     await expect(page.locator('html')).toHaveAttribute('data-font', 'b');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'b'); // colors untouched
     await expect(page.locator('h1').first()).toHaveCSS('font-family', /Bebas Neue/);
     await page.reload({ waitUntil: 'load' });
     await expect(page.locator('html')).toHaveAttribute('data-font', 'b');
+  });
+
+  test('the saved look: B · Our Pick, C · Cleaner, D · On Air for everyone, once', async ({ page }) => {
+    // a partner who clicked around during the vote still has their old picks stored
+    await page.addInitScript(() => {
+      if (sessionStorage.getItem('seeded')) return;
+      sessionStorage.setItem('seeded', '1');
+      localStorage.setItem('gi-theme', 'c');
+      localStorage.setItem('gi-font', 'a');
+      localStorage.setItem('gi-logo', 'b');
+    });
+    await open(page, '/gi/site');
+    const html = page.locator('html');
+    await expect(html).toHaveAttribute('data-theme', 'b');
+    await expect(html).toHaveAttribute('data-font', 'c');
+    await expect(html).toHaveAttribute('data-logo', 'd');
+    for (const sel of ['[data-theme-set="b"]', '[data-font-set="c"]', '[data-logo-set="d"]']) {
+      await expect(page.locator(`.theme-switch button${sel}`)).toHaveAttribute('aria-pressed', 'true');
+    }
+    // a pick made after the save still sticks
+    await page.locator('.theme-switch button[data-font-set="a"]').click();
+    await page.reload({ waitUntil: 'load' });
+    await expect(html).toHaveAttribute('data-font', 'a');
+    await expect(html).toHaveAttribute('data-theme', 'b');
+  });
+
+  test('Home plays only the logo intro; Explainer plays the rest in the same frame', async ({ page }) => {
+    await open(page, '/gi/site');
+    const frame = page.locator('#trailer iframe');
+    await expect(frame).toHaveAttribute('data-src', '/gi/site/promo/?part=intro');
+    const buttons = page.locator('[data-gi-explainer]');
+    await expect(buttons).toHaveCount(2);
+    await expect(buttons).toHaveText(['▶ Explainer', '▶ Explainer']);
+    await expect(page.locator('#trailer .trailer-actions a.btn-red')).toHaveAttribute('href', 'https://forms.gle/4qjmLzJieGN4hJWg6');
+    await page.locator('#trailer [data-gi-explainer]').click();
+    await expect(frame).toHaveAttribute('src', '/gi/site/promo/?part=explainer');
+  });
+
+  test('promo parts: intro is the logo video only, explainer skips it, no part is the full promo', async ({ page }) => {
+    await open(page, '/gi/site/promo', '?part=intro');
+    await expect(page.locator('.gi-embed')).toHaveClass(/gi-part-intro/);
+    await expect(page.locator('.gi-a-out video')).toHaveCount(1);
+    for (const sel of ['.gi-board', '.gi-b-out', '.gi-c-out', '.gi-close', '.gi-bug']) {
+      await expect(page.locator(sel)).toBeHidden();
+    }
+
+    await open(page, '/gi/site/promo', '?part=explainer');
+    await expect(page.locator('html')).toHaveAttribute('data-ready', '1', { timeout: 10000 });
+    await expect(page.locator('.gi-embed')).toHaveClass(/gi-play/);
+    await expect(page.locator('video')).toHaveCount(0);
+    await expect(page.locator('.gi-a-out')).toBeHidden();
+    const at = await page.evaluate(() => Math.min(...document.getAnimations().map((a) => Number(a.currentTime))));
+    expect(at).toBeGreaterThanOrEqual(9000); // starts at the whiteboard, not the intro
+
+    await open(page, '/gi/site/promo');
+    await expect(page.locator('.gi-embed')).not.toHaveClass(/gi-part-/);
+    await expect(page.locator('.gi-a-out video')).toHaveCount(1);
+    await expect(page.locator('.gi-close')).toHaveCount(1);
   });
 
   test('/strategy: both decks have View (new tab) and Download buttons', async ({ page }) => {

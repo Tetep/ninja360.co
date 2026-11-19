@@ -54,9 +54,13 @@
     <div class="kicker">Watch</div>
     <h2>See what the show is about</h2>
     <div class="promo-embed">
-      <iframe data-src="/gi/site/promo/" title="Generationally Incorrect promo" allow="autoplay" loading="lazy"></iframe>
+      <!-- Just the logo intro here; the explainer plays in the same spot from its button (Tim, 11/19/26). -->
+      <iframe data-src="/gi/site/promo/?part=intro" title="Generationally Incorrect intro" allow="autoplay" loading="lazy"></iframe>
     </div>
-    <a class="btn btn-red" href="https://forms.gle/4qjmLzJieGN4hJWg6" target="_blank" rel="noopener" style="margin-top:22px">Be on the Show</a>
+    <div class="trailer-actions">
+      <a class="btn btn-red" href="https://forms.gle/4qjmLzJieGN4hJWg6" target="_blank" rel="noopener">Be on the Show</a>
+      <button type="button" class="btn btn-ghost" data-gi-explainer>&#9654; Explainer</button>
+    </div>
   </div>
 </section>
 
@@ -88,7 +92,7 @@
       <div class="cta-row">
         <a class="btn btn-red" href="https://forms.gle/4qjmLzJieGN4hJWg6" target="_blank" rel="noopener">Be on the Show</a>
         <a class="btn btn-ghost" href="/gi/site/episodes/">Listen</a>
-        <a class="btn btn-ghost" href="#trailer">▶ Watch the trailer</a>
+        <a class="btn btn-ghost" href="#trailer" data-gi-explainer>&#9654; Explainer</a>
       </div>
     </div>
   </div>
@@ -177,20 +181,33 @@
     });
   });
 
-  // Trailer promo — only load the iframe once someone actually scrolls to it,
+  // Logo intro — only load the iframe once someone actually scrolls to it,
   // so it isn't fetched (and doesn't play) for people who never see it.
+  // Either Explainer button plays the explainer in the same frame instead.
   (function () {
     var frame = document.querySelector('#trailer iframe[data-src]');
     if (!frame) return;
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
-          frame.src = frame.dataset.src;
+          if (!frame.getAttribute('src')) frame.src = frame.dataset.src;
           io.unobserve(frame);
         }
       });
     }, { threshold: 0.3 });
     io.observe(frame);
+    document.querySelectorAll('[data-gi-explainer]').forEach(function (b) {
+      b.addEventListener('click', function (e) {
+        e.preventDefault();
+        frame.title = 'Generationally Incorrect explainer';
+        frame.src = '/gi/site/promo/?part=explainer';
+        io.unobserve(frame);
+        var r = frame.getBoundingClientRect();
+        if (r.top < 0 || r.bottom > window.innerHeight) {
+          document.getElementById('trailer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
   })();
 
 </script>

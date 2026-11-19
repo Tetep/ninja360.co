@@ -458,6 +458,7 @@ footer .small b{color:var(--gi-band-link-hover)}
 
 .bp-back{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-family:var(--gi-font-type);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--gi-muted);text-decoration:none}
 .bp-back:hover{color:var(--gi-accent-small)}
+#trailer .trailer-actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:22px}
 .cta-band .btn-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:10px}
 
 /* ---------- Man on the Street (business-plan/man-on-the-street) ----------

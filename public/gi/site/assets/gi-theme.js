@@ -1,9 +1,10 @@
-/* Generationally Incorrect — color-scheme and font-set pickers (vote tools).
+/* Generationally Incorrect — color-scheme, font-set and logo pickers.
    Loaded in <head> (no defer) so data-theme and data-font are on <html> before
    first paint: no flash of the wrong scheme or fonts. Each choice is remembered
    in localStorage. Switching only changes that one attribute.
+   The saved look (Tim, 11/19/26): B · Our Pick, C · Cleaner, D · On Air.
      colors: data-theme a|b|c, default b   (gi-theme.css)
-     fonts:  data-font  a|b|c, default a   (gi-fonts.css)
+     fonts:  data-font  a|b|c, default c   (gi-fonts.css)
      logo:   data-logo  a|b|c|d, default d (gi-theme.css) */
 (function () {
   'use strict';
@@ -18,7 +19,7 @@
       ]
     },
     {
-      key: 'gi-font', attr: 'data-font', btnAttr: 'data-font-set', def: 'a', label: 'Font set',
+      key: 'gi-font', attr: 'data-font', btnAttr: 'data-font-set', def: 'c', label: 'Font set',
       items: [
         { id: 'a', label: 'A · Current' },
         { id: 'b', label: 'B · Louder' },
@@ -36,6 +37,17 @@
     }
   ];
   var root = document.documentElement;
+
+  /* Picks made while we were voting are cleared once, so everyone opens the saved
+     look. Anything picked after this sticks as before. Bump SAVED_LOOK only when
+     the defaults above change again. */
+  var SAVED_LOOK = '2026-11-19';
+  try {
+    if (localStorage.getItem('gi-look') !== SAVED_LOOK) {
+      PICKERS.forEach(function (p) { localStorage.removeItem(p.key); });
+      localStorage.setItem('gi-look', SAVED_LOOK);
+    }
+  } catch (e) { /* private mode: nothing was stored anyway */ }
 
   function valid(p, v) {
     for (var i = 0; i < p.items.length; i++) if (p.items[i].id === v) return true;
