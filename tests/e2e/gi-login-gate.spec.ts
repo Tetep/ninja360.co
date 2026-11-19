@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 // The Dojo gate is the first handler Pages runs (functions/_middleware.js). Called directly here:
 // no browser, no server, just "does this path ask for the login or not".
 import { onRequest } from '../../functions/_middleware.js';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 
 const gate = onRequest[0] as (ctx: unknown) => Promise<Response>;
 const env = { DOJO_USER: 'ninja', DOJO_PASS: 'test-pass', GI_LOGINS: 'Erik:redcup; Gabriel:bluechair' };
@@ -16,7 +18,7 @@ async function status(path: string, auth?: string, extraEnv: Record<string, stri
 }
 
 // One visit, with the sheet stubbed: returns the rows the gate sent.
-async function rowsFor(path: string, auth: string, headers: Record<string, string> = {}, opts: { url?: string; status?: number } = {}) {
+async function rowsFor(path: string, auth: string, headers: Record<string, string> = {}, opts: { url?: string; status?: number; cf?: Record<string, string>; env?: Record<string, string> } = {}) {
   const sent: any[] = [];
   const waits: Promise<unknown>[] = [];
   const realFetch = globalThis.fetch;
@@ -28,10 +30,11 @@ async function rowsFor(path: string, auth: string, headers: Record<string, strin
     const request = new Request('https://dojo.ninja360.co' + path, {
       headers: { Authorization: auth, 'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)', ...headers },
     });
+    if (opts.cf) Object.defineProperty(request, 'cf', { value: opts.cf });
     const logEnv = 'url' in opts ? (opts.url ? { GI_LOG_URL: opts.url } : {}) : { GI_LOG_URL: 'https://script.example/exec' };
     await gate({
       request,
-      env: { ...env, ...logEnv },
+      env: { ...env, ...logEnv, ...(opts.env || {}) },
       next: async () => new Response('page', { status: opts.status ?? 200 }),
       waitUntil: (p: Promise<unknown>) => waits.push(p),
     });
@@ -114,9 +117,27 @@ test.describe('GI named logins: first name + a word per person, GI pages only', 
     for (const p of ['/', '/scrolls/', '/gi/', '/money', '/gi/site-x/', '/gi/site/%E0%A4%A/']) expect(await status(p, erik), p).toBe(401);
   });
 
-  test('no GI_LOGINS set: only the Dojo login works', async () => {
+  test('no GI_LOGINS set: the Dojo login and the built-in partner logins still work, a GI_LOGINS word does not', async () => {
     expect(await status('/gi/site/call/', as('Erik', 'redcup'), { GI_LOGINS: '' })).toBe(401);
     expect(await status('/gi/site/call/', login, { GI_LOGINS: '' })).toBe(200);
+    expect(await status('/gi/site/call/', as('Erik', 'Juergensen'), { GI_LOGINS: '' })).toBe(200);
+  });
+
+  test('partner logins: Erik / Juergensen and Gabe (or Gabriel) / Miller, any capitals, stray spaces', async () => {
+    for (const a of [as('Erik', 'Juergensen'), as('erik', 'JUERGENSEN'), as(' Erik', 'juergensen '), as('Gabe', 'Miller'), as('gabe', 'miller'), as('Gabriel', 'Miller')]) {
+      expect(await status('/gi/site/business-plan/', a, { GI_LOGINS: '' })).toBe(200);
+      expect(await status('/gi/site/business-plan/man-on-the-street/', a, { GI_LOGINS: '' })).toBe(200);
+    }
+    for (const a of [as('Erik', 'Miller'), as('Gabe', 'Juergensen'), as('Erik', 'Jurgensen'), as('Gabe', ''), as('', 'Miller'), as('Erik Juergensen', ''), as('Tim', 'Petet')]) {
+      expect(await status('/gi/site/business-plan/', a, { GI_LOGINS: '' })).toBe(401);
+    }
+    for (const p of ['/', '/scrolls/', '/gi/', '/money']) expect(await status(p, as('Gabe', 'Miller'), { GI_LOGINS: '' }), p).toBe(401);
+  });
+
+  test('the partner words are not written anywhere in the gate', async () => {
+    const src = await readFile(path.join(process.cwd(), 'functions/_middleware.js'), 'utf8');
+    expect(src.toLowerCase()).not.toContain('juergensen');
+    expect(src.toLowerCase()).not.toMatch(/['"`]miller['"`]/);
   });
 });
 
@@ -149,6 +170,14 @@ test.describe('the sheet: one row per page a named login opens', () => {
   test('the Dojo login (Tim, the daily smoke test) is never logged; no sheet URL, no rows', async () => {
     expect(await rowsFor('/gi/site/business-plan/', login, { 'Sec-Fetch-Dest': 'document' })).toHaveLength(0);
     expect(await rowsFor('/gi/site/business-plan/', as('Erik', 'redcup'), {}, { url: '' })).toHaveLength(0);
+  });
+
+  test('a partner login is logged by name, with the IP and the city, region and country', async () => {
+    const sent = await rowsFor('/gi/site/strategy/', as('gabe', 'miller'), { 'Sec-Fetch-Dest': 'document', 'CF-Connecting-IP': '203.0.113.7' }, { cf: { city: 'Gladstone', region: 'Missouri', country: 'US' }, env: { GI_LOGINS: '' } });
+    expect(sent).toHaveLength(1);
+    expect(sent[0].row).toMatchObject({ who: 'Gabe', page: 'The Plan (decks page)', ip: '203.0.113.7', location: 'Gladstone, Missouri, US' });
+    const erik = await rowsFor('/gi/site/business-plan/', as('Erik', 'Juergensen'), {}, { env: { GI_LOGINS: '' } });
+    expect(erik[0].row).toMatchObject({ who: 'Erik', ip: '', location: '' });
   });
 
   test('a page with no friendly name still shows its address', async () => {

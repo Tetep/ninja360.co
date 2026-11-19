@@ -1,5 +1,6 @@
 // GI — Who Looked (private sheet). The Dojo site adds one row here each time someone signed in
-// with a named GI login opens a page behind the login: when, who, which page, what device.
+// with a partner login opens a page behind the login: when, who, which page, what device, IP and
+// location (city, region, country).
 //
 // One-time setup, in the sheet "GI — Who Looked (private)":
 //   1. Extensions > Apps Script. Delete what's there, paste this whole file, click Save.
@@ -13,7 +14,7 @@
 function doPost(e) {
   var d = JSON.parse(e.postData.contents);
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Views');
-  sheet.appendRow([new Date(d.when), text(d.who), text(d.page), text(d.device)]);
+  sheet.appendRow([new Date(d.when), text(d.who), text(d.page), text(d.device), text(d.ip), text(d.location)]);
   return ContentService.createTextOutput('ok');
 }
 
