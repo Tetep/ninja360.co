@@ -186,6 +186,26 @@ test.describe('GI color-scheme selector', () => {
     }
   });
 
+  test('the real slate: Listen shows Episode 001 and the three Dec 12 tapings, the plans show the calendar', async ({ page }) => {
+    await open(page, '/gi/site/episodes');
+    await expect(page.locator('.ep-card')).toHaveCount(5);
+    await expect(page.locator('.ep-title')).toHaveText([
+      'Episode 001 · AI',
+      'Episode 002 · Home Schooling vs. Public School',
+      'Episode 003 · Is cancel culture accountability or censorship?',
+      'Episode 004 · Sticks & Stones: do we have entire generations of snowflakes?',
+      'More tapings in 2027',
+    ]);
+    await expect(page.getByText('Example · Being voted on')).toHaveCount(0);
+    await open(page, '/gi/site/business-plan');
+    const table = page.locator('#plan .bp-table');
+    await expect(table.locator('tbody tr')).toHaveCount(5);
+    await expect(table).toContainText('Home Schooling vs. Public School');
+    await open(page, '/gi/site/business-plan/youtube-strategy');
+    await expect(page.locator('.gi-slate tbody tr')).toHaveCount(5);
+    await expect(page.locator('#ytsSlateTitle')).toContainText('as of');
+  });
+
   test('GHL forms live behind the scenes only: never on a page the home page or menu reaches', async () => {
     const pub = ['', 'episodes', 'rate-the-topics', 'about', 'contact', 'membership', 'question-of-the-week'];
     for (const r of pub) {

@@ -503,6 +503,8 @@ h3.mots-card-title{font-family:var(--gi-font-display);font-size:20px;line-height
    the real heights run short on a live check, bump these numbers up.
    The diagram is its own self-contained export with its own cream paper
    colors: it does not follow the color-scheme selector. */
+.yts-slate-band{padding:8px 0 4px}
+.yts-slate-band .bp-table{max-width:100%}
 .yts-frame-band{padding:24px 0 56px}
 .yts-frame{display:block;width:100%;height:3700px;border:2px solid var(--gi-rule);background:#f3efe6}
 @media(max-width:900px){.yts-frame{height:5400px}}
