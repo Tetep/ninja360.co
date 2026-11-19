@@ -173,6 +173,19 @@ test.describe('GI color-scheme selector', () => {
     await expect(page.locator('#callChecks input[data-k="colors"]')).toBeChecked();
   });
 
+  test('Be on the Show goes to the current guest form (second draft, Nov 18) everywhere, never the old one', async ({ page }) => {
+    const NEW = 'https://forms.gle/4qjmLzJieGN4hJWg6';
+    await open(page, '/gi/site');
+    await expect(page.locator('#gi-menu a', { hasText: 'Be on the Show' })).toHaveAttribute('href', NEW);
+    const { readdir } = await import('node:fs/promises');
+    const root = path.join(process.cwd(), 'dist/gi/site');
+    const files = (await readdir(root, { recursive: true })).filter((f) => String(f).endsWith('.html'));
+    for (const f of files) {
+      const html = await readFile(path.join(root, String(f)), 'utf8');
+      expect(html, `${f} still links the old guest form`).not.toContain('1FAIpQLScvfwAtkcMGAXOii7GNK6kHzBYgyU6exOj1wUhE2TpkPkq_Ew');
+    }
+  });
+
   test('GHL forms live behind the scenes only: never on a page the home page or menu reaches', async () => {
     const pub = ['', 'episodes', 'rate-the-topics', 'about', 'contact', 'membership', 'question-of-the-week'];
     for (const r of pub) {
