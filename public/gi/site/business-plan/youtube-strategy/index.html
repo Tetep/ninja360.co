@@ -48,6 +48,19 @@
   </div>
 </section>
 
+<section class="yts-slate-band">
+  <div class="wrap">
+    <div class="bp-block-title" id="ytsSlateTitle">On the calendar</div>
+    <div data-gi-slate></div>
+    <p class="small muted" style="margin:12px 0 0">The ten polls below use the AI shortlist: the same ten questions as Episode 001.</p>
+  </div>
+</section>
+<script type="module">
+  import { renderSlate, SLATE_AS_OF } from '../../assets/gi-slate.js';
+  renderSlate(document.querySelector('[data-gi-slate]'));
+  document.getElementById('ytsSlateTitle').textContent = 'On the calendar (as of ' + SLATE_AS_OF + ')';
+</script>
+
 <section class="yts-frame-band">
   <div class="wrap">
     <!-- The diagram (YouTube Polling Strategy.dc.html) is its own self-contained

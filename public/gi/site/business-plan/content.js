@@ -15,6 +15,8 @@
 //   { type:'note',    text }
 //   { type:'button',  text, href, external? }
 
+import { SLATE_AS_OF, slateRows } from '../assets/gi-slate.js';
+
 export const SECTIONS = [
   {
     num: 1,
@@ -43,6 +45,12 @@ export const SECTIONS = [
           { value: '1,000', label: 'subscriber goal' },
           { value: '2', label: 'episodes a month' },
         ],
+      },
+      {
+        type: 'table',
+        title: `On the calendar (as of ${SLATE_AS_OF})`,
+        headers: ['When', 'Episode', 'Topic', 'Status'],
+        rows: slateRows(),
       },
     ],
   },
