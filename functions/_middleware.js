@@ -28,14 +28,19 @@
 //
 // Who can sign in to those GI pages:
 //   - the Dojo login (DOJO_USER / DOJO_PASS), which opens everything, GI included
-//   - a named GI login per person, from the Pages secret GI_LOGINS: one person per line (or ';'),
-//     written  FirstName:password  e.g.  Erik:xxxx; Gabriel:xxxx . A named login opens the GI site
-//     only (/gi/site/...), never the rest of the Dojo. Name and password are matched ignoring case
-//     and stray spaces, so a phone's automatic capital letter can't lock anyone out.
+//   - a partner login (Tim, 11/19/26): Erik and Gabe each sign in with their first name and the
+//     word Tim gave them. Built in below as PARTNER_LOGINS, so it works with no Cloudflare setup.
+//     Only SHA-256 fingerprints of "name:word" live in this file (the repo is public), never the
+//     words themselves. "Gabriel" works as well as "Gabe".
+//   - any extra named login from the Pages secret GI_LOGINS: one person per line (or ';'), written
+//     FirstName:password. Optional.
+//   A partner or named login opens the GI site only (/gi/site/...), never the rest of the Dojo.
+//   Name and password are matched ignoring case and stray spaces, so a phone's automatic capital
+//   letter can't lock anyone out.
 //
 // The sheet (Tim, 11/14/26): with GI_LOG_URL set (the web-app URL of Tim's private Google Sheet,
-// "GI — Who Looked"), every GI page a named login opens adds a row there: when, who, which page,
-// what device. Pages opened in a frame inside another page (the deck previews on The Plan, the
+// "GI — Who Looked"), every GI page a partner or named login opens adds a row there: when, who,
+// which page, what device, the IP address, and the city / region / country Cloudflare places it in. Pages opened in a frame inside another page (the deck previews on The Plan, the
 // diagram in YouTube Strategy) are not counted, so a row means that person opened it. The Dojo
 // login is not logged (Tim's own visits, and the daily smoke test). The URL is used here on the
 // server only and never reaches a browser; a slow or broken sheet never delays or blocks a page.
@@ -101,10 +106,23 @@ function basicLogin(request) {
   return { user: decoded.slice(0, idx), pass: decoded.slice(idx + 1) };
 }
 
-// The person a named GI login belongs to (as written in GI_LOGINS), or null.
-function giPerson(list, user, pass) {
+// The partners' logins: SHA-256 of "name:word", both lowercase. The sheet logs the name shown.
+const PARTNER_LOGINS = [
+  { name: 'Erik', sha256: '7e489788b58017be510a669fe7d86797a895460b107850fb99e986f1b61a6a4c' },
+  { name: 'Gabe', sha256: '729ce47d2ea5044548d2c7bf0adadf01a73eab79d9921c84fd21e481e1d6d104' },
+  { name: 'Gabe', sha256: '0c0b18e065d65358c331e1d5f5a6b005988ae03687f17a539c0df47c01e8cbdc' }, // "Gabriel"
+];
+
+async function sha256Hex(text) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Who a partner or named GI login belongs to, or null.
+async function giPerson(list, user, pass) {
   const u = user.trim().toLowerCase();
   const p = pass.trim().toLowerCase();
+  if (!u || !p) return null;
   let who = null;
   for (const entry of String(list || '').split(/[;\n]/)) {
     const idx = entry.indexOf(':');
@@ -114,6 +132,9 @@ function giPerson(list, user, pass) {
     if (!name || !word) continue;
     if (safeEqual(u, name.toLowerCase()) && safeEqual(p, word.toLowerCase())) who = name;
   }
+  if (who) return who;
+  const print = await sha256Hex(`${u}:${p}`);
+  for (const login of PARTNER_LOGINS) if (safeEqual(print, login.sha256)) who = login.name;
   return who;
 }
 
@@ -163,11 +184,14 @@ function isPageView(request, path, response) {
 function logView(ctx, who, path) {
   const target = ctx.env.GI_LOG_URL;
   if (!target) return;
+  const cf = ctx.request.cf || {};
   const row = {
     when: new Date().toISOString(),
     who,
     page: pageName(path),
     device: deviceName(ctx.request.headers.get('User-Agent') || ''),
+    ip: ctx.request.headers.get('CF-Connecting-IP') || '',
+    location: [cf.city, cf.region, cf.country].filter(Boolean).join(', '),
   };
   const sent = fetch(target, {
     method: 'POST',
@@ -191,7 +215,7 @@ async function dojoGate(ctx) {
   const dojo =
     !!env.DOJO_USER && !!env.DOJO_PASS && safeEqual(login.user, env.DOJO_USER) && safeEqual(login.pass, env.DOJO_PASS);
   // A named GI login opens the GI site and nothing else.
-  const person = !dojo && path !== null && GI_AREA.test(path) ? giPerson(env.GI_LOGINS, login.user, login.pass) : null;
+  const person = !dojo && path !== null && GI_AREA.test(path) ? await giPerson(env.GI_LOGINS, login.user, login.pass) : null;
   if (!dojo && !person) return unauthorized();
 
   const response = await next();
