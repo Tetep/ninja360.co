@@ -152,7 +152,7 @@ test.describe('GI color-scheme selector', () => {
     await expect(page.locator('.gi-close')).toHaveCount(1);
   });
 
-  test('link preview (texts, social): the clean logo on white, 1200x630, on every open page', async ({ page }) => {
+  test('link preview (texts, social): the clean logo on white, 1200x630, on Home, Listen and Rate the Topics', async ({ page }) => {
     const img = 'https://dojo.ninja360.co/gi/site/assets/og-logo-white.png';
     for (const route of ['/gi/site', '/gi/site/episodes', '/gi/site/rate-the-topics']) {
       await open(page, route);
