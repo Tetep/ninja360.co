@@ -12,10 +12,20 @@ const env = { DOJO_USER: 'ninja', DOJO_PASS: 'test-pass', GI_LOGINS: 'Erik:redcu
 const login = 'Basic ' + btoa('ninja:test-pass');
 const as = (user: string, pass: string) => 'Basic ' + btoa(user + ':' + pass);
 
-async function status(path: string, auth?: string, extraEnv: Record<string, string> = {}) {
+// The basic GI pages are open only until midnight Central, Nov 20/21 (Tim, 11/20/26). The gate
+// reads the clock, so these tests pin it: BEFORE unless a test says otherwise.
+const CUTOFF = Date.parse('2026-11-21T06:00:00Z'); // 12:00 AM Central, Sat Nov 21
+const BEFORE = Date.parse('2026-11-20T20:00:00Z'); // 2 PM Central, Fri Nov 20
+async function at<T>(clock: number, fn: () => Promise<T>): Promise<T> {
+  const realNow = Date.now;
+  Date.now = () => clock;
+  try { return await fn(); } finally { Date.now = realNow; }
+}
+
+async function status(path: string, auth?: string, extraEnv: Record<string, string> = {}, clock = BEFORE, host = 'dojo.ninja360.co') {
   const headers = new Headers(auth ? { Authorization: auth } : {});
-  const request = new Request('https://dojo.ninja360.co' + path, { headers });
-  const res = await gate({ request, env: { ...env, ...extraEnv }, next: async () => new Response('page', { status: 200 }) });
+  const request = new Request('https://' + host + path, { headers });
+  const res = await at(clock, () => gate({ request, env: { ...env, ...extraEnv }, next: async () => new Response('page', { status: 200 }) }));
   return res.status;
 }
 
@@ -34,12 +44,12 @@ async function rowsFor(path: string, auth: string, headers: Record<string, strin
     });
     if (opts.cf) Object.defineProperty(request, 'cf', { value: opts.cf });
     const logEnv = 'url' in opts ? (opts.url ? { GI_LOG_URL: opts.url } : {}) : { GI_LOG_URL: 'https://script.example/exec' };
-    await gate({
+    await at(BEFORE, () => gate({
       request,
       env: { ...env, ...logEnv, ...(opts.env || {}) },
       next: async () => new Response('page', { status: opts.status ?? 200 }),
       waitUntil: (p: Promise<unknown>) => waits.push(p),
-    });
+    }));
     await Promise.all(waits);
   } finally {
     globalThis.fetch = realFetch;
@@ -47,30 +57,28 @@ async function rowsFor(path: string, auth: string, headers: Record<string, strin
   return sent;
 }
 
-// Only the menu's pages are open (Home, Listen), plus the promo Home plays in a
-// frame and the shared files under /assets/ that those pages load.
+// Until the cutoff: the basic pages are open (Home, Listen, the footer pages, Be on the Show and
+// Coming Soon), plus the promo Home plays in a frame and the shared files under /assets/.
 const OPEN = [
   '/gi/site', '/gi/site/', '/gi/site/index.html', '/gi/site/?src=chamber',
   '/gi/site/episodes', '/gi/site/episodes/', '/gi/site/promo/',
+  '/gi/site/about/', '/gi/site/about', '/gi/site/membership/', '/gi/site/contact/', '/gi/site/contact/index.html',
+  '/gi/site/question-of-the-week/', '/gi/site/be-on-the-show/', '/gi/site/be-on-the-show/?src=card',
+  '/gi/site/apply', '/gi/site/audition/', '/gi/site/comingsoon/',
   '/gi/site/assets/gi-site.css', '/gi/site/assets/gi-theme.js', '/gi/site/assets/gi-intro.mp4',
   '/gi/site/assets/logo-v3b-light.png', '/gi/site/assets/topics/poster.jpg',
   '/gi/site/assets/business-plan-logo.png', // the Ninja logo on Listen is the door itself
   '/gi/site/assets/og-logo-white.png', // the link preview a text message fetches, with no login
 ];
 
-// Everything not on the menu.
+// The Business Plan side, and anything not a basic page.
 const LOCKED = [
   '/gi/site/business-plan', '/gi/site/business-plan/', '/gi/site/business-plan/content.js',
   '/gi/site/business-plan/youtube-strategy/', '/gi/site/business-plan/youtube-strategy/diagram.html',
   '/gi/site/strategy/', '/gi/site/call/', '/gi/site/dashboard/',
   '/gi/site/rate-the-topics/', '/gi/site/rate-the-topics', '/gi/site/rate-the-topics/index.html', // locked 11/20/26
   '/gi/site/assets/docs/', '/gi/site/assets/docs/anything.pdf', '/gi/site/assets/DOCS/anything.pdf', '/gi/site/assets/',
-  // the footer pages
-  '/gi/site/about/', '/gi/site/membership/', '/gi/site/contact/', '/gi/site/question-of-the-week/',
-  '/gi/site/about', '/gi/site/contact/index.html',
-  // not on the menu either
-  '/gi/site/be-on-the-show/', '/gi/site/be-on-the-show/?src=card', '/gi/site/apply', '/gi/site/audition/',
-  '/gi/site/comingsoon/', '/gi/site/episodes/_template/', '/gi/site/a-page-added-later/',
+  '/gi/site/episodes/_template/', '/gi/site/a-page-added-later/',
   // locked pages, dressed up
   '/gi/site/Business-Plan/', '/gi/site//business-plan/', '/gi/site/%62usiness-plan/', '/gi/site/business-plan.html',
   '/gi/site/promo/../call/', '/gi/site/%2e%2e/site/strategy/', '/gi/site/assets/%2e%2e/call/',
@@ -78,7 +86,7 @@ const LOCKED = [
   '/gi/site/%E0%A4%A/', // won't decode: stays locked
 ];
 
-test.describe('GI login: only the menu pages are open, everything else asks for the Dojo login', () => {
+test.describe('GI login (before midnight): the basic pages are open, the Business Plan side asks for the Dojo login', () => {
   test('open pages need no login', async () => {
     for (const p of OPEN) expect(await status(p), p).toBe(200);
   });
@@ -92,7 +100,11 @@ test.describe('GI login: only the menu pages are open, everything else asks for 
 
   test("Tim's rule: nothing on an open page asks for a login except the Ninja 360 button on Listen", async () => {
     const asked: string[] = [];
-    for (const [route, file] of [['/gi/site/', ''], ['/gi/site/episodes/', 'episodes']]) {
+    for (const [route, file] of [
+      ['/gi/site/', ''], ['/gi/site/episodes/', 'episodes'], ['/gi/site/about/', 'about'], ['/gi/site/contact/', 'contact'],
+      ['/gi/site/membership/', 'membership'], ['/gi/site/question-of-the-week/', 'question-of-the-week'],
+      ['/gi/site/be-on-the-show/', 'be-on-the-show'], ['/gi/site/comingsoon/', 'comingsoon'],
+    ]) {
       const html = await readFile(path.join(process.cwd(), 'dist/gi/site', file, 'index.html'), 'utf8');
       for (const [, href] of html.matchAll(/<a\b[^>]*\bhref="([^"#]+)/g)) {
         const url = new URL(href, 'https://dojo.ninja360.co' + route);
@@ -112,6 +124,35 @@ test.describe('GI login: only the menu pages are open, everything else asks for 
     expect(await status('/scrolls/')).toBe(401);
     expect(await status('/gi/')).toBe(401);
     expect(await status('/gi/site-x/')).toBe(401);
+  });
+});
+
+test.describe('midnight (Tim, 11/20/26): "Turn the whole thing off after that"', () => {
+  test('the cutoff is 12:00 AM Central, Saturday Nov 21', async () => {
+    const src = await readFile(path.join(process.cwd(), 'functions/_middleware.js'), 'utf8');
+    expect(src).toContain("const GI_OPEN_UNTIL = Date.parse('2026-11-21T06:00:00Z');");
+    expect(new Date(CUTOFF).toLocaleString('en-US', { timeZone: 'America/Chicago' })).toBe('11/21/2026, 12:00:00 AM');
+  });
+
+  test('one second before midnight the basic pages are open; at midnight every GI page asks for the login', async () => {
+    for (const p of OPEN) {
+      expect(await status(p, undefined, {}, CUTOFF - 1000), p).toBe(200);
+      expect(await status(p, undefined, {}, CUTOFF), p).toBe(401);
+      expect(await status(p, undefined, {}, CUTOFF + 86_400_000), p).toBe(401);
+    }
+  });
+
+  test('after midnight the Dojo login still opens everything, Erik and Gabe still nothing', async () => {
+    const later = CUTOFF + 3_600_000;
+    for (const p of [...OPEN, '/gi/site/business-plan/', '/gi/site/rate-the-topics/']) {
+      expect(await status(p, login, { GI_PARTNER_LOGINS: '' }, later), p).toBe(200);
+      expect(await status(p, as('Erik', 'Juergensen'), { GI_PARTNER_LOGINS: '' }, later), p).toBe(401);
+      expect(await status(p, as('Gabe', 'Miller'), { GI_PARTNER_LOGINS: '' }, later), p).toBe(401);
+    }
+  });
+
+  test("the crew's run sheet on ninja360.org is not part of it: still open after midnight", async () => {
+    expect(await status('/', undefined, {}, CUTOFF + 3_600_000, 'ninja360.org')).toBe(200);
   });
 });
 

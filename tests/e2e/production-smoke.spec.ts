@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { test, expect } from '@playwright/test';
 
 const routes = [
@@ -59,14 +61,18 @@ test.describe('production smoke checks', () => {
     expect(res.status, 'Dojo should be password-gated').toBe(401);
   });
 
-  // GI: only the menu's pages (and the promo Home plays) open with no login; every other page asks for it.
-  // Rate the Topics is locked since the lockdown (Tim, 11/20/26).
-  test('GI: the menu pages open without the login, nothing else does', async ({ baseURL }) => {
-    for (const path of ['/gi/site/', '/gi/site/episodes/', '/gi/site/promo/']) {
+  // GI: until midnight Central Nov 20/21 the basic pages open with no login and the Business Plan
+  // side asks for it; from midnight on, every GI page asks for it (Tim, 11/20/26). The cutoff is read
+  // from the gate itself so the two can't drift apart.
+  test('GI: basic pages open until the cutoff, Business Plan side always locked, everything locked after', async ({ baseURL }) => {
+    const gateSrc = readFileSync(join(process.cwd(), 'functions/_middleware.js'), 'utf8');
+    const cutoff = Date.parse(/GI_OPEN_UNTIL = Date\.parse\('([^']+)'\)/.exec(gateSrc)![1]);
+    const open = Date.now() < cutoff;
+    for (const path of ['/gi/site/', '/gi/site/episodes/', '/gi/site/promo/', '/gi/site/about/', '/gi/site/be-on-the-show/']) {
       const res = await fetch(new URL(path, baseURL), { redirect: 'manual' });
-      expect(res.status, path + ' should be public').toBe(200);
+      expect(res.status, path + (open ? ' should be public until midnight' : ' should ask for the login after midnight')).toBe(open ? 200 : 401);
     }
-    for (const path of ['/gi/site/business-plan/', '/gi/site/strategy/', '/gi/site/about/', '/gi/site/question-of-the-week/', '/gi/site/be-on-the-show/', '/gi/site/rate-the-topics/']) {
+    for (const path of ['/gi/site/business-plan/', '/gi/site/strategy/', '/gi/site/call/', '/gi/site/rate-the-topics/']) {
       const res = await fetch(new URL(path, baseURL), { redirect: 'manual' });
       expect(res.status, path + ' should ask for the login').toBe(401);
     }

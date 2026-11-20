@@ -13,19 +13,21 @@
 // To drop the gate, take dojoGate out of the onRequest list at the bottom of this file; nothing
 // else to undo.
 //
-// GI (Tim, 11/14/26): "I don't want them to be able to access any page that is not on the menu."
-// So the GI site is an allow-list. Open with no login:
-//   - the menu's pages: Home and Listen (/episodes/). The menu's other two items are not pages
-//     here: Be on the Show is the Google Form, Contact is an email link. Rate the Topics is locked
-//     and off the menu (Tim, 11/20/26).
+// GI, until midnight Central tonight (Tim, 11/20/26): "Give them the basic mock up site, basic
+// pages. Nothing behind the MENU of Business Plan." / "No log in till midnight tonight. Turn the
+// whole thing off after that." So until GI_OPEN_UNTIL (12:00 AM Central, Nov 21 = 06:00 UTC) the
+// basic GI pages below open with no login; from then on every GI page asks for the Dojo login,
+// which only Tim has. Nobody has to deploy anything at midnight: the clock does it.
+// The GI site is an allow-list. Open with no login (until the cutoff):
+//   - the basic pages: Home, Listen (/episodes/), About, Contact & Sponsors, Membership, the
+//     Weekly opt-in (Question of the Week), Be on the Show (and /apply, /audition, which forward
+//     to it) and Coming Soon. Rate the Topics is locked and off the menu (Tim, 11/20/26).
 //   - the promo, because Home plays it in a frame
 //   - /gi/site/assets/: the shared styles, scripts, images and video those pages load, except
 //     /assets/docs/ (the PDF decks)
 // Every other GI page asks for a login: the Business Plan (the Ninja logo on Listen) and all
-// under it, The Plan and its decks, the Partner Call, the Dashboard, the footer pages (About,
-// Membership, Contact & Sponsors, the Weekly opt-in), Be on the Show (and /apply, /audition),
-// Coming Soon, and any page added later. The footer links stay; they ask for the login. To make a
-// page public, add it to GI_PUBLIC_PAGE.
+// under it, The Plan and its decks, the Partner Call, the Dashboard, Rate the Topics, the episode
+// template, and any page added later. To make a page public, add it to GI_PUBLIC_PAGE.
 //
 // Who can sign in to those GI pages:
 //   - the Dojo login (DOJO_USER / DOJO_PASS), which opens everything, GI included. Since the
@@ -49,7 +51,10 @@
 // server only and never reaches a browser; a slow or broken sheet never delays or blocks a page.
 
 const OPEN_HOST = /(^|\.)ninja360\.org$/i;
-const GI_PUBLIC_PAGE = /^\/gi\/site(\/(episodes|promo))?(\/(index\.html)?)?$/i;
+const GI_PUBLIC_PAGE =
+  /^\/gi\/site(\/(episodes|promo|about|contact|membership|question-of-the-week|be-on-the-show|apply|audition|comingsoon))?(\/(index\.html)?)?$/i;
+// 12:00 AM Central, Saturday Nov 21, 2026 (CST is UTC-6). From this moment nothing GI is open.
+const GI_OPEN_UNTIL = Date.parse('2026-11-21T06:00:00Z');
 const GI_PUBLIC_FILE = /^\/gi\/site\/assets\/(?!docs(\/|$))[^/]/i;
 const DOT_SEGMENT = /(^|\/)\.\.?(\/|$)/;
 const ENCODED_SEPARATOR = /%2f|%5c/i;   // an encoded slash never gets to talk its way into an open path
@@ -70,7 +75,8 @@ function servedPath(pathname) {
   return DOT_SEGMENT.test(path) ? null : path;
 }
 
-const isOpenPath = (path) => path !== null && (GI_PUBLIC_PAGE.test(path) || GI_PUBLIC_FILE.test(path));
+const isOpenPath = (path) =>
+  Date.now() < GI_OPEN_UNTIL && path !== null && (GI_PUBLIC_PAGE.test(path) || GI_PUBLIC_FILE.test(path));
 const GI_AREA = /^\/gi\/site(\/|$)/i;
 
 const unauthorized = () =>
