@@ -60,12 +60,13 @@ test.describe('production smoke checks', () => {
   });
 
   // GI: only the menu's pages (and the promo Home plays) open with no login; every other page asks for it.
+  // Rate the Topics is locked since the lockdown (Tim, 11/20/26).
   test('GI: the menu pages open without the login, nothing else does', async ({ baseURL }) => {
-    for (const path of ['/gi/site/', '/gi/site/episodes/', '/gi/site/rate-the-topics/', '/gi/site/promo/']) {
+    for (const path of ['/gi/site/', '/gi/site/episodes/', '/gi/site/promo/']) {
       const res = await fetch(new URL(path, baseURL), { redirect: 'manual' });
       expect(res.status, path + ' should be public').toBe(200);
     }
-    for (const path of ['/gi/site/business-plan/', '/gi/site/strategy/', '/gi/site/about/', '/gi/site/question-of-the-week/', '/gi/site/be-on-the-show/']) {
+    for (const path of ['/gi/site/business-plan/', '/gi/site/strategy/', '/gi/site/about/', '/gi/site/question-of-the-week/', '/gi/site/be-on-the-show/', '/gi/site/rate-the-topics/']) {
       const res = await fetch(new URL(path, baseURL), { redirect: 'manual' });
       expect(res.status, path + ' should ask for the login').toBe(401);
     }

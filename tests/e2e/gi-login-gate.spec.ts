@@ -6,7 +6,9 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const gate = onRequest[0] as (ctx: unknown) => Promise<Response>;
-const env = { DOJO_USER: 'ninja', DOJO_PASS: 'test-pass', GI_LOGINS: 'Erik:redcup; Gabriel:bluechair' };
+// GI_PARTNER_LOGINS 'on' here so the named-login machinery stays tested; the lockdown tests below
+// run with it unset, which is how the live site runs (Tim, 11/20/26).
+const env = { DOJO_USER: 'ninja', DOJO_PASS: 'test-pass', GI_LOGINS: 'Erik:redcup; Gabriel:bluechair', GI_PARTNER_LOGINS: 'on' };
 const login = 'Basic ' + btoa('ninja:test-pass');
 const as = (user: string, pass: string) => 'Basic ' + btoa(user + ':' + pass);
 
@@ -45,11 +47,11 @@ async function rowsFor(path: string, auth: string, headers: Record<string, strin
   return sent;
 }
 
-// Only the menu's pages are open (Home, Listen, Rate the Topics), plus the promo Home plays in a
+// Only the menu's pages are open (Home, Listen), plus the promo Home plays in a
 // frame and the shared files under /assets/ that those pages load.
 const OPEN = [
   '/gi/site', '/gi/site/', '/gi/site/index.html', '/gi/site/?src=chamber',
-  '/gi/site/episodes', '/gi/site/episodes/', '/gi/site/rate-the-topics/', '/gi/site/promo/',
+  '/gi/site/episodes', '/gi/site/episodes/', '/gi/site/promo/',
   '/gi/site/assets/gi-site.css', '/gi/site/assets/gi-theme.js', '/gi/site/assets/gi-intro.mp4',
   '/gi/site/assets/logo-v3b-light.png', '/gi/site/assets/topics/poster.jpg',
   '/gi/site/assets/business-plan-logo.png', // the Ninja logo on Listen is the door itself
@@ -61,6 +63,7 @@ const LOCKED = [
   '/gi/site/business-plan', '/gi/site/business-plan/', '/gi/site/business-plan/content.js',
   '/gi/site/business-plan/youtube-strategy/', '/gi/site/business-plan/youtube-strategy/diagram.html',
   '/gi/site/strategy/', '/gi/site/call/', '/gi/site/dashboard/',
+  '/gi/site/rate-the-topics/', '/gi/site/rate-the-topics', '/gi/site/rate-the-topics/index.html', // locked 11/20/26
   '/gi/site/assets/docs/', '/gi/site/assets/docs/anything.pdf', '/gi/site/assets/DOCS/anything.pdf', '/gi/site/assets/',
   // the footer pages
   '/gi/site/about/', '/gi/site/membership/', '/gi/site/contact/', '/gi/site/question-of-the-week/',
@@ -89,7 +92,7 @@ test.describe('GI login: only the menu pages are open, everything else asks for 
 
   test("Tim's rule: nothing on an open page asks for a login except the Ninja 360 button on Listen", async () => {
     const asked: string[] = [];
-    for (const [route, file] of [['/gi/site/', ''], ['/gi/site/episodes/', 'episodes'], ['/gi/site/rate-the-topics/', 'rate-the-topics']]) {
+    for (const [route, file] of [['/gi/site/', ''], ['/gi/site/episodes/', 'episodes']]) {
       const html = await readFile(path.join(process.cwd(), 'dist/gi/site', file, 'index.html'), 'utf8');
       for (const [, href] of html.matchAll(/<a\b[^>]*\bhref="([^"#]+)/g)) {
         const url = new URL(href, 'https://dojo.ninja360.co' + route);
@@ -112,7 +115,41 @@ test.describe('GI login: only the menu pages are open, everything else asks for 
   });
 });
 
-test.describe('GI named logins: first name + a word per person, GI pages only', () => {
+test.describe('lockdown (Tim, 11/20/26): only the Dojo login opens a private page', () => {
+  const off = { GI_PARTNER_LOGINS: '' };
+  const partners = [
+    as('Erik', 'Juergensen'), as('erik', 'juergensen'), as('Gabe', 'Miller'), as('Gabriel', 'Miller'),
+    as('Erik', 'redcup'), as('Gabriel', 'bluechair'), // GI_LOGINS entries
+  ];
+  const privatePages = [
+    '/gi/site/business-plan/', '/gi/site/business-plan/youtube-strategy/', '/gi/site/business-plan/man-on-the-street/',
+    '/gi/site/call/', '/gi/site/strategy/', '/gi/site/rate-the-topics/', '/gi/site/assets/docs/GI-YouTube-Strategy.pdf',
+  ];
+
+  test('Erik and Gabe are refused everywhere, with every word they had', async () => {
+    for (const p of privatePages) for (const a of partners) expect(await status(p, a, off), p).toBe(401);
+  });
+
+  test('anything but GI_PARTNER_LOGINS="on" keeps them out', async () => {
+    for (const v of ['', 'off', 'yes', 'true', '1', 'ON please']) {
+      expect(await status('/gi/site/business-plan/', as('Erik', 'Juergensen'), { GI_PARTNER_LOGINS: v }), v).toBe(401);
+    }
+  });
+
+  test('the Dojo login still opens every private page, and the open pages still need nothing', async () => {
+    for (const p of privatePages) expect(await status(p, login, off), p).toBe(200);
+    for (const p of ['/gi/site/', '/gi/site/episodes/', '/gi/site/promo/', '/gi/site/assets/og-logo-white.png']) {
+      expect(await status(p, undefined, off), p).toBe(200);
+    }
+  });
+
+  test('a refused partner adds no row to the sheet', async () => {
+    const sent = await rowsFor('/gi/site/business-plan/', as('Erik', 'Juergensen'), { 'Sec-Fetch-Dest': 'document' }, { env: off });
+    expect(sent).toHaveLength(0);
+  });
+});
+
+test.describe('GI named logins (only with GI_PARTNER_LOGINS "on"): first name + a word per person, GI pages only', () => {
   test('each person gets in with their own first name and word, any capitals, stray spaces', async () => {
     for (const a of [as('Erik', 'redcup'), as('erik', 'RedCup'), as(' Erik ', 'redcup '), as('Gabriel', 'bluechair')]) {
       expect(await status('/gi/site/business-plan/', a)).toBe(200);

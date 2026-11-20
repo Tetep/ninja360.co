@@ -15,8 +15,9 @@
 //
 // GI (Tim, 11/14/26): "I don't want them to be able to access any page that is not on the menu."
 // So the GI site is an allow-list. Open with no login:
-//   - the menu's pages: Home, Listen (/episodes/), Rate the Topics. The menu's other two items are
-//     not pages here: Be on the Show is the Google Form, Contact is an email link.
+//   - the menu's pages: Home and Listen (/episodes/). The menu's other two items are not pages
+//     here: Be on the Show is the Google Form, Contact is an email link. Rate the Topics is locked
+//     and off the menu (Tim, 11/20/26).
 //   - the promo, because Home plays it in a frame
 //   - /gi/site/assets/: the shared styles, scripts, images and video those pages load, except
 //     /assets/docs/ (the PDF decks)
@@ -27,7 +28,9 @@
 // page public, add it to GI_PUBLIC_PAGE.
 //
 // Who can sign in to those GI pages:
-//   - the Dojo login (DOJO_USER / DOJO_PASS), which opens everything, GI included
+//   - the Dojo login (DOJO_USER / DOJO_PASS), which opens everything, GI included. Since the
+//     lockdown (Tim, 11/20/26) this is the ONLY login: the partner and named logins below are off.
+//     They come back only if the Pages env var GI_PARTNER_LOGINS is set to "on".
 //   - a partner login (Tim, 11/19/26): Erik and Gabe each sign in with their first name and the
 //     word Tim gave them. Built in below as PARTNER_LOGINS, so it works with no Cloudflare setup.
 //     Only SHA-256 fingerprints of "name:word" live in this file (the repo is public), never the
@@ -46,7 +49,7 @@
 // server only and never reaches a browser; a slow or broken sheet never delays or blocks a page.
 
 const OPEN_HOST = /(^|\.)ninja360\.org$/i;
-const GI_PUBLIC_PAGE = /^\/gi\/site(\/(episodes|rate-the-topics|promo))?(\/(index\.html)?)?$/i;
+const GI_PUBLIC_PAGE = /^\/gi\/site(\/(episodes|promo))?(\/(index\.html)?)?$/i;
 const GI_PUBLIC_FILE = /^\/gi\/site\/assets\/(?!docs(\/|$))[^/]/i;
 const DOT_SEGMENT = /(^|\/)\.\.?(\/|$)/;
 const ENCODED_SEPARATOR = /%2f|%5c/i;   // an encoded slash never gets to talk its way into an open path
@@ -214,8 +217,11 @@ async function dojoGate(ctx) {
   // The Dojo login opens everything. Fail closed: if its secrets aren't configured, it opens nothing.
   const dojo =
     !!env.DOJO_USER && !!env.DOJO_PASS && safeEqual(login.user, env.DOJO_USER) && safeEqual(login.pass, env.DOJO_PASS);
-  // A named GI login opens the GI site and nothing else.
-  const person = !dojo && path !== null && GI_AREA.test(path) ? await giPerson(env.GI_LOGINS, login.user, login.pass) : null;
+  // A named GI login opens the GI site and nothing else, and only while GI_PARTNER_LOGINS is "on".
+  // Lockdown (Tim, 11/20/26): it isn't set, so only the Dojo login gets in.
+  const partnersOn = String(env.GI_PARTNER_LOGINS || '').trim().toLowerCase() === 'on';
+  const person =
+    partnersOn && !dojo && path !== null && GI_AREA.test(path) ? await giPerson(env.GI_LOGINS, login.user, login.pass) : null;
   if (!dojo && !person) return unauthorized();
 
   const response = await next();
